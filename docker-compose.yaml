@@ -7,7 +7,6 @@ services:
       no_cache: true
     ports:
       - 5000:5000
-      - 5432:5432
     deploy:
       restart_policy:
         condition: unless-stopped

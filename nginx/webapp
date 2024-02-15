@@ -1,0 +1,27 @@
+server {
+    server_name 0.0.0.0 team6.ua-ppdb.me;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/app/PPDB-Template-App/src/ProgDBTutor/webapp.sock;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/team6.ua-ppdb.me/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/team6.ua-ppdb.me/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    if ($host = team6.ua-ppdb.me) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name 0.0.0.0 team6.ua-ppdb.me;
+    return 404; # managed by Certbot
+
+
+}

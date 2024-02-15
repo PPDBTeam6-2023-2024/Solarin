@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  app:
+    image: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      no_cache: true
+    ports:
+      - 5000:5000
+    deploy:
+      restart_policy:
+        condition: unless-stopped

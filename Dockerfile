@@ -4,5 +4,6 @@ FROM python:3.11.2-slim-buster
 COPY requirements.txt /
 RUN pip3 install -r /requirements.txt
 COPY . .
+RUN ls
 RUN cd PPDB-Template-App/src/ProgDBTutor
 RUN gunicorn -b 0.0.0.0:5000 wsgi:app

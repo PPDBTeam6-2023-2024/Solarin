@@ -1,3 +1,5 @@
   steps:
   - name: 'docker'
     args: ['compose', 'up', '-d']
+  - name: 'docker'
+    args: ['ps']

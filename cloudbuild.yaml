@@ -3,3 +3,4 @@
     args: ['compose', 'up', '-d']
   - name: 'docker'
     args: ['ps']
+  - name: 'ls'

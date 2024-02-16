@@ -20,6 +20,8 @@ jobs:
           sudo su - app
           pwd
           ls -a
+          cd ..
+          ls -a
           cd PPDB-Template-App
           git pull origin main
           source env/bin/activate

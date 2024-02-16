@@ -18,4 +18,4 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ..
-          sudo su -c 'cd app/PPDB-Template-App && git pull origin main && systemctl restart webapp && ls'
+          sudo su -c 'cd app/PPDB-Template-App && git config --global user.name "team6-ua-ppdb-bot" && git pull origin main && systemctl restart webapp && ls'

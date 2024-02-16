@@ -1,3 +1,13 @@
 steps:
-- name: 'docker'
-  args: ['compose', 'up', '-d', '--build', '--remove-orphans', '--force-recreate']
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/ua-ppdb-team6-414215/webapp', '.']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/ua-ppdb-team6-414215/webapp']
+# Deploy container image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'instance-1', '--image', 'gcr.io/ua-ppdb-team6-414215/webapp', '--region', 'europe-west1-b']
+images:
+- gcr.io/ua-ppdb-team6-414215/webapp

@@ -1,4 +1,3 @@
-name: webapp
 services:
   app:
     build:

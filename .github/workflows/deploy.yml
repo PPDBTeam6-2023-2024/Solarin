@@ -18,4 +18,5 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ..
-          sudo su -c 'git config --global --add safe.directory /home/app/PPDB-Template-App && cd app/PPDB-Template-App && git pull origin main && systemctl restart webapp && ls'
+          sudo su -c 'cd app/PPDB-Template-App'
+          ls -a

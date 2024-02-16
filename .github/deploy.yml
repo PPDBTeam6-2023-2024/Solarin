@@ -1,0 +1,24 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: debian-12
+
+    steps:
+    - name: SSH into VM and deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          sudo su - app
+          cd PPDB-Template-App
+          git pull origin main
+          source env/bin/activate
+          sudo systemctl restart webapp

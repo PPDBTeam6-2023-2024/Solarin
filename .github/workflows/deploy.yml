@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: debian-12
+    runs-on: ubuntu-latest
 
     steps:
     - name: SSH into VM and deploy

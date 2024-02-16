@@ -18,6 +18,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           sudo su - app
+          pwd
           cd PPDB-Template-App
           git pull origin main
           source env/bin/activate

@@ -6,9 +6,14 @@ import psycopg2
 
 
 class DBConnection:
-    def __init__(self, dbname, dbuser):
+    def __init__(self, dbname, dbuser, dbpassword):
         try:
-            self.conn = psycopg2.connect("dbname='{}' user='{}'".format(dbname, dbuser))
+            self.conn = psycopg2.connect(
+                dbname=dbname,
+                user=dbuser,
+                password=dbpassword,
+                host="host.docker.internal",
+                port=5432)
         except:
             print('ERROR: Unable to connect to database')
             raise

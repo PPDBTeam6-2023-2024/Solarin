@@ -1,12 +1,21 @@
 services:
   app:
-    image: app
     build:
-      context: .
-      dockerfile: Dockerfile
-      no_cache: true
+      . 
+    command: gunicorn -b 0.0.0.0:5000 wsgi:app
+    working_dir: /src/ProgDBTutor
     ports:
       - 5000:5000
-    deploy:
-      restart_policy:
-        condition: unless-stopped
+    depends_on:
+      - db
+    restart: on-failure
+  db:
+    image: postgres:14.1-alpine
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql

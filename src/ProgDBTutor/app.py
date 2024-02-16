@@ -12,7 +12,7 @@ app = Flask('Tutorial ')
 app.secret_key = '*^*(*&)(*)(*afafafaSDD47j\3yX R~X@H!jmM]Lwf/,?KT'
 app_data = dict()
 app_data['app_name'] = config_data['app_name']
-connection = DBConnection(dbname=config_data['dbname'], dbuser=config_data['dbuser'])
+connection = DBConnection(dbname=config_data['dbname'], dbuser=config_data['dbuser'], dbpassword=config_data['dbpassword'])
 quote_data_access = QuoteDataAccess(connection)
 
 DEBUG = False

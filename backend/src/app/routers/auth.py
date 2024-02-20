@@ -1,0 +1,94 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from passlib.context import CryptContext
+from jose import jwt, JWTError
+from datetime import datetime, timedelta, timezone
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+import sqlalchemy.exc
+from typing import Union, Annotated
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from uuid import UUID
+
+from ..schemas import UserCreate, Token
+from ..database import db
+from ..models import User
+
+auth_router = APIRouter(prefix="/auth")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+
+@auth_router.post("/add_user")
+async def add_user(user: UserCreate, db=Depends(db.get_db)):
+    try:
+        db_user = User(
+            email=user.email,
+            username=user.username,
+            hashed_password=pwd_context.hash(user.password)
+        )
+        db.add(db_user)
+        await db.commit()
+        return {
+            "username": user.username,
+            "email": user.email
+        }
+    except sqlalchemy.exc.IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=404, detail="Email or username already taken")
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to add user")
+
+
+async def authenticate_user(session: AsyncSession, email: str, password: str) -> Union[User, None]:
+    user = await session.execute(select(User).where(User.email == email))
+    user = user.first()
+    if not user:
+        return None
+    user = user[0]
+    if not pwd_context.verify(password, user.hashed_password):
+        return None
+    return user
+
+
+def create_access_token(data: dict, expires_delta: timedelta):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + expires_delta
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+@auth_router.post("/token")
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(db.get_db)) -> Token:
+    user = await authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = create_access_token(
+        data={"sub": str(user.id)}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    return Token(access_token=access_token, token_type="bearer")
+
+
+def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> UUID:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = UUID(payload.get("sub"))
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    return user_id

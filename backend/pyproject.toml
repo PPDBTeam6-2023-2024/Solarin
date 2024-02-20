@@ -9,7 +9,7 @@ authors = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10.12"
 fastapi = "^0.109.2"
 pytest = "^8.0.1"
 sqlalchemy = "^2.0.27"

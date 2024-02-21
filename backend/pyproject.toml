@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "ppdb-project"
+version = "0.1.0"
+description = ""
+authors = [
+    "Tibo Verreycken <https://github.com/klanting>",
+    "Arne De Peuter <https://github.com/ArneDePeuter>",
+    "Patryck Pillichowski <https://github.com/ArneDePeuter>",
+]
+
+[tool.poetry.dependencies]
+python = "^3.10.12"
+fastapi = "^0.109.2"
+pytest = "^8.0.1"
+sqlalchemy = "^2.0.27"
+alembic = "^1.13.1"
+asyncpg = "^0.29.0"
+passlib = "^1.7.4"
+python-jose = "^3.3.0"
+uvicorn = "^0.27.1"
+pydantic = {extras = ["email"], version = "^2.6.1"}
+python-multipart = "^0.0.9"
+bcrypt = "4.0.1"
+confz = "^2.0.1"
+loguru = "^0.7.2"
+gunicorn = "^21.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

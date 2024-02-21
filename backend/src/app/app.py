@@ -44,7 +44,6 @@ async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)
     result = await db.execute(select(User).where(User.id == user_id))
     return result.scalars().all()
 
-@app.get("/hello-world")
-async def hello():
-    client_host = request.client.host
-    return {"message": "hello world!"}
+@app.get("/hello")
+async def root():
+    return {"message": "Hello World"}

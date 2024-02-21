@@ -12,7 +12,7 @@ from .customize_logger import CustomizeLogger
 
 config = APIConfig()
 
-app = FastAPI(title="SolarinAPI")
+app = FastAPI(title="SolarinAPI", root_path="/api")
 
 if config.logging:
     app.logger = CustomizeLogger.make_logger(config=config.logging)

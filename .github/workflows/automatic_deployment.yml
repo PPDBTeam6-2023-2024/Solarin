@@ -1,0 +1,49 @@
+name: Automatic Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  pull-origin-rebase:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: SSH into VM and deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ..
+          sudo su -c 'cd app/PPDB-Template-App && git remote set-url origin https://team6-ua-ppdb-bot:${{secrets.BOT_ACCESSTOKEN}}@github.com/PPDBTeam6-2023-2024/PPDB-Project.git && git pull origin main --rebase'
+  deploy-backend:
+    needs: pull-origin-rebase
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: SSH into VM and deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ..
+          sudo su -c 'cd app/PPDB-Template-App && sudo supervisorctl restart solarin_backend'
+  deploy-frontend:
+    needs: pull-origin-rebase
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: SSH into VM and deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ..
+          sudo su -c 'cd app/PPDB-Template-App/frontend && npm run build && systemctl restart nginx'

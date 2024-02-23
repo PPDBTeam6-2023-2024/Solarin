@@ -1,12 +1,13 @@
 import './App.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 function App() {
+  const [msg, setMsg] = useState('Pending...');
   useEffect(() => {
       document.title = "Solarin";
       axios.get(`${process.env.REACT_APP_BACKEND_PATH}/hello`).then((response) => {
-        console.log(response.data.message);
+        setMsg(response.data.message);
       })
   });
   
@@ -14,7 +15,7 @@ function App() {
     <div className="App">
       <header className="App-header">
       <h1 className="text-5xl">SOLARIN</h1>
-      <h3>Hello World</h3>
+      <h3>{msg}</h3>
       </header>
     </div>
   );

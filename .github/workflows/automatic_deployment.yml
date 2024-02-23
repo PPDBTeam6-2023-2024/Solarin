@@ -46,4 +46,4 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ..
-          sudo su -c 'cd app/PPDB-Template-App/frontend && npm run build && systemctl restart nginx'
+          sudo su -c 'cd app/PPDB-Template-App/frontend && npm install && npm run build && systemctl restart nginx'

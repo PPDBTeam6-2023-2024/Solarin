@@ -1,10 +1,15 @@
 import './App.css';
 import { useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
   useEffect(() => {
       document.title = "Solarin";
+      axios.get(`${process.env.REACT_APP_BACKEND_PATH}/hello`).then((response) => {
+        console.log(response.data.message);
+      })
   });
+  
   return (
     <div className="App">
       <header className="App-header">

@@ -17,10 +17,9 @@ app = FastAPI(title="SolarinAPI", root_path="/api")
 if config.logging:
     app.logger = CustomizeLogger.make_logger(config=config.logging)
 
-origins = config.CORS_sources
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

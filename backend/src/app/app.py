@@ -37,6 +37,10 @@ async def startup():
 async def shutdown():
     await db.disconnect()
 
+@app.get("/users")
+async def users(db=Depends(db.get_db)):
+    result = await db.execute(select(User))
+    return result.scalars().all()
 
 @app.get("/me")
 async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)):

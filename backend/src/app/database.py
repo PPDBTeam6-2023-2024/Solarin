@@ -1,11 +1,10 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
 from sqlalchemy.orm import declarative_base
 from typing import AsyncGenerator
-
+from sqlalchemy.schema import CreateTable
 from .config import DBConfig
 
 Base = declarative_base()
-
 
 class Database:
     def __init__(self) -> None:
@@ -16,6 +15,9 @@ class Database:
         self.__engine = create_async_engine(
             f"postgresql+asyncpg://{config.user}:{config.password.get_secret_value()}@{config.host}:{config.port}/{config.database}",
         )
+
+        async with self.__engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
         self.__session = async_sessionmaker(
             bind=self.__engine,
@@ -35,3 +37,4 @@ class Database:
 
 
 db = Database()
+

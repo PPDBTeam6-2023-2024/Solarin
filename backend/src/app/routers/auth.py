@@ -44,6 +44,7 @@ async def add_user(user: UserCreate, db=Depends(db.get_db)):
         raise HTTPException(status_code=500, detail="Failed to add user")
 
 
+
 async def authenticate_user(session: AsyncSession, email: str, password: str) -> Union[User, None]:
     user = await session.execute(select(User).where(User.email == email))
     user = user.first()

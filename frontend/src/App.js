@@ -2,9 +2,13 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import qs from 'qs'
+import ParticlesApp from './Particles.js'
 function App() {  
   const [isSignIn, setIsSignIn] = useState(true)
   const [signError, setSignError] = useState(null)
+
+
+  document.title = "Solarin"
   const handleSubmit = async(event) => {
     event.preventDefault()
       let username = event.target.username.value
@@ -49,7 +53,9 @@ function App() {
       }
   }
   return (
-    <div className="App min-h-screen flex justify-center text-center">
+    <div className="App">
+          <ParticlesApp></ParticlesApp>
+        <div className="min-h-screen flex justify-center text-center z-10">
         <div className="mt-20">
         <h1 className="text-9xl">SOLARIN</h1>
         
@@ -89,6 +95,7 @@ function App() {
         PLAY
         </button>
         </div>
+    </div>
     </div>
   );
 }

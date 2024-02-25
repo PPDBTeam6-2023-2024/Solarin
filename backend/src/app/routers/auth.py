@@ -45,8 +45,8 @@ async def add_user(user: UserCreate, db=Depends(db.get_db)):
 
 
 
-async def authenticate_user(session: AsyncSession, email: str, password: str) -> Union[User, None]:
-    user = await session.execute(select(User).where(User.email == email))
+async def authenticate_user(session: AsyncSession, username: str, password: str) -> Union[User, None]:
+    user = await session.execute(select(User).where(User.username == username))
     user = user.first()
     if not user:
         return None

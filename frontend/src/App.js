@@ -3,12 +3,20 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import qs from 'qs'
 import ParticlesApp from './Particles.js'
+/**
+ * The login and (currently) the home page
+ * @returns app login/home component
+ */
 function App() {  
   const [isSignIn, setIsSignIn] = useState(true)
   const [signError, setSignError] = useState(null)
 
 
   document.title = "Solarin"
+  /**
+   * communicates with the backend to either sign in or sign up by sending post requests using axios
+   * @param {*} event information filled in the form after clicking on sign in or sign up
+   */
   const handleSubmit = async(event) => {
     event.preventDefault()
       let username = event.target.username.value
@@ -16,7 +24,7 @@ function App() {
       let email = event.target.email.value
       if(isSignIn) {
         axios.post(`${process.env.REACT_APP_BACKEND_PATH}/auth/token`, qs.stringify({
-          "username": email,
+          "username": username,
           "password": password 
         }), 
         { 

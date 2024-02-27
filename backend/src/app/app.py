@@ -1,11 +1,7 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Annotated
-from uuid import UUID
-from sqlalchemy import select
 
-from .routers.auth import auth_router, get_my_id
-from .models import User
+from src.app.modules.authentication.router import auth_router
 from .database import db
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
@@ -36,12 +32,3 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
-
-@app.get("/me")
-async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)):
-    result = await db.execute(select(User).where(User.id == user_id))
-    return result.scalars().all()
-
-@app.get("/hello")
-async def root():
-    return {"message": "Hello World"}

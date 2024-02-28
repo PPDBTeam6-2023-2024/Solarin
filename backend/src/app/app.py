@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .modules.authentication.router import router as auth_router
+from .routers.authentication.router import router as auth_router
+from .routers.chat.router import router as chat_router
 from .database import db
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
@@ -22,6 +23,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(chat_router)
 
 
 @app.on_event("startup")

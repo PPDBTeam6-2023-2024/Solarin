@@ -93,3 +93,22 @@ def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> UUID:
     except JWTError:
         raise credentials_exception
     return user_id
+
+
+@router.get("/validate")
+def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
+    success = True
+    try:
+        jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except Exception as e:
+        success = False
+    return {
+        "success": success
+    }
+
+
+@router.get("/me")
+async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)):
+    result = await db.execute(select(User).where(User.id == user_id))
+    scalar = result.scalars().all()[0]
+    return {"username": scalar.username, "id": scalar.id, "email": scalar.email}

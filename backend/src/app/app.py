@@ -1,11 +1,7 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Annotated
-from uuid import UUID
-from sqlalchemy import select
 
-from .routers.auth import auth_router, get_my_id
-from .models import User
+from .modules.authentication.router import router as auth_router
 from .database import db
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
@@ -36,7 +32,3 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
-
-@app.get("/hello")
-async def root():
-    return {"message": "Hello World"}

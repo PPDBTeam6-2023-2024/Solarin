@@ -9,11 +9,11 @@ from typing import Union, Annotated
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from uuid import UUID
 
-from ..schemas import UserCreate, Token
-from ..database import db
-from ..models import User
+from .schemas import UserCreate, Token
+from src.app.database import db
+from src.app.models import User
 
-auth_router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -22,7 +22,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-@auth_router.post("/add_user")
+@router.post("/add_user")
 async def add_user(user: UserCreate, db=Depends(db.get_db)):
     try:
         db_user = User(
@@ -44,7 +44,6 @@ async def add_user(user: UserCreate, db=Depends(db.get_db)):
         raise HTTPException(status_code=500, detail="Failed to add user")
 
 
-
 async def authenticate_user(session: AsyncSession, username: str, password: str) -> Union[User, None]:
     user = await session.execute(select(User).where(User.username == username))
     user = user.first()
@@ -64,7 +63,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
     return encoded_jwt
 
 
-@auth_router.post("/token")
+@router.post("/token")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(db.get_db)) -> Token:
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:

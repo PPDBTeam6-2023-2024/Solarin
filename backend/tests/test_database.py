@@ -18,11 +18,9 @@ async def setup_data():
     session = await task
     da = DataAccess(session)
 
-    t_index = 12
-    uuid = await da.createUser(f"t{t_index}@gmail", f"usernamet{t_index}", f"hpt{t_index}")
-    a = await da.getFactionName(uuid)
-    print(uuid, "a", a)
-
+    #t_index = 1
+    #uuid = await da.createUser(f"t{t_index}@gmail", f"usernamet{t_index}", f"hp{t_index}")
+    #a = await da.getFactionName(uuid)
     """
     session.add(User("t1@gmail", "username", "hp"))
     session.add(User("t2@gmail", "username2", "hp2"))
@@ -32,6 +30,21 @@ async def setup_data():
     session.add(Clan("epic clan", mb.bid))
     await session.commit()
     """
+    m_token = MessageToken(
+        sender_id="d0dd0cb0-c8ac-42b7-9902-f8e3171838e1",
+        message_board=1,
+        body="test"
+    )
+
+    #await da.createMessage(m_token)
+
+    a = await da.getMessagesAlliance("epic clan", 0, 1)
+    b = await da.getMessagesAlliance("epic clan", 1, 2)
+    #await da.addFriendship(1, 3)
+    f = await da.getFriends(1)
+    f2 = await da.getFriends(3)
+    print(f)
+    print(f2)
 
     await db.disconnect()
 

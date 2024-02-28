@@ -5,6 +5,8 @@ from sqlalchemy.schema import CreateTable
 from ..config import DBConfig
 
 Base = declarative_base()
+
+
 class Database:
     def __init__(self) -> None:
         self.__session = None

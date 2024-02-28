@@ -105,7 +105,6 @@ def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
         "success": success
     }
 
-
 @router.get("/me")
 async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)):
     result = await db.execute(select(User).where(User.id == user_id))

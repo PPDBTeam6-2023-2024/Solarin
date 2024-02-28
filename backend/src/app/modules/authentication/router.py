@@ -92,3 +92,15 @@ def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> UUID:
     except JWTError:
         raise credentials_exception
     return user_id
+
+
+@router.get("/validate")
+def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
+    success = True
+    try:
+        jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except Exception as e:
+        success = False
+    return {
+        "success": success
+    }

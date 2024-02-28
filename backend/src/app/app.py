@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.app.modules.authentication.router import auth_router
+from .modules.authentication.router import router as auth_router
 from .database import db
 from .config import APIConfig
 from .customize_logger import CustomizeLogger

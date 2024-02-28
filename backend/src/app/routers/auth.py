@@ -3,15 +3,14 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy.exc
 from typing import Union, Annotated
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from uuid import UUID
 
 from ..schemas import UserCreate, Token
-from ..database import db
-from ..models import User
+from ..database.database import *
+from ..database.models import User
 
 auth_router = APIRouter(prefix="/auth")
 

@@ -106,15 +106,36 @@ class City(Base):
                                            [PlanetRegion.planet_id, PlanetRegion.id]),{})
 
 
-
-###########################################################
-# nieuw toegevoegd
-##########################################################
-
 class Building(Base):
     __tablename__ = 'building'
     id = Column(Integer, Sequence("building.id_seq"), primary_key=True)
     rank = Column(Integer,nullable=False)
+
+class BarracksType(Base):
+    __tablename__ = 'barracksType'
+    id = Column(Integer, Sequence("barracksType.id"), primary_key=True)
+    name = Column(TEXT, nullable=False)
+    required_rank = Column(Integer, nullable=False)
+    resource_cost_type = Column(ForeignKey("resourceType.type"),nullable=False)
+    resource_cost_amount = Column(Integer,nullable=False)
+
+
+class WallType(Base):
+    __tablename__ = 'wallType'
+    id = Column(Integer, Sequence("wallType.id"), primary_key=True)
+    name = Column(TEXT, nullable=False)
+    requiredRank = Column(Integer, nullable=False)
+    resource_cost_type = Column(ForeignKey("resourceType.type"),nullable=False)
+    resource_cost_amount = Column(Integer,nullable=False)
+
+class TowerType(Base):
+    __tablename__ = 'towerType'
+    id = Column(Integer, Sequence("towerType.id"), primary_key=True)
+    name = Column(TEXT, nullable=False)
+    requiredRank = Column(Integer, nullable=False)
+    resource_cost_type = Column(ForeignKey("resourceType.type"),nullable=False)
+    resource_cost_amount = Column(Integer,nullable=False)
+
 
 
 class Wall(Base):
@@ -122,52 +143,26 @@ class Wall(Base):
     id = Column(Integer, ForeignKey("building.id"), primary_key=True)
     typeId = Column(Integer, ForeignKey("wallType.id"), nullable=False)
     towers = relationship("Tower", back_populates="parent")
-
-class WallType(Base):
-    __tablename__ = 'wallType'
-    id = Column(Integer, Sequence("wallType.id"), primary_key=True)
-    name = Column(TEXT, nullable=False)
-    requiredRank = Column(Integer, nullable=False)
-    # voeg costsResource toe
-
+    defence = Column(Integer, nullable=False)
 
 class Tower(Base):
     __tablename__ = 'tower'
     id = Column(Integer, ForeignKey("building.id"), primary_key=True)
     type_id = Column(Integer, ForeignKey("towerType.id"), nullable=False)
+    attack = Column(Integer, nullable=False)
     wall = relationship("Wall", back_populates="children")
-
-
-class TowerType(Base):
-    __tablename__ = 'towerType'
-    id = Column(Integer, Sequence("towerType.id"), primary_key=True)
-    name = Column(TEXT, nullable=False)
-    requiredRank = Column(Integer, nullable=False)
-    # voeg costsResource toe
 
 
 class Barracks(Base):
     __tablename__ = 'barracks'
     id = Column(Integer, ForeignKey("building.id"), primary_key=True)
     type_id = Column(Integer, ForeignKey("barracksType.id"), nullable=False)
-    #one-to-one relatie
+    #one-to-one relationship
     queue = relationship("TrainingQueue", uselist=False, back_populates="barracks")
-
-
-
-class BarracksType(Base):
-    __tablename__ = 'barracksType'
-    id = Column(Integer, Sequence("barracksType.id"), primary_key=True)
-    name = Column(TEXT, nullable=False)
-    required_rank = Column(Integer, nullable=False)
-    # voeg costsResource toe
-
 
 class House(Base):
     __tablename__ = 'house'
     id = Column(Integer, ForeignKey("building.id"), primary_key=True)
-
-
 class ProductionBuilding(Base):
     __tablename__ = 'productionBuilding'
     id = Column(Integer, ForeignKey("building.id"), primary_key=True)

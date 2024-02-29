@@ -13,7 +13,7 @@ class Token(BaseModel):
 
 
 class MessageToken(BaseModel):
-    sender_id: str
+    sender_id: int
     message_board: int
     body: str
     parent_message_id: int = None

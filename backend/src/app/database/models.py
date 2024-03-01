@@ -78,7 +78,7 @@ class PlanetType(Base):
 class PlanetRegion(Base):
     __tablename__ = 'planetRegion'
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
-    planet_id = Column(Integer, ForeignKey("planet.id"), primary_key=True)
+    planet_id = Column(Integer, ForeignKey("planet.id"))
     region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
 
 
@@ -91,9 +91,8 @@ class PlanetRegionType(Base):
 class City(Base):
     __tablename__ = 'city'
 
-    planet_id = Column(Integer, ForeignKey("planet.id"), primary_key=True)
-    region_id = Column(Integer, primary_key=True)
-    id = Column(Integer, primary_key=True)
+    region_id = Column(Integer, ForeignKey("planetRegion.id"))
+    id = Column(Integer, Sequence("city_id_seq"), primary_key=True)
     controlled_by = Column(Integer, ForeignKey("user.id"), nullable=False)
 
     rank = Column(Integer, nullable=False, default=1)
@@ -101,13 +100,11 @@ class City(Base):
     """
     Guarantee a composite Foreign key to access planet Region
     """
-    __table_args__ = (ForeignKeyConstraint([planet_id, region_id],
-                                           [PlanetRegion.planet_id, PlanetRegion.id]),{})
 
 
 class BuildingInstance(Base):
     __tablename__ = "buildingInstance"
-    id = Column(Integer, Sequence('BuildingInstance_id_seq'), primary_key=True, index=True)
+    id = Column(Integer, Sequence('buildingInstance_id_seq'), primary_key=True, index=True)
     city_id = Column(Integer, ForeignKey("city.id"), primary_key=True)
     building_id = Column(Integer, ForeignKey("building.id"), primary_key=True)
 

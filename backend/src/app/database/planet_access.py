@@ -38,3 +38,15 @@ class PlanetAccess:
         await self.__session.flush()
         region_id = region.id
         return region_id
+
+    async def getRegions(self):
+        pass
+
+    async def getRegionVertices(self):
+        pass
+
+    async def getPlanetCities(self):
+        pass
+
+    async def getRegionCities(self):
+        pass

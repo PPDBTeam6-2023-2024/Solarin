@@ -105,6 +105,13 @@ class City(Base):
                                            [PlanetRegion.planet_id, PlanetRegion.id]),{})
 
 
+class BuildingInstance(Base):
+    __tablename__ = "buildingInstance"
+    id = Column(Integer, Sequence('BuildingInstance_id_seq'), primary_key=True, index=True)
+    city_id = Column(Integer, ForeignKey("city.id"), primary_key=True)
+    building_id = Column(Integer, ForeignKey("building.id"), primary_key=True)
+
+
 class Building(Base):
     __tablename__ = 'building'
     id = Column(Integer, Sequence("building_id_seq"), primary_key=True)

@@ -19,4 +19,13 @@ class MessageToken(BaseModel):
     parent_message_id: int = None
 
 
+class BattleStats(BaseModel):
+    attack: int
+    defense: int
+    city_attack: int
+    city_defense: int
+    recovery: int
+    speed: float
+
+
 

@@ -1,56 +1,49 @@
 from .models import *
-from .database import db, AsyncSession
+from .database import AsyncSession
 
 
 class AllianceAccess:
     """
     This class will manage the sql access for data related to information of an alliance
     """
-    def __init__(self, session):
+    def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createAlliance(self, clan_name: str):
+    async def createAlliance(self, alliance_name: str):
         """
         Create Alliance in the database
+
+        :param: alliance_name: name of the alliance
+        :return: nothing
         """
 
-        mb = MessageBoard(chat_name=f"{clan_name} clan chat")
+        mb = MessageBoard(chat_name=f"{alliance_name} clan chat")
         self.__session.add(mb)
         await self.__session.flush()
-        self.__session.add(Alliance(name=clan_name, message_board=mb.bid))
-
-    async def getMessagesAlliance(self, alliance_name: str, offset: int, amount: int):
-        """
-        Ask for an amount of messages written by this clan
-        """
-
-        """
-        Select all the messages that have the message board corresponding to the alliance name
-        """
-
-        search_messages = Select(Message).\
-            join(MessageBoard, Message.message_board == MessageBoard.bid).\
-            join(Alliance, Alliance.message_board == MessageBoard.bid).where(Alliance.name == alliance_name).offset(offset).limit(amount)
-        results = await self.__session.execute(search_messages)
-
-        return results.unique().all()
+        self.__session.add(Alliance(name=alliance_name, message_board=mb.bid))
 
     async def setAlliance(self, user_id: int, alliance_name: str):
+        """
+        Add a user to an alliance
+
+        :param: alliance_name: name of the alliance
+        :param: user_id: id of the user we want to add to the alliance
+        :return: nothing
+        """
         add_ally = update(User)
         add_ally = add_ally.values({"alliance": alliance_name})
         add_ally = add_ally.where(User.id == user_id)
 
         await self.__session.execute(add_ally)
 
-    async def getAllianceMessageBoard(self, alliance_name: str):
-        search_message_board = Select(Alliance.message_board).where(Alliance.name == alliance_name)
-        results = await self.__session.execute(search_message_board)
-
-        return results.first()[0]
-
     async def getAllianceMembers(self, alliance_name: str):
+        """
+        retrieve all the members of an alliance
+
+        :param: alliance_name: name of the alliance
+        :return: all the members of the alliance
+        """
         search_members = Select(User).where(User.alliance == alliance_name)
         results = await self.__session.execute(search_members)
 
         return results.all()
-

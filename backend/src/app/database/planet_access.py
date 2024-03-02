@@ -1,12 +1,12 @@
 from .models import *
-from .database import db, AsyncSession
+from .database import AsyncSession
 
 
 class PlanetAccess:
     """
     This class will manage the sql access for data related to information of planets
     """
-    def __init__(self, session):
+    def __init__(self, session: AsyncSession):
         self.__session = session
 
     async def createSpaceRegion(self, region_name: str):
@@ -16,7 +16,7 @@ class PlanetAccess:
         sp = SpaceRegion(name=region_name)
         self.__session.add(sp)
         await self.__session.flush()
-        region_id = sp.space_region_id
+        region_id = sp.id
         return region_id
 
     async def createPlanet(self, planet_name: str, planet_type: str, space_region_id: int):
@@ -39,14 +39,17 @@ class PlanetAccess:
         region_id = region.id
         return region_id
 
-    async def getRegions(self):
-        pass
+    async def getRegions(self, planet_id: int):
+        select_regions = Select(PlanetRegion).where(PlanetRegion.planet_id == planet_id)
+        results = await self.__session.execute(select_regions)
+        return results.all()
 
-    async def getRegionVertices(self):
-        pass
+    async def getPlanetCities(self, planet_id: int):
+        select_cities = Select(City).join(PlanetRegion, City.region_id == PlanetRegion.id).where(planet_id == PlanetRegion.planet_id)
+        results = await self.__session.execute(select_cities)
+        return results.all()
 
-    async def getPlanetCities(self):
-        pass
-
-    async def getRegionCities(self):
-        pass
+    async def getRegionCities(self, region_id: int):
+        select_cities = Select(City).where(City.region_id == region_id)
+        results = await self.__session.execute(select_cities)
+        return results.all()

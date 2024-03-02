@@ -1,12 +1,12 @@
 from .models import *
-from .database import db, AsyncSession
+from .database import AsyncSession
 
 
 class UserAccess:
     """
     This class will manage the sql access for data related to information of a User
     """
-    def __init__(self, session):
+    def __init__(self, session: AsyncSession):
         self.__session = session
 
     async def createUser(self, user_name: str, email: str, password: str):

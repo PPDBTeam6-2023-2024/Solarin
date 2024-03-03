@@ -1,3 +1,4 @@
+import subprocess
 import asyncio
 from ..src.app.database.database import db, Base
 from sqlalchemy import *
@@ -5,7 +6,6 @@ from ..src.app.config import DBConfig
 from ..src.app.database.database_access.data_access import *
 from datetime import timedelta
 from ..src.app.routers.authentication.schemas import *
-
 db_config = DBConfig(
         user="postgres",
         password="postgres",
@@ -19,6 +19,8 @@ async def getSession():
     """
     get a new session to connect to the database
     """
+
+
     await db.connect(db_config)
     task = asyncio.ensure_future(db.get_db().__anext__())
 
@@ -26,6 +28,7 @@ async def getSession():
 
     await session.execute(text("SELECT * FROM user"))
     await session.commit()
+    
     return session
 
 
@@ -331,6 +334,10 @@ class BasicTests:
 
 
 def test_basics() -> None:
+
+    subprocess.run(f"cd .. && alembic revision --autogenerate -m \"<testbuild>\" ", shell=True)
+    subprocess.run(f"cd .. && alembic upgrade head """, shell=True)
+
     asyncio.run(BasicTests.setup_data())
     asyncio.run(BasicTests.checkMessages())
     asyncio.run(BasicTests.checkFriendShipRelations())

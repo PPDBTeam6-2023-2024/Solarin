@@ -3,14 +3,14 @@ from typing import AsyncGenerator
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
-from tests.services import create_test_services
+from ...tests.services import create_test_services
 
-from src.app.database.models.models import Base
+from ...src.app.database.models.models import Base
 
-from src.app.routers.authentication.router import router
-from src.app.routers.authentication.schemas import UserCreate
-from src.app.routers.authentication.router import pwd_context
-from src.app.models import User as UserTable
+from ...src.app.routers.authentication.router import router
+from ...src.app.routers.authentication.schemas import UserCreate
+from ...src.app.routers.authentication.router import pwd_context
+from ...src.app.database.models.models import User as UserTable
 
 client, TestingSessionLocal, engine = create_test_services(router)
 

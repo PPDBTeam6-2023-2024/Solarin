@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Query
 from typing import Annotated
 from sqlalchemy import UUID
 
-from src.app.routers.authentication.router import get_my_id
-from src.app.database import db
+from ...routers.authentication.router import get_my_id
+from ...database.database import db
 from .schemas import MessageIn, MessageOut
 
 router = APIRouter(prefix="/chat", tags=["Chat"])

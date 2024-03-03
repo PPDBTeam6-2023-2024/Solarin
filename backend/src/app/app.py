@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .routers.authentication.router import router as auth_router
 from .routers.chat.router import router as chat_router
-from .database import db
+from .database.database import db
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
 

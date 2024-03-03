@@ -3,7 +3,7 @@ from sqlalchemy import *
 from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship
 
-from ...schemas import MessageToken, BattleStats
+from ...routers.authentication.schemas import MessageToken, BattleStats
 from datetime import timedelta
 
 

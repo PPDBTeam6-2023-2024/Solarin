@@ -6,7 +6,7 @@ from ..src.app.config import DBConfig
 from ..src.app.database.database_access.data_access import *
 from datetime import timedelta
 from ..src.app.routers.authentication.schemas import *
-from .authentication.test_add_user import session
+
 db_config = DBConfig(
         user="postgres",
         password="postgres",

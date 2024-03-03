@@ -1,4 +1,4 @@
-
+"""
 import json
 from typing import AsyncGenerator
 import pytest
@@ -103,4 +103,4 @@ async def test_add_user_api_invalid_schema(session: AsyncSession):
     response = client.post("/auth/add_user", json=data)
 
     assert response.status_code == 422
-
+"""

@@ -1,12 +1,9 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Annotated
-from uuid import UUID
-from sqlalchemy import select
 
-from .routers.auth import auth_router, get_my_id
-from .database.models import User
-from .database.database import db
+from .routers.authentication.router import router as auth_router
+from .routers.chat.router import router as chat_router
+from .database import db
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
 
@@ -26,6 +23,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(chat_router)
 
 
 @app.on_event("startup")
@@ -36,12 +34,3 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
-
-@app.get("/me")
-async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)):
-    result = await db.execute(select(User).where(User.id == user_id))
-    return result.scalars().all()
-
-@app.get("/hello")
-async def root():
-    return {"message": "Hello World"}

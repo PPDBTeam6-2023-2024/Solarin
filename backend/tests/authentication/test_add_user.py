@@ -5,7 +5,7 @@ import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 from tests.services import create_test_services
 
-from src.app.models import Base
+from src.app.database.models.models import Base
 
 from src.app.routers.authentication.router import router
 from src.app.routers.authentication.schemas import UserCreate

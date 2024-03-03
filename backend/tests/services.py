@@ -5,7 +5,7 @@ from fastapi import FastAPI, APIRouter
 from typing import Tuple
 
 
-from src.app.database import db
+from ..src.app.database.database import db
 
 
 def create_test_services(router: APIRouter) -> Tuple[TestClient, async_sessionmaker[AsyncSession], AsyncEngine]:

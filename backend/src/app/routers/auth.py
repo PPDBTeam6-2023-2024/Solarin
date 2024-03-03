@@ -10,7 +10,7 @@ from uuid import UUID
 
 from ..schemas import UserCreate, Token
 from ..database.database import *
-from ..database.models import User
+from ..database.models.models import User
 
 auth_router = APIRouter(prefix="/auth")
 

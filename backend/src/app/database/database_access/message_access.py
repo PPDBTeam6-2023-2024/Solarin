@@ -1,0 +1,110 @@
+from ..models.models import *
+from ..database import AsyncSession
+from .user_access import getFriendsQuerySym
+
+
+class MessageAccess:
+    """
+    This class will manage the sql access for data related to information of messages
+    """
+    def __init__(self, session: AsyncSession):
+        self.__session = session
+
+    async def createMessage(self, message_token: MessageToken):
+        """
+        Create a new message in the database
+
+        :param: message_token: a schema that contains all the needed information in regard to a message
+        :return: the message id of the message that is just created
+        """
+
+        message = Message.fromMessageToken(message_token)
+        self.__session.add(message)
+
+        await self.__session.flush()
+        mid = message.mid
+        return mid
+
+    async def getMessagesPlayer(self, user1_id: int, user2_id: int, offset: int, amount: int):
+        """
+        requests the messages exchanged between the 2 users
+        We will make sure to ask the messages starting from newest till oldest with regards to which messages we take
+        The list of messages will be in chronological order
+
+        :param: user1_id: id of user_1
+        :param: user2_id: id of user_2
+        :param: offset: the offset from where we want to start reading messages
+        :param: amount: the amount of messages we want
+        :return: a list of messages with a max length of 'amount'
+        """
+
+        f_sym = getFriendsQuerySym(user1_id)
+
+        search_messages = Select(Message).\
+            where(f_sym.select().c.user_id == user2_id, f_sym.select().c.message_board == Message.message_board).\
+            order_by(desc(Message.mid)).offset(offset).limit(amount)
+
+        results = await self.__session.execute(search_messages)
+        results = results.all()
+
+        """
+        query is sorted from newest till oldest, so we still need to put it in chronological order
+        """
+        results = list(reversed(results))
+        return results
+
+    async def getMessagesAlliance(self, alliance_name: str, offset: int, amount: int):
+        """
+        Ask for an amount of messages written by this clan
+        We will make sure to ask the messages starting from newest till oldest
+
+        :param: alliance: the name of the alliance whose messages we want to access
+        :param: offset: the offset from where we want to start reading messages
+        :param: amount: the amount of messages we want
+        :return: a list of messages with a max length of 'amount'
+        """
+
+        """
+        Select all the messages that have the message board corresponding to the alliance name
+        """
+
+        search_messages = Select(Message).\
+            join(MessageBoard, Message.message_board == MessageBoard.bid).\
+            join(Alliance, Alliance.message_board == MessageBoard.bid).where(Alliance.name == alliance_name).\
+            order_by(desc(Message.mid)).offset(offset).limit(amount)
+
+        results = await self.__session.execute(search_messages)
+
+        """
+        query is sorted from newest till oldest, so we still need to put it in chronological order
+        """
+        results = results.unique().all()
+        results = list(reversed(results))
+        return results
+
+    async def getAllianceMessageBoard(self, alliance_name: str):
+        """
+        Get the messageBoardId of an Alliance
+
+        :param: alliance: the name of the alliance whose messages we want to access
+        :return: id of the messageboard of the alliance
+        """
+        search_message_board = Select(Alliance.message_board).where(Alliance.name == alliance_name)
+        results = await self.__session.execute(search_message_board)
+
+        return results.first()[0]
+
+    async def getPlayerMessageBoard(self, user1_id: int, user2_id: int):
+        """
+        Get the messageBoardId of an DM between 2 friends
+
+        :param: user1_id: id of user_1
+        :param: user2_id: id of user_2
+        :return: id of the messageboard of the DM between the 2 users
+        """
+        sym_friends = getFriendsQuerySym(user1_id)
+
+        dm_mb = sym_friends.select().where(sym_friends.c.user_id == user2_id)
+        results = await self.__session.execute(dm_mb )
+        results = results.first()[1]
+        return results

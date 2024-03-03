@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import select
 
 from .routers.auth import auth_router, get_my_id
-from .database.models import User
+from .database.models.models import User
 from .database.database import db
 from .config import APIConfig
 from .customize_logger import CustomizeLogger

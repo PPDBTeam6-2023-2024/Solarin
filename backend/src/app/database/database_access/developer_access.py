@@ -1,5 +1,5 @@
-from .models import *
-from .database import AsyncSession
+from ..models.models import *
+from ..database import AsyncSession
 from typing import List, Tuple
 
 
@@ -47,8 +47,6 @@ class DeveloperAccess:
                 as long as the player doesn't collect its resources from here
         :return: nothing
         """
-        bt = BuildingType(name=name)
-        self.__session.add(bt)
         pb = ProductionBuildingType(name=name, base_production=base_production, max_capacity=max_capacity)
         self.__session.add(pb)
 
@@ -59,8 +57,6 @@ class DeveloperAccess:
         :param: name: name of the building type
         :return: nothing
         """
-        bt = BuildingType(name=name)
-        self.__session.add(bt)
         brt = BarracksType(name=name)
         self.__session.add(brt)
 
@@ -72,8 +68,6 @@ class DeveloperAccess:
         :param: residents: amount of residents living in such a house
         :return: nothing
         """
-        bt = BuildingType(name=name)
-        self.__session.add(bt)
         ht = HouseType(name=name, residents=residents)
         self.__session.add(ht)
 
@@ -115,7 +109,7 @@ class DeveloperAccess:
 
     async def setTroopTypeCost(self, troop_name: str, resource_costs: List[Tuple[str, int]]):
         """
-        :param: make costs associated with training troops
+        make costs associated with training troops
 
         :param: troop_name: the name of the troop with want to give a trainings cost
         :param: resource_costs: a list of tuples with format List[Tuple[str, int]].
@@ -124,6 +118,31 @@ class DeveloperAccess:
         :return: nothing
         """
 
+        await self.__session.flush()
+        old_cost = delete(TroopTypeCost).where(TroopTypeCost.troop_type == troop_name)
+        await self.__session.execute(old_cost)
+
         for resource in resource_costs:
             troop_type_cost = TroopTypeCost(troop_type=troop_name, resource_type=resource[0], amount=resource[1])
             self.__session.add(troop_type_cost)
+
+    async def setUpgradeCost(self, building_name: str, resource_costs: List[Tuple[str, int]]):
+        """
+        add an upgrade cost for a certain building,
+        This stores the base values for an upgrade
+
+        :param: building_name: the name of the building type we want to upgrade
+        :param: resource_costs: a list of tuples with format List[Tuple[str, int]].
+                The tuples will contain (resource_name, amount) and it is a list to easily support adding
+                costs of multiple resources for 1 troop type.
+        :return: nothing
+        """
+
+        await self.__session.flush()
+        old_up_cost = delete(UpgradeCost).where(UpgradeCost.building_name == building_name)
+        await self.__session.execute(old_up_cost)
+
+        for resource in resource_costs:
+            upgrade = UpgradeCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
+            self.__session.add(upgrade)
+

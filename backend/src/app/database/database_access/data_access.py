@@ -1,4 +1,4 @@
-from .database import AsyncSession
+from ..database import AsyncSession
 
 from .user_access import UserAccess
 from .alliance_access import AllianceAccess

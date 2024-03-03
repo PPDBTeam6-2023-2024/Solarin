@@ -1,5 +1,5 @@
-from .models import *
-from .database import AsyncSession
+from ..models.models import *
+from ..database import AsyncSession
 
 
 class CityAccess:

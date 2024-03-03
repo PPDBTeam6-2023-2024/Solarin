@@ -10,6 +10,7 @@ from ..src.app.database.database import db
 
 def create_test_services(router: APIRouter) -> Tuple[TestClient, async_sessionmaker[AsyncSession], AsyncEngine]:
     db_url = "sqlite+aiosqlite://"
+    db_url = f"postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
 
     engine = create_async_engine(
         db_url,

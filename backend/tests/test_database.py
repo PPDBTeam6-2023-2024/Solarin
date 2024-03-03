@@ -16,45 +16,12 @@ db_config = DBConfig(
     )
 
 
-import json
-from typing import AsyncGenerator
-import pytest
-import pytest_asyncio
-from sqlalchemy.ext.asyncio import AsyncSession
-from ..tests.services import create_test_services
-
-from ..src.app.database.models.models import Base
-
-from ..src.app.routers.authentication.router import router
-from ..src.app.routers.authentication.schemas import UserCreate
-from ..src.app.routers.authentication.router import pwd_context
-
-client, TestingSessionLocal, engine = create_test_services(router)
-
-
-@pytest_asyncio.fixture
-async def session() -> AsyncGenerator[AsyncSession, None]:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    async with TestingSessionLocal() as session:
-        await test_basics(session)
-
-        yield session
-
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-
-
-pytestmark = pytest.mark.asyncio
-
-
 async def getSession():
     """
     get a new session to connect to the database
     """
 
-    """
+
     await db.connect(db_config)
     task = asyncio.ensure_future(db.get_db().__anext__())
 
@@ -64,7 +31,6 @@ async def getSession():
     await session.commit()
     
     return session
-    """
 
 
 async def clear_database(session):
@@ -83,10 +49,7 @@ async def clear_database(session):
     reset all sequences
     """
     for sequence in reversed(target_metadata._sequences):
-        try:
-            await session.execute(text(f"""ALTER SEQUENCE IF EXISTS "{sequence}" RESTART WITH 1"""))
-        except Exception:
-            pass
+        await session.execute(text(f"""ALTER SEQUENCE IF EXISTS "{sequence}" RESTART WITH 1"""))
 
     await session.commit()
 
@@ -98,11 +61,11 @@ class BasicTests:
     """
 
     @staticmethod
-    async def setup_data(session):
+    async def setup_data():
         """
         setup database data that can be queried
         """
-        #session = await getSession()
+        session = await getSession()
         await clear_database(session)
 
         da = DataAccess(session)
@@ -249,14 +212,14 @@ class BasicTests:
 
         await da.commit()
 
-        #await db.disconnect()
+        await db.disconnect()
 
     @staticmethod
-    async def checkMessages(session):
+    async def checkMessages():
         """
         test case for accessing messages
         """
-        #session = await getSession()
+        session = await getSession()
         da = DataAccess(session)
 
         """
@@ -285,14 +248,14 @@ class BasicTests:
             assert len(messages) == 1
             assert messages[0][0].body == "test2"
         await da.commit()
-        #await db.disconnect()
+        await db.disconnect()
 
     @staticmethod
-    async def checkFriendShipRelations(session):
+    async def checkFriendShipRelations():
         """
         check if the friendship relations are properly working
         """
-        #session = await getSession()
+        session = await getSession()
         da = DataAccess(session)
 
         for t_index in range(20):
@@ -303,14 +266,14 @@ class BasicTests:
                 assert f[0] != t_index+1
 
         await da.commit()
-        #await db.disconnect()
+        await db.disconnect()
 
     @staticmethod
-    async def checkAllianceMembers(session):
+    async def checkAllianceMembers():
         """
         check that people are correctly part of the right alliance
         """
-        #session = await getSession()
+        session = await getSession()
         da = DataAccess(session)
         for t_index in range(1, 51, 2):
             members = await da.AllianceAccess.getAllianceMembers(f"{t_index} his clan")
@@ -319,14 +282,14 @@ class BasicTests:
                 assert m[0].email in (f"t{t_index-1}@gmail", f"t{t_index}@gmail")
 
         await da.commit()
-        #await db.disconnect()
+        await db.disconnect()
 
     @staticmethod
-    async def checkPlanet(session):
+    async def checkPlanet():
         """
         check that the planet info is correct
         """
-        #session = await getSession()
+        session = await getSession()
 
         da = DataAccess(session)
 
@@ -340,14 +303,14 @@ class BasicTests:
         assert cities[0][0].controlled_by == 1
 
         await da.commit()
-        #await db.disconnect()
+        await db.disconnect()
 
     @staticmethod
-    async def checkBuildings(session):
+    async def checkBuildings():
         """
         check if the buildings are correctly created and accessed
         """
-        #session = await getSession()
+        session = await getSession()
 
         da = DataAccess(session)
 
@@ -368,16 +331,19 @@ class BasicTests:
         assert cbt[2][0].id == 3
 
         await da.commit()
-        #await db.disconnect()
+        await db.disconnect()
 
 
-async def test_basics(session: AsyncSession):
-    await BasicTests.setup_data(session)
-    await BasicTests.checkMessages(session)
-    await BasicTests.checkFriendShipRelations(session)
-    await BasicTests.checkAllianceMembers(session)
-    await BasicTests.checkPlanet(session)
-    await BasicTests.checkBuildings(session)
+def test_basics():
+    subprocess.run(f"cd .. && alembic revision --autogenerate -m \"<testbuild>\" ", shell=True)
+    subprocess.run(f"cd .. && alembic upgrade head """, shell=True)
+
+    asyncio.run(BasicTests.setup_data())
+    asyncio.run(BasicTests.checkMessages())
+    asyncio.run(BasicTests.checkFriendShipRelations())
+    asyncio.run(BasicTests.checkAllianceMembers())
+    asyncio.run(BasicTests.checkPlanet())
+    asyncio.run(BasicTests.checkBuildings())
 
 
 

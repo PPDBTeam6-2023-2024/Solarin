@@ -13,7 +13,7 @@ LOG_LEVEL=error
 cd $DIR
 source $VENV
 
-exec exec gunicorn src.app._main:app \
+exec gunicorn src.app.__main__:app \
   --name $NAME \
   --workers $WORKERS \
   --worker-class $WORKER_CLASS \

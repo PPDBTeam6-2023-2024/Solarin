@@ -3,7 +3,7 @@ from typing import Annotated
 from sqlalchemy import UUID
 
 from ...routers.authentication.router import get_my_id
-from ...database.database import db
+from ...database.database import get_db
 from .schemas import MessageIn, MessageOut
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
@@ -14,7 +14,7 @@ async def get_messages(
         user_id: Annotated[UUID, Depends(get_my_id)],
         offset=Query(0),
         limit=Query(),
-        db=Depends(db.get_db)
+        db=Depends(get_db)
 ) -> list[MessageOut]:
     return
 
@@ -23,7 +23,7 @@ async def get_messages(
 async def add_message(
         user_id: Annotated[UUID, Depends(get_my_id)],
         message: MessageIn,
-        db=Depends(db.get_db)
+        db=Depends(get_db)
 ) -> MessageOut:
     return
 
@@ -34,7 +34,7 @@ async def get_messages(
         friend_id: int,
         offset=Query(0),
         limit=Query(),
-        db=Depends(db.get_db)
+        db=Depends(get_db)
 ) -> list[MessageOut]:
     return
 
@@ -44,7 +44,7 @@ async def add_message(
         user_id: Annotated[UUID, Depends(get_my_id)],
         friend_id: int,
         message: MessageIn,
-        db=Depends(db.get_db)
+        db=Depends(get_db)
 ) -> MessageOut:
     return
 

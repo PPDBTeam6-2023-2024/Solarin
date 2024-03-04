@@ -10,8 +10,6 @@ from ..src.app.database.database import db
 
 
 def create_test_services(router: APIRouter) -> Tuple[TestClient, async_sessionmaker[AsyncSession], AsyncEngine]:
-    subprocess.run(f"cd .. && alembic revision --autogenerate -m \"<testbuild>\" ", shell=True)
-    subprocess.run(f"cd .. && alembic upgrade head """, shell=True)
 
     db_url = "sqlite+aiosqlite://"
     db_url = f"postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"

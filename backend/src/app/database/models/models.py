@@ -16,7 +16,7 @@ class User(Base):
     email = Column(String, unique=True)
     username = Column(String, unique=True)
     hashed_password = Column(String)
-    faction_name = Column(String, nullable=False, unique=True, default=Sequence("user_faction_name_seq"))
+    faction_name = Column(String, nullable=True, unique=True)
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED'))
 
 

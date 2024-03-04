@@ -9,7 +9,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from uuid import UUID
 
 from .schemas import UserCreate, Token
-from ...database.database import db, AsyncSession
+from ...database.database import get_db, AsyncSession
 from ...database.models.models import User
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -22,7 +22,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 @router.post("/add_user")
-async def add_user(user: UserCreate, db=Depends(db.get_db)):
+async def add_user(user: UserCreate, db=Depends(get_db)):
     try:
         db_user = User(
             email=user.email,
@@ -63,7 +63,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
 
 
 @router.post("/token")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(db.get_db)) -> Token:
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(get_db)) -> Token:
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -105,7 +105,7 @@ def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
     }
 
 @router.get("/me")
-async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)):
+async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(get_db)):
     result = await db.execute(select(User).where(User.id == user_id))
     scalar = result.scalars().all()[0]
     return {"username": scalar.username, "id": scalar.id, "email": scalar.email}

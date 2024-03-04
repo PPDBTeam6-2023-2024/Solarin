@@ -11,6 +11,9 @@ class DBConfig(BaseConfig):
     port: int
     database: str
 
+    def get_connection_string(self) -> SecretStr:
+        return SecretStr(f"postgresql+asyncpg://{self.user}:{self.password.get_secret_value()}@{self.host}:{self.port}/{self.database}")
+
 
 class LogLevel(Enum):
     NOTSET = "NOTSET"
@@ -31,8 +34,6 @@ class LoggingConfig(BaseConfig):
 
 
 class APIConfig(BaseConfig):
-    db: DBConfig
+    db: Optional[DBConfig] = None
     CORS_sources: Optional[list[AnyUrl]] = []
     logging: Optional[LoggingConfig] = None
-
-    CONFIG_SOURCES = FileSource(file='config.yml')

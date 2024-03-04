@@ -233,7 +233,8 @@ async def test_planet():
         assert cities[0][0].id == 1
         assert cities[0][0].controlled_by == 1
 
-async def checkBuildings():
+
+async def test_buildings():
     """
     check if the buildings are correctly created and accessed
     """

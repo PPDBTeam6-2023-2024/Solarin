@@ -1,3 +1,4 @@
+import subprocess
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession, AsyncEngine
 from sqlalchemy import StaticPool
@@ -5,11 +6,13 @@ from fastapi import FastAPI, APIRouter
 from typing import Tuple
 
 
-from src.app.database import db
+from ..src.app.database.database import db
 
 
 def create_test_services(router: APIRouter) -> Tuple[TestClient, async_sessionmaker[AsyncSession], AsyncEngine]:
+
     db_url = "sqlite+aiosqlite://"
+    db_url = f"postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
 
     engine = create_async_engine(
         db_url,

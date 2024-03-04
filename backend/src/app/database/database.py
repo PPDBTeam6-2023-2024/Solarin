@@ -1,10 +1,10 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
 from sqlalchemy.orm import declarative_base
 from typing import AsyncGenerator
-from sqlalchemy.schema import CreateTable
-from .config import DBConfig
+from ..config import DBConfig
 
 Base = declarative_base()
+
 
 class Database:
     def __init__(self) -> None:

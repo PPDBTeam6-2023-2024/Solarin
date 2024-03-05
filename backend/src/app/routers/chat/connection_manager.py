@@ -15,10 +15,6 @@ class ConnectionPool:
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
 
-    @staticmethod
-    async def send_personal_message(data: dict, websocket: WebSocket):
-        await websocket.send_json(data)
-
     async def broadcast(self, data: dict):
         for connection in self.active_connections:
             await connection.send_json(data)

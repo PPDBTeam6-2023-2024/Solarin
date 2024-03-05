@@ -77,7 +77,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     return Token(access_token=access_token, token_type="bearer")
 
 
-def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> UUID:
+def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> int:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -85,7 +85,7 @@ def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> UUID:
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = UUID(payload.get("sub"))
+        user_id = int(payload.get("sub"))
         if user_id is None:
             raise credentials_exception
     except JWTError:

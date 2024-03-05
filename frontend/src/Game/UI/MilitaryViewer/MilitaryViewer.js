@@ -7,16 +7,16 @@ function MilitaryViewer(props) {
       {'name': 'Red Dragon',
         'general': {'name': 'Tarkin'},
         'troops': [
-           {'type': 'assassin'},
-           {'type': 'tank'}
+           {'type': 'Assassin', "count": 10},
+           {'type': 'Tank', "count": 3}
         ]
       },
       {'troops': [
-          {'type': 'tank'}
+          {'type': 'Tank', "count": 6}
       ]},
       {'name': "Hawk's Fist",
         'troops': [
-          {'type': 'soldier'}
+          {'type': 'Soldier', "count": 2}
         ]
       }
     ]
@@ -25,7 +25,7 @@ function MilitaryViewer(props) {
       const name_str = (elem.name) ? `'${elem.name}'` : ""
       let troops_output = []
       elem.troops.forEach((elem, sub_index) => {
-          troops_output.push(<TreeItem nodeId={`${index}-${sub_index}`} label={`Troop ${elem.type}`}/>)
+          troops_output.push(<TreeItem nodeId={`${index}-${sub_index}`} label={`${elem.count}x Troop ${elem.type}`}/>)
       })
       example_armies_output.push(
       <TreeItem className="border-2" sx={{padding: "0.25rem"}} nodeId={`${index}`} label={`Army ${index} ${name_str}`}>

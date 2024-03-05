@@ -1,22 +1,21 @@
 from tests.conftest import client
-import json
 
 
-async def test_add_user_happy(client):
+async def test_happy(client):
     data = {
         "email": "insert@example.com",
         "username": "insert",
         "password": "unused"
     }
     response = client.post("/auth/add_user", json=data)
-    body = response.json()
-
     assert response.status_code == 200
+
+    body = response.json()
     assert body["email"] == "insert@example.com"
     assert body["username"] == "insert"
 
 
-async def test_add_user_already_inside(client):
+async def test_already_inside(client):
     data = {
         "email": "inside@example.com",
         "username": "inside",
@@ -36,7 +35,7 @@ async def test_add_user_already_inside(client):
     assert response.status_code == 404
 
 
-async def test_add_user_invalid_email(client):
+async def test_invalid_email(client):
     data = {
             "email": "invalidemailexample.com",
             "username": "invalidemail",
@@ -47,7 +46,7 @@ async def test_add_user_invalid_email(client):
     assert response.status_code == 422
 
 
-async def test_add_user_invalid_schema(client):
+async def test_invalid_schema(client):
     data = {
         "email": "invalidschema@example.com",
         "username": "invalidschema"

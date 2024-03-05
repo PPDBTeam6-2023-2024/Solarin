@@ -1,5 +1,6 @@
-.App {
+* {
   color: white;
+  cursor: url("../public/images/cursor.svg") 1 1, auto;
 }
 #tsparticles canvas{
   position: absolute;

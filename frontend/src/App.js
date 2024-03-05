@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import Login from './Login/Login'
 import Game from './Game/Game'
 function App() {  
@@ -9,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />}/>
         <Route path="/game" element={<Game />}/>
+        <Route path="*" element={<Navigate to="/"/>}/>
       </Routes>
     </BrowserRouter>
     </div>

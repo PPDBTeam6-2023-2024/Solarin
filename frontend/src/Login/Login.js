@@ -4,6 +4,17 @@ import qs from 'qs'
 import ParticlesApp from './Particles.js'
 import {Animated} from "react-animated-css";
 import { useNavigate } from 'react-router-dom';
+
+
+const hasValidToken = async() => {
+    try {
+    axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/auth/me`)
+    return response.status === 200
+    }
+    catch(e) {return false}
+}
+
 /**
  * The login and (currently) the home page
  * @returns app login/home component
@@ -14,18 +25,24 @@ function Login() {
   const [isSignedIn, setIsSignedIn] = useState(false)
 
   const navigate = useNavigate()
-  const onClickPlay = async() => {
+  const gotoGame = async() => {
     navigate("/game", {shallow: true})
   }
 
-  const signOut = async() => {
+  const signOut = () => {
     setIsSignedIn(false) 
     localStorage.clear()
   }
 
+  const validate = async() => {
+        hasValidToken().then((response) => {
+          if(!response) signOut()
+          else setIsSignedIn(true);
+        })
+  }
+
   useEffect(() => {
-      const token = localStorage.getItem("access-token")
-      if(token) setIsSignedIn(true)
+        validate()
   })
 
   /**
@@ -89,7 +106,7 @@ function Login() {
         <div className="min-h-screen flex justify-center text-center z-10">
         <div className="mt-20">
         <Animated animationIn="fadeInDownBig" animationOut="fadeOut" isVisible={true}>
-        <h1 className="text-9xl">SOLARIN</h1>
+        <h1 className="text-7xl lg:text-9xl">SOLARIN</h1>
         </Animated>
         
     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -129,7 +146,7 @@ function Login() {
   </Animated>
   { isSignedIn &&
         <Animated animationIn="flipInY" animationOut="fadeOut" isVisible={true} animationInDuration={500}>
-        <button onClick={onClickPlay} className="mt-10 bg-transparent hover:bg-white text-white-700 font-semibold hover:text-black py-6 px-20 border border-white-500 rounded text-5xl">
+        <button onClick={gotoGame} className="mt-10 bg-transparent hover:bg-white text-white-700 font-semibold hover:text-black py-6 px-20 border border-white-500 rounded text-5xl">
         PLAY
         </button>
         <br/>

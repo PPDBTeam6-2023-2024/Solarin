@@ -19,20 +19,28 @@ async def handle_messaging(
         websocket: WebSocket,
         db: AsyncSession
 ):
+    # TODO: enter message
+    await connection_pool.broadcast({
+
+    })
+
     try:
         while True:
             data = await websocket.receive_json()
+            await connection_pool.broadcast(data)  # broadcast data to everyone
+
             if data["type"] == MessageType.CHAT:
                 chat = Chat(**data)
-                # TODO: persist chat data
-            await connection_pool.broadcast(data)
+                # TODO: persist chat to database
+
     except WebSocketDisconnect:
         manager.disconnect_board(board_id=board_id, websocket=websocket)
-        if not connection_pool.empty():
-            # TODO: leave message
-            await connection_pool.broadcast({
 
-            })
+    # TODO: exit message
+    if not connection_pool.empty():
+        await connection_pool.broadcast({
+
+        })
 
 
 @router.websocket("/dm/{board_id}")
@@ -42,7 +50,11 @@ async def websocket_endpoint(
         board_id: int,
         db: AsyncSession = Depends(get_db)
 ):
-    # TODO: CHECK IF THIS USER CAN ACCESS THIS BOARD CHAT OF FRIEND
+    can_access = True  # TODO: CHECK IF THIS USER CAN ACCESS THIS BOARD CHAT OF FRIEND
+    if not can_access:
+        await websocket.close()
+        return
+
     connection_pool = await manager.connect_board(board_id=board_id, websocket=websocket)
     await handle_messaging(
         user_id=user_id,
@@ -60,7 +72,11 @@ async def websocket_endpoint(
         board_id: int,
         db: AsyncSession = Depends(get_db)
 ):
-    # TODO: CHECK IF THIS USER CAN ACCESS THIS BOARD CHAT OF ALLIANCE
+    can_access = True  # TODO: CHECK IF THIS USER CAN ACCESS THIS BOARD CHAT OF ALLIANCE
+    if not can_access:
+        await websocket.close()
+        return
+
     connection_pool = await manager.connect_board(board_id=board_id, websocket=websocket)
     await handle_messaging(
         user_id=user_id,

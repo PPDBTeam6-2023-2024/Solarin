@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState} from "react"
 import axios from 'axios'
+import PlanetViewer from "./PlanetViewer/PlanetViewer"
 
 const Game = () => {
     const [isAuth, setIsAuth] = useState(false)
@@ -21,9 +22,11 @@ const Game = () => {
 
     useEffect(() => {
         authenticate()
-    })
-    return (<div className="bg-black min-h-screen">
-        {userInfo && <h1>Welcome {userInfo.username}</h1>}
+    }, [])
+    return (<div className="h-screen bg-gray-900">
+        {userInfo && <>
+            <PlanetViewer planetName="Mars"/>
+            </>}
         {!userInfo && !isAuth && <h1>Not authenticated</h1>}
     </div>)
 }

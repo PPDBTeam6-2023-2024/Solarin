@@ -6,7 +6,6 @@ from sqlalchemy import select
 import sqlalchemy.exc
 from typing import Union, Annotated
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from uuid import UUID
 
 from .schemas import UserCreate, Token
 from ...database.database import get_db, AsyncSession
@@ -77,7 +76,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     return Token(access_token=access_token, token_type="bearer")
 
 
-def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> UUID:
+def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> int:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -85,7 +84,7 @@ def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> UUID:
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = UUID(payload.get("sub"))
+        user_id = int(payload.get("sub"))
         if user_id is None:
             raise credentials_exception
     except JWTError:
@@ -105,7 +104,7 @@ def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
     }
 
 @router.get("/me")
-async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(get_db)):
+async def me(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
     result = await db.execute(select(User).where(User.id == user_id))
     scalar = result.scalars().all()[0]
     return {"username": scalar.username, "id": scalar.id, "email": scalar.email}

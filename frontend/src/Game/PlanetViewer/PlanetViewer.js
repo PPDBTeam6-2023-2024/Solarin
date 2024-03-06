@@ -31,7 +31,7 @@ function PlanetViewer(props) {
         {
         image &&
     <MapInteractionCSS minScale={1} maxScale={5} translationBounds={{xMin: image.width-mapState.scale*image.width, xMax: 0, yMin: image.height-mapState.scale*image.height, yMax: 0}} value={mapState} onChange={(value) => {setMapState(value)}}>
-      <img src={image.src} alt="map" style={{imageRendering: "pixelated"}}/>
+      <img src={image.src} alt="map" style={{imageRendering: "pixelated", width:"100vw"}} />
     </MapInteractionCSS>
         }
         </>

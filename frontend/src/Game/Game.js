@@ -3,23 +3,19 @@ import axios from 'axios'
 import PlanetViewer from "./PlanetViewer/PlanetViewer"
 import GalaxyViewer from "./GalaxyViewer/GalaxyViewer"
 import SideMenu from "./UI/SideMenu/SideMenu"
-
+import UI from "./UI/UI"
+import {ViewModeContext, View} from "./Context/ViewModeContext"
+import ProfileViewer from "./UI/MainUI/ProfileViewer";
 import { RiArrowLeftSLine } from "react-icons/ri";
 import { IoMdPlanet } from "react-icons/io";
 
 import planet_example from './Images/Planets/example.png'
 
-// enum 
-const ViewMode = {
-    GalaxyView: "GalaxyView",
-    PlanetView: "PLanetView",
-    CityView: "CityView",
-}
 
 const Game = () => {
     const [isAuth, setIsAuth] = useState(false)
     const [userInfo, setUserInfo] = useState(null)
-    const [viewMode, setViewMode] = useState(ViewMode.PlanetView)
+    const [viewMode, setViewMode] = useState(View.PlanetView)
 
 
     const authenticate = async() => {
@@ -40,11 +36,14 @@ const Game = () => {
         authenticate()
     }, [])
     return (<div className="h-screen bg-gray-900">
+        <ViewModeContext.Provider value={[viewMode, setViewMode]}>
+
+
         {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
-            <SideMenu/>                
-            {viewMode === ViewMode.PlanetView &&
+            <UI/>
+            {viewMode === View.PlanetView &&
             <>
-            <div onClick={() => setViewMode(ViewMode.GalaxyView)} className="fixed text-5xl z-10 transition ease-in-out hover:scale-150 hover:translate-x-5 hover:translate-y-1 duration-300 flex">
+            <div onClick={() => setViewMode(View.GalaxyView)} className="fixed text-5xl z-10 transition ease-in-out hover:scale-150 hover:translate-x-5 hover:translate-y-1 duration-300 flex">
             <RiArrowLeftSLine className="basis-1/4"/>
             <IoMdPlanet/>
             </div>
@@ -52,12 +51,21 @@ const Game = () => {
             </>
             }
 
-            {viewMode === ViewMode.GalaxyView &&
+            {viewMode === View.GalaxyView &&
             <GalaxyViewer mapImage={planet_example}/>
             }
-            </Suspense>
+
+            {viewMode === View.ProfileView &&
+                <ProfileViewer/>
             }
+
+            </Suspense>
+        }
+
+
+
         {!userInfo && !isAuth && <h1>Not authenticated</h1>}
+        </ViewModeContext.Provider>
     </div>)
 }
 export default Game

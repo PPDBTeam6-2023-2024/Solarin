@@ -11,7 +11,7 @@ const ProfileElement = (props) => {
      * */
   return (
       <>
-          <div className="profile_circle bottom-0 absolute" onClick={props.onProfileClick}>
+          <div className="profile_circle bottom-0 absolute transition ease-in-out" onClick={props.onProfileClick}>
               <div className="profile_background bottom-0 absolute">
                   <img src={profile} alt="profile_1" draggable="false"/>
               </div>
@@ -20,9 +20,6 @@ const ProfileElement = (props) => {
       </>
   );
 };
-
-
-
 
 
 /*component to access the profile of a user*/

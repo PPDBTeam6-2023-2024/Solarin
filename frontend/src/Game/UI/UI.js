@@ -21,7 +21,6 @@ function UI() {
     const [primaryColor, setPrimaryColor] = useState("#07cb61")
     const [secondaryColor, setSecondaryColor] = useState("#7715c7")
 
-    console.log(getColorString(182, 179, 171, 255));
     return(
 
         <div className="UI" style={{'--primaryColor': primaryColor, '--secundaryColor': secondaryColor}}>

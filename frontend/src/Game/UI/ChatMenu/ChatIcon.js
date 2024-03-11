@@ -6,7 +6,7 @@ import React from "react";
 
 function ChatIcon() {
     return (
-        <div id={"chat_icon"} className="bottom-0 right-0 absolute">
+        <div id={"chat_icon"} className="bottom-0 right-0 absolute transition ease-in-out">
             <img src={chat_icon} className="bottom-0 absolute" draggable="false"/>
         </div>
     )

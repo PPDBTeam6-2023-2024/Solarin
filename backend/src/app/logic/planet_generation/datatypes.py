@@ -1,19 +1,16 @@
 from dataclasses import dataclass
 from typing import Tuple, Iterable
 
-from .enums import RegionType, PlanetType, DistanceFormula
-
 
 @dataclass
 class Region:
-    type: RegionType
+    type: str
     coordinate: Tuple[float, float]
 
 
 @dataclass
 class Planet:
-    type: PlanetType
+    type: str
     regions: Iterable[Region]
-    distance_formula: DistanceFormula
 
 

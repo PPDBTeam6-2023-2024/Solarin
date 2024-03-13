@@ -30,24 +30,15 @@ def generate_regions(
     return regions
 
 
-def get_distance_formula(
-        planet_type: enums.PlanetType
-) -> datatypes.DistanceFormula:
-    return datatypes.DistanceFormula.EUCLIDEAN
-
 
 def generate_planet(planet_type: enums.PlanetType, width: int, region_scale: float) -> datatypes.Planet:
     height = int(width/16*9)
     region_types = get_region_types(planet_type)
     regions = generate_regions(width, height, region_types, region_scale)
-    distance_formula = get_distance_formula(planet_type)
 
     return datatypes.Planet(
         type=planet_type,
-        regions=regions,
-        width=width,
-        height=height,
-        distance_formula=distance_formula
+        regions=regions
     )
 
 

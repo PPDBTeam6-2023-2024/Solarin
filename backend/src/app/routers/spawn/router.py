@@ -6,7 +6,7 @@ import uuid
 from ...routers.authentication.router import get_my_id
 from ...database.database import get_db
 from ...database.database_access.planet_access import PlanetAccess
-from ...logic.planet_generation.planet_generation import generate_planet_random
+from .region_generation import generate_regions
 
 router = APIRouter(prefix="/spawn", tags=["Spawn"])
 
@@ -17,8 +17,6 @@ async def spawn_user(
         db=Depends(get_db)
 ) -> int:
     planet_access = PlanetAccess(db)
-
-    generated_planet = generate_planet_random()
 
     region_id = await planet_access.createSpaceRegion(
         region_name="region1"

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import joinedload
+from sqlalchemy.sql.expression import func
 
 from ..models.models import *
 from ..database import AsyncSession
@@ -115,3 +116,17 @@ class PlanetAccess:
         )
         results = await self.__session.execute(stmt)
         return results.all()
+
+    async def get_random_planet_type(self):
+        """
+        Get a random planet type
+
+        :return: a random planet type
+        """
+        stmt = (
+            Select(PlanetType)
+            .order_by(func.random())
+            .limit(1)
+        )
+        results = await self.__session.execute(stmt)
+        return results.first()

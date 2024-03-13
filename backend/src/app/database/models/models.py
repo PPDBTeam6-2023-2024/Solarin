@@ -9,6 +9,7 @@ from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from datetime import timedelta
+from datetime import timedelta, datetime
 
 from sqlalchemy.orm.state import InstanceState
 
@@ -115,6 +116,7 @@ class Planet(Base):
     name = Column(String, nullable=False, unique=True)
     planet_type = Column(String, ForeignKey("planetType.type"), nullable=False)
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
+    creation_date = Column(DateTime, default=datetime.utcnow)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
     regions = relationship("PlanetRegion", back_populates="planet", lazy='select')
@@ -138,8 +140,8 @@ class PlanetRegion(Base):
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
     planet_id = Column(Integer, ForeignKey("planet.id"))
     region_type = Column(String, ForeignKey("planetRegionType.region_type"), nullable=False)
-    x = Column(Integer, nullable=False)
-    y = Column(Integer, nullable=False)
+    x = Column(Double, nullable=False)
+    y = Column(Double, nullable=False)
 
     planet = relationship("Planet", back_populates="regions", lazy='joined')
     cities = relationship("City", back_populates="region", lazy='select')

@@ -39,7 +39,7 @@ class PlanetAccess:
         planet_id = planet.id
         return planet_id
 
-    async def createPlanetRegion(self, planet_id: int, region_type: str, coordinate: tuple[int, int]):
+    async def createPlanetRegion(self, planet_id: int, region_type: str, coordinate: tuple[float, float]):
         """
         create a region on a planet
 

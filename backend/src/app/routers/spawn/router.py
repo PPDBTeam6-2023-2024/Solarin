@@ -5,8 +5,7 @@ import uuid
 
 from ...routers.authentication.router import get_my_id
 from ...database.database import get_db
-from ...database.database_access.planet_access import PlanetAccess
-from .region_generation import generate_regions
+from .planet_generation import generate_random_planet
 
 router = APIRouter(prefix="/spawn", tags=["Spawn"])
 
@@ -16,18 +15,7 @@ async def spawn_user(
         user_id: Annotated[str, Depends(get_my_id)],
         db=Depends(get_db)
 ) -> int:
-    planet_access = PlanetAccess(db)
+    planet_id = await generate_random_planet(db)
+    # create initial city for user
 
-    region_id = await planet_access.createSpaceRegion(
-        region_name="region1"
-    )
-
-    planet_id = await planet_access.createPlanet(
-        planet_name=str(uuid.uuid4()),
-        planet_type=generated_planet.type.value,
-        space_region_id=region_id
-    )
-
-
-
-    return
+    return planet_id

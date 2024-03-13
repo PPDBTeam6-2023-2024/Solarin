@@ -38,15 +38,16 @@ class PlanetAccess:
         planet_id = planet.id
         return planet_id
 
-    async def createPlanetRegion(self, planet_id: int, region_type: str):
+    async def createPlanetRegion(self, planet_id: int, region_type: str, coordinate: tuple[int, int]):
         """
         create a region on a planet
 
         :param: planet_id: id of the planet the region will be on
         :param: region_type: type of the planet region
+        :param: coordinate: coordinates of the planet region
         :return: region_id of the region that is just created
         """
-        region = PlanetRegion(planet_id=planet_id, region_type=region_type)
+        region = PlanetRegion(planet_id=planet_id, region_type=region_type, x=coordinate[0], y=coordinate[1])
         self.__session.add(region)
         await self.__session.flush()
         region_id = region.id

@@ -138,6 +138,8 @@ class PlanetRegion(Base):
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
     planet_id = Column(Integer, ForeignKey("planet.id"))
     region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
+    x = Column(Integer, nullable=False)
+    y = Column(Integer, nullable=False)
 
     planet = relationship("Planet", back_populates="regions", lazy='joined')
     cities = relationship("City", back_populates="region", lazy='select')

@@ -37,18 +37,12 @@ async def insert_test_data(connection_test):
             space_region_id=space_region_id
         )
 
-        assert user_id == 1
         city_access = CityAccess(session)
-        city_id = await city_access.createCity(
-            region_id=planet_region_id,
-            founder_id=user_id
-        )
-        assert city_id == 1
-        city_id = await city_access.createCity(
-            region_id=planet_region_id,
-            founder_id=user_id
-        )
-        assert city_id == 2
+        for _ in range(10):
+             await city_access.createCity(
+                region_id=planet_region_id,
+                founder_id=user_id
+            )
         await session.commit()
 
 
@@ -56,4 +50,4 @@ async def test_get_cities():
     async with sessionmanager.session() as session:
         city_access = CityAccess(session)
         cities = await city_access.get_cities(controller=1)
-        assert len(cities) == 2
+        assert len(cities) == 10

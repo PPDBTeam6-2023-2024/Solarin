@@ -47,3 +47,12 @@ class CityAccess:
         results = results.all()
 
         return results
+    
+    async def get_cities(self, controller: int):
+        stmt = (
+            Select(City)
+            .where(City.controlled_by == controller)
+        )
+
+        results = await self.__session.execute(stmt)
+        return results.all()

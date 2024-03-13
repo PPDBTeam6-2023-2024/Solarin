@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Query
-from typing import Annotated
+from typing import Annotated, Tuple, List
 from sqlalchemy import UUID
 
 from ...routers.authentication.router import get_my_id
 from ...database.database import get_db
 from .schemas import MessageIn, MessageOut
-
+from ...database.database_access.data_access import DataAccess
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
 
@@ -48,3 +48,22 @@ async def add_message(
 ) -> MessageOut:
     return
 
+
+@router.get("/DmOverview")
+async def dm_overview(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db=Depends(get_db)
+) -> List[Tuple[str, MessageOut]]:
+
+    print("wow")
+    data_access = DataAccess(db)
+    data = data_access.MessageAccess.getFriendMessageOverview(user_id, 5)
+    """
+    transform data to web format
+    """
+    output_list: List[Tuple[str, MessageOut]] = []
+    for d in data:
+        output_list.append(tuple(d[0], d[1].toMessageOut(d[2])))
+
+    print(output_list)
+    return output_list

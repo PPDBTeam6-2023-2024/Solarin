@@ -4,6 +4,7 @@ from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship
 
 from ...routers.authentication.schemas import MessageToken, BattleStats
+from ...routers.chat.schemas import MessageOut
 from datetime import timedelta
 
 
@@ -51,6 +52,11 @@ class Message(Base):
             parent_message_id= message_token.parent_message_id
 
         )
+
+    def toMessageOut(self, sender_name):
+        return MessageOut(sender_name=sender_name,
+                          created_at=self.create_date_time,
+                          body=self.body)
 
 
 class MessageBoard(Base):

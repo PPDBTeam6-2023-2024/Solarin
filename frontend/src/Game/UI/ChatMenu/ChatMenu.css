@@ -1,0 +1,32 @@
+.ChatMenuWidget{
+
+    background-image: inherit;
+    width: 20vw;
+    height: 25vw;
+    border:0.5vw solid var(--tertiaryColor);
+    border-radius: 2vw 2vw 2vw 2vw;
+    bottom: 9vw;
+    font-size: 1.4vw;
+
+}
+
+
+.ChatNavBar ul{
+    text-align: center;
+    justify-content:space-between;
+    align-items:center;
+    overflow: hidden;
+
+    border-bottom:0.3vw solid var(--tertiaryColor);
+}
+
+.ChatNavBar ul li{
+    display: inline-block;
+    margin: 0.3vw;
+
+}
+
+.ChatNavBar ul li:hover{
+    transform: scale(110%);
+
+}

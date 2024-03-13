@@ -11,8 +11,8 @@ const ProfileElement = (props) => {
      * */
   return (
       <>
-          <div className="profile_circle bottom-0 absolute transition ease-in-out" onClick={props.onProfileClick}>
-              <div className="profile_background bottom-0 absolute">
+          <div className="profile_circle bottom-0 fixed transition ease-in-out" onClick={props.onProfileClick}>
+              <div className="profile_background bottom-0 fixed">
                   <img src={profile} alt="profile_1" draggable="false"/>
               </div>
           </div>
@@ -49,7 +49,7 @@ function ProfileButton() {
             <ProfileElement  onProfileClick={onPressProfileButton}/>
 
             {/*Below is the bar we have which will contain all the resources*/}
-            <div id={"profile_bar"} className="bottom-0 left-0 absolute"></div>
+            <div id={"profile_bar"} className="bottom-0 left-0 fixed"></div>
         </>
 
 

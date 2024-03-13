@@ -18,12 +18,16 @@ function UI() {
     /**
      * these 2 states exist to be able to change the UI colors
      * */
-    const [primaryColor, setPrimaryColor] = useState("#07cb61")
-    const [secondaryColor, setSecondaryColor] = useState("#7715c7")
+    const [primaryColor, setPrimaryColor] = useState("#ce1c75")
+    const [secondaryColor, setSecondaryColor] = useState("#d57d11")
+    const [tertiaryColor, setTertiaryColor] = useState("#e1b812")
 
     return(
 
-        <div className="UI" style={{'--primaryColor': primaryColor, '--secundaryColor': secondaryColor}}>
+        <div className="UI" style={
+            {'--primaryColor': primaryColor,
+            '--secundaryColor': secondaryColor,
+            "--tertiaryColor": tertiaryColor}}>
 
             {/*Load the side menu */}
             <SideMenu/>

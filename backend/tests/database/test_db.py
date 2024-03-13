@@ -256,3 +256,8 @@ async def test_buildings():
         assert cbt[0][0].id == 1
         assert cbt[1][0].id == 2
         assert cbt[2][0].id == 3
+
+async def test_DM_overview():
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        r = await da.MessageAccess.getFriendMessageOverview(1, 3)

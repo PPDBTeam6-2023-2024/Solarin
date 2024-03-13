@@ -1,7 +1,7 @@
 from ..models.models import *
 from ..database import AsyncSession
 from .user_access import getFriendsQuerySym
-
+from sqlalchemy.orm import aliased
 
 class MessageAccess:
     """
@@ -105,6 +105,45 @@ class MessageAccess:
         sym_friends = getFriendsQuerySym(user1_id)
 
         dm_mb = sym_friends.select().where(sym_friends.c.user_id == user2_id)
-        results = await self.__session.execute(dm_mb )
+        results = await self.__session.execute(dm_mb)
         results = results.first()[1]
+        return results
+
+    async def getFriendMessageOverview(self, user1_id: int, limit: int):
+        """
+        Get an overview of friends with the most recently send message in the DM between the friend and the given user
+        This can be used to easily display an overview of a player his DM's
+
+        :param: user1_id: id of user_1
+        :param: limit amount of friend message tuples we want
+        :return: a list of tuples: (friends username, MessageBoard, Message)
+        """
+        sym_friends = getFriendsQuerySym(user1_id)
+
+        sym_friends = sym_friends.select()
+
+        """
+        get most recent message create time sent by each friend
+        """
+        most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).select_from(sym_friends)).join(Message, Message.message_board == sym_friends.c.message_board).group_by(sym_friends.c)
+
+        results = await self.__session.execute(most_recent_message)
+
+        results = results.unique().all()
+        print(results)
+
+        """
+        get the tuple (friend_username, Message, message_sender_username)
+        """
+        message_sender = aliased(User, name='message_sender')
+
+        message_overview = (select(User.username, Message, message_sender.username).select_from(most_recent_message))\
+            .join(Message, (Message.message_board == most_recent_message.c.message_board)).where(most_recent_message.c.max == Message.create_date_time)\
+            .order_by(desc(Message.create_date_time)).limit(limit).join(User, User.id == most_recent_message.c.user_id)\
+            .join(message_sender, message_sender.id == Message.sender_id)
+
+        results = await self.__session.execute(message_overview)
+
+        results = results.unique().all()
+        print(results)
         return results

@@ -28,7 +28,7 @@ async def add_message(
     return
 
 
-@router.get("/{friend_id}")
+@router.get("/friend/{friend_id}")
 async def get_messages(
         user_id: Annotated[UUID, Depends(get_my_id)],
         friend_id: int,
@@ -39,7 +39,7 @@ async def get_messages(
     return
 
 
-@router.post("/{friend_id}")
+@router.post("/friend/{friend_id}")
 async def add_message(
         user_id: Annotated[UUID, Depends(get_my_id)],
         friend_id: int,
@@ -49,21 +49,24 @@ async def add_message(
     return
 
 
-@router.get("/DmOverview")
+@router.get("/dm_overview")
 async def dm_overview(
         user_id: Annotated[int, Depends(get_my_id)],
         db=Depends(get_db)
 ) -> List[Tuple[str, MessageOut]]:
+    """
+    Get information of the last 5 DM's between the user and other friends
+    The Information we want: The user we DM with, the last message send between them
+    """
 
-    print("wow")
     data_access = DataAccess(db)
-    data = data_access.MessageAccess.getFriendMessageOverview(user_id, 5)
+    data = await data_access.MessageAccess.getFriendMessageOverview(user_id, 5)
+
     """
     transform data to web format
     """
     output_list: List[Tuple[str, MessageOut]] = []
     for d in data:
-        output_list.append(tuple(d[0], d[1].toMessageOut(d[2])))
+        output_list.append((d[0], d[1].toMessageOut(d[2])))
 
-    print(output_list)
     return output_list

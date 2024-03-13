@@ -127,11 +127,6 @@ class MessageAccess:
         """
         most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).select_from(sym_friends)).join(Message, Message.message_board == sym_friends.c.message_board).group_by(sym_friends.c)
 
-        results = await self.__session.execute(most_recent_message)
-
-        results = results.unique().all()
-        print(results)
-
         """
         get the tuple (friend_username, Message, message_sender_username)
         """
@@ -145,5 +140,4 @@ class MessageAccess:
         results = await self.__session.execute(message_overview)
 
         results = results.unique().all()
-        print(results)
         return results

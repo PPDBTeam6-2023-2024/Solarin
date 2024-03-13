@@ -11,6 +11,9 @@ const categories = ["Friends", "Alliances", "Ranking"]
 
 const getDMOverview = async() => {
     try {
+
+        const socket = new WebSocket(`ws://${process.env.REACT_APP_BACKEND_PATH}/chat/DmOverviewSocket`)
+
     axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
     const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/DmOverview`)
     return response.status === 200

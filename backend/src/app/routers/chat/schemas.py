@@ -17,4 +17,4 @@ class MessageOut(BaseModel):
     sender_name: str
     created_at: datetime
     body: str
-    parent_message: Optional[ParentMessage]
+    parent_message: Optional[ParentMessage] = None

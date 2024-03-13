@@ -1,0 +1,22 @@
+{
+  "planet-types": [
+    {"type-name": "arctic", "description": "A planet of arctic climate." },
+    {"type-name": "desert", "description":  "A planet of desert climate."},
+    {"type-name": "tropical", "description": "A planet of tropical climate"}
+  ],
+  "region-types": [
+    {"type-name": "arctic", "description": "A region of arctic climate." },
+    {"type-name": "desert", "description":  "A region of desert climate."},
+    {"type-name": "alpine", "description": "A region with many mountains."},
+    {"type-name": "plain", "description": "A flat region with a few trees."}
+  ],
+  "building-types": [
+    {"type-name":  }
+  ],
+  "resource-types": [
+
+  ],
+  "troop-types": [
+
+  ]
+}

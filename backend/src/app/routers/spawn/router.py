@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends
 from typing import Annotated
 
-import uuid
-
 from ...routers.authentication.router import get_my_id
 from ...database.database import get_db
 from .planet_generation import generate_random_planet

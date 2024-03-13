@@ -6,7 +6,6 @@ from sqlalchemy import select
 import sqlalchemy.exc
 from typing import Union, Annotated
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from uuid import UUID
 
 from .schemas import UserCreate, Token
 from ...database.database import get_db, AsyncSession
@@ -104,7 +103,7 @@ def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
     }
 
 @router.get("/me")
-async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(get_db)):
+async def me(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
     result = await db.execute(select(User).where(User.id == user_id))
     scalar = result.scalars().all()[0]
     return {"username": scalar.username, "id": scalar.id, "email": scalar.email}

@@ -100,3 +100,18 @@ class PlanetAccess:
         results = await self.__session.execute(get_planets)
         results = results.all()
         return results
+    
+    async def get_planet_region_types(self, planet_type: str):
+        """
+        Get all the planet region types associated with a planet type
+
+        :param: planet_type: the planet type
+        :return: a list of all planet regions associated with the planet type
+        """
+        stmt = (
+            Select(PlanetRegionType)
+            .join(AssociatedWith, PlanetRegionType.region_type == AssociatedWith.region_type)
+            .filter(AssociatedWith.planet_type == planet_type)
+        )
+        results = await self.__session.execute(stmt)
+        return results.all()

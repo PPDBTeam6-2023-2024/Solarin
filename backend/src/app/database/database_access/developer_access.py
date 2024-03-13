@@ -37,7 +37,18 @@ class DeveloperAccess:
         self.__session.add(PlanetRegionType(region_type=type_name, description=description))
         await self.__session.flush()
 
-    async def createProductionBuildingType(self, name: str):
+    async def createAssociatedWith(self, planet_type: str, region_type: str):
+        """
+        Creates an association between a planet type and a region type
+
+        :param: planet_type: type of the planet
+        :param: region_type: type of the region
+        :return: nothing
+        """
+        self.__session.add(AssociatedWith(planet_type=planet_type, region_type=region_type))
+        await self.__session.flush()
+
+    async def createProductionBuildingType(self, name: str, base_production: int, max_capacity: int):
         """
         Creates a new type of building that can produce certain resources
         These types of buildings will generate certain resources over time

@@ -56,7 +56,7 @@ class Message(Base):
     message_board = Column(Integer, ForeignKey("messageBoard.bid"), nullable=False)
     create_date_time = Column(TIMESTAMP, nullable=False, default=func.now())
     parent_message_id = Column(Integer, ForeignKey("message.mid", deferrable=True, initially='DEFERRED'))
-    body = Column(TEXT, nullable=False)
+    body = Column(String, nullable=False)
 
     @classmethod
     def fromMessageToken(cls, message_token: MessageToken) -> "Message":
@@ -112,8 +112,8 @@ class Planet(Base):
     """
     __tablename__ = 'planet'
     id = Column(Integer, Sequence('planet_id_seq'), primary_key=True)
-    name = Column(TEXT, nullable=False)
-    planet_type = Column(TEXT, ForeignKey("planetType.type"), nullable=False)
+    name = Column(String, nullable=False, unique=True)
+    planet_type = Column(String, ForeignKey("planetType.type"), nullable=False)
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
@@ -126,8 +126,8 @@ class PlanetType(Base):
     (each planet has a type)
     """
     __tablename__ = 'planetType'
-    type = Column(TEXT, primary_key=True)
-    description = Column(TEXT)
+    type = Column(String, primary_key=True)
+    description = Column(String)
 
 
 class PlanetRegion(Base):
@@ -137,12 +137,18 @@ class PlanetRegion(Base):
     __tablename__ = 'planetRegion'
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
     planet_id = Column(Integer, ForeignKey("planet.id"))
-    region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
+    region_type = Column(String, ForeignKey("planetRegionType.region_type"), nullable=False)
     x = Column(Integer, nullable=False)
     y = Column(Integer, nullable=False)
 
     planet = relationship("Planet", back_populates="regions", lazy='joined')
     cities = relationship("City", back_populates="region", lazy='select')
+
+
+class AssociatedWith(Base):
+    __tablename__ = 'associatedWith'
+    planet_type = Column(String, ForeignKey("planetType.type"), primary_key=True)
+    region_type = Column(String, ForeignKey("planetRegionType.region_type"), primary_key=True)
 
 
 class PlanetRegionType(Base):
@@ -341,7 +347,7 @@ class TroopType(Base):
     Types of troops that are in the game
     """
     __tablename__ = 'troopType'
-    type = Column(TEXT, primary_key=True)
+    type = Column(String, primary_key=True)
     training_time = Column(Integer, nullable=False)
     attack = Column(Integer, nullable=False)
     defense = Column(Integer, nullable=False)
@@ -374,9 +380,8 @@ class TroopTypeCost(Base):
     Stores which resources and how much of them it costs to train a unit
     """
     __tablename__ = 'troopTypeCost'
-    troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
-    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'),
-                           primary_key=True)
+    troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
+    resource_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
     amount = Column(Integer, nullable=False)
 
 

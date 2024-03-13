@@ -14,8 +14,6 @@ class Region:
 class Planet:
     type: PlanetType
     regions: Iterable[Region]
-    width: int
-    height: int
     distance_formula: DistanceFormula
 
 

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from typing import Annotated
-from sqlalchemy import UUID
+
+import uuid
 
 from ...routers.authentication.router import get_my_id
 from ...database.database import get_db
@@ -12,14 +13,23 @@ router = APIRouter(prefix="/spawn", tags=["Spawn"])
 
 @router.post("")
 async def spawn_user(
-        user_id: Annotated[UUID, Depends(get_my_id)],
+        user_id: Annotated[str, Depends(get_my_id)],
         db=Depends(get_db)
 ) -> int:
     planet_access = PlanetAccess(db)
 
     generated_planet = generate_planet_random()
 
+    region_id = await planet_access.createSpaceRegion(
+        region_name="region1"
+    )
 
-    generated_planet
+    planet_id = await planet_access.createPlanet(
+        planet_name=str(uuid.uuid4()),
+        planet_type=generated_planet.type.value,
+        space_region_id=region_id
+    )
+
+
 
     return

@@ -2,7 +2,7 @@ from ..models.models import *
 from ..database import AsyncSession
 from typing import List, Tuple
 
-
+# TODO: change it so one building can produce multiple resources, need a creation cost
 class DeveloperAccess:
     """
     This class will manage the sql access for developers to easily expand the game

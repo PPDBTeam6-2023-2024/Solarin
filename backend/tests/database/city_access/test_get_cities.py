@@ -7,7 +7,7 @@ from src.app.database.database_access.planet_access import PlanetAccess
 from src.app.database.database_access.developer_access import DeveloperAccess
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="function")
 async def insert_test_data(connection_test):
     async with sessionmanager.session() as session:
         user_access = UserAccess(session)
@@ -46,8 +46,15 @@ async def insert_test_data(connection_test):
         await session.commit()
 
 
-async def test_get_cities():
+async def test_get_cities(insert_test_data):
     async with sessionmanager.session() as session:
         city_access = CityAccess(session)
         cities = await city_access.get_cities(controller=1)
         assert len(cities) == 10
+
+
+async def test_get_no_cities():
+    async with sessionmanager.session() as session:
+        city_access = CityAccess(session)
+        cities = await city_access.get_cities(controller=1)
+        assert len(cities) == 0

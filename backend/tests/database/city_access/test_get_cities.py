@@ -39,7 +39,7 @@ async def insert_test_data(connection_test):
 
         city_access = CityAccess(session)
         for _ in range(10):
-             await city_access.createCity(
+            await city_access.createCity(
                 region_id=planet_region_id,
                 founder_id=user_id
             )

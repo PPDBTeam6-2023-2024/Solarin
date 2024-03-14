@@ -1,6 +1,6 @@
 from fastapi import APIRouter, WebSocket, Depends, Query
 from fastapi.websockets import WebSocketDisconnect
-from typing import Annotated
+from typing import Annotated, Tuple, List
 
 from .connection_manager import ConnectionManager, ConnectionPool
 from ..authentication.router import get_my_id
@@ -88,7 +88,7 @@ async def websocket_endpoint(
     )
 
 
-@router.get("/{board_id}")
+@router.get("/all/{board_id}")
 async def get_messages(
         user_id: Annotated[int, Depends(get_my_id)],
         board_id: int,
@@ -103,7 +103,8 @@ async def get_messages(
 @router.get("/dm_overview")
 async def dm_overview(
         user_id: Annotated[int, Depends(get_my_id)],
-        db=Depends(get_db)
+        db: AsyncSession = Depends(get_db)
+
 ) -> List[Tuple[str, MessageOut]]:
     """
     Get information of the last 5 DM's between the user and other friends
@@ -111,7 +112,7 @@ async def dm_overview(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.MessageAccess.getFriendMessageOverview(user_id, 5)
+    data = await data_access.MessageAccess.getFriendMessageOverview(user_id, 20)
 
     """
     transform data to web format

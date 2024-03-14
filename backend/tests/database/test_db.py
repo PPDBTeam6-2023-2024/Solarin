@@ -261,3 +261,5 @@ async def test_DM_overview():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
         r = await da.MessageAccess.getFriendMessageOverview(1, 3)
+        assert len(r) == 1
+        assert r[0][0] == "username1"

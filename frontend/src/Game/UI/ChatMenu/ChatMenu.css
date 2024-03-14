@@ -1,8 +1,8 @@
 .ChatMenuWidget{
 
     background-image: inherit;
-    width: 20vw;
-    height: 25vw;
+    width: 30vw;
+    height: 40vw;
     border:0.5vw solid var(--tertiaryColor);
     border-radius: 2vw 2vw 2vw 2vw;
     bottom: 9vw;
@@ -29,4 +29,9 @@
 .ChatNavBar ul li:hover{
     transform: scale(110%);
 
+}
+
+/* makes scrollbar invisible, because it is not really gameLike to have an ugly scrollbar*/
+::-webkit-scrollbar {
+    display: none;
 }

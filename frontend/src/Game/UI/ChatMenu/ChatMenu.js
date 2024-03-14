@@ -5,18 +5,17 @@ import Draggable from "react-draggable";
 import "./ChatMenu.css"
 import profile from "../../Images/profile_images/profile_1.png";
 import axios from "axios";
-
+import FriendOverviewEntry from "./Friends/FriendOverviewEntry";
 const categories = ["Friends", "Alliances", "Ranking"]
-
 
 const getDMOverview = async() => {
     try {
 
-        const socket = new WebSocket(`ws://${process.env.REACT_APP_BACKEND_PATH}/chat/DmOverviewSocket`)
+        //const socket = new WebSocket(`ws://${process.env.REACT_APP_BACKEND_PATH}/chat/dm_overview`)
 
-    axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/DmOverview`)
-    return response.status === 200
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/dm_overview`)
+        return response.data
     }
     catch(e) {return false}
 }
@@ -59,11 +58,40 @@ const CategoryTab = (props) => {
 };
 
 
-function ChatMenu(props) {
+const DmTab = (props) => {
+    const [dmData, setDmData] = useState(null)
+    const [dmIndex, setDmIndex] = useState(-1)
+
+    //syntax is not great, but apparently the proper way to retrieve async information from a sync function
+    //This function reads the data from the RESTAPI request, and will use its data to amek  the DMOverview
+
 
     useEffect(() => {
-        getDMOverview()
+        async function makeOverviewEntries() {
+            let data = await getDMOverview()
+            let friend_entries = []
+            data.forEach((elem, index) => {
+                friend_entries.push(
+                    <FriendOverviewEntry user={elem[0]} message={elem[1]} key={index} onClick={() => console.log("a")}></FriendOverviewEntry>
+
+                )
+            })
+
+            setDmData(friend_entries)
+        }
+        makeOverviewEntries()
     }, [])
+
+    return (
+        <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
+            {dmIndex === -1 && <>{dmData}</>}
+
+        </div>
+
+    )
+}
+
+function ChatMenu(props) {
 
     const [selectedCategory, setSelectedCategory] = useState("Friends");
     return (
@@ -71,6 +99,7 @@ function ChatMenu(props) {
           {/*Creates the div that contains the chat menu*/}
       <div className="ChatMenuWidget absolute right-0">
           <CategoryTab selected={[selectedCategory, setSelectedCategory]}/>
+          {selectedCategory === "Friends" && <DmTab></DmTab>}
 
       </div>
     </Draggable>

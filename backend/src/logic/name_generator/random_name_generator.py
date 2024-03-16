@@ -5,6 +5,6 @@ def generate_planet_name():
     planet_names = open("planet_names.txt", "r")
     lines = planet_names.readlines()
     random_line = random.choice(lines)
-    print(random_line)
+    return str(random_line)
 
 

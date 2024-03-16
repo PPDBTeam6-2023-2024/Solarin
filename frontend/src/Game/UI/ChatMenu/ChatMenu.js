@@ -6,11 +6,13 @@ import "./ChatMenu.css"
 import profile from "../../Images/profile_images/profile_1.png";
 import axios from "axios";
 import FriendOverviewEntry from "./Friends/FriendOverviewEntry";
+import MessageBoard from "./MessageBoard";
+
 const categories = ["Friends", "Alliances", "Ranking"]
+
 
 const getDMOverview = async() => {
     try {
-
         //const socket = new WebSocket(`ws://${process.env.REACT_APP_BACKEND_PATH}/chat/dm_overview`)
 
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
@@ -59,7 +61,7 @@ const CategoryTab = (props) => {
 
 
 const DmTab = (props) => {
-    const [dmData, setDmData] = useState(null)
+    const [dmData, setDmData] = useState([])
     const [dmIndex, setDmIndex] = useState(-1)
 
     //syntax is not great, but apparently the proper way to retrieve async information from a sync function
@@ -69,24 +71,25 @@ const DmTab = (props) => {
     useEffect(() => {
         async function makeOverviewEntries() {
             let data = await getDMOverview()
-            let friend_entries = []
-            data.forEach((elem, index) => {
-                friend_entries.push(
-                    <FriendOverviewEntry user={elem[0]} message={elem[1]} key={index} onClick={() => console.log("a")}></FriendOverviewEntry>
-
-                )
-            })
-
-            setDmData(friend_entries)
+            setDmData(data)
         }
         makeOverviewEntries()
     }, [])
 
-    return (
-        <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
-            {dmIndex === -1 && <>{dmData}</>}
 
-        </div>
+    return (
+        <>
+            {dmIndex === -1 && <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
+                <div>{
+                    /*display al the friend overview entries we jsut retrieved*/
+                    dmData.map((elem, index) => <FriendOverviewEntry user={elem[0]} message={elem[1]} key={index} onEntryClick={() => setDmIndex(index)}></FriendOverviewEntry>)
+                }</div>
+
+            </div>}
+            {/*Open a component for the dm between the 2 users that were just selected*/}
+            {dmIndex !== -1 && <MessageBoard message_board={dmData.slice(dmIndex , dmIndex+1)[0][2]}/>}
+        </>
+
 
     )
 }

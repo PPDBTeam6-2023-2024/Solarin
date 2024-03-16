@@ -55,7 +55,7 @@ class Message(Base):
 
     def toMessageOut(self, sender_name):
         return MessageOut(sender_name=sender_name,
-                          created_at=self.create_date_time,
+                          created_at=self.create_date_time.isoformat(),
                           body=self.body)
 
 

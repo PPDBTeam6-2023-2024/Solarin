@@ -1,6 +1,6 @@
 #FriendOverviewEntryVisual{
     width: 100%;
-    height: 20%;
+    height: 5vw;
 
     border-bottom:0.2vw solid var(--tertiaryColor);
     margin-left: auto;

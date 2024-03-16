@@ -141,3 +141,16 @@ class MessageAccess:
 
         results = results.unique().all()
         return results
+
+    async def getMessages(self, message_board: int, offset: int, limit: int):
+        search_messages = Select(Message, User.username).join(User, User.id == Message.sender_id).where(Message.message_board == message_board). \
+            order_by(desc(Message.mid)).offset(offset).limit(limit)
+
+        results = await self.__session.execute(search_messages)
+
+        """
+        query is sorted from newest till oldest, so we still need to put it in chronological order
+        """
+        results = results.unique().all()
+        results = list(reversed(results))
+        return results

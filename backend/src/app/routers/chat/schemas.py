@@ -24,7 +24,7 @@ class ParentMessage(BaseModel):
 
 class MessageOut(BaseModel):
     sender_name: str
-    created_at: datetime
+    created_at: str # datetime is not serializable, that is why we use datatime as a string representation
     body: str
     parent_message: Optional[ParentMessage] = None
 

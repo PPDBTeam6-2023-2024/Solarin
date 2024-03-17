@@ -1,7 +1,7 @@
 import { MapInteractionCSS } from 'react-map-interaction';
 import { useState, useEffect } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
-
+import ResourceViewer from '../UI/ResourceViewer/ResourceViewer';
 
 const loadImage = async(imgPath, stateSetter) => {
     let img = new Image()
@@ -23,6 +23,7 @@ function PlanetViewer(props) {
     }, [props.mapImage])
     return (
         <>
+        <ResourceViewer className="fixed z-20 bottom-0 right-0" title="Some Title" resources={{"SOL" : 150, "TF": 500}} draggable={true}/>
         <div className="bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl justify-between items-center flex">
         <RiArrowLeftSLine className="transition ease-in-out hover:scale-150"/>
          <h1>{props.planetName}</h1>

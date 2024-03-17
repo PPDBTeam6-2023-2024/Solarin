@@ -257,9 +257,53 @@ async def test_buildings():
         assert cbt[1][0].id == 2
         assert cbt[2][0].id == 3
 
+
 async def test_DM_overview():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
         r = await da.MessageAccess.getFriendMessageOverview(1, 3)
         assert len(r) == 1
         assert r[0][0] == "username1"
+
+
+async def test_friend_requests():
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        await da.UserAccess.sendFriendRequest(1, 40)
+        await da.UserAccess.sendFriendRequest(1, 41)
+        await da.UserAccess.sendFriendRequest(40, 41)
+
+        await da.commit()
+        with pytest.raises(Exception):
+            """
+            expected to throw exceptions
+            """
+            await da.UserAccess.sendFriendRequest(1, 40)
+
+        await da.rollback()
+
+        with pytest.raises(Exception):
+            """
+            expected to throw exceptions
+            """
+            await da.UserAccess.sendFriendRequest(1, 2)
+
+        await da.rollback()
+
+        await da.UserAccess.acceptFriendRequest(1, 40)
+
+        friends = await da.UserAccess.getFriends(1)
+
+        """
+        verify that 40 is amongs friends
+        """
+        found_friend = False
+        for friend, board in friends:
+            if friend == 40:
+                found_friend = True
+                break
+
+        assert found_friend == True
+
+        r = await da.UserAccess.getFriendRequests(41)
+        assert len(r) == 2

@@ -5,6 +5,7 @@
 .SendMessageTab textarea{
     height: 4.95vw;
     border-radius: 0 0 0 1.8vw;
+    resize: none;
 }
 
 .SendMessageTab button{

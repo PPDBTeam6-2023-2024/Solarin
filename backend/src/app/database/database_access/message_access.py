@@ -3,6 +3,7 @@ from ..database import AsyncSession
 from .user_access import getFriendsQuerySym
 from sqlalchemy.orm import aliased
 
+
 class MessageAccess:
     """
     This class will manage the sql access for data related to information of messages
@@ -125,7 +126,7 @@ class MessageAccess:
         """
         get most recent message create time sent by each friend
         """
-        most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).select_from(sym_friends)).join(Message, Message.message_board == sym_friends.c.message_board).group_by(sym_friends.c)
+        most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).select_from(sym_friends)).join(Message, Message.message_board == sym_friends.c.message_board, isouter=True).group_by(sym_friends.c)
 
         """
         get the tuple (friend_username, Message, message_sender_username)
@@ -133,9 +134,9 @@ class MessageAccess:
         message_sender = aliased(User, name='message_sender')
 
         message_overview = (select(User.username, Message, message_sender.username).select_from(most_recent_message))\
-            .join(Message, (Message.message_board == most_recent_message.c.message_board)).where(most_recent_message.c.max == Message.create_date_time)\
-            .order_by(desc(Message.create_date_time)).limit(limit).join(User, User.id == most_recent_message.c.user_id)\
-            .join(message_sender, message_sender.id == Message.sender_id)
+            .join(Message, (Message.message_board == most_recent_message.c.message_board), isouter=True).where((most_recent_message.c.max == Message.create_date_time) | (most_recent_message.c.max == None))\
+            .order_by(desc(Message.create_date_time)).limit(limit).join(User, User.id == most_recent_message.c.user_id, isouter=True)\
+            .join(message_sender, message_sender.id == Message.sender_id, isouter=True)
 
         results = await self.__session.execute(message_overview)
 
@@ -143,6 +144,14 @@ class MessageAccess:
         return results
 
     async def getMessages(self, message_board: int, offset: int, limit: int):
+        """
+        get all messages from a specific message board
+
+        :param: message_board: id of messages
+        :param: offset: offset from where we want to read: offset 50 means we ignore the last 50 messages send
+        :param: limit: amount of messages we want to retrieve
+        :return: a list of tuples: (Message, sender username)
+        """
         search_messages = Select(Message, User.username).join(User, User.id == Message.sender_id).where(Message.message_board == message_board). \
             order_by(desc(Message.mid)).offset(offset).limit(limit)
 
@@ -154,3 +163,24 @@ class MessageAccess:
         results = results.unique().all()
         results = list(reversed(results))
         return results
+
+    async def getMessage(self, mid: int):
+        """
+        Get a specific message based on its message mid
+        :param: mid: id of the message
+        :return: a list of tuples: (Message, sender username)
+        """
+        search_message = Select(Message, User.username).join(User, User.id == Message.sender_id).where(Message.mid == mid)
+
+        results = await self.__session.execute(search_message)
+
+        """
+        query is sorted from newest till oldest, so we still need to put it in chronological order
+        """
+        result = results.first()
+
+        if results is None:
+            raise Exception("MessageAccess: GetMessage: Message does not exist")
+
+        return result
+

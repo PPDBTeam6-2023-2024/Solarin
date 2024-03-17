@@ -33,3 +33,9 @@ class DataAccess:
         Make sure you can call commit without having access to the session directly
         """
         await self.__session.commit()
+
+    async def rollback(self):
+        """
+        Rollback issues
+        """
+        await self.__session.rollback()

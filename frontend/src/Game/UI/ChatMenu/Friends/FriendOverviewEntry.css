@@ -11,7 +11,6 @@
 
 #FriendOverviewEntryVisual:hover{
     --scaleIndex: 110%;
-    --translate_size: calc((var(--scaleIndex) - 100%)/2 * -1);
     transform: scale(var(--scaleIndex));
     border-top:0.2vw solid var(--tertiaryColor);
     z-index: 21;

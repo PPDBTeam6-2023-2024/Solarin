@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket, Depends, Query
+from fastapi import APIRouter, WebSocket, Depends, Query, Request
 from fastapi.websockets import WebSocketDisconnect
 from typing import Annotated, Tuple, List
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -74,19 +74,25 @@ async def websocket_endpoint(
     connection_pool = await manager.connect_board(board_id=board_id, websocket=websocket)
 
     try:
-        await connection_pool.broadcast({"type": "new message", "message": output_list})
-
         while True:
             data = await websocket.receive_json()
-            if data.type == "new message":
+            if data["type"] == "new message":
                 """
                 store message in database
                 """
-                data_access.MessageAccess.createMessage(MessageToken(sender_id=user_id,
+                mid = await data_access.MessageAccess.createMessage(MessageToken(sender_id=user_id,
                                                                      message_board=board_id,
-                                                                     body=data.body))
+                                                                     body=data["body"]))
 
-            print("data", data)
+                """
+                obtain information about the just created message
+                """
+                message = await data_access.MessageAccess.getMessage(mid)
+                message = message[0].toMessageOut(message[1])
+                await data_access.commit()
+                await connection_pool.broadcast({"type": "new message", "message": [message.model_dump()]})
+
+
 
     except WebSocketDisconnect:
         connection_pool.disconnect(websocket)
@@ -145,26 +151,56 @@ async def dm_overview(
     """
     output_list: List[Tuple[str, MessageOut, int]] = []
     for d in data:
+        if d[1] is None:
+            continue
         output_list.append((d[0], d[1].toMessageOut(d[2]), d[1].message_board))
 
     return output_list
 
 
-@router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket, db: AsyncSession = Depends(get_db)):
-    auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
-    user_id = get_my_id(auth_token)
-    await websocket.accept(subprotocol=auth_token)
+@router.get("/friend_requests")
+async def friend_requests(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
 
-    """send the first 30 messages to the user"""
+) -> List[Tuple[str, int]]:
+    """
+    obtain all the friend requests of the user
+    """
+
     data_access = DataAccess(db)
-    messages = await data_access.MessageAccess.getMessages(1, 0, 30)
-    output_list: List[MessageOut] = []
-    for d in messages:
-        output_list.append(d[0].toMessageOut(d[1]).model_dump())
+    data = await data_access.UserAccess.getFriendRequests(user_id)
 
-    await websocket.send_json(output_list)
+    """
+    transform data to web format
+    format: User -> (username, id)
+    """
+    output_list: List[Tuple[str, int]] = []
+    for d in data:
+        output_list.append((d[0].username, d[0].id))
+    return output_list
 
-    while True:
-        data = await websocket.receive_json()
-        print("data", data)
+
+@router.post("/friend_requests")
+async def friend_requests(
+        request: Request,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db),
+
+
+
+) -> str:
+    """
+    obtain all the friend requests of the user
+    """
+    data = await request.json()
+
+    data_access = DataAccess(db)
+
+    if data["accepted"]:
+        await data_access.UserAccess.acceptFriendRequest(data["friend_id"], user_id)
+    else:
+        await data_access.UserAccess.rejectFriendRequest(data["friend_id"], user_id)
+    await data_access.commit()
+    return ""
+

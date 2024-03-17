@@ -55,7 +55,7 @@ class Message(Base):
 
     def toMessageOut(self, sender_name):
         return MessageOut(sender_name=sender_name,
-                          created_at=self.create_date_time.isoformat(),
+                          created_at=self.create_date_time.strftime("%m/%d/%Y %H:%M:%S"),
                           body=self.body)
 
 
@@ -370,3 +370,22 @@ class UpgradeCost(Base):
 
     cost_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
     cost_amount = Column(Integer, nullable=False)
+
+
+class FriendRequest(Base):
+    """
+    Stores which users have pending friend requests
+    """
+    __tablename__ = "FriendRequest"
+    from_user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    to_user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+
+
+class AllianceRequest(Base):
+    """
+    Stores which users asked to join a faction
+    """
+    __tablename__ = "allianceRequest"
+    user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    alliance_name = Column(Integer, ForeignKey("alliance.name"), nullable=False)
+

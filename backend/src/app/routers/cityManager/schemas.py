@@ -1,0 +1,32 @@
+from pydantic import BaseModel
+
+
+class ConfigClass(BaseModel):
+    class Config:
+        orm_mode = True
+        from_attributes = True
+
+
+class BuildingInstanceSchema(ConfigClass):
+    id: int
+    city_id: int
+    building_type: str
+    rank: int
+
+
+class CitySchema(ConfigClass):
+    id: int
+    region_id: int
+    x: float
+    y: float
+    controlled_by: int
+    rank: int
+    region_type: str
+
+
+class PlanetRegion(ConfigClass):
+    id: int
+    planet_id: int
+    region_type: str
+    planet: str
+    cities: str

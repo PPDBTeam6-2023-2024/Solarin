@@ -9,6 +9,7 @@ import ProfileViewer from "./UI/MainUI/ProfileViewer";
 import { RiArrowLeftSLine } from "react-icons/ri";
 import { IoMdPlanet } from "react-icons/io";
 
+
 import planet_example from './Images/Planets/example.png'
 
 

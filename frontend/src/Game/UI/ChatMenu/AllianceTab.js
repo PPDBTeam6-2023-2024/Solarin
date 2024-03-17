@@ -1,26 +1,143 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import FriendOverviewEntry from "./Friends/FriendOverviewEntry";
 import MessageBoard from "./MessageBoard";
 import axios from "axios";
-import FriendRequestEntry from "./Friends/FriendRequestEntry";
-
+import AllianceRequestEntry from "./Alliance/AllianceRequestEntry";
+import {UserInfoContext} from "./../../Context/UserInfoContext"
+import "./AllianceTab.css"
 const AllianceTab = (props) => {
     const [chatOpen, setChatOpen] = useState(false)
     const [allianceRequests, setAllianceRequests] = useState([])
+
+    const [userInfo, setUserInfo] = useContext(UserInfoContext);
+
+    /*In case the user is not in a faction it receives an input area to enter a Alliance name of a faction it wants to join/create*/
+    const [pendingName, setPendingName] = useState("");
+
+    /*error message in regard to errors for creating/joining an alliance*/
+    const [anwserMessage, setAnwserMessage] = useState("");
+
+    /*store the message board number*/
+    const [messageBoard, setMessageBoard] = useState(-1);
+
+    /*
+    * This function will create/try to join an alliance
+    * */
+    const DoAlliance = async(alliance_name, create) => {
+        let end_point = "join";
+        if (create){
+            end_point = "create"
+        }
+
+        try {
+            /*send a post request to try and create or join the alliance*/
+            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/${end_point}_alliance`,
+            JSON.stringify({
+              "alliance_name": alliance_name
+            }),
+            {
+              headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json',
+              },
+            }
+            )
+
+            let data = response.data;
+
+            /**
+             * if alliance is created make sure locally the user is also aware of this alliance in frontend
+             * */
+            if (data.success === true){
+                const newUserInfo= { ...userInfo, alliance : alliance_name};
+                setUserInfo(newUserInfo);
+            }else{
+                setAnwserMessage(data.message);
+            }
+
+        }catch (e){}
+    }
+
+    const getAllianceRequests = async() => {
+    try {
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_requests`)
+        return response.data
+    }
+    catch(e) {return []}
+    }
+
+    const getMessageBoard = async() => {
+        try {
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_messageboard`)
+        return response.data
+        }
+        catch(e) {return -1}
+    }
+
+    useEffect(() => {
+        async function makeOverviewEntries() {
+            let data = await getAllianceRequests()
+            setAllianceRequests(data)
+
+            if (userInfo.alliance !== null){
+                data = await getMessageBoard()
+                setMessageBoard(data)
+            }
+        }
+        makeOverviewEntries()
+    }, [])
+
     return (
         <>
+            {/*when the chat is not yet open*/}
             {!chatOpen &&
-                <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
-                    {
-                    /*display all friend requests*/
-                    allianceRequests.map((elem, index) => <FriendRequestEntry user={elem[0]} user_id={elem[1]} key={index}
-                                                                            onEntryChose={
-                        () => setAllianceRequests(allianceRequests.slice(0 , index).concat(allianceRequests.slice(index+1)))
-                    }/>)
+                <div id={"AllianceTab"} style={{"height": "93%"}}>
+                    {!userInfo.alliance &&
+                        <>
+                            Enter Alliance Name:
+                            <textarea name="alliance_name" value={pendingName}
+                            onChange={(event) => {setPendingName(event.target.value)}}
+                            className="bg-gray-900" required/>
+                            {anwserMessage}
+                            <button id={"AllianceTabButton"} onClick={() => DoAlliance(pendingName, true)}> Create Alliance</button>
+                            <button id={"AllianceTabButton"} onClick={() => DoAlliance(pendingName, false)}> Join Alliance</button>
+                        </>
+
+                    }
+
+                    {userInfo.alliance &&
+                        <>
+                            {/*this part gives an overview of the alliance, when the user is part of an alliance*/}
+
+                            {/*visualize all alliance join requests*/}
+                            <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
+                                    {
+                                    /*display all friend requests*/
+                                    allianceRequests.map((elem, index) => <AllianceRequestEntry user={elem[0]} user_id={elem[1]} key={index}
+                                                                                            onEntryChose={
+                                        () => setAllianceRequests(allianceRequests.slice(0 , index).concat(allianceRequests.slice(index+1)))
+                                    }/>)
+                                    }
+
+
+                            </div>
+                            
+                            {/*button to open the alliance chat*/}
+                            <button id={"AllianceTabButton"} onClick={() => {setChatOpen(true);}}> Open Chat</button>
+                        </>
+
+
+
                     }
                 </div>
-
             }
+
+            {/*Display the chat of the alliance*/}
+            {chatOpen && <MessageBoard message_board={messageBoard}/>}
+
         </>
 
 

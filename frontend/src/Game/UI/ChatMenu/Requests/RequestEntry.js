@@ -15,10 +15,10 @@ function RequestEntry(props) {
               {props.text}
           </div>
 
-          <button style={{"backgroundColor": "green"}} onClick={() => {props.on_true(); props.onEntryChose()}}>
+          <button style={{"backgroundColor": "green"}} onClick={props.onTrue}>
               accept
           </button>
-          <button style={{"backgroundColor": "red"}} onClick={() => {props.on_false(); props.onEntryChose()}}>
+          <button style={{"backgroundColor": "red"}} onClick={props.onFalse}>
               reject
           </button>
 
@@ -27,4 +27,4 @@ function RequestEntry(props) {
     )
 }
 
-export default FriendRequestEntry
+export default RequestEntry

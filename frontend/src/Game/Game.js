@@ -8,7 +8,7 @@ import {ViewModeContext, View} from "./Context/ViewModeContext"
 import ProfileViewer from "./UI/MainUI/ProfileViewer";
 import { RiArrowLeftSLine } from "react-icons/ri";
 import { IoMdPlanet } from "react-icons/io";
-
+import {UserInfoContext} from "./Context/UserInfoContext"
 
 import planet_example from './Images/Planets/example.png'
 
@@ -37,8 +37,8 @@ const Game = () => {
         authenticate()
     }, [])
     return (<div className="h-screen bg-gray-900">
+        <UserInfoContext.Provider value={[userInfo, setUserInfo]}>
         <ViewModeContext.Provider value={[viewMode, setViewMode]}>
-
 
         {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
             <UI/>
@@ -67,6 +67,7 @@ const Game = () => {
 
         {!userInfo && !isAuth && <h1>Not authenticated</h1>}
         </ViewModeContext.Provider>
+        </UserInfoContext.Provider>
     </div>)
 }
 export default Game

@@ -69,21 +69,6 @@ async def websocket_endpoint(
         connection_pool.disconnect(websocket)
 
 
-@router.websocket("/gc/{board_id}")
-async def websocket_endpoint(
-        user_id: Annotated[int, Depends(get_my_id)],
-        websocket: WebSocket,
-        board_id: int,
-        db: AsyncSession = Depends(get_db)
-):
-    can_access = True  # TODO: CHECK IF THIS USER CAN ACCESS THIS BOARD CHAT OF ALLIANCE
-    if not can_access:
-        await websocket.close()
-        return
-
-    connection_pool = await manager.connect_board(board_id=board_id, websocket=websocket)
-
-
 @router.get("/dm_overview")
 async def dm_overview(
         user_id: Annotated[int, Depends(get_my_id)],
@@ -139,6 +124,104 @@ async def friend_requests(
         user_id: Annotated[int, Depends(get_my_id)],
         db: AsyncSession = Depends(get_db),
 
+) -> str:
+    """
+    obtain all the friend requests of the user
+    """
+    data = await request.json()
+
+    data_access = DataAccess(db)
+
+    if data["accepted"]:
+        await data_access.UserAccess.acceptFriendRequest(data["friend_id"], user_id)
+
+        """
+        send a default message indicating the friend request ahs been accepted
+        """
+        message_board = await data_access.MessageAccess.getPlayerMessageBoard(user_id, data["friend_id"])
+
+        await data_access.MessageAccess.createMessage(MessageToken(sender_id=user_id, message_board=message_board,
+                                                                   body="Friend request has been accepted"))
+    else:
+        await data_access.UserAccess.rejectFriendRequest(data["friend_id"], user_id)
+    await data_access.commit()
+    return ""
+
+@router.post("/create_alliance")
+async def create_alliance(
+        request: Request,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db),
+
+) -> dict:
+    """
+    obtain all the friend requests of the user
+    """
+    data = await request.json()
+
+    data_access = DataAccess(db)
+
+    alliance_name = data["alliance_name"]
+
+    alliance_exists = await data_access.AllianceAccess.allianceExists(alliance_name)
+    if alliance_exists:
+        return {"success": False, "message": "Alliance name already in use"}
+
+    await data_access.AllianceAccess.createAlliance(alliance_name)
+    await data_access.AllianceAccess.setAlliance(user_id, alliance_name)
+    await data_access.commit()
+    return {"success": True, "message": "Alliance is created"}
+
+@router.post("/join_alliance")
+async def join_alliance(
+        request: Request,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db),
+
+) -> dict:
+    """
+    obtain all the friend requests of the user
+    """
+    data = await request.json()
+    data_access = DataAccess(db)
+    alliance_name = data["alliance_name"]
+
+    alliance_exists = await data_access.AllianceAccess.allianceExists(alliance_name)
+    if not alliance_exists:
+        return {"success": False, "message": "Alliance name already in use"}
+
+    await data_access.AllianceAccess.sendAllianceRequest(user_id, alliance_name)
+    await data_access.commit()
+    return {"success": False, "message": "Alliance join request has been send"}
+
+
+@router.get("/alliance_requests")
+async def alliance_requests(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+) -> List[Tuple[str, int]]:
+    """
+    obtain all the friend requests of the user
+    """
+
+    data_access = DataAccess(db)
+    data = await data_access.AllianceAccess.getAllianceRequests(user_id)
+
+    """
+    transform data to web format
+    format: User -> (username, id)
+    """
+    output_list: List[Tuple[str, int]] = []
+    for d in data:
+        output_list.append((d[0].username, d[0].id))
+    return output_list
+
+@router.post("/alliance_requests")
+async def friend_requests(
+        request: Request,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db),
 
 
 ) -> str:
@@ -150,9 +233,22 @@ async def friend_requests(
     data_access = DataAccess(db)
 
     if data["accepted"]:
-        await data_access.UserAccess.acceptFriendRequest(data["friend_id"], user_id)
+        alliance = await data_access.AllianceAccess.getAlliance(user_id)
+        await data_access.AllianceAccess.acceptAllianceRequest(data["user_id"], alliance)
     else:
-        await data_access.UserAccess.rejectFriendRequest(data["friend_id"], user_id)
+        await data_access.AllianceAccess.rejectAllianceRequest(data["user_id"])
     await data_access.commit()
+
     return ""
 
+@router.get("/alliance_messageboard")
+async def alliance_messageboard(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+) -> int:
+    data_access = DataAccess(db)
+
+    alliance = await data_access.AllianceAccess.getAlliance(user_id)
+    message_board = await data_access.MessageAccess.getAllianceMessageBoard(alliance)
+    return message_board

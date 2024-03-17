@@ -1,3 +1,5 @@
+from sqlalchemy.orm import aliased
+
 from ..models.models import *
 from ..database import AsyncSession
 
@@ -71,6 +73,7 @@ class AllianceAccess:
         :param: alliance_name: name of the alliance
         """
 
+        await self.__removeAllianceRequest(user_id)
         await self.setAlliance(user_id, alliance_name)
 
     async def rejectAllianceRequest(self, user_id: int):
@@ -89,4 +92,43 @@ class AllianceAccess:
         await self.__session.execute(dr)
         await self.__session.flush()
 
+    async def allianceExists(self, alliance_name: str):
+        """
+        check if an alliance exists
+        :param: alliance_name: name of the alliance
+        :return: bool, if alliance exists -> return true else -> return false
+        """
+
+        get_alliance = Select(Alliance).where(Alliance.name == alliance_name)
+        results = await self.__session.execute(get_alliance)
+        result = results.first()
+        return result is not None
+
+    async def getAllianceRequests(self, user_id: int):
+        """
+        We want to retrieve all the users requests to join the alliance
+        :param: user_id: id of the user whose friend requests we want to retrieve
+        :return: list of users whose sent an alliance join request
+        """
+
+        alliance_member = aliased(User, name='alliance_member')
+        alliance_requests = Select(User).join(AllianceRequest, AllianceRequest.user_id == User.id).\
+            join(alliance_member, alliance_member.alliance == AllianceRequest.alliance_name).where(alliance_member.id == user_id)
+        results = await self.__session.execute(alliance_requests)
+        results = results.all()
+        return results
+
+    async def getAlliance(self, user_id: int):
+        """
+        et the alliance the user belongs to
+        :param: user_id: id of the user whose friend requests we want to retrieve
+        :return: alliance name
+        """
+
+        result = await self.__session.execute(Select(User.alliance).where(User.id == user_id))
+        result = result.first()
+        if result is None:
+            return None
+
+        return result[0]
 

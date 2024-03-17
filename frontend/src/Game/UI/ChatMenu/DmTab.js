@@ -46,18 +46,18 @@ const DmTab = (props) => {
     return (
         <>
             {dmIndex === -1 && <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
-                    {
+                        {
                     /*display all friend requests*/
                     friendRequests.map((elem, index) => <FriendRequestEntry user={elem[0]} user_id={elem[1]} key={index}
                                                                             onEntryChose={
                         () => setFriendRequests(friendRequests.slice(0 , index).concat(friendRequests.slice(index+1)))
                     }/>)
                     }
+
                     {
                     /*display all the friend overview entries we just retrieved*/
                     dmData.map((elem, index) => <FriendOverviewEntry user={elem[0]} message={elem[1]} key={index} onEntryClick={() => setDmIndex(index)}></FriendOverviewEntry>)
                     }
-
 
             </div>}
             {/*Open a component for the dm between the 2 users that were just selected*/}

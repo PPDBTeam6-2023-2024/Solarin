@@ -1,19 +1,18 @@
-import React, {useEffect, useState} from "react";
-import Draggable from "react-draggable";
 import axios from "axios";
 import RequestEntry from "../Requests/RequestEntry";
+import React from "react";
 
-function FriendRequestEntry(props) {
+function AllianceRequestEntry(props) {
     /**
-     * This component represent 1 friend request
+     * This component represent 1 request to join your faction
      * */
 
-    const SendRequestReply = async(friend_id, accepted) => {
+    const SendRequestReply = async(user_id, accepted) => {
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/friend_requests`,
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_requests`,
             JSON.stringify({
-              "friend_id": friend_id,
+              "user_id": user_id,
               "accepted": accepted
             }),
             {
@@ -31,11 +30,10 @@ function FriendRequestEntry(props) {
 
     return (
       <>
-
-      <RequestEntry text={`Friend request from\n ${props.user}`} onTrue={() => {SendRequestReply(props.user_id, true); props.onEntryChose()}}
+      <RequestEntry text={`join request\n '${props.user}'`} onTrue={() => {SendRequestReply(props.user_id, true); props.onEntryChose()}}
         onFalse={() => {SendRequestReply(props.user_id, false); props.onEntryChose()}}/>
     </>
     )
 }
 
-export default FriendRequestEntry
+export default AllianceRequestEntry

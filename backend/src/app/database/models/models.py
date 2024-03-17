@@ -420,5 +420,5 @@ class AllianceRequest(Base):
     """
     __tablename__ = "allianceRequest"
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
-    alliance_name = Column(Integer, ForeignKey("alliance.name"), nullable=False)
+    alliance_name = Column(String, ForeignKey("alliance.name"), nullable=False)
 

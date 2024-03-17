@@ -8,10 +8,10 @@ import axios from "axios";
 import FriendOverviewEntry from "./Friends/FriendOverviewEntry";
 import MessageBoard from "./MessageBoard";
 import DmTab from "./DmTab";
+import AllianceTab from "./AllianceTab";
+
+
 const categories = ["Friends", "Alliances", "Ranking"]
-
-
-
 
 const CategoryTab = (props) => {
     /**
@@ -61,7 +61,8 @@ function ChatMenu(props) {
           {/*Creates the div that contains the chat menu*/}
       <div className="ChatMenuWidget absolute right-0">
           <CategoryTab selected={[selectedCategory, setSelectedCategory]}/>
-          {selectedCategory === "Friends" && <DmTab></DmTab>}
+          {selectedCategory === "Friends" && <DmTab/>}
+          {selectedCategory === "Alliances" && <AllianceTab/>}
 
       </div>
     </Draggable>

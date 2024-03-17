@@ -17,36 +17,6 @@ manager = ConnectionManager()
 
 security = HTTPBearer()
 
-async def handle_messaging(
-        user_id: int,
-        board_id: int,
-        connection_pool: ConnectionPool,
-        websocket: WebSocket,
-        db: AsyncSession
-):
-    # TODO: enter message
-    await connection_pool.broadcast({
-
-    })
-
-    try:
-        while True:
-            data = await websocket.receive_json()
-            await connection_pool.broadcast(data)  # broadcast data to everyone
-
-            if data["type"] == MessageType.CHAT:
-                chat = Chat(**data)
-                # TODO: persist chat to database
-
-    except WebSocketDisconnect:
-        manager.disconnect_board(board_id=board_id, websocket=websocket)
-
-    # TODO: exit message
-    if not connection_pool.empty():
-        await connection_pool.broadcast({
-
-        })
-
 
 @router.websocket("/dm/{board_id}")
 async def websocket_endpoint(
@@ -73,6 +43,9 @@ async def websocket_endpoint(
 
     connection_pool = await manager.connect_board(board_id=board_id, websocket=websocket)
 
+    """
+    start receiving new requests
+    """
     try:
         while True:
             data = await websocket.receive_json()
@@ -92,8 +65,6 @@ async def websocket_endpoint(
                 await data_access.commit()
                 await connection_pool.broadcast({"type": "new message", "message": [message.model_dump()]})
 
-
-
     except WebSocketDisconnect:
         connection_pool.disconnect(websocket)
 
@@ -111,25 +82,6 @@ async def websocket_endpoint(
         return
 
     connection_pool = await manager.connect_board(board_id=board_id, websocket=websocket)
-    await handle_messaging(
-        user_id=user_id,
-        board_id=board_id,
-        connection_pool=connection_pool,
-        websocket=websocket,
-        db=db
-    )
-
-
-@router.get("/all/{board_id}")
-async def get_messages(
-        user_id: Annotated[int, Depends(get_my_id)],
-        board_id: int,
-        offset=Query(0),
-        limit=Query(),
-        db=Depends(get_db)
-) -> list[MessageOut]:
-    # TODO: FETCH MESSAGE HISTORY
-    return
 
 
 @router.get("/dm_overview")

@@ -300,7 +300,8 @@ class TroopType(Base):
     required_rank = Column(Integer)
 
     @classmethod
-    def withBattleStats(cls, type_name: str, training_time: timedelta, battle_stats: BattleStats, required_rank: int) -> "TroopType":
+    def withBattleStats(cls, type_name: str, training_time: timedelta, battle_stats: BattleStats,
+                        required_rank: int) -> "TroopType":
         return cls(
             type=type_name,
             training_time=training_time.total_seconds(),
@@ -322,7 +323,8 @@ class TroopTypeCost(Base):
     """
     __tablename__ = 'troopTypeCost'
     troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
-    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
+    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'),
+                           primary_key=True)
     amount = Column(Integer, nullable=False)
 
 
@@ -334,6 +336,8 @@ class Army(Base):
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     last_update = Column(TIME)
+    x = Column(Float(precision=53), nullable=False)
+    y = Column(Float(precision=53), nullable=False)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
 

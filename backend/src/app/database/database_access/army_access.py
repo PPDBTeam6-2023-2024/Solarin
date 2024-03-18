@@ -68,3 +68,14 @@ class ArmyAccess:
         to alter the just created entry when the exact same troops are added to the army
         """
         await self.__session.flush()
+
+    async def getArmies(self, userid: int, planetid: int):
+        getentry = Select(Army).where(Army.user_id==userid)
+        armies = await self.__session.execute(getentry)
+        await self.__session.flush()
+        return armies
+
+    async def getTroops(self, armyid: int):
+        getentry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==armyid)
+        troops = await self.__session.execute(getentry)
+        await self.__session.flush()

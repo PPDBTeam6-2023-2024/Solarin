@@ -1,0 +1,38 @@
+from pydantic import BaseModel
+from typing import Optional
+
+
+class TroopTypeSchema(BaseModel):
+    type: str
+    training_time: int
+    attack: int
+    defense: int
+    city_attack: int
+    city_defense: int
+    recovery: int
+    speed: int
+    required_rank: Optional[int] = None
+
+    class Config:
+        orm_mode = True
+
+
+class ArmySchema(BaseModel):
+    id: int
+    user_id: int
+    last_update: Optional[str] = None  # Use str for TIME, assuming you're using ISO format or similar
+    x: float
+    y: float
+
+    class Config:
+        orm_mode = True
+
+
+class ArmyConsistsOfSchema(BaseModel):
+    army_id: int
+    troop_type: str
+    rank: int
+    size: int
+
+    class Config:
+        orm_mode = True

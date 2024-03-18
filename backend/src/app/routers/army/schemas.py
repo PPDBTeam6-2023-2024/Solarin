@@ -20,7 +20,7 @@ class TroopTypeSchema(BaseModel):
 class ArmySchema(BaseModel):
     id: int
     user_id: int
-    last_update: Optional[str] = None  # Use str for TIME, assuming you're using ISO format or similar
+    last_update: Optional[str] = None
     x: float
     y: float
 

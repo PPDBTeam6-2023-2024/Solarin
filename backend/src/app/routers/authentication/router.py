@@ -1,12 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from passlib.context import CryptContext
 from jose import jwt, JWTError
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from sqlalchemy import select
 import sqlalchemy.exc
 from typing import Union, Annotated
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from uuid import UUID
 
 from .schemas import UserCreate, Token
 from ...database.database import get_db, AsyncSession
@@ -18,7 +17,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 @router.post("/add_user")
@@ -56,14 +54,14 @@ async def authenticate_user(session: AsyncSession, username: str, password: str)
 
 def create_access_token(data: dict, expires_delta: timedelta):
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
 @router.post("/token")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(get_db)) -> Token:
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(get_db), expire: float = Query(30, ge=0, lt=60)) -> Token:
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -72,7 +70,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(
-        data={"sub": str(user.id)}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        data={"sub": str(user.id)}, expires_delta=timedelta(minutes=expire)
     )
     return Token(access_token=access_token, token_type="bearer")
 
@@ -105,7 +103,7 @@ def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
     }
 
 @router.get("/me")
-async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(get_db)):
+async def me(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
     result = await db.execute(select(User).where(User.id == user_id))
     scalar = result.scalars().all()[0]
     return {"username": scalar.username, "id": scalar.id, "email": scalar.email}

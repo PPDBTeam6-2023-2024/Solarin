@@ -8,4 +8,3 @@ def generate_planet_name():
     lines = planet_names.readlines()
     random_line = random.choice(lines)
     return str(random_line)
-

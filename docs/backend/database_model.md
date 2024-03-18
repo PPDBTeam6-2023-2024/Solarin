@@ -24,7 +24,7 @@ These tables can be used to store information about the game and can be altered 
 </p>
 </details>
 
-An overview of each Tthe tables in the database:
+An overview of each the tables in the database:
 
 <details>
 <summary><strong>User and Communication</strong></summary>
@@ -94,6 +94,13 @@ An overview of each Tthe tables in the database:
 |            Army            |  Data   | Stores data about an army                                                                                                                                |
 |       ArmyConsistsOf       |  Data   | The relation indication which types of units are part of the army and in what quantities                                                                 |
 
+</p>
+</details>
+
+<details>
+<summary><strong>Coordinate System</strong></summary>
+<p>
+The coordinate system used in our game is stored in the database as double precision (x,y) coordinate with values ranging from 0 to 1. Cities and planets have coordinates.
 </p>
 </details>
 

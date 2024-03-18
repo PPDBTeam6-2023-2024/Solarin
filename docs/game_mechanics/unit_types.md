@@ -7,10 +7,9 @@ A point is a natural number and always bounded by the interval [0,499]
 * High: [350, 449]
 * Very High [450, 499]
 ### Unit Strength 
-* $\text{strength(unit)}=\text{rank(unit)} \cdot \dfrac{\sum{b_i}}{|\text{BP}|}$
+* $\text{strength(unit)}=\dfrac{\sum{b_i}}{|\text{BP}|}$
 	* $b_i \in \text{BP}$
 	* $\text{BP} = \\{ \text{AP, DP, ..., AMS} \\} $
-	* $\text{rank(unit) is the current level of the unit}$
 ### Point Types
 * AP: Attack Points
     * The general attack power of a unit
@@ -27,11 +26,9 @@ A point is a natural number and always bounded by the interval [0,499]
 
 ## Units
 * Spec
-	* Specialization of the unit: land or space
+    * Specialization of the unit: land or space
 * Base points
-	* The points a unit starts with
-* Current points
-	* Base points of the unit times current rank of the unit
+    * The points a unit starts with
 ### Regular Units
 
 * Assault Unit

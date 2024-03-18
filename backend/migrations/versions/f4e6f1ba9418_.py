@@ -1,8 +1,8 @@
-"""setup tables
+"""
 
-Revision ID: 9d5f6ad5a5f3
+Revision ID: f4e6f1ba9418
 Revises: 
-Create Date: 2024-03-04 21:39:58.729135
+Create Date: 2024-03-18 21:50:59.397139
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '9d5f6ad5a5f3'
+revision: str = 'f4e6f1ba9418'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -179,6 +179,14 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user2_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('user1_id', 'user2_id')
     )
+    op.create_table('hasResources',
+    sa.Column('owner_id', sa.Integer(), nullable=False),
+    sa.Column('resource_type', sa.String(), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['resource_type'], ['resourceType.name'], ),
+    sa.PrimaryKeyConstraint('owner_id', 'resource_type')
+    )
     op.create_table('message',
     sa.Column('mid', sa.Integer(), nullable=False),
     sa.Column('sender_id', sa.Integer(), nullable=False),
@@ -233,6 +241,7 @@ def downgrade() -> None:
     op.drop_table('buildingInstance')
     op.drop_table('armyConsistsOf')
     op.drop_table('message')
+    op.drop_table('hasResources')
     op.drop_table('friendsOf')
     op.drop_table('city')
     op.drop_table('army')

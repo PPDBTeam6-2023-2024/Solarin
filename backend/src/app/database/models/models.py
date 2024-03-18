@@ -19,6 +19,15 @@ class User(Base):
     faction_name = Column(String, nullable=True, unique=True)
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED'))
 
+class HasResources(Base):
+    """
+    Store resources of a user
+    """
+    __tablename__ = "hasResources"
+    owner_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
+    quantity = Column(Integer, nullable=False)
+
 
 class Alliance(Base):
     """

@@ -30,3 +30,8 @@ class PropertyUtility():
     @staticmethod
     def getGPR(modifier: float, base_rate: int, level: int) -> int:
         return int(floor(modifier * base_rate * (level ** 2)))
+
+    @staticmethod
+    def getUnitStrength(self, current_points: list[int], unit_rank: int) -> float:
+        return (unit_rank*mean(current_points))/(mean(PropertyUtility.base_point_bounds))
+    

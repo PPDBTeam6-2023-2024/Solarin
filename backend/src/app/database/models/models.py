@@ -182,8 +182,8 @@ class BuildingInstance(Base):
     """
     type = relationship("BuildingType", back_populates="instances", lazy='joined')
 
-    def to_pydantic(building_instance) -> BuildingInstanceSchema:
-        return BuildingInstanceSchema.from_orm(building_instance)
+    def to_pydantic(self) -> BuildingInstanceSchema:
+        return BuildingInstanceSchema.from_orm(self)
     def to_BuildingOverview(self, building_id: int, city_id_nr: int, building_type_name: str,
                             rank_nr: int) -> "BuildingInstanceSchema":
         return BuildingInstanceSchema(
@@ -235,7 +235,7 @@ class WallType(BuildingType):
     defense = Column(Integer, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'wallType'
+        'polymorphic_identity': 'wall'
     }
 
 
@@ -248,7 +248,7 @@ class TowerType(BuildingType):
     attack = Column(Integer, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'towerType'
+        'polymorphic_identity': 'tower'
     }
 
 
@@ -261,7 +261,7 @@ class HouseType(BuildingType):
     residents = Column(Integer, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'houseType'
+        'polymorphic_identity': 'house'
     }
 
 
@@ -275,7 +275,7 @@ class ProductionBuildingType(BuildingType):
     max_capacity = Column(Integer, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'productionBuildingType'
+        'polymorphic_identity': 'productionBuilding'
     }
 
     producing_resources = relationship("ProducesResources", back_populates="production_building", lazy='select')

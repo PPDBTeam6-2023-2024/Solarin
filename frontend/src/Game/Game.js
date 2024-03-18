@@ -11,6 +11,8 @@ import planet_example from './Images/Planets/example.png'
 
 import {Navigate} from 'react-router-dom'
 
+import ResourceViewer from './UI/ResourceViewer/ResourceViewer'
+
 // enum 
 const ViewMode = {
     GalaxyView: "GalaxyView",
@@ -46,6 +48,7 @@ const Game = () => {
     }, [isAuth])
     return (<div className="h-screen bg-gray-900">
         {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
+            <ResourceViewer className="fixed z-20 bottom-0 right-0" title="Some Title" resources={{"SOL" : {"collected": 150, "producing": 10}, "TF": {"collected": 50}}} draggable={true}/>
             <SideMenu setIsAuth={setIsAuth}/>                
             {viewMode === ViewMode.PlanetView &&
             <>

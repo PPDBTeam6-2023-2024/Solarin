@@ -2,7 +2,6 @@ import { MapInteractionCSS } from 'react-map-interaction';
 import { useState, useEffect } from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
-
 const loadImage = async(imgPath, stateSetter) => {
     let img = new Image()
     img.src = imgPath

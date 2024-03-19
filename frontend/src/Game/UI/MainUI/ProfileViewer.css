@@ -1,0 +1,12 @@
+#profile_viewer * {
+    font-size: 2vw;
+    display: block;
+}
+
+#profile_viewer h1{
+    font-size: 3vw;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+

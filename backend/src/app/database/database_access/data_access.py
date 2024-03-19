@@ -9,6 +9,7 @@ from .city_access import CityAccess
 from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from .training_access import TrainingAccess
+from .ranking_access import RankingAccess
 
 
 class DataAccess:
@@ -27,9 +28,16 @@ class DataAccess:
         self.BuildingAccess = BuildingAccess(session)
         self.ArmyAccess = ArmyAccess(session)
         self.TrainingAccess = TrainingAccess(session)
+        self.RankingAccess = RankingAccess(session)
 
     async def commit(self):
         """
         Make sure you can call commit without having access to the session directly
         """
         await self.__session.commit()
+
+    async def rollback(self):
+        """
+        Rollback issues
+        """
+        await self.__session.rollback()

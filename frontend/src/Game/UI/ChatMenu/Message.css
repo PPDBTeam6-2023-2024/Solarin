@@ -1,0 +1,20 @@
+.MessageBody{
+    /*center message*/
+    border:0.2vw solid var(--tertiaryColor);
+    border-radius: 0.5vw;
+    padding-left: 3%;
+    font-size: 150%;
+    word-wrap: break-word;
+    margin: 1% auto;
+
+}
+
+.MessageSender{
+    /*center message*/
+    font-size: 70%;
+    color: var(--tertiaryColor);
+    display: inline;
+    overflow: hidden;
+    display: inline-block;
+}
+

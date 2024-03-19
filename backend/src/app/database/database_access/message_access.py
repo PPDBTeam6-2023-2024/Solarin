@@ -1,6 +1,7 @@
 from ..models.models import *
 from ..database import AsyncSession
 from .user_access import getFriendsQuerySym
+from sqlalchemy.orm import aliased
 
 
 class MessageAccess:
@@ -105,6 +106,81 @@ class MessageAccess:
         sym_friends = getFriendsQuerySym(user1_id)
 
         dm_mb = sym_friends.select().where(sym_friends.c.user_id == user2_id)
-        results = await self.__session.execute(dm_mb )
+        results = await self.__session.execute(dm_mb)
         results = results.first()[1]
         return results
+
+    async def getFriendMessageOverview(self, user1_id: int):
+        """
+        Get an overview of friends with the most recently send message in the DM between the friend and the given user
+        This can be used to easily display an overview of a player his DM's
+
+        :param: user1_id: id of user_1
+        :param: limit amount of friend message tuples we want
+        :return: a list of tuples: (friends username, MessageBoard, Message)
+        """
+        sym_friends = getFriendsQuerySym(user1_id)
+
+        sym_friends = sym_friends.select()
+
+        """
+        get most recent message create time sent by each friend
+        """
+        most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).select_from(sym_friends)).join(Message, Message.message_board == sym_friends.c.message_board).group_by(sym_friends.c)
+
+        """
+        get the tuple (friend_username, Message, message_sender_username)
+        """
+        message_sender = aliased(User, name='message_sender')
+
+        message_overview = (select(User.username, Message, message_sender.username).select_from(most_recent_message))\
+            .join(Message, (Message.message_board == most_recent_message.c.message_board)).where(most_recent_message.c.max == Message.create_date_time)\
+            .order_by(desc(Message.create_date_time)).join(User, User.id == most_recent_message.c.user_id)\
+            .join(message_sender, message_sender.id == Message.sender_id)
+
+        results = await self.__session.execute(message_overview)
+
+        results = results.unique().all()
+        return results
+
+    async def getMessages(self, message_board: int, offset: int, limit: int):
+        """
+        get all messages from a specific message board
+
+        :param: message_board: id of messages
+        :param: offset: offset from where we want to read: offset 50 means we ignore the last 50 messages send
+        :param: limit: amount of messages we want to retrieve
+        :return: a list of tuples: (Message, sender username)
+        """
+        search_messages = Select(Message, User.username).join(User, User.id == Message.sender_id).where(Message.message_board == message_board). \
+            order_by(desc(Message.create_date_time)).offset(offset).limit(limit)
+
+        results = await self.__session.execute(search_messages)
+
+        """
+        query is sorted from newest till oldest, so we still need to put it in chronological order
+        """
+        results = results.unique().all()
+        results = list(reversed(results))
+        return results
+
+    async def getMessage(self, mid: int):
+        """
+        Get a specific message based on its message mid
+        :param: mid: id of the message
+        :return: a list of tuples: (Message, sender username)
+        """
+        search_message = Select(Message, User.username).join(User, User.id == Message.sender_id).where(Message.mid == mid)
+
+        results = await self.__session.execute(search_message)
+
+        """
+        query is sorted from newest till oldest, so we still need to put it in chronological order
+        """
+        result = results.first()
+
+        if results is None:
+            raise Exception("MessageAccess: GetMessage: Message does not exist")
+
+        return result
+

@@ -1,11 +1,15 @@
+import sqlalchemy.orm.state
 from sqlalchemy import *
 
 from ..database import Base
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base, relationship, declared_attr
 
 from ...routers.authentication.schemas import MessageToken, BattleStats
+from ...routers.chat.schemas import MessageOut
+from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
 from datetime import timedelta
 
+from sqlalchemy.orm.state import InstanceState
 
 class User(Base):
     """
@@ -16,8 +20,16 @@ class User(Base):
     email = Column(String, unique=True)
     username = Column(String, unique=True)
     hashed_password = Column(String)
-    faction_name = Column(String, nullable=True, unique=True)
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED'))
+
+class HasResources(Base):
+    """
+    Store resources of a user
+    """
+    __tablename__ = "hasResources"
+    owner_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
+    quantity = Column(Integer, nullable=False, default=0)
 
 
 class Alliance(Base):
@@ -43,14 +55,19 @@ class Message(Base):
     body = Column(TEXT, nullable=False)
 
     @classmethod
-    def fromMessageToken (cls, message_token: MessageToken) -> "Message":
+    def fromMessageToken(cls, message_token: MessageToken) -> "Message":
         return cls(
             sender_id=message_token.sender_id,
-            message_board= message_token.message_board,
-            body= message_token.body,
-            parent_message_id= message_token.parent_message_id
+            message_board=message_token.message_board,
+            body=message_token.body,
+            parent_message_id=message_token.parent_message_id
 
         )
+
+    def toMessageOut(self, sender_name):
+        return MessageOut(sender_name=sender_name,
+                          created_at=self.create_date_time.strftime("/%d/%m/%Y %H:%M:%S"),
+                          body=self.body)
 
 
 class MessageBoard(Base):
@@ -91,7 +108,7 @@ class Planet(Base):
     """
     __tablename__ = 'planet'
     id = Column(Integer, Sequence('planet_id_seq'), primary_key=True)
-    name = Column(TEXT, nullable=False, unique=True)
+    name = Column(TEXT, nullable=False)
     planet_type = Column(TEXT, ForeignKey("planetType.type"), nullable=False)
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
 
@@ -134,16 +151,28 @@ class PlanetRegionType(Base):
 class City(Base):
     """
     Stores information about a city that is in a region on a planet
+    x and y represent the planetary coordinates of the city
     """
     __tablename__ = 'city'
 
     region_id = Column(Integer, ForeignKey("planetRegion.id"))
     id = Column(Integer, Sequence("city_id_seq"), primary_key=True)
     controlled_by = Column(Integer, ForeignKey("user.id"), nullable=False)
+    x = Column(Float(precision=53), nullable=False)
+    y = Column(Float(precision=53), nullable=False)
 
     rank = Column(Integer, nullable=False, default=1)
 
-    region = relationship("PlanetRegion", back_populates="cities", lazy='select')
+    region = relationship("PlanetRegion", back_populates="cities")
+
+    def to_city_schema(self):
+        return CitySchema(id=self.id,
+                          region_id=self.region_id,
+                          controlled_by=self.controlled_by,
+                          x=self.x,
+                          y=self.y,
+                          rank=self.rank,
+                          region_type=self.region.region_type)
 
 
 class BuildingInstance(Base):
@@ -153,13 +182,25 @@ class BuildingInstance(Base):
     __tablename__ = "buildingInstance"
     id = Column(Integer, Sequence('buildingInstance_id_seq'), primary_key=True, index=True)
     city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), nullable=False)
-    building_type = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), nullable=False)
+    building_type = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'),
+                           nullable=False)
     rank = Column(Integer, nullable=False, default=1)
 
     """
     This relation is joined, because when we ask for an instance we will often also be interested in the type its attributes
     """
     type = relationship("BuildingType", back_populates="instances", lazy='joined')
+
+    def to_pydantic(self) -> BuildingInstanceSchema:
+        return BuildingInstanceSchema.from_orm(self)
+    def to_BuildingOverview(self, building_id: int, city_id_nr: int, building_type_name: str,
+                            rank_nr: int) -> "BuildingInstanceSchema":
+        return BuildingInstanceSchema(
+            id=building_id,
+            city_id=city_id_nr,
+            building_type=building_type_name,
+            rank=rank_nr
+        )
 
 
 class BuildingType(Base):
@@ -190,7 +231,7 @@ class BarracksType(BuildingType):
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'barracksType'
+        'polymorphic_identity': 'Barracks'
     }
 
 
@@ -203,7 +244,7 @@ class WallType(BuildingType):
     defense = Column(Integer, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'wallType'
+        'polymorphic_identity': 'wall'
     }
 
 
@@ -216,7 +257,7 @@ class TowerType(BuildingType):
     attack = Column(Integer, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'towerType'
+        'polymorphic_identity': 'tower'
     }
 
 
@@ -229,7 +270,7 @@ class HouseType(BuildingType):
     residents = Column(Integer, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'houseType'
+        'polymorphic_identity': 'house'
     }
 
 
@@ -239,11 +280,8 @@ class ProductionBuildingType(BuildingType):
     """
     __tablename__ = 'productionBuildingType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    base_production = Column(Integer, nullable=False)
-    max_capacity = Column(Integer, nullable=False)
-
     __mapper_args__ = {
-        'polymorphic_identity': 'productionBuildingType'
+        'polymorphic_identity': 'productionBuilding'
     }
 
     producing_resources = relationship("ProducesResources", back_populates="production_building", lazy='select')
@@ -254,13 +292,19 @@ class ProducesResources(Base):
     Stores which resources a production building produces
     """
     __tablename__ = 'producesResources'
-    building_name = Column(String, ForeignKey("productionBuildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    resource_name = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
+    building_name = Column(String, ForeignKey("productionBuildingType.name", deferrable=True, initially='DEFERRED'),
+                           primary_key=True)
+    resource_name = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'),
+                           primary_key=True)
+
+    base_production = Column(Integer, nullable=False)
+    max_capacity = Column(Integer, nullable=False)
+
 
     production_building = relationship("ProductionBuildingType", back_populates="producing_resources", lazy='select')
 
 
-class ResourceType (Base):
+class ResourceType(Base):
     """
     Types of resources that are in the game
     """
@@ -300,7 +344,8 @@ class TroopType(Base):
     required_rank = Column(Integer)
 
     @classmethod
-    def withBattleStats(cls, type_name: str, training_time: timedelta, battle_stats: BattleStats, required_rank: int) -> "TroopType":
+    def withBattleStats(cls, type_name: str, training_time: timedelta, battle_stats: BattleStats,
+                        required_rank: int) -> "TroopType":
         return cls(
             type=type_name,
             training_time=training_time.total_seconds(),
@@ -322,7 +367,8 @@ class TroopTypeCost(Base):
     """
     __tablename__ = 'troopTypeCost'
     troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
-    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
+    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'),
+                           primary_key=True)
     amount = Column(Integer, nullable=False)
 
 
@@ -334,6 +380,8 @@ class Army(Base):
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     last_update = Column(TIME)
+    x = Column(Float(precision=53), nullable=False)
+    y = Column(Float(precision=53), nullable=False)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
 
@@ -352,15 +400,34 @@ class ArmyConsistsOf(Base):
     troop = relationship("TroopType", back_populates="in_consist_of", lazy='select')
 
 
-class UpgradeCost(Base):
+class CreationCost(Base):
     """
-    Stores the cost to upgrade certain buildings
-    Lookup table to define upgrade prices
+    Stores the cost to create certain buildings
+    Lookup table to define creation prices
     """
 
-    __tablename__ = "UpgradeCost"
+    __tablename__ = "CreationCost"
     building_name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'),
                            primary_key=True)
 
     cost_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
     cost_amount = Column(Integer, nullable=False)
+
+
+class FriendRequest(Base):
+    """
+    Stores which users have pending friend requests
+    """
+    __tablename__ = "FriendRequest"
+    from_user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    to_user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+
+
+class AllianceRequest(Base):
+    """
+    Stores which users asked to join a faction
+    """
+    __tablename__ = "allianceRequest"
+    user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    alliance_name = Column(String, ForeignKey("alliance.name"), nullable=False)
+

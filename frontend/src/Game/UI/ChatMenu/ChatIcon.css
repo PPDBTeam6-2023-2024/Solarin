@@ -1,0 +1,19 @@
+#chat_icon{
+    width: 8vw;
+    height: 8vw;
+
+    background-image: inherit;
+
+    /* top-left | top-right | bottom-right | bottom-left */
+    border-radius: 3vw 3vw 3vw 3vw;
+
+}
+#chat_icon *{
+    transform: scale(0.6);
+}
+
+#chat_icon:hover{
+    --scaleIndex: 110%;
+    --translate_size: calc((var(--scaleIndex) - 100%)/2 * -1);
+    transform: translate(var(--translate_size), var(--translate_size)) scale(var(--scaleIndex)) ;
+}

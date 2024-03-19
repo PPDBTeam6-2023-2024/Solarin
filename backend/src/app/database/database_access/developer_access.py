@@ -1,6 +1,7 @@
 from ..models.models import *
 from ..database import AsyncSession
 from typing import List, Tuple
+from sqlalchemy import select, exists
 
 
 class DeveloperAccess:
@@ -36,7 +37,7 @@ class DeveloperAccess:
         self.__session.add(PlanetRegionType(region_type=type_name, description=description))
         await self.__session.flush()
 
-    async def createProductionBuildingType(self, name: str, base_production: int, max_capacity: int):
+    async def createProductionBuildingType(self, name: str):
         """
         Creates a new type of building that can produce certain resources
         These types of buildings will generate certain resources over time
@@ -47,7 +48,7 @@ class DeveloperAccess:
                 as long as the player doesn't collect its resources from here
         :return: nothing
         """
-        pb = ProductionBuildingType(name=name, base_production=base_production, max_capacity=max_capacity)
+        pb = ProductionBuildingType(name=name)
         self.__session.add(pb)
 
     async def createBarracksType(self, name: str):
@@ -59,6 +60,26 @@ class DeveloperAccess:
         """
         brt = BarracksType(name=name)
         self.__session.add(brt)
+
+    async def createTowerType(self, name: str, attack: int):
+        """
+        Creates a new type of tower
+
+        :param: name: name of the tower type
+        :return: nothing
+        """
+        tower = TowerType(name=name, attack=attack)
+        self.__session.add(tower)
+
+    async def createWallType(self, name: str, defense: int):
+        """
+       Creates a new type of wall
+
+       :param: name: name of the wall type
+       :return: nothing
+       """
+        wall = WallType(name=name, defense=defense)
+        self.__session.add(wall)
 
     async def createHouseType(self, name: str, residents: int):
         """
@@ -81,7 +102,7 @@ class DeveloperAccess:
         r = ResourceType(name=type_name)
         self.__session.add(r)
 
-    async def setProducesResources(self, building_name: str, resource_name: str):
+    async def setProducesResources(self, building_name: str, resource_name: str, base_production: int, max_capacity: int):
         """
         Creates the link between a productionBuildingType and the Resource type it produces
 
@@ -89,7 +110,7 @@ class DeveloperAccess:
         :param: resource_name: name of resource that will be produced
         :return: nothing
         """
-        pr = ProducesResources(building_name=building_name, resource_name=resource_name)
+        pr = ProducesResources(building_name=building_name, resource_name=resource_name, base_production=base_production, max_capacity=max_capacity)
         self.__session.add(pr)
 
     async def createToopType(self, type_name: str, training_time: timedelta, battle_stats: BattleStats,
@@ -103,7 +124,6 @@ class DeveloperAccess:
         :param: required_rank: the rank a building is required to have to unlock the option to train this troop
         :return: nothing
         """
-
         troop_type = TroopType.withBattleStats(type_name, training_time, battle_stats, required_rank)
         self.__session.add(troop_type)
 
@@ -126,12 +146,12 @@ class DeveloperAccess:
             troop_type_cost = TroopTypeCost(troop_type=troop_name, resource_type=resource[0], amount=resource[1])
             self.__session.add(troop_type_cost)
 
-    async def setUpgradeCost(self, building_name: str, resource_costs: List[Tuple[str, int]]):
+    async def setCreationCost(self, building_name: str, resource_costs: List[Tuple[str, int]]):
         """
-        add an upgrade cost for a certain building,
-        This stores the base values for an upgrade
+        add an crate cost for a certain building,
+        This stores the base values for a creation
 
-        :param: building_name: the name of the building type we want to upgrade
+        :param: building_name: the name of the building type we want to create
         :param: resource_costs: a list of tuples with format List[Tuple[str, int]].
                 The tuples will contain (resource_name, amount) and it is a list to easily support adding
                 costs of multiple resources for 1 troop type.
@@ -139,10 +159,10 @@ class DeveloperAccess:
         """
 
         await self.__session.flush()
-        old_up_cost = delete(UpgradeCost).where(UpgradeCost.building_name == building_name)
+        old_up_cost = delete(CreationCost).where(CreationCost.building_name == building_name)
         await self.__session.execute(old_up_cost)
 
         for resource in resource_costs:
-            upgrade = UpgradeCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
+            upgrade = CreationCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
             self.__session.add(upgrade)
 

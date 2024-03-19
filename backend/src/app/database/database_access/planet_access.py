@@ -1,3 +1,5 @@
+from sqlalchemy.orm import joinedload
+
 from ..models.models import *
 from ..database import AsyncSession
 
@@ -65,11 +67,13 @@ class PlanetAccess:
         """
         Get all the cities that are on the given planet
 
-        :param: planet_id: id of the planet we want to check
+        :param planet_id: id of the planet we want to check
         :return: a list of all cities that are on this planet
         """
-        select_cities = Select(City).join(PlanetRegion, City.region_id == PlanetRegion.id).\
-            where(planet_id == PlanetRegion.planet_id)
+        select_cities = select(City).options(joinedload(City.region)).join(
+            PlanetRegion, City.region_id == PlanetRegion.id
+        ).where(PlanetRegion.planet_id == planet_id)
+
         results = await self.__session.execute(select_cities)
         return results.all()
 

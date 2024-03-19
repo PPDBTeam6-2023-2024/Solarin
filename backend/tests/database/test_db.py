@@ -14,6 +14,12 @@ async def insert_test_data(connection_test):
         da = DataAccess(session)
 
         """
+        add default resources
+        """
+        await da.DeveloperAccess.createResourceType("Vibranium")
+        await da.DeveloperAccess.createResourceType("Energon")
+        await da.DeveloperAccess.createResourceType("SOL")
+        """
         Creates 50 users
         """
         for t_index in range(50):
@@ -97,16 +103,14 @@ async def insert_test_data(connection_test):
         """
         Create some types of buildings and resources
         """
-        await da.DeveloperAccess.createProductionBuildingType("The mines of moria", 100, 2000)
+        await da.DeveloperAccess.createProductionBuildingType("The mines of moria")
         await da.DeveloperAccess.createBarracksType("Kamino training complex")
         await da.DeveloperAccess.createHouseType("Solarin mansion", 50)
-        await da.DeveloperAccess.createResourceType("Vibranium")
-        await da.DeveloperAccess.createResourceType("Energon")
-        await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium")
+        await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium", 100, 2000)
 
-        await da.DeveloperAccess.setUpgradeCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
-        await da.DeveloperAccess.setUpgradeCost("Kamino training complex", [("Vibranium", 1)])
-        await da.DeveloperAccess.setUpgradeCost("Kamino training complex", [("Energon", 2)])
+        await da.DeveloperAccess.setCreationCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
+        await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Vibranium", 1)])
+        await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Energon", 2)])
 
         """
         Create some actual buildings instances inside cities
@@ -174,7 +178,7 @@ async def test_check_messages():
             m2 = await da.MessageAccess.getMessagesAlliance(f"{t_index} his clan", 0, 1)
             assert len(m1) == 2
             assert len(m2) == 1
-
+            print(m1, m2)
             assert m1[0][0].body == "test reply"
             assert m1[1][0].body == "test"
             assert m2[0][0].body == "test reply"
@@ -243,16 +247,78 @@ async def test_buildings():
 
         bt = await da.BuildingAccess.getBuildingTypes()
         assert len(bt) == 3
-        assert (bt[0][0].name, bt[0][0].type) == ('The mines of moria', 'productionBuildingType')
-        assert (bt[1][0].name, bt[1][0].type) == ('Kamino training complex', 'barracksType')
-        assert (bt[2][0].name, bt[2][0].type) == ('Solarin mansion', 'houseType')
+        assert (bt[0][0].name, bt[0][0].type) == ('The mines of moria', 'productionBuilding')
+        assert (bt[1][0].name, bt[1][0].type) == ('Kamino training complex', 'Barracks')
+        assert (bt[2][0].name, bt[2][0].type) == ('Solarin mansion', 'house')
 
         cbt = await da.BuildingAccess.getCityBuildings(1)
         assert len(cbt) == 3
-        assert (cbt[0][1].name, cbt[0][1].type) == ('The mines of moria', 'productionBuildingType')
-        assert (cbt[1][1].name, cbt[1][1].type) == ('Kamino training complex', 'barracksType')
-        assert (cbt[2][1].name, cbt[2][1].type) == ('Solarin mansion', 'houseType')
+        assert (cbt[0][1].name, cbt[0][1].type) == ('The mines of moria', 'productionBuilding')
+        assert (cbt[1][1].name, cbt[1][1].type) == ('Kamino training complex', 'Barracks')
+        assert (cbt[2][1].name, cbt[2][1].type) == ('Solarin mansion', 'house')
 
         assert cbt[0][0].id == 1
         assert cbt[1][0].id == 2
         assert cbt[2][0].id == 3
+
+
+async def test_DM_overview():
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        r = await da.MessageAccess.getFriendMessageOverview(1)
+        assert len(r) == 1
+        assert r[0][0] == "username1"
+
+
+async def test_friend_requests():
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        await da.UserAccess.sendFriendRequest(1, 40)
+        await da.UserAccess.sendFriendRequest(1, 41)
+        await da.UserAccess.sendFriendRequest(40, 41)
+
+        await da.commit()
+        with pytest.raises(Exception):
+            """
+            expected to throw exceptions
+            """
+            await da.UserAccess.sendFriendRequest(1, 40)
+
+        await da.rollback()
+
+        with pytest.raises(Exception):
+            """
+            expected to throw exceptions
+            """
+            await da.UserAccess.sendFriendRequest(1, 2)
+
+        await da.rollback()
+
+        await da.UserAccess.acceptFriendRequest(1, 40)
+
+        friends = await da.UserAccess.getFriends(1)
+
+        """
+        verify that 40 is amongs friends
+        """
+        found_friend = False
+        for friend, board in friends:
+            if friend == 40:
+                found_friend = True
+                break
+
+        assert found_friend == True
+
+        r = await da.UserAccess.getFriendRequests(41)
+        assert len(r) == 2
+
+async def test_ranking():
+    """
+    test ranking
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        ranking = await da.RankingAccess.getTopRanking(10)
+        assert len(ranking) == 10
+        assert ranking[0][0] == "username0"
+        assert ranking[9][0] == "username9"

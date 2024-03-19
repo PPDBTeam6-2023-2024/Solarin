@@ -15,6 +15,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.2.2",
     "@types/three": "^0.162.0",
+    "ag-grid-react": "^31.1.1",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "env-cmd": "^10.1.0",
@@ -27,6 +28,7 @@
     "react-map-interaction": "^2.1.0",
     "react-router-dom": "^6.22.1",
     "react-scripts": "5.0.1",
+    "react-scroll": "^1.9.0",
     "three": "^0.162.0",
     "web-vitals": "^2.1.4"
   },

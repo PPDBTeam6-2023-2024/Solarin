@@ -1,0 +1,38 @@
+{
+  "SOL": {
+    "icon": "solarin.svg",
+    "description": "Solarium: A versatile and universal currency also considered the main currency of the galaxy."
+  },
+  "TF": {
+    "icon": "techforge.svg",
+    "description": "Techforge: Used to create and upgrade buildings."
+  },
+  "RA": {
+    "icon": "rations.svg",
+    "description": "Rations: Used to maintain armies."
+  },
+  "POP": {
+    "icon": "population.svg",
+    "description": "Population: Number of people in a city. Taken into account when recruiting new units."
+  },
+  "INF": {
+    "icon": "influence.svg",
+    "description": "Influence: Used to make political decisions."
+  },
+  "MIN": {
+    "icon": "minerals.svg",
+    "description": "Minerals: Used as a resource for various industrial processes."
+  },
+  "UR": {
+    "icon": "uranium.svg",
+    "description": "Uranium: Used for energy production and advanced technologies."
+  },
+  "OI": {
+    "icon": "oil.svg",
+    "description": "Used as a primary energy source and for manufacturing various products."
+  },
+  "CO": {
+    "icon": "coal.svg",
+    "description": "Used primarily as a fuel source for energy generation."
+  }
+}

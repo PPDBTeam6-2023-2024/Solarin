@@ -2,6 +2,7 @@ import {MapInteractionCSS} from 'react-map-interaction';
 import {useState, useEffect} from 'react';
 import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
 import ArmyViewer from '../UI/armyViewer/armyViewer'
+import getArmies from "./getArmies";
 
 const loadImage = async (imgPath, stateSetter) => {
     let img = new Image()
@@ -17,16 +18,14 @@ function PlanetViewer(props) {
         scale: 1,
         translation: {x: 0, y: 0},
     })
-    // temporary constant position of the army until we can get the positions from the backend
 
-    const temparmyPos = {x: 0.25, y: 0.5}
     const [image, setImage] = useState()
-    const [overlayImage, setOverlayImage] = useState()
     const [showArmyViewer, setShowArmyViewer] = useState(false)
-
+    const [armiesLoaded, setArmiesLoaded] = useState(false)
     const [ArmyViewerPosition, setArmyViewerPosition] = useState({x: 0, y: 0});
+    const [armyImages, setArmyImages] = useState([])
 
-    const toggleArmyViewer = (e) => {
+    const toggleArmyViewer = (e, armyid) => {
         const overlayRect = e.target.getBoundingClientRect();
         setArmyViewerPosition({
             x: overlayRect.left + window.scrollX,
@@ -41,10 +40,19 @@ function PlanetViewer(props) {
     }, [props.mapImage])
 
     useEffect(() => {
-        if (props.armyImage) {
-            loadImage(props.armyImage, setOverlayImage);
+        const fetchArmies = async () => {
+            const armies = await getArmies(1);
+            const armyElements = armies.map(army => ({
+                ...army,
+                onClick: (e) => toggleArmyViewer(e, army.id),
+            }));
+            setArmyImages(armyElements)
+            setArmiesLoaded(true);
+        };
+        if (!armiesLoaded) {
+            fetchArmies();
         }
-    }, [props.armyImage]); // Dependency array containing props.overlayImageSrc
+    }, [toggleArmyViewer, armiesLoaded]);
 
     return (
         <>
@@ -80,23 +88,10 @@ function PlanetViewer(props) {
                 >
                     <img src={image.src} alt="map"
                          style={{imageRendering: "pixelated", width: "100%", height: "auto"}}/>
-                    {overlayImage && (
-                        <img
-                            src={overlayImage.src}
-                            alt="overlay"
-                            onClick={toggleArmyViewer}
-                            draggable={false}
-                            style={{
-                                position: 'absolute',
-                                left: `${temparmyPos.x * 100}%`, // use value from db instead of temparmypos
-                                top: `${temparmyPos.y * 100}%`,
-                                width: "2vw", // this value was chosen arbitrarily, subject to change
-                                height: "3vw",
-                                cursor: "pointer",
-                                transform: 'translate(-50%, -50%)',
-                            }}
-                        />
-                    )}
+
+                    {armyImages.map((army, index) => (
+                        <img key={index} src={army.src} alt="army" style={army.style} onClick={army.onClick}/>
+                    ))}
                 </MapInteractionCSS>
             }
         </>

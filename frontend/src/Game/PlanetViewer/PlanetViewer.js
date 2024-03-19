@@ -4,7 +4,6 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import getCities from './CityViewer/getCities';
 import CityManager from "./CityViewer/cityManager";
 
-
 const loadImage = async(imgPath, stateSetter) => {
     let img = new Image()
     img.src = imgPath

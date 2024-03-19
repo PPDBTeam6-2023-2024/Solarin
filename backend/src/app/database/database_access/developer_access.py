@@ -1,7 +1,7 @@
 from ..models.models import *
 from ..database import AsyncSession
 from typing import List, Tuple
-from sqlalchemy import select
+from sqlalchemy import select, exists
 
 class DeveloperAccess:
     """
@@ -25,7 +25,6 @@ class DeveloperAccess:
         self.__session.add(PlanetType(type=type_name, description=description))
         await self.__session.flush()
 
-
     async def createPlanetRegionType(self, type_name: str, description: str = None):
         """
         creates a new type of planet region
@@ -34,10 +33,8 @@ class DeveloperAccess:
         :param: description: description of the planet region type (if provided)
         :return: nothing
         """
-
         self.__session.add(PlanetRegionType(region_type=type_name, description=description))
         await self.__session.flush()
-
 
     async def createProductionBuildingType(self, name: str, base_production: int, max_capacity: int):
         """
@@ -53,7 +50,6 @@ class DeveloperAccess:
         pb = ProductionBuildingType(name=name, base_production=base_production, max_capacity=max_capacity)
         self.__session.add(pb)
 
-
     async def createBarracksType(self, name: str):
         """
         Creates a new type of barrack that can train new kinds of troops
@@ -63,7 +59,6 @@ class DeveloperAccess:
         """
         brt = BarracksType(name=name)
         self.__session.add(brt)
-
 
     async def createHouseType(self, name: str, residents: int):
         """
@@ -76,7 +71,6 @@ class DeveloperAccess:
         ht = HouseType(name=name, residents=residents)
         self.__session.add(ht)
 
-
     async def createResourceType(self, type_name: str):
         """
         Add a new type of resource
@@ -86,8 +80,6 @@ class DeveloperAccess:
         """
         r = ResourceType(name=type_name)
         self.__session.add(r)
-        await self.__session.flush()
-
 
     async def setProducesResources(self, building_name: str, resource_name: str):
         """
@@ -99,7 +91,6 @@ class DeveloperAccess:
         """
         pr = ProducesResources(building_name=building_name, resource_name=resource_name)
         self.__session.add(pr)
-
 
     async def createToopType(self, type_name: str, training_time: timedelta, battle_stats: BattleStats,
                              required_rank: int = None):
@@ -114,8 +105,6 @@ class DeveloperAccess:
         """
         troop_type = TroopType.withBattleStats(type_name, training_time, battle_stats, required_rank)
         self.__session.add(troop_type)
-        await self.__session.flush()
-
 
     async def setTroopTypeCost(self, troop_name: str, resource_costs: List[Tuple[str, int]]):
         """

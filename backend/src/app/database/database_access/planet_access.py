@@ -88,3 +88,14 @@ class PlanetAccess:
         select_cities = Select(City).where(City.region_id == region_id)
         results = await self.__session.execute(select_cities)
         return results.all()
+
+    async def getAllPlanets(self):
+        """
+        get all the planets in a map
+
+        :return: a list of tuples (planet id, planet name)
+        """
+        get_planets = Select(Planet.id, Planet.name)
+        results = await self.__session.execute(get_planets)
+        results = results.all()
+        return results

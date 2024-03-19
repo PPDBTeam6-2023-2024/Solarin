@@ -1,15 +1,9 @@
 import React, {useEffect, useState} from "react";
-import chat_icon from "../../Images/icons/chat_icon.png";
-import {TreeItem, TreeView} from "@mui/x-tree-view";
 import Draggable from "react-draggable";
 import "./ChatMenu.css"
-import profile from "../../Images/profile_images/profile_1.png";
-import axios from "axios";
-import FriendOverviewEntry from "./Friends/FriendOverviewEntry";
-import MessageBoard from "./MessageBoard";
-import DmTab from "./DmTab";
-import AllianceTab from "./AllianceTab";
-
+import FriendsTab from "./Friends/FriendsTab";
+import AllianceTab from "./Alliance/AllianceTab";
+import RankingTab from "./Ranking/RankingTab";
 
 const categories = ["Friends", "Alliances", "Ranking"]
 
@@ -61,8 +55,9 @@ function ChatMenu(props) {
           {/*Creates the div that contains the chat menu*/}
       <div className="ChatMenuWidget absolute right-0">
           <CategoryTab selected={[selectedCategory, setSelectedCategory]}/>
-          {selectedCategory === "Friends" && <DmTab/>}
+          {selectedCategory === "Friends" && <FriendsTab/>}
           {selectedCategory === "Alliances" && <AllianceTab/>}
+          {selectedCategory === "Ranking" && <RankingTab/>}
 
       </div>
     </Draggable>

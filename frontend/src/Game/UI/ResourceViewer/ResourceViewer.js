@@ -6,22 +6,26 @@ import Tooltip from '@mui/material/Tooltip';
 const getResourceStats = (resources, resourcesInfo) => {
     const elements = []
     for (let resource in resources){
+        const scale = resourcesInfo[resource].scale || 1;
+        const imageSize = { width: `${scale * 24}px`, height: `${scale * 24}px` };
+
         elements.push(
             <Tooltip key={resource} title={resourcesInfo[resource]["description"]}>
             <div className="mr-3 bg-gradient-to-r from-gray-600 to-gray-700 p-1">
             <p>{resources[resource]["collected"]}
-            <img className="inline ml-2 h-6 w-6"src={(`/images/resources/${resourcesInfo[resource]["icon"]}`)} alt={resource} draggable={false}/>
+            <img className="inline ml-2" src={(`/images/resources/${resourcesInfo[resource]["icon"]}`)} style={imageSize} alt={resource} draggable={false}/>
             </p>
             {resources[resource]["producing"] && <p className="text-xs">{resources[resource]["producing"]}/hr</p>}
             </div>
             </Tooltip>
         )
-      }
+    }
     return (<>
         {elements}
     </>
     )
 }
+
 
 
 function ResourceViewer(props) {

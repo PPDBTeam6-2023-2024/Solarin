@@ -100,7 +100,7 @@ class UserAccess:
         exception in case the email has no corresponding account
         """
         if results is None:
-            raise Exception("SQL UserAccess --> getUserIdEmail: no id corresponds to the email")
+            raise Exception("SQL UserAccess --> getUserIdUsername: no id corresponds to the username")
 
         return results[0]
 
@@ -155,6 +155,9 @@ class UserAccess:
         results = results.first()
         if results is not None:
             raise Exception("Users are already friends")
+
+        if from_user == to_user:
+            raise Exception("I know you are lonely, but you cannot be friends with yourself")
 
         """
         if friend request is already send we return that information

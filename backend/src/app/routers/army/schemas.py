@@ -15,6 +15,7 @@ class TroopTypeSchema(BaseModel):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class ArmySchema(BaseModel):
@@ -26,6 +27,7 @@ class ArmySchema(BaseModel):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class ArmyConsistsOfSchema(BaseModel):
@@ -36,3 +38,4 @@ class ArmyConsistsOfSchema(BaseModel):
 
     class Config:
         orm_mode = True
+        from_attributes = True

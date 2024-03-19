@@ -14,7 +14,8 @@ function FriendRequestEntry(props) {
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/friend_requests`,
             JSON.stringify({
               "friend_id": friend_id,
-              "accepted": accepted
+              "accepted": accepted,
+                "type": "review"
             }),
             {
               headers: {

@@ -16,6 +16,8 @@ function MessageBoard(props) {
     const [messageList, setMessageList] = useState([]);
 
 
+    const scroll_bar = React.useRef(null);
+
     /**
     * makes sure that UseEffect for connecting to the websocket is not called twice
      * in react strict mode
@@ -34,12 +36,27 @@ function MessageBoard(props) {
     useEffect(() => {
         if (!socket) return;
 
+        let loaded = false;
+
         socket.onmessage = function (event) {
             let data = JSON.parse(event.data)
             if (data.type === "paging"){
-                if (messageList.length !== 0){
+
+                /*in case we receive new pages, we don't want to scroll down fully*/
+                if (loaded){
                     do_scroll_down.current = false;
+
+                    /*
+                    * calculate how much we need to scroll down to keep the messages visually on the right spot (new messages appear on top)
+                    * */
+                    let message_height = scroll_bar.current?.childNodes[0].clientHeight;
+
+                    /*
+                    * multiplier 1.1 makes the visuals more smooth
+                    * */
+                    scroll_bar.current?.scrollTo(0, (data.message.length+1)*message_height*1.1);
                 }
+                loaded = true;
 
                 setMessageList(messageList => data.message.concat(messageList));
 
@@ -67,12 +84,39 @@ function MessageBoard(props) {
         if (!do_scroll_down.current) return;
 
         scroll_bottom.current?.scrollIntoView({ behavior: "smooth" })
+
     }, [scroll_bottom]);
+
+    /*make sure to ask for more pages (paging) when top scrollbar has been reached*/
+    useEffect(() => {
+        if (scroll_bar.current === null) {return;}
+
+        const checkPaging = () =>{
+            if (scroll_bar.current?.scrollTop > 0) return;
+            socket.send(
+                JSON.stringify(
+                {
+                        type: "paging",
+                        limit: 10,
+                        offset: messageList.length
+                      })
+            )
+
+
+        }
+        scroll_bar.current?.addEventListener('scroll', checkPaging)
+
+        return () => {
+            /*should remove listener or dismount*/
+            scroll_bar.current?.removeEventListener('scroll', checkPaging)
+        };
+
+    }, [scroll_bar, socket, messageList]);
 
     return (
       <>
           {/*Display the messages*/}
-          <div style={{"overflow-y": "scroll", "height":"80%", "scrollbar-width:": "none", "borderBottom":"0.3vw solid var(--tertiaryColor)"}}>
+          <div ref={scroll_bar} style={{"overflow-y": "scroll", "height":"80%", "scrollbar-width:": "none", "borderBottom":"0.3vw solid var(--tertiaryColor)"}}>
               {messageList.map((d, index) => <Message key={index} message={d}/>)}
               <div ref={scroll_bottom}/>
           </div>

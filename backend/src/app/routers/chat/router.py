@@ -8,7 +8,7 @@ from .schemas import *
 from ...database.database import get_db, AsyncSession
 from ...database.database_access.data_access import DataAccess
 import json
-
+from .friend_request_handler import FriendRequestHandler
 from ..authentication.schemas import MessageToken
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
@@ -34,7 +34,7 @@ async def websocket_endpoint(
 
     """send the first 30 messages to the user"""
     data_access = DataAccess(db)
-    messages = await data_access.MessageAccess.getMessages(board_id, 0, 30)
+    messages = await data_access.MessageAccess.getMessages(board_id, 0, 10)
     output_list: List[MessageOut] = []
     for d in messages:
         output_list.append(d[0].toMessageOut(d[1]).model_dump())
@@ -64,6 +64,24 @@ async def websocket_endpoint(
                 message = message[0].toMessageOut(message[1])
                 await data_access.commit()
                 await connection_pool.broadcast({"type": "new message", "message": [message.model_dump()]})
+
+            if data["type"] == "paging":
+                limit = data["limit"]
+                offset = data["offset"]
+
+                messages = await data_access.MessageAccess.getMessages(board_id, offset, limit)
+
+                """
+                don't send empty paging answers
+                """
+                if len(messages) == 0:
+                    continue
+
+                output_list: List[MessageOut] = []
+                for d in messages:
+                    output_list.append(d[0].toMessageOut(d[1]).model_dump())
+
+                await websocket.send_json({"type": "paging", "message": output_list})
 
     except WebSocketDisconnect:
         connection_pool.disconnect(websocket)
@@ -124,28 +142,26 @@ async def friend_requests(
         user_id: Annotated[int, Depends(get_my_id)],
         db: AsyncSession = Depends(get_db),
 
-) -> str:
+):
     """
-    obtain all the friend requests of the user
+    obtain all the friend requests of the user or add new friend requests
     """
     data = await request.json()
 
-    data_access = DataAccess(db)
+    """
+    use FriendRequestHandler to handle the data
+    """
 
-    if data["accepted"]:
-        await data_access.UserAccess.acceptFriendRequest(data["friend_id"], user_id)
+    try:
+        fh = FriendRequestHandler(data, db)
+        success, message = await fh.handle(user_id)
 
-        """
-        send a default message indicating the friend request ahs been accepted
-        """
-        message_board = await data_access.MessageAccess.getPlayerMessageBoard(user_id, data["friend_id"])
+    except Exception as e:
+        success = False
+        message = e
 
-        await data_access.MessageAccess.createMessage(MessageToken(sender_id=user_id, message_board=message_board,
-                                                                   body="Friend request has been accepted"))
-    else:
-        await data_access.UserAccess.rejectFriendRequest(data["friend_id"], user_id)
-    await data_access.commit()
-    return ""
+    return {"success": success, "message": message}
+
 
 @router.post("/create_alliance")
 async def create_alliance(

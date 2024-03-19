@@ -63,10 +63,30 @@ class UserAccess:
         Get the User id corresponding to the given email
 
         :param: email: the email of the user whose id we want to retrieve
-        :return: faction name
+        :return: user id
         """
 
         find_uuid = select(User.id).where(User.email == email)
+        results = await self.__session.execute(find_uuid)
+        results = results.first()
+
+        """
+        exception in case the email has no corresponding account
+        """
+        if results is None:
+            raise Exception("SQL UserAccess --> getUserIdEmail: no id corresponds to the email")
+
+        return results[0]
+
+    async def getUserIdUsername(self, username: str):
+        """
+        Get the User id corresponding to the given username
+
+        :param: username: the username of the user whose id we want to retrieve
+        :return: user id
+        """
+
+        find_uuid = select(User.id).where(User.username == username)
         results = await self.__session.execute(find_uuid)
         results = results.first()
 
@@ -128,9 +148,19 @@ class UserAccess:
         results = await self.__session.execute(check_friends)
         results = results.first()
         if results is not None:
-            raise Exception("MessageAccess: sendFriendRequest: users are already friends")
+            raise Exception("Users are already friends")
 
-        fq = FriendRequest(from_user_id= from_user, to_user_id= to_user)
+        """
+        if friend request is already send we return that information
+        """
+        results = await self.__session.execute(Select(FriendRequest).
+                                               where((FriendRequest.from_user_id == from_user) & (FriendRequest.to_user_id == to_user)))
+
+        results = results.first()
+        if results is not None:
+            raise Exception("Friend request has already been send")
+
+        fq = FriendRequest(from_user_id= from_user, to_user_id=to_user)
         self.__session.add(fq)
 
         await self.__session.flush()

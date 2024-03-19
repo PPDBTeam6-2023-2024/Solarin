@@ -54,7 +54,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         switch (buildingType) {
             case 'barracks':
                 return barracks;
-            case 'mine':
+            case 'The mines of moria':
                 return mine;
             case 'factory':
                 return factory;

@@ -5,6 +5,7 @@ import axios from "axios";
 import AllianceRequestEntry from "./Alliance/AllianceRequestEntry";
 import {UserInfoContext} from "./../../Context/UserInfoContext"
 import "./AllianceTab.css"
+import "./Requests/RequestButtons.css"
 const AllianceTab = (props) => {
     const [chatOpen, setChatOpen] = useState(false)
     const [allianceRequests, setAllianceRequests] = useState([])
@@ -98,12 +99,12 @@ const AllianceTab = (props) => {
                     {!userInfo.alliance &&
                         <>
                             Enter Alliance Name:
-                            <textarea name="alliance_name" value={pendingName}
+                            <input name="alliance_name" value={pendingName}
                             onChange={(event) => {setPendingName(event.target.value)}}
                             className="bg-gray-900" required/>
                             {anwserMessage}
-                            <button id={"AllianceTabButton"} onClick={() => DoAlliance(pendingName, true)}> Create Alliance</button>
-                            <button id={"AllianceTabButton"} onClick={() => DoAlliance(pendingName, false)}> Join Alliance</button>
+                            <button className="RequestButton" onClick={() => DoAlliance(pendingName, true)}> Create Alliance</button>
+                            <button className="RequestButton" onClick={() => DoAlliance(pendingName, false)}> Join Alliance</button>
                         </>
 
                     }
@@ -126,7 +127,7 @@ const AllianceTab = (props) => {
                             </div>
                             
                             {/*button to open the alliance chat*/}
-                            <button id={"AllianceTabButton"} onClick={() => {setChatOpen(true);}}> Open Chat</button>
+                            <button className="RequestButton" onClick={() => {setChatOpen(true);}}> Open Chat</button>
                         </>
 
 

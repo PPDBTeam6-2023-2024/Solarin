@@ -3,6 +3,8 @@ import FriendOverviewEntry from "./Friends/FriendOverviewEntry";
 import MessageBoard from "./MessageBoard";
 import axios from "axios";
 import FriendRequestEntry from "./Friends/FriendRequestEntry";
+import SendFriendRequestEntry from "./Friends/SendFriendRequestEntry";
+
 const getDMOverview = async() => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
@@ -20,6 +22,8 @@ const getFriendRequests = async() => {
     }
     catch(e) {return []}
 }
+
+
 
 
 const DmTab = (props) => {
@@ -46,7 +50,11 @@ const DmTab = (props) => {
     return (
         <>
             {dmIndex === -1 && <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
-                        {
+                    {/*Display an option to add friends*/
+                        <SendFriendRequestEntry/>
+                    }
+
+                    {
                     /*display all friend requests*/
                     friendRequests.map((elem, index) => <FriendRequestEntry user={elem[0]} user_id={elem[1]} key={index}
                                                                             onEntryChose={

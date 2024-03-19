@@ -17,64 +17,74 @@ function PlanetViewer(props) {
     const [mapState, setMapState] = useState({
         scale: 1,
         translation: {x: 0, y: 0},
-    })
+    });
+    const [image, setImage] = useState();
+    const [armiesLoaded, setArmiesLoaded] = useState(false);
+    const [armyImages, setArmyImages] = useState([]);
+    const [activeArmyViewers, setActiveArmyViewers] = useState([]);
 
-    const [image, setImage] = useState()
-    const [showArmyViewer, setShowArmyViewer] = useState(false)
-    const [armiesLoaded, setArmiesLoaded] = useState(false)
-    const [ArmyViewerPosition, setArmyViewerPosition] = useState({x: 0, y: 0});
-    const [armyImages, setArmyImages] = useState([])
-
-    const toggleArmyViewer = (e, armyid) => {
+    const toggleArmyViewer = (e, armyId) => {
         const overlayRect = e.target.getBoundingClientRect();
-        setArmyViewerPosition({
+        const position = {
             x: overlayRect.left + window.scrollX,
             y: overlayRect.top + window.scrollY
+        };
+
+        setActiveArmyViewers(prev => {
+            const index = prev.findIndex(viewer => viewer.id === armyId);
+            if (index >= 0) {
+                // Remove viewer if already active
+                return prev.filter(viewer => viewer.id !== armyId);
+            } else {
+                // Add new viewer with position if not already active
+                return [...prev, { id: armyId, position }];
+            }
         });
-        setShowArmyViewer(!showArmyViewer);
     };
 
+    useEffect(() => {
+        loadImage(props.mapImage, setImage);
+    }, [props.mapImage]);
 
     useEffect(() => {
-        loadImage(props.mapImage, setImage)
-    }, [props.mapImage])
+    const fetchArmies = async () => {
+        const armies = await getArmies(1);
+        const armyElements = armies.map(army => ({
+            ...army,
+            onClick: (e) => toggleArmyViewer(e, army.id), // Ensure e is passed here
+        }));
+        setArmyImages(armyElements);
+        setArmiesLoaded(true);
+    };
+    if (!armiesLoaded) {
+        fetchArmies();
+    }
+}, [armiesLoaded]);
 
-    useEffect(() => {
-        const fetchArmies = async () => {
-            const armies = await getArmies(1);
-            const armyElements = armies.map(army => ({
-                ...army,
-                onClick: (e) => toggleArmyViewer(e, army.id),
-            }));
-            setArmyImages(armyElements)
-            setArmiesLoaded(true);
-        };
-        if (!armiesLoaded) {
-            fetchArmies();
-        }
-    }, [toggleArmyViewer, armiesLoaded]);
 
     return (
         <>
-            <div
-                className="bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl justify-between items-center flex">
+            <div className="bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl justify-between items-center flex">
                 <RiArrowLeftSLine className="transition ease-in-out hover:scale-150"/>
                 <h1>{props.planetName}</h1>
                 <RiArrowRightSLine className="transition ease-in-out hover:scale-150"/>
             </div>
-            {showArmyViewer && (
-                <div style={{
-                    position: 'absolute',
-                    left: `${ArmyViewerPosition.x}px`,
-                    top: `${ArmyViewerPosition.y}px`,
-                }}>
-                    <ArmyViewer/>
-                </div>
-            )}
-
+            {
+                activeArmyViewers.map(({ id, position }) => (
+                    <div key={id} style={{
+                        position: 'absolute',
+                        left: `${position.x}px`,
+                        top: `${position.y}px`,
+                    }}>
+                        <ArmyViewer armyId={id}/>
+                    </div>
+                ))
+            }
             {
                 image &&
                 <MapInteractionCSS
+                    value={mapState}
+                    onChange={(value) => setMapState(value)}
                     minScale={1}
                     maxScale={5}
                     translationBounds={{
@@ -83,19 +93,16 @@ function PlanetViewer(props) {
                         yMin: image.height - mapState.scale * image.height,
                         yMax: 0,
                     }}
-                    value={mapState}
-                    onChange={(value) => setMapState(value)}
                 >
-                    <img src={image.src} alt="map"
-                         style={{imageRendering: "pixelated", width: "100%", height: "auto"}}/>
-
+                    <img src={image.src} alt="map" style={{imageRendering: "pixelated", width: "100%", height: "auto"}}/>
                     {armyImages.map((army, index) => (
-                        <img key={index} src={army.src} alt="army" style={army.style} onClick={army.onClick}/>
+                        <img key={index} src={army.src} alt="army" style={army.style} onClick={(e) => toggleArmyViewer(e, army.id)}/>
                     ))}
+
                 </MapInteractionCSS>
             }
         </>
-    )
+    );
 }
 
 export default PlanetViewer;

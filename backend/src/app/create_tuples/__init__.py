@@ -25,7 +25,7 @@ class CreateTuples():
 
     async def create_barracks_types(self, barracks_types: list[dict[str, Any]]):
         for barracks_type in barracks_types:
-            if await self.__session.get(PlanetType, barracks_type["name"]) is None:
+            if await self.__session.get(BarracksType, barracks_type["name"]) is None:
                 await self.__dev.createBarracksType(barracks_type["name"])
 
     async def create_tower_types(self, tower_types: list[dict[str, Any]]):

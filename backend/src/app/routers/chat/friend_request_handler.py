@@ -1,7 +1,6 @@
 from .request_handler import RequestHandler
 from ..authentication.schemas import MessageToken
 
-
 class FriendRequestHandler(RequestHandler):
     """
     This class contains methods to handle certain actions related to friend requests

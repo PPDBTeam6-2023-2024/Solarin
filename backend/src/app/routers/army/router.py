@@ -30,9 +30,15 @@ async def get_armies(
 
 
 @router.get("/troops", response_model=List[ArmyConsistsOfSchema])
-async def get_troops(armyid: int):
-    troops_db = await ArmyAccess.getTroops(armyid)
+async def get_troops(armyid: int, db=Depends(get_db)) -> List[ArmyConsistsOfSchema]:
+    data_access = DataAccess(db)
+    db_reply = await data_access.ArmyAccess.getTroops(armyid)
 
-    troops = [ArmyConsistsOfSchema.from_orm(troop) for troop in troops_db]
+    troops_schema = []
 
-    return troops
+    for troop_groups in db_reply:
+        for troops in troop_groups:
+            temp = troops.to_armyconsistsof_schema()
+            troops_schema.append(temp)
+
+    return troops_schema

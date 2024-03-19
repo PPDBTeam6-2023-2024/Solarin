@@ -364,6 +364,12 @@ class ArmyConsistsOf(Base):
     army = relationship("Army", back_populates="consists_of", lazy='select')
     troop = relationship("TroopType", back_populates="in_consist_of", lazy='select')
 
+    def to_armyconsistsof_schema(self):
+        return ArmyConsistsOfSchema(army_id=self.army_id,
+                                    troop_type=self.troop_type,
+                                    rank=self.rank,
+                                    size=self.size)
+
 
 class UpgradeCost(Base):
     """

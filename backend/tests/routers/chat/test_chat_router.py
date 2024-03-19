@@ -2,7 +2,15 @@ import pytest
 import asyncio
 from tests.conftest import client
 
-async def insert_test_data(client):
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from fastapi.websockets import WebSocket
+
+
+app = FastAPI()
+
+
+def insert_test_data(client):
     data = {
         "email": "insert@example.com",
         "username": "insert",
@@ -49,11 +57,11 @@ async def insert_test_data(client):
                "accept": "application/json"
                }
 
-    return headers, headers2
+    return headers, headers2, token, token2
 
 
-async def test_friends(client):
-    headers, headers2 = await insert_test_data(client)
+def test_friends(client):
+    headers, headers2, token, token2 = insert_test_data(client)
     response = client.get("/chat/dm_overview", headers=headers2)
 
     """
@@ -106,6 +114,38 @@ async def test_friends(client):
     assert data[0][0] == "insert"
     assert data[0][1]["body"] == "Friend request has been accepted"
 
+
+def test_alliance(client):
+    headers, headers2, token, token2 = insert_test_data(client)
+
     """
-    Test websockets for messages
+    let 'insert' create an alliance
     """
+    data = {
+        "alliance_name": "abc"
+    }
+    response = client.post("/chat/create_alliance", headers=headers, json=data)
+    data = response.json()
+    assert data["success"]
+    assert data["message"] == "Alliance is created"
+
+    """
+    let 'insert2' send an alliance join request to alliance 'abc'
+    """
+
+    data = {
+        "alliance_name": "abc"
+    }
+    response = client.post("/chat/join_alliance", headers=headers2, json=data)
+    data = response.json()
+
+    assert not data["success"]
+    assert data["message"] == "Alliance join request has been send"
+
+    """
+    check for join alliance requests
+    """
+    response = client.get("/chat/alliance_requests", headers=headers)
+    data = response.json()
+    assert len(data) == 1
+    assert data[0][0] == "insert2"

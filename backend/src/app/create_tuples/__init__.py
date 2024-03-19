@@ -51,6 +51,7 @@ class CreateTuples:
     async def create_building_types(self, building_types: list[dict[str, Any]]):
         for building_type in building_types:
             if await self.__session.get(ProductionBuildingType, building_type["name"]) is None:
+                await self.__dev.createProductionBuildingType(building_type["name"])
                 await self.__dev.setUpgradeCost(building_type["name"],
                                                 [("TF", PropertyUtility.getGUC(building_type["creation-cost"], 1))])
                 for resource_type in building_type["products"]:

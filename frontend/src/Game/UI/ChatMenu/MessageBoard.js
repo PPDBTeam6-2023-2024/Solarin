@@ -29,7 +29,8 @@ function MessageBoard(props) {
 
        is_connected.current = true;
 
-       const web_socket = new WebSocket(`ws://${"localhost:8000"}/chat/dm/${props.message_board}`, `${localStorage.getItem('access-token')}`);
+        console.log("q", process.env.REACT_APP_BACKEND_PATH_WEBSOCKET);
+       const web_socket = new WebSocket(`ws://${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/chat/dm/${props.message_board}`, `${localStorage.getItem('access-token')}`);
         setSocket(web_socket);
     }, []);
 

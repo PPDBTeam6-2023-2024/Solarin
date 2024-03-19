@@ -6,9 +6,6 @@ A point is a natural number and always bounded by the interval [0,499]
 * Moderate: [150,349]
 * High: [350, 449]
 * Very High [450, 499]
-### Unit Strength 
-* $\text{strength(unit)}=\dfrac{\text{rank(unit)}\cdot\text{mean(P)}}{250}}$
-	* $\text{P} = ( \text{AP, DP, ..., AMS} ) $
 ### Point Types
 * AP: Attack Points
     * The general attack power of a unit

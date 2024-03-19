@@ -31,7 +31,7 @@ function PlanetSVG(props) {
 
     const voronoi = useMemo(() => {
         return delaunay.voronoi();
-      }, [width, height, delaunay]);
+      }, [delaunay]);
 
     const renderClippedImages = () => {
         return props.data.map((d, i) => {
@@ -57,7 +57,7 @@ function PlanetSVG(props) {
     };
 
     return (
-        <svg width="100vw" height="100vh" viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
+        <svg width="100%" height="100%" viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
             {renderClippedImages()}
             <path key={`voronoi-total`} d={voronoi.render()} stroke="black" strokeWidth={2} />
         </svg>

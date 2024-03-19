@@ -1,30 +1,18 @@
 import './App.css';
-import PlanetViewer from './Game/PlanetViewer/PlanetViewer';
-
-function generateData(width, height) {
-  const data = [];
-  const cellWidth = 1 / width;
-  const cellHeight = 1 / height;
-
-  for (let i = 0; i < height; i++) {
-    for (let j = 0; j < width; j++) {
-      const x = Math.random() * cellWidth + j * cellWidth;
-      const y = Math.random() * cellHeight + i * cellHeight;
-      const types = ['type1', 'type2', 'type3']
-      const regionType = types[Math.floor(Math.random()*types.length)];
-      data.push({ x, y, regionType });
-    }
-  }
-
-  return data;
-}
+import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import Login from './Login/Login'
+import Game from './Game/Game'
 
 function App() {  
-  const data = generateData(5, 5);
-
   return (
     <div className="App">
-      <PlanetViewer data={data} planetName="test"/>
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />}/>
+        <Route path="/game" element={<Game />}/>
+        <Route path="*" element={<Navigate to="/"/>}/>
+      </Routes>
+    </BrowserRouter>
     </div>
   );
 }

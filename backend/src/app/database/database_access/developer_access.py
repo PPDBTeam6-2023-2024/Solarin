@@ -102,7 +102,7 @@ class DeveloperAccess:
         r = ResourceType(name=type_name)
         self.__session.add(r)
 
-    async def setProducesResources(self, building_name: str, resource_name: str):
+    async def setProducesResources(self, building_name: str, resource_name: str, base_production: int, max_capacity: int):
         """
         Creates the link between a productionBuildingType and the Resource type it produces
 
@@ -110,7 +110,7 @@ class DeveloperAccess:
         :param: resource_name: name of resource that will be produced
         :return: nothing
         """
-        pr = ProducesResources(building_name=building_name, resource_name=resource_name)
+        pr = ProducesResources(building_name=building_name, resource_name=resource_name, base_production=base_production, max_capacity=max_capacity)
         self.__session.add(pr)
 
     async def createToopType(self, type_name: str, training_time: timedelta, battle_stats: BattleStats,

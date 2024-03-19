@@ -400,13 +400,13 @@ class ArmyConsistsOf(Base):
     troop = relationship("TroopType", back_populates="in_consist_of", lazy='select')
 
 
-class UpgradeCost(Base):
+class CreationCost(Base):
     """
-    Stores the cost to upgrade certain buildings
-    Lookup table to define upgrade prices
+    Stores the cost to create certain buildings
+    Lookup table to define creation prices
     """
 
-    __tablename__ = "UpgradeCost"
+    __tablename__ = "CreationCost"
     building_name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'),
                            primary_key=True)
 

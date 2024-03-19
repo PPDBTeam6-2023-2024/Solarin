@@ -14,11 +14,14 @@ async def fill_db():
     config = APIConfig(config_sources=FileSource(file='config.yml'))
     sessionmanager.init(config.db.get_connection_string().get_secret_value())
     async with sessionmanager.session() as session:
-        print("filling up database")
         """
         setup database data that can be queried
         """
         da = DataAccess(session)
+
+        """
+        add default resources
+        """
         await da.DeveloperAccess.createResourceType("Vibranium")
         await da.DeveloperAccess.createResourceType("Energon")
         await da.DeveloperAccess.createResourceType("SOL")
@@ -111,9 +114,10 @@ async def fill_db():
         await da.DeveloperAccess.createHouseType("Solarin mansion", 50)
         await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium", 10, 200)
 
-        await da.DeveloperAccess.setUpgradeCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
-        await da.DeveloperAccess.setUpgradeCost("Kamino training complex", [("Vibranium", 1)])
-        await da.DeveloperAccess.setUpgradeCost("Kamino training complex", [("Energon", 2)])
+
+        await da.DeveloperAccess.setCreationCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
+        await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Vibranium", 1)])
+        await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Energon", 2)])
 
         """
         Create some actual buildings instances inside cities

@@ -108,9 +108,9 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.createHouseType("Solarin mansion", 50)
         await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium", 100, 2000)
 
-        await da.DeveloperAccess.setUpgradeCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
-        await da.DeveloperAccess.setUpgradeCost("Kamino training complex", [("Vibranium", 1)])
-        await da.DeveloperAccess.setUpgradeCost("Kamino training complex", [("Energon", 2)])
+        await da.DeveloperAccess.setCreationCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
+        await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Vibranium", 1)])
+        await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Energon", 2)])
 
         """
         Create some actual buildings instances inside cities

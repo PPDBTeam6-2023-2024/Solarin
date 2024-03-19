@@ -20,23 +20,29 @@ class CreateTuples:
         await self.create_barracks_types(types["barracks"])
         await self.create_tower_types(types["towers"])
         await self.create_wall_types(types["walls"])
-        await self.create_building_types(types["buildings"])
+        await self.create_production_building_types(types["production-buildings"])
         await self.__session.commit()
 
     async def create_barracks_types(self, barracks_types: list[dict[str, Any]]):
         for barracks_type in barracks_types:
             if await self.__session.get(BarracksType, barracks_type["name"]) is None:
                 await self.__dev.createBarracksType(barracks_type["name"])
+                await self.__dev.setCreationCost(barracks_type["name"],
+                                                 [("TF", PropertyUtility.getGUC(barracks_type["creation-cost"], 1))])
 
     async def create_tower_types(self, tower_types: list[dict[str, Any]]):
         for tower_type in tower_types:
             if await self.__session.get(TowerType, tower_type["name"]) is None:
                 await self.__dev.createTowerType(tower_type["name"], tower_type["attack"])
+                await self.__dev.setCreationCost(tower_type["name"],
+                                                 [("TF", PropertyUtility.getGUC(tower_type["creation-cost"], 1))])
 
     async def create_wall_types(self, wall_types: list[dict[str, Any]]):
         for wall_type in wall_types:
             if await self.__session.get(WallType, wall_type["name"]) is None:
                 await self.__dev.createWallType(wall_type["name"], wall_type["defense"])
+                await self.__dev.setCreationCost(wall_type["name"],
+                                                 [("TF", PropertyUtility.getGUC(wall_type["creation-cost"], 1))])
 
     async def create_planet_types(self, planet_types: list[dict[str, Any]]):
         for planet_type in planet_types:
@@ -48,11 +54,11 @@ class CreateTuples:
             if await self.__session.get(PlanetRegionType, region_type["type-name"]) is None:
                 await self.__dev.createPlanetRegionType(region_type["type-name"], region_type["description"])
 
-    async def create_building_types(self, building_types: list[dict[str, Any]]):
+    async def create_production_building_types(self, building_types: list[dict[str, Any]]):
         for building_type in building_types:
             if await self.__session.get(ProductionBuildingType, building_type["name"]) is None:
                 await self.__dev.createProductionBuildingType(building_type["name"])
-                await self.__dev.setUpgradeCost(building_type["name"],
+                await self.__dev.setCreationCost(building_type["name"],
                                                 [("TF", PropertyUtility.getGUC(building_type["creation-cost"], 1))])
                 for resource_type in building_type["products"]:
                     await self.__dev.setProducesResources(building_type["name"], resource_type["product-name"], resource_type["base-rate"], resource_type["base-cap"])

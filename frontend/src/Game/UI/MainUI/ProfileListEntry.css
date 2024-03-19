@@ -1,3 +1,10 @@
 .ProfileListEntry{
     display: block;
 }
+
+.ProfileListEntry .goto:hover{
+    z-index: 21;
+    --scaleIndex: 110%;
+    --translate_size: calc((var(--scaleIndex) - 100%)/2);
+    transform: translate(var(--translate_size), 0) scale(var(--scaleIndex)) ;
+}

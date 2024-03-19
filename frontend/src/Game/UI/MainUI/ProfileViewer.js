@@ -19,7 +19,6 @@ function ProfileViewer() {
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/cities?planet_id=${planetId}`)
-            console.log(response.data)
             setCitiesList(response.data)
 
         }
@@ -29,7 +28,7 @@ function ProfileViewer() {
     return (
         <>
             <div id="profile_viewer">
-                <h1>{userInfo.username}</h1>
+                <h1>Username: {userInfo.username}</h1>
 
                 <div style={{"width":"9%", "height": "100%", "marginLeft": "5vw"}} >
                     <ul>
@@ -41,7 +40,7 @@ function ProfileViewer() {
 
                 {selectedCategory === "Cities" &&
                     <div className="profile_viewer_list absolute right-0" style={{"overflow-y": "scroll", "width":"80%", "height": "50vw", "scrollbar-width:": "none"}} >
-                        {citiesList.map((c, index) => <ProfileListEntry key={index} text={`city ${c.id}`} type={"City"}/>)}
+                        {citiesList.map((c, index) => <ProfileListEntry key={index} text={`city ${c.id}`} type={"City"} x={c.x} y={c.y}/>)}
                     </div>
 
                 }

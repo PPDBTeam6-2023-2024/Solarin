@@ -1,10 +1,15 @@
 from math import floor
-from statistics import mean
+from statistics import mean, median
+import scipy
+import numpy
 
 
-class PropertyUtility():
+class PropertyUtility:
     rate: int = 5
     base_point_bounds: tuple[int, int] = (0, 499)
+    # BORM = battle outcome random modifier
+    BORM_bounds: tuple[float, float] = (1/2, 3/2)
+    BORM_std: float = 0.1
 
     @staticmethod
     def verifyBasePoint(base_point: int):
@@ -32,8 +37,40 @@ class PropertyUtility():
         return int(floor(modifier * base_rate * (level ** 2)))
 
     @staticmethod
-    def getUnitStrength(self, current_points: list[int], unit_rank: int) -> float:
+    def getUnitStrength(current_points: list[int], unit_rank: int) -> float:
         return (unit_rank*mean(current_points))/(mean(PropertyUtility.base_point_bounds))
 
     @staticmethod
-    
+    def getUnitCityStrength(non_city_points: list[int], city_points: list[int], unit_rank: int) -> float:
+        return (unit_rank*(0.5*mean(non_city_points)+mean(city_points))) / mean(PropertyUtility.base_point_bounds)
+
+    @staticmethod
+    def getArmyStrength(units: list[list[dict[str, int]]]) -> float:
+        return mean(list(map(lambda unit:PropertyUtility.getUnitStrength(unit["non_city_points"]+unit["city_points"], unit["rank"]), units)))
+
+    @staticmethod
+    def getArmyCityStrength(units: list[list[dict[str, int]]]) -> float:
+        return mean(list(map(lambda unit:PropertyUtility.getUnitCityStrength(unit["non_city_points"], unit["city_points"], unit["rank"]), units)))
+
+    @staticmethod
+    def getTruncNormSample(mean: float, std: float, bounds: tuple[float, float]) -> float:
+        return numpy.median(scipy.stats.truncnorm.rvs((bounds[0]-mean)/std,(bounds[1]-mean)/std,loc=mean, scale=std))
+    @staticmethod
+    def getBattleOutcome(army_1: list[list[dict[str, int]]], army_2: list[list[dict[str, int]]]) -> int:
+        random_1: float = PropertyUtility.getTruncNormSample(1, PropertyUtility.BORM_std, PropertyUtility.BORM_bounds)
+        random_2: float = PropertyUtility.getTruncNormSample(1, PropertyUtility.BORM_std, PropertyUtility.BORM_bounds)
+        versus = [random_1*PropertyUtility.getArmyStrength(army_1), random_2*PropertyUtility.getArmyStrength(army_2)]
+        return versus.index(max(versus))+1
+
+    @staticmethod
+    def getCityBattleOutcome(army_1: list[list[dict[str, int]]], army_2: list[list[dict[str, int]]]) -> int:
+        random_1: float = PropertyUtility.getTruncNormSample(1, PropertyUtility.BORM_std, PropertyUtility.BORM_bounds)
+        random_2: float = PropertyUtility.getTruncNormSample(1, PropertyUtility.BORM_std, PropertyUtility.BORM_bounds)
+        versus = [random_1*PropertyUtility.getArmyCityStrength(army_1), random_2*PropertyUtility.getArmyCityStrength(army_2)]
+        return versus.index(max(versus))+1
+
+    @staticmethod
+    def getSurvivedUnitsAmount(pbr: int, number_of_units: int) -> int:
+        survival : float = PropertyUtility.getTruncNormSample(pbr/PropertyUtility.base_point_bounds[1], 0.1, (0,1))
+        return int(round(survival*number_of_units))
+

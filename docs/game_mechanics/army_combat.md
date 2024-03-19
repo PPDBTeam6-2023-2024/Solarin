@@ -17,4 +17,4 @@ A battle is initiated when player 1 decides to attack player 2 by either directl
 * $\text{cityBattle}(\text{army}_1, \text{army}_2)=\text{max}\left[\text{rand}_1\cdot\text{cityStrength}(\text{army}_1),\text{rand}_2\cdot\text{cityStrength}(\text{army}_2)\right]$
 * $\text{rand}_1, \text{rand}_2 \in \left[\frac{1}{2}, \frac{3}{2}\right] \sim N(1,0.1)$ 
 ## Post-Battle Recovery
-$\text{armySurvival} \in \left[0,1\right] \sim N(\dfrac{\text{PBR}}{\text{upperBound(PBR)}}, 0.1)$ where $\left\lfloor\text{armySurvival}\cdot\text{numOfUnits(army)}\right\rceil$ is the number of units surviving after a battle for both players.
+$\text{armySurvival} \in \left[0,1\right] \sim N(\dfrac{\text{PBR}}{\text{upperBound(PBR)}}, 0.1)$ where $\left\lfloor\text{armySurvival}\cdot\text{numOfUnits(army)}\right\rceil$ is the number of units surviving after a battle.

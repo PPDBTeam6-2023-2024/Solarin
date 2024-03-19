@@ -10,9 +10,21 @@
     {"type-name": "alpine", "description": "A region with many mountains."},
     {"type-name": "plain", "description": "A flat region with a few trees."}
   ],
+  "barracks":[
+    {"name":  "barracks", "creation-cost": 550, "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}]},
+    {"name":  "space-dock", "creation-cost": 1250, "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}]}
+    ],
+  "towers": [
+    {"name":  "Sentry Tower", "attack":  50},
+    {"name":  "Plasmic Cannons", "attack":  100},
+    {"name":  "Directed Antiprotonic Annihilation System", "attack":  150}
+  ],
+  "walls": [
+    {"name":  "Reinforced Techno-Mesh", "defense": 50},
+    {"name":  "Solarinium Absorption Barrier", "defense": 100},
+    {"name":  "Void-fuelled Nullification Wall", "defense": 150}
+  ],
   "buildings": [
-    {"name":  "barracks", "creation-cost": 550, "is-barrack": true, "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}]},
-    {"name":  "space-dock", "creation-cost": 1250,"is-barrack": true, "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}]},
     {"name":  "nexus", "creation-cost" : 6500,"products": [
       {"product-name":  "SOL", "base-rate":  5, "base-cap":  500},
       {"product-name":  "TF", "base-rate":  15, "base-cap":  5000}

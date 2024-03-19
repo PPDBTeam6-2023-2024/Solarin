@@ -3,13 +3,15 @@ import { IoMdMenu, IoIosSettings } from "react-icons/io";
 import { RiArrowRightSLine } from "react-icons/ri";
 import { FaSignOutAlt } from "react-icons/fa";
 import Settings from "../Settings/Settings";
+import { useNavigate } from "react-router-dom";
 
 function SideMenu(props) {
     const [menuOpen, setMenuOpen] = useState(false)
     const [settingsOpen, setSettingsOpen] = useState(false)
+    const navigate = useNavigate()
     const signOut = () => {
         localStorage.clear()
-        props.setIsAuth(false)
+        navigate("/")
     }
     const buttonStyle = "flex items-center mt-3 transition-all ease-in-out hover:scale-110"
     return(

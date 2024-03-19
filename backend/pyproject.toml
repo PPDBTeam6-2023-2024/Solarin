@@ -31,6 +31,7 @@ aiosqlite = "^0.20.0"
 pytest-postgresql = "^5.1.0"
 psycopg = {extras = ["binary", "pool"], version = "^3.1.18"}
 websockets = "^12.0"
+scipy = "^1.12.0"
 
 
 [build-system]

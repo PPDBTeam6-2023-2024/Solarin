@@ -103,10 +103,10 @@ async def insert_test_data(connection_test):
         """
         Create some types of buildings and resources
         """
-        await da.DeveloperAccess.createProductionBuildingType("The mines of moria", 100, 2000)
+        await da.DeveloperAccess.createProductionBuildingType("The mines of moria")
         await da.DeveloperAccess.createBarracksType("Kamino training complex")
         await da.DeveloperAccess.createHouseType("Solarin mansion", 50)
-        await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium")
+        await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium", 100, 2000)
 
         await da.DeveloperAccess.setUpgradeCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
         await da.DeveloperAccess.setUpgradeCost("Kamino training complex", [("Vibranium", 1)])

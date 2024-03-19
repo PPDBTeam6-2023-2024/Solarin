@@ -9,6 +9,9 @@ function FriendRequestEntry(props) {
      * */
 
     const SendRequestReply = async(friend_id, accepted) => {
+        /*
+        * communicate to the server whether we accepted or rejected this friend request
+        * */
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/friend_requests`,

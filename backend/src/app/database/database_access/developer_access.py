@@ -37,7 +37,7 @@ class DeveloperAccess:
         self.__session.add(PlanetRegionType(region_type=type_name, description=description))
         await self.__session.flush()
 
-    async def createProductionBuildingType(self, name: str, base_production: int, max_capacity: int):
+    async def createProductionBuildingType(self, name: str):
         """
         Creates a new type of building that can produce certain resources
         These types of buildings will generate certain resources over time
@@ -48,7 +48,7 @@ class DeveloperAccess:
                 as long as the player doesn't collect its resources from here
         :return: nothing
         """
-        pb = ProductionBuildingType(name=name, base_production=base_production, max_capacity=max_capacity)
+        pb = ProductionBuildingType(name=name)
         self.__session.add(pb)
 
     async def createBarracksType(self, name: str):
@@ -60,6 +60,26 @@ class DeveloperAccess:
         """
         brt = BarracksType(name=name)
         self.__session.add(brt)
+
+    async def createTowerType(self, name: str, attack: int):
+        """
+        Creates a new type of tower
+
+        :param: name: name of the tower type
+        :return: nothing
+        """
+        tower = TowerType(name=name, attack=attack)
+        self.__session.add(tower)
+
+    async def createWallType(self, name: str, defense: int):
+        """
+       Creates a new type of wall
+
+       :param: name: name of the wall type
+       :return: nothing
+       """
+        wall = WallType(name=name, defense=defense)
+        self.__session.add(wall)
 
     async def createHouseType(self, name: str, residents: int):
         """
@@ -82,7 +102,7 @@ class DeveloperAccess:
         r = ResourceType(name=type_name)
         self.__session.add(r)
 
-    async def setProducesResources(self, building_name: str, resource_name: str):
+    async def setProducesResources(self, building_name: str, resource_name: str, base_production: int, max_capacity: int):
         """
         Creates the link between a productionBuildingType and the Resource type it produces
 
@@ -90,7 +110,7 @@ class DeveloperAccess:
         :param: resource_name: name of resource that will be produced
         :return: nothing
         """
-        pr = ProducesResources(building_name=building_name, resource_name=resource_name)
+        pr = ProducesResources(building_name=building_name, resource_name=resource_name, base_production=base_production, max_capacity=max_capacity)
         self.__session.add(pr)
 
     async def createToopType(self, type_name: str, training_time: timedelta, battle_stats: BattleStats,

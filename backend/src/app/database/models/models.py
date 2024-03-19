@@ -108,7 +108,7 @@ class Planet(Base):
     """
     __tablename__ = 'planet'
     id = Column(Integer, Sequence('planet_id_seq'), primary_key=True)
-    name = Column(TEXT, nullable=False, unique=True)
+    name = Column(TEXT, nullable=False)
     planet_type = Column(TEXT, ForeignKey("planetType.type"), nullable=False)
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
 
@@ -280,9 +280,6 @@ class ProductionBuildingType(BuildingType):
     """
     __tablename__ = 'productionBuildingType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    base_production = Column(Integer, nullable=False)
-    max_capacity = Column(Integer, nullable=False)
-
     __mapper_args__ = {
         'polymorphic_identity': 'productionBuilding'
     }
@@ -299,6 +296,10 @@ class ProducesResources(Base):
                            primary_key=True)
     resource_name = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'),
                            primary_key=True)
+
+    base_production = Column(Integer, nullable=False)
+    max_capacity = Column(Integer, nullable=False)
+
 
     production_building = relationship("ProductionBuildingType", back_populates="producing_resources", lazy='select')
 

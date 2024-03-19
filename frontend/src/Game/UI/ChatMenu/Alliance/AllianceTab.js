@@ -1,11 +1,11 @@
 import React, {useEffect, useState, useContext} from "react";
-import FriendOverviewEntry from "./Friends/FriendOverviewEntry";
-import MessageBoard from "./MessageBoard";
+import FriendOverviewEntry from "../Friends/FriendOverviewEntry";
+import MessageBoard from "../MessageBoard";
 import axios from "axios";
-import AllianceRequestEntry from "./Alliance/AllianceRequestEntry";
-import {UserInfoContext} from "./../../Context/UserInfoContext"
+import AllianceRequestEntry from "./AllianceRequestEntry";
+import {UserInfoContext} from "../../../Context/UserInfoContext"
 import "./AllianceTab.css"
-import "./Requests/RequestButtons.css"
+import "../Requests/RequestButtons.css"
 const AllianceTab = (props) => {
     const [chatOpen, setChatOpen] = useState(false)
     const [allianceRequests, setAllianceRequests] = useState([])
@@ -25,6 +25,9 @@ const AllianceTab = (props) => {
     * This function will create/try to join an alliance
     * */
     const DoAlliance = async(alliance_name, create) => {
+        /*
+        * change the endpoint depending on if we want to create or join an alliance.
+        * */
         let end_point = "join";
         if (create){
             end_point = "create"
@@ -61,15 +64,17 @@ const AllianceTab = (props) => {
     }
 
     const getAllianceRequests = async() => {
-    try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_requests`)
-        return response.data
-    }
-    catch(e) {return []}
+        /*get the list of all the requests to join the alliance*/
+        try {
+            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_requests`)
+            return response.data
+        }
+        catch(e) {return []}
     }
 
     const getMessageBoard = async() => {
+        /*get messageboard for the alliance, because we do not yet have that*/
         try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_messageboard`)

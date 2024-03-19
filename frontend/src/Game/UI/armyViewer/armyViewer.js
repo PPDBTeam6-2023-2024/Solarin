@@ -4,14 +4,14 @@ import { TreeView, TreeItem } from '@mui/x-tree-view';
 import Draggable from 'react-draggable';
 
 function ArmyViewer(props) {
-    const [troops, setTroops] = useState([]); // Renamed from armies to troops for clarity
+    const [troops, setTroops] = useState([]);
 
     useEffect(() => {
         const fetchTroops = async () => {
             try {
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops?armyid=${props.armyId}`);
                 if (response.status === 200 && Array.isArray(response.data)) {
-                    setTroops(response.data); // Directly use the array response data
+                    setTroops(response.data);
                 }
             } catch (error) {
                 console.error("Failed to fetch troops", error);

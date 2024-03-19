@@ -4,8 +4,9 @@
     "description": "Solarium: A versatile and universal currency also considered the main currency of the galaxy."
   },
   "TF": {
-    "icon": "techforge.svg",
-    "description": "Techforge: Used to create and upgrade buildings."
+    "icon": "techforge.png",
+    "description": "Techforge: Used to create and upgrade buildings.",
+    "scale": 1.6
   },
   "RA": {
     "icon": "rations.svg",

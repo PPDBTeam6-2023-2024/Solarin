@@ -1,7 +1,7 @@
 from ..models.models import *
 from ..database import AsyncSession
 from typing import List, Tuple
-
+from sqlalchemy import select
 
 class DeveloperAccess:
     """
@@ -22,8 +22,9 @@ class DeveloperAccess:
         :param: description: description of the planet type (if provided)
         :return: nothing
         """
-        self.__session.add(PlanetType(type=type_name, description=description))
-        await self.__session.flush()
+        if not await self.__session.execute(select(PlanetType).where(PlanetType.type == type_name)):
+            self.__session.add(PlanetType(type=type_name, description=description))
+            await self.__session.flush()
 
     async def createPlanetRegionType(self, type_name: str, description: str = None):
         """
@@ -33,8 +34,9 @@ class DeveloperAccess:
         :param: description: description of the planet region type (if provided)
         :return: nothing
         """
-        self.__session.add(PlanetRegionType(region_type=type_name, description=description))
-        await self.__session.flush()
+        if not await self.__session.execute(select(PlanetRegionType).where(PlanetRegionType.region_type == type_name)):
+            self.__session.add(PlanetRegionType(region_type=type_name, description=description))
+            await self.__session.flush()
 
     async def createProductionBuildingType(self, name: str, base_production: int, max_capacity: int):
         """
@@ -47,8 +49,9 @@ class DeveloperAccess:
                 as long as the player doesn't collect its resources from here
         :return: nothing
         """
-        pb = ProductionBuildingType(name=name, base_production=base_production, max_capacity=max_capacity)
-        self.__session.add(pb)
+        if not await self.__session.execute(select(ProductionBuildingType).where(ProductionBuildingType.name == name)):
+            pb = ProductionBuildingType(name=name, base_production=base_production, max_capacity=max_capacity)
+            self.__session.add(pb)
 
     async def createBarracksType(self, name: str):
         """
@@ -57,8 +60,9 @@ class DeveloperAccess:
         :param: name: name of the building type
         :return: nothing
         """
-        brt = BarracksType(name=name)
-        self.__session.add(brt)
+        if not await self.__session.execute(select(BarracksType).where(BarracksType.name == name)):
+            brt = BarracksType(name=name)
+            self.__session.add(brt)
 
     async def createHouseType(self, name: str, residents: int):
         """
@@ -68,8 +72,9 @@ class DeveloperAccess:
         :param: residents: amount of residents living in such a house
         :return: nothing
         """
-        ht = HouseType(name=name, residents=residents)
-        self.__session.add(ht)
+        if not await self.__session.execute(select(HouseType).where(HouseType.name == name)):
+            ht = HouseType(name=name, residents=residents)
+            self.__session.add(ht)
 
     async def createResourceType(self, type_name: str):
         """
@@ -78,8 +83,9 @@ class DeveloperAccess:
         :param: type_name: name of resource
         :return: nothing
         """
-        r = ResourceType(name=type_name)
-        self.__session.add(r)
+        if not await self.__session.execute(select(ResourceType).where(ResourceType.name == type_name)):
+            r = ResourceType(name=type_name)
+            self.__session.add(r)
 
     async def setProducesResources(self, building_name: str, resource_name: str):
         """
@@ -89,8 +95,11 @@ class DeveloperAccess:
         :param: resource_name: name of resource that will be produced
         :return: nothing
         """
-        pr = ProducesResources(building_name=building_name, resource_name=resource_name)
-        self.__session.add(pr)
+        if not await self.__session.execute(select(ProducesResources).where(
+                ProducesResources.building_name == building_name and
+                ProducesResources.resource_name == resource_name)):
+            pr = ProducesResources(building_name=building_name, resource_name=resource_name)
+            self.__session.add(pr)
 
     async def createToopType(self, type_name: str, training_time: timedelta, battle_stats: BattleStats,
                              required_rank: int = None):
@@ -103,9 +112,9 @@ class DeveloperAccess:
         :param: required_rank: the rank a building is required to have to unlock the option to train this troop
         :return: nothing
         """
-
-        troop_type = TroopType.withBattleStats(type_name, training_time, battle_stats, required_rank)
-        self.__session.add(troop_type)
+        if not await self.__session.execute(select(TroopType).where(TroopType.type == type_name)):
+            troop_type = TroopType.withBattleStats(type_name, training_time, battle_stats, required_rank)
+            self.__session.add(troop_type)
 
     async def setTroopTypeCost(self, troop_name: str, resource_costs: List[Tuple[str, int]]):
         """

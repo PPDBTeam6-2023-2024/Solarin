@@ -80,3 +80,24 @@ class ArmyAccess:
         troops = await self.__session.execute(getentry)
         await self.__session.flush()
         return troops
+
+    async def getArmyById(self, army_id: int):
+        getentry = Select(Army).where(Army.id==army_id)
+        result = await self.__session.execute(getentry)
+        await self.__session.flush()
+        army = result.first()
+        return army
+
+    async def updateArmyCoordinates(self, army_id: int, x, y):
+        getentry = Select(Army).where(Army.id==army_id)
+        result = await self.__session.execute(getentry)
+        army = result.scalars().first()
+
+        if army is None:
+            return False
+
+        army.x = x
+        army.y = y
+
+        await self.__session.commit()
+        return True

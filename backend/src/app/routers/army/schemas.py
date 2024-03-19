@@ -30,6 +30,11 @@ class ArmySchema(BaseModel):
         from_attributes = True
 
 
+class ArmyUpdateSchema(BaseModel):
+    x: float
+    y: float
+
+
 class ArmyConsistsOfSchema(BaseModel):
     army_id: int
     troop_type: str

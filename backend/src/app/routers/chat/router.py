@@ -274,7 +274,7 @@ async def get_ranking(
         user_id: Annotated[int, Depends(get_my_id)],
         db: AsyncSession = Depends(get_db)
 
-) -> Tuple[str, int]:
+) -> List[Tuple[str, int]]:
     """
     get the ranking of users, based on the amount of Solarium they have
     """

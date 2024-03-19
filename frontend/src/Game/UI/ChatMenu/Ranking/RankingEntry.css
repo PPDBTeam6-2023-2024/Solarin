@@ -1,0 +1,15 @@
+.RankingEntry{
+    display: block;
+    border-bottom:0.2vw solid var(--tertiaryColor);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.RankingEntry *{
+    text-align: center;
+    justify-content:space-between;
+    align-items:center;
+
+    display: inline-block;
+
+}

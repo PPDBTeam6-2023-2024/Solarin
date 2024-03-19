@@ -14,7 +14,7 @@ function FriendOverviewEntry(props) {
       <>
           {/*Creates the div that contains the chat menu*/}
       <div className="transition ease-in-out" id={"FriendOverviewEntryVisual"} onClick={props.onEntryClick}>
-          <div style={{"width": "40%"}}>
+          <div style={{"width": "35%", "marginLeft": "5%"}}>
               {props.user}
           </div>
 

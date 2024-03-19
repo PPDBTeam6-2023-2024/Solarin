@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import FriendOverviewEntry from "./Friends/FriendOverviewEntry";
-import MessageBoard from "./MessageBoard";
+import FriendOverviewEntry from "./FriendOverviewEntry";
+import MessageBoard from "../MessageBoard";
 import axios from "axios";
-import FriendRequestEntry from "./Friends/FriendRequestEntry";
-import SendFriendRequestEntry from "./Friends/SendFriendRequestEntry";
+import FriendRequestEntry from "./FriendRequestEntry";
+import SendFriendRequestEntry from "./SendFriendRequestEntry";
 
 const getDMOverview = async() => {
     try {
@@ -26,7 +26,7 @@ const getFriendRequests = async() => {
 
 
 
-const DmTab = (props) => {
+const FriendsTab = (props) => {
     const [friendRequests, setFriendRequests] = useState([])
     const [dmData, setDmData] = useState([])
     const [dmIndex, setDmIndex] = useState(-1)
@@ -76,4 +76,4 @@ const DmTab = (props) => {
     )
 }
 
-export default DmTab;
+export default FriendsTab;

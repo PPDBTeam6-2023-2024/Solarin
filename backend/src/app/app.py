@@ -7,7 +7,7 @@ from .routers.logic.router import router as logic_router
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
 from .create_tuples import *
-from .database.models.models import User
+from .database.models.models import *
 
 
 def init_app(config: APIConfig) -> FastAPI:
@@ -30,7 +30,7 @@ def init_app(config: APIConfig) -> FastAPI:
 
     if config.db:
         sessionmanager.init(config.db.get_connection_string().get_secret_value())
-        session: AsyncSession = sessionmanager.session()
+        sessionmanager.session()
         @app.on_event("startup")
         async def startup():
             # create all types (planets, resources, troops, ...)

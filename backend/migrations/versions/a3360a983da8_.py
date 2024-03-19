@@ -1,8 +1,8 @@
 """
 
-Revision ID: f4e6f1ba9418
+Revision ID: a3360a983da8
 Revises: 
-Create Date: 2024-03-18 21:50:59.397139
+Create Date: 2024-03-19 17:40:47.181252
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f4e6f1ba9418'
+revision: str = 'a3360a983da8'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -145,19 +145,33 @@ def upgrade() -> None:
     sa.Column('email', sa.String(), nullable=True),
     sa.Column('username', sa.String(), nullable=True),
     sa.Column('hashed_password', sa.String(), nullable=True),
-    sa.Column('faction_name', sa.String(), nullable=True),
     sa.Column('alliance', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['alliance'], ['alliance.name'], initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('faction_name'),
     sa.UniqueConstraint('username')
     )
     op.create_index(op.f('ix_user_id'), 'user', ['id'], unique=False)
+    op.create_table('FriendRequest',
+    sa.Column('from_user_id', sa.Integer(), nullable=False),
+    sa.Column('to_user_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['from_user_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['to_user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('from_user_id', 'to_user_id')
+    )
+    op.create_table('allianceRequest',
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('alliance_name', sa.String(), nullable=False),
+    sa.ForeignKeyConstraint(['alliance_name'], ['alliance.name'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('user_id')
+    )
     op.create_table('army',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('last_update', sa.TIME(), nullable=True),
+    sa.Column('x', sa.Float(precision=53), nullable=False),
+    sa.Column('y', sa.Float(precision=53), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -165,6 +179,8 @@ def upgrade() -> None:
     sa.Column('region_id', sa.Integer(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('controlled_by', sa.Integer(), nullable=False),
+    sa.Column('x', sa.Float(precision=53), nullable=False),
+    sa.Column('y', sa.Float(precision=53), nullable=False),
     sa.Column('rank', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['controlled_by'], ['user.id'], ),
     sa.ForeignKeyConstraint(['region_id'], ['planetRegion.id'], ),
@@ -245,6 +261,8 @@ def downgrade() -> None:
     op.drop_table('friendsOf')
     op.drop_table('city')
     op.drop_table('army')
+    op.drop_table('allianceRequest')
+    op.drop_table('FriendRequest')
     op.drop_index(op.f('ix_user_id'), table_name='user')
     op.drop_table('user')
     op.drop_table('producesResources')

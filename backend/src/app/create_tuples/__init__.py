@@ -18,6 +18,8 @@ class CreateTuples():
         await self.create_planet_types(types["planets"])
         await self.create_troop_types(types["units"])
         await self.create_barracks_types(types["barracks"])
+        await self.create_tower_types(types["towers"])
+        await self.create_wall_types(types["walls"])
         await self.create_building_types(types["buildings"])
         await self.__session.commit()
 

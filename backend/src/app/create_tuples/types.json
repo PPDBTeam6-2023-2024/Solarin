@@ -17,7 +17,7 @@
   "towers": [
     {"name":  "Sentry Tower", "attack":  50},
     {"name":  "Plasmic Cannons", "attack":  100},
-    {"name":  "Directed Antiprotonic Annihilation System", ",attack":  150}
+    {"name":  "Directed Antiprotonic Annihilation System", "attack":  150}
   ],
   "walls": [
     {"name":  "Reinforced Techno-Mesh", "defense": 50},

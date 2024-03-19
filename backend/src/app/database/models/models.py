@@ -1,9 +1,11 @@
+import sqlalchemy.orm.state
 from sqlalchemy import *
 
 from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship
 
 from ...routers.authentication.schemas import MessageToken, BattleStats
+from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from datetime import timedelta
 
 
@@ -340,6 +342,13 @@ class Army(Base):
     y = Column(Float(precision=53), nullable=False)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
+
+    def to_army_schema(self):
+        return ArmySchema(id=self.id,
+                          user_id=self.user_id,
+                          last_update=str(self.last_update),
+                          x=self.x,
+                          y=self.y)
 
 
 class ArmyConsistsOf(Base):

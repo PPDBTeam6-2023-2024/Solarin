@@ -40,11 +40,8 @@ async def get_cities(
     # Initialize an empty list to store the building schemas
     cities_schemas = []
 
-    for city in cities:
-        schema = city.to_city_schema()
-        cities_schemas.append(schema)
     # Iterate through each building, creating a BuildingInstanceSchema for each one
-    cities_schemas = [city.to_city_schema() for city in cities]
+    cities_schemas = [city[0].to_city_schema() for city in cities]
 
     # Return the list of BuildingInstanceSchema instances
     return cities_schemas

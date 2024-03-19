@@ -16,7 +16,7 @@ class ArmyAccess:
         :param: user_id: the id of the user who created the army
         :return: army_id: id of the army that was just generated
         """
-        army = Army(user_id=user_id)
+        army = Army(user_id=user_id, x=0, y=0)
         self.__session.add(army)
         await self.__session.flush()
         return army.id

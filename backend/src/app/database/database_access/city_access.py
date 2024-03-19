@@ -17,7 +17,7 @@ class CityAccess:
         :return: the id of the city
         """
 
-        city = City(region_id=region_id, controlled_by=founder_id)
+        city = City(region_id=region_id, controlled_by=founder_id, x=0, y=0)
         self.__session.add(city)
         await self.__session.flush()
         city_id = city.id

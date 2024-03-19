@@ -60,6 +60,26 @@ class DeveloperAccess:
         brt = BarracksType(name=name)
         self.__session.add(brt)
 
+    async def createTowerType(self, name: str, attack: int):
+        """
+        Creates a new type of tower
+
+        :param: name: name of the tower type
+        :return: nothing
+        """
+        tower = TowerType(name=name, attack=attack)
+        self.__session.add(tower)
+
+    async def createWallType(self, name: str, defense: int):
+        """
+       Creates a new type of wall
+
+       :param: name: name of the wall type
+       :return: nothing
+       """
+        wall = WallType(name=name, defense=defense)
+        self.__session.add(wall)
+
     async def createHouseType(self, name: str, residents: int):
         """
         Create a new type of house having its citizens

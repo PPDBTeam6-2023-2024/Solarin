@@ -146,12 +146,12 @@ class DeveloperAccess:
             troop_type_cost = TroopTypeCost(troop_type=troop_name, resource_type=resource[0], amount=resource[1])
             self.__session.add(troop_type_cost)
 
-    async def setUpgradeCost(self, building_name: str, resource_costs: List[Tuple[str, int]]):
+    async def setCreationCost(self, building_name: str, resource_costs: List[Tuple[str, int]]):
         """
-        add an upgrade cost for a certain building,
-        This stores the base values for an upgrade
+        add an crate cost for a certain building,
+        This stores the base values for a creation
 
-        :param: building_name: the name of the building type we want to upgrade
+        :param: building_name: the name of the building type we want to create
         :param: resource_costs: a list of tuples with format List[Tuple[str, int]].
                 The tuples will contain (resource_name, amount) and it is a list to easily support adding
                 costs of multiple resources for 1 troop type.
@@ -159,10 +159,10 @@ class DeveloperAccess:
         """
 
         await self.__session.flush()
-        old_up_cost = delete(UpgradeCost).where(UpgradeCost.building_name == building_name)
+        old_up_cost = delete(CreationCost).where(CreationCost.building_name == building_name)
         await self.__session.execute(old_up_cost)
 
         for resource in resource_costs:
-            upgrade = UpgradeCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
+            upgrade = CreationCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
             self.__session.add(upgrade)
 

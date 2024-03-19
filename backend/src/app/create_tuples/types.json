@@ -15,16 +15,16 @@
     {"name":  "space-dock", "creation-cost": 1250, "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}]}
     ],
   "towers": [
-    {"name":  "Sentry Tower", "attack":  50},
-    {"name":  "Plasmic Cannons", "attack":  100},
-    {"name":  "Directed Antiprotonic Annihilation System", "attack":  150}
+    {"name":  "Sentry Tower", "attack":  50, "creation-cost":  500},
+    {"name":  "Plasmic Cannons", "attack":  100, "creation-cost":  2500},
+    {"name":  "Directed Antiprotonic Annihilation System", "attack":  150, "creation-cost":  10000}
   ],
   "walls": [
-    {"name":  "Reinforced Techno-Mesh", "defense": 50},
-    {"name":  "Solarinium Absorption Barrier", "defense": 100},
-    {"name":  "Void-fuelled Nullification Wall", "defense": 150}
+    {"name":  "Reinforced Techno-Mesh", "defense": 50, "creation-cost":  500},
+    {"name":  "Solarinium Absorption Barrier", "defense": 100, "creation-cost":  2500},
+    {"name":  "Void-fuelled Nullification Wall", "defense": 150, "creation-cost":  10000}
   ],
-  "buildings": [
+  "production-buildings": [
     {"name":  "nexus", "creation-cost" : 6500,"products": [
       {"product-name":  "SOL", "base-rate":  5, "base-cap":  500},
       {"product-name":  "TF", "base-rate":  15, "base-cap":  5000}

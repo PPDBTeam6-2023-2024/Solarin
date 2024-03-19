@@ -24,7 +24,7 @@ function App() {
 
   return (
     <div className="App">
-      <PlanetViewer data={data} width={400} height={400} mapImage='./Game/Images/Planets/example.png' planetName="test"/>
+      <PlanetViewer data={data} planetName="test"/>
     </div>
   );
 }

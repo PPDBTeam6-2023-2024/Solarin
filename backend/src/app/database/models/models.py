@@ -29,7 +29,7 @@ class HasResources(Base):
     __tablename__ = "hasResources"
     owner_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
     resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
-    quantity = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False, default=0)
 
 
 class Alliance(Base):

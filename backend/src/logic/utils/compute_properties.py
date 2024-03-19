@@ -73,4 +73,3 @@ class PropertyUtility:
     def getSurvivedUnitsAmount(pbr: int, number_of_units: int) -> int:
         survival : float = PropertyUtility.getTruncNormSample(pbr/PropertyUtility.base_point_bounds[1], 0.1, (0,1))
         return int(round(survival*number_of_units))
-

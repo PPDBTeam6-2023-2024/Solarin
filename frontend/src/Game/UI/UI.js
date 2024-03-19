@@ -22,7 +22,6 @@ function UI() {
     const [primaryColor, setPrimaryColor] = useState("#ce1c75")
     const [secondaryColor, setSecondaryColor] = useState("#d57d11")
     const [tertiaryColor, setTertiaryColor] = useState("#e1b812")
-
     return(
 
         <div className="UI" style={

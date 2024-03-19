@@ -75,7 +75,7 @@ class PlanetAccess:
         ).where(PlanetRegion.planet_id == planet_id)
 
         results = await self.__session.execute(select_cities)
-        return results.scalars().all()
+        return results.all()
 
     async def getRegionCities(self, region_id: int):
         """

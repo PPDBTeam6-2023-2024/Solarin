@@ -19,7 +19,9 @@ async def fill_db():
         setup database data that can be queried
         """
         da = DataAccess(session)
-
+        await da.DeveloperAccess.createResourceType("Vibranium")
+        await da.DeveloperAccess.createResourceType("Energon")
+        await da.DeveloperAccess.createResourceType("SOL")
         """
         Creates 50 users
         """
@@ -107,8 +109,6 @@ async def fill_db():
         await da.DeveloperAccess.createProductionBuildingType("The mines of moria", 100, 2000)
         await da.DeveloperAccess.createBarracksType("Kamino training complex")
         await da.DeveloperAccess.createHouseType("Solarin mansion", 50)
-        await da.DeveloperAccess.createResourceType("Vibranium")
-        await da.DeveloperAccess.createResourceType("Energon")
         await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium")
 
         await da.DeveloperAccess.setUpgradeCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
@@ -158,6 +158,5 @@ async def fill_db():
         await da.TrainingAccess.trainType(a_id, b_id2, "tank", 3, 10)
 
         await da.commit()
-        await session.disconnect()
 
 asyncio.run(fill_db())

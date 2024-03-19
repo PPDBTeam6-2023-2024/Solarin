@@ -3,6 +3,7 @@ from ..database import AsyncSession
 from typing import List, Tuple
 from sqlalchemy import select, exists
 
+
 class DeveloperAccess:
     """
     This class will manage the sql access for developers to easily expand the game

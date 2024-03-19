@@ -5,7 +5,7 @@ import os
 from src.app.database.database import sessionmanager
 
 
-class CreateTuples():
+class CreateTuples:
 
     async def create_all_tuples(self):
         async with sessionmanager.session() as session:
@@ -50,22 +50,11 @@ class CreateTuples():
 
     async def create_building_types(self, building_types: list[dict[str, Any]]):
         for building_type in building_types:
-            if building_type.get("is-barrack", False):
-                if await self.__session.get(BarracksType, building_type["name"]) is None:
-                    await self.__dev.createBarracksType(building_type["name"])
-            else:
-                if await self.__session.get(ProductionBuildingType, building_type["name"]) is None:
-                    # to change
-                    base_production: int = building_type["products"][0].get("base-production") if \
-                    building_type["products"][0].get(
-                        "base-production", None) is not None else building_type["products"][0]["base-rate"] * 60
-                    await self.__dev.createProductionBuildingType(building_type["name"], base_production,
-                                                                  building_type["products"][0]["base-cap"])
-
-                    await self.__dev.setUpgradeCost(building_type["name"],
-                                                    [("TF", PropertyUtility.getGUC(building_type["creation-cost"], 1))])
-                    for resource_type in building_type["products"]:
-                        await self.__dev.setProducesResources(building_type["name"], resource_type["product-name"])
+            if await self.__session.get(ProductionBuildingType, building_type["name"]) is None:
+                await self.__dev.setUpgradeCost(building_type["name"],
+                                                [("TF", PropertyUtility.getGUC(building_type["creation-cost"], 1))])
+                for resource_type in building_type["products"]:
+                    await self.__dev.setProducesResources(building_type["name"], resource_type["product-name"], resource_type["base-rate"], resource_type["base-cap"])
 
     async def create_resource_types(self, resource_types: list[str]):
         for resource_type in resource_types:

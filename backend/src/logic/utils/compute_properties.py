@@ -35,5 +35,4 @@ class PropertyUtility():
     def getUnitStrength(self, current_points: list[int], unit_rank: int) -> float:
         return (unit_rank*mean(current_points))/(mean(PropertyUtility.base_point_bounds))
 
-    @staticmethod
     

@@ -37,6 +37,12 @@ class UserAccess:
         self.__session.add(user)
         await self.__session.flush()
         user_id = user.id
+
+        """
+        make has resource entry
+        """
+        await self.__setHasResourceEntries(user_id)
+
         return user_id
 
     async def getFactionName(self, user_id: str):
@@ -205,3 +211,13 @@ class UserAccess:
         results = await self.__session.execute(friend_requests)
         results = results.all()
         return results
+
+    async def __setHasResourceEntries(self, user_id: int):
+        """
+        make a table entry for each resource for the given user in hasResource
+        """
+        resources = await self.__session.execute(Select(ResourceType.name))
+        resources = resources.all()
+        for resource in resources:
+            self.__session.add(HasResources(owner_id=user_id, resource_type=resource[0]))
+        await self.__session.flush()

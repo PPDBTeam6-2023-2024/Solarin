@@ -99,7 +99,7 @@ async def dm_overview(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.MessageAccess.getFriendMessageOverview(user_id, 20)
+    data = await data_access.MessageAccess.getFriendMessageOverview(user_id)
 
     """
     transform data to web format
@@ -234,7 +234,7 @@ async def alliance_requests(
     return output_list
 
 @router.post("/alliance_requests")
-async def friend_requests(
+async def alliance_requests(
         request: Request,
         user_id: Annotated[int, Depends(get_my_id)],
         db: AsyncSession = Depends(get_db),
@@ -268,3 +268,17 @@ async def alliance_messageboard(
     alliance = await data_access.AllianceAccess.getAlliance(user_id)
     message_board = await data_access.MessageAccess.getAllianceMessageBoard(alliance)
     return message_board
+
+@router.get("/ranking")
+async def get_ranking(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+) -> Tuple[str, int]:
+    """
+    get the ranking of users, based on the amount of Solarium they have
+    """
+
+    data_access = DataAccess(db)
+    ranking = await data_access.RankingAccess.getTopRanking(30)
+    return ranking

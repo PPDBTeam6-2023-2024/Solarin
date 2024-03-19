@@ -1,39 +1,37 @@
-import {TreeView, TreeItem} from '@mui/x-tree-view'
-import Draggable from 'react-draggable'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { TreeView, TreeItem } from '@mui/x-tree-view';
+import Draggable from 'react-draggable';
 
 function ArmyViewer(props) {
-    // TODO: with more info (ap, dp, cap, cdp, ...) and more icons, ...
-    const example_armies_input = [
-        {
-            'name': 'Red Dragon',
-            'general': {'name': 'Tarkin'},
-            'troops': [
-                {'type': 'Assassin', "count": 10},
-                {'type': 'Tank', "count": 3}
-            ]
-        }
-    ]
-    let example_armies_output = []
-    let elem = example_armies_input[0]
-    let index = 0
-    const name_str = (elem.name) ? `'${elem.name}'` : ""
-    let troops_output = []
-    let totalcount = 0
-    elem.troops.forEach((elem, sub_index) => {
-        troops_output.push(<TreeItem nodeId={`${index}-${sub_index}`} label={`${elem.count}x Troop ${elem.type}`}/>)
-        totalcount += elem.count
-    })
+    const [troops, setTroops] = useState([]); // Renamed from armies to troops for clarity
 
-    example_armies_output.push(
-        <TreeItem className="border-2" sx={{padding: "0.25rem"}} nodeId={`${index}`}
-                  label={`stats`}>
-        </TreeItem>)
-    example_armies_output.push(
-        <TreeItem className="border-2" sx={{padding: "0.25rem"}} nodeId={`${index}`}
-                  label={` ${totalcount} troops`}>
-            {troops_output}
-        </TreeItem>)
+    useEffect(() => {
+        const fetchTroops = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops?armyid=${props.armyId}`);
+                if (response.status === 200 && Array.isArray(response.data)) {
+                    setTroops(response.data); // Directly use the array response data
+                }
+            } catch (error) {
+                console.error("Failed to fetch troops", error);
+            }
+        };
 
+        fetchTroops();
+    }, [props.armyId]);
+
+    let troopsOutput = troops.map((troop, index) => {
+        return (
+            <TreeItem
+                key={index}
+                nodeId={`${index}`}
+                label={`${troop.size}x Troop ${troop.troop_type}`}
+            />
+        );
+    });
+
+    let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);
 
     return (
         <Draggable>
@@ -42,11 +40,14 @@ function ArmyViewer(props) {
                 aria-label="file system navigator"
                 sx={{zIndex: 1, flexGrow: 1, overflowY: 'auto', padding: "1rem"}}
             >
-                <h1 className="text-2xl my-1">Army 1</h1>
-                {example_armies_output}
+                <h1 className="text-2xl my-1">Army {props.armyId}</h1>
+                <TreeItem className="border-2" sx={{padding: "0.25rem"}} nodeId={`stats-${props.armyId}`} label={`stats`}></TreeItem>
+                <TreeItem className="border-2" sx={{padding: "0.25rem"}} nodeId={`total-${props.armyId}`} label={`${totalCount} troops`}>
+                    {troopsOutput}
+                </TreeItem>
             </TreeView>
         </Draggable>
-    )
+    );
 }
 
 export default ArmyViewer;

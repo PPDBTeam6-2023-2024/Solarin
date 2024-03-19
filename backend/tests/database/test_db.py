@@ -97,8 +97,8 @@ async def insert_test_data(connection_test):
         p_id = await da.PlanetAccess.createPlanet("Umbara", "Shadow planet", sr_id)
         await da.DeveloperAccess.createPlanetRegionType("valley of death", "Ooh.. very scary")
         r_id = await da.PlanetAccess.createPlanetRegion(p_id, "valley of death")
-        c_id = await da.CityAccess.createCity(r_id, 1)
-        c_id2 = await da.CityAccess.createCity(r_id, 1)
+        c_id = await da.CityAccess.createCity(r_id, 1, 0.2, 0.8)
+        c_id2 = await da.CityAccess.createCity(r_id, 1, 0.8, 0.2)
 
         """
         Create some types of buildings and resources
@@ -234,8 +234,13 @@ async def test_planet():
 
         cities = await da.PlanetAccess.getPlanetCities(1)
         assert len(cities) == 2
-        assert cities[0][0].id == 1
-        assert cities[0][0].controlled_by == 1
+        assert cities[0].id == 1
+        assert cities[0].controlled_by == 1
+        assert cities[0].x == 0.2
+        assert cities[0].y == 0.8
+        assert cities[1].x == 0.8
+        assert cities[1].y == 0.2
+
 
 
 async def test_buildings():

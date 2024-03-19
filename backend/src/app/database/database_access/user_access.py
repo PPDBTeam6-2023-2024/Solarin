@@ -63,10 +63,30 @@ class UserAccess:
         Get the User id corresponding to the given email
 
         :param: email: the email of the user whose id we want to retrieve
-        :return: faction name
+        :return: user id
         """
 
         find_uuid = select(User.id).where(User.email == email)
+        results = await self.__session.execute(find_uuid)
+        results = results.first()
+
+        """
+        exception in case the email has no corresponding account
+        """
+        if results is None:
+            raise Exception("SQL UserAccess --> getUserIdEmail: no id corresponds to the email")
+
+        return results[0]
+
+    async def getUserIdUsername(self, username: str):
+        """
+        Get the User id corresponding to the given username
+
+        :param: username: the username of the user whose id we want to retrieve
+        :return: user id
+        """
+
+        find_uuid = select(User.id).where(User.username == username)
         results = await self.__session.execute(find_uuid)
         results = results.first()
 
@@ -109,5 +129,79 @@ class UserAccess:
         mb = MessageBoard(chat_name=f"DM {user1_id}-{user2_id}")
         self.__session.add(mb)
         await self.__session.flush()
-
         self.__session.add(FriendsOf(user1_id=user1_id, user2_id=user2_id, message_board=mb.bid))
+
+        await self.__session.flush()
+
+    async def sendFriendRequest(self, from_user: int, to_user: int):
+        """
+        store a new friend request
+        :param: from_user: id of the user that sends the friend request
+        :param: to_user: id of the user that receives
+        """
+
+        """
+        check if the users are already friends
+        """
+        sym_friends = getFriendsQuerySym(from_user)
+        check_friends = sym_friends.select().where(sym_friends.c.user_id == to_user)
+        results = await self.__session.execute(check_friends)
+        results = results.first()
+        if results is not None:
+            raise Exception("Users are already friends")
+
+        """
+        if friend request is already send we return that information
+        """
+        results = await self.__session.execute(Select(FriendRequest).
+                                               where((FriendRequest.from_user_id == from_user) & (FriendRequest.to_user_id == to_user)))
+
+        results = results.first()
+        if results is not None:
+            raise Exception("Friend request has already been send")
+
+        fq = FriendRequest(from_user_id= from_user, to_user_id=to_user)
+        self.__session.add(fq)
+
+        await self.__session.flush()
+
+    async def acceptFriendRequest(self, from_user: int, to_user: int):
+        """
+        when a friend request is accepted, these users become friends
+        :param: from_user: id of the user that sends the friend request
+        :param: to_user: id of the user that receives
+        """
+
+        await self.__removeFriendRequest(from_user, to_user)
+        await self.addFriendship(from_user, to_user)
+
+    async def rejectFriendRequest(self, from_user: int, to_user: int):
+        """
+        remove friend request
+        :param: from_user: id of the user that sends the friend request
+        :param: to_user: id of the user that receives
+        """
+        await self.__removeFriendRequest(from_user, to_user)
+
+    async def __removeFriendRequest(self, from_user: int, to_user: int):
+        """
+        remove friend request
+        :param: from_user: id of the user that sends the friend request
+        :param: to_user: id of the user that receives
+        """
+        delete_request = delete(FriendRequest).where(
+            (from_user == FriendRequest.from_user_id) & (to_user == FriendRequest.to_user_id))
+        await self.__session.execute(delete_request)
+
+        await self.__session.flush()
+
+    async def getFriendRequests(self, user_id: int):
+        """
+        We want to retrieve all the friend requests of a user
+        :param: user_id: id of the user whose friend requests we want to retrieve
+        :return: list of users whose sended a friend request
+        """
+        friend_requests = Select(User).join(FriendRequest, FriendRequest.from_user_id == User.id).where(FriendRequest.to_user_id == user_id)
+        results = await self.__session.execute(friend_requests)
+        results = results.all()
+        return results

@@ -1,0 +1,36 @@
+#FriendOverviewEntryVisual{
+    width: 100%;
+    height: 5vw;
+
+    border-bottom:0.2vw solid var(--tertiaryColor);
+    margin-left: auto;
+    margin-right: auto;
+
+
+}
+
+#FriendOverviewEntryVisual:hover{
+    --scaleIndex: 110%;
+    transform: scale(var(--scaleIndex));
+    border-top:0.2vw solid var(--tertiaryColor);
+    z-index: 21;
+}
+
+#FriendOverviewEntryVisual *{
+    overflow: hidden;
+    text-align: center;
+    justify-content:space-between;
+    align-items:center;
+
+    display: inline-block;
+
+
+}
+
+#FriendOverviewEntryMessage{
+
+    border-radius: 1vw 0 0 2.7vw;
+    padding-left: 1.1vw;
+    border-left:0.2vw solid var(--tertiaryColor);
+    word-wrap: break-word
+}

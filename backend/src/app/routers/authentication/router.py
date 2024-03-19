@@ -52,16 +52,14 @@ async def authenticate_user(session: AsyncSession, username: str, password: str)
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta):
+def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
-    to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
 @router.post("/token")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(get_db), expire: float = Query(30, ge=0, lt=60)) -> Token:
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(get_db)) -> Token:
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -70,7 +68,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(
-        data={"sub": str(user.id)}, expires_delta=timedelta(minutes=expire)
+        data={"sub": str(user.id)}
     )
     return Token(access_token=access_token, token_type="bearer")
 
@@ -106,4 +104,4 @@ def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
 async def me(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
     result = await db.execute(select(User).where(User.id == user_id))
     scalar = result.scalars().all()[0]
-    return {"username": scalar.username, "id": scalar.id, "email": scalar.email}
+    return {"username": scalar.username, "id": scalar.id, "email": scalar.email, "alliance": scalar.alliance}

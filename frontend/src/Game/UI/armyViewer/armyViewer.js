@@ -52,7 +52,7 @@ function ArmyViewer({ armyId, onUpdatePosition }) {
 
     return (
         <Draggable>
-            <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: 'auto', height: 'auto' }}>
+            <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: 'auto', minWidth: '300px', height: 'auto' }}>
                 <TreeView aria-label="file system navigator">
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
                     <Button variant="contained" onClick={() => setShowInputFields(true)} sx={{ margin: "10px" }}>

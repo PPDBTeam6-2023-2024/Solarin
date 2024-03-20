@@ -14,8 +14,8 @@ cd $DIR
 source $VENV
 
 exec gunicorn src.app.__main__:app \
-  --keyfile=./localhost+4-privkey.pem \
-  --certfile=./localhost+4-fullchain.pem \
+  --ssl-keyfile=/etc/letsencrypt/live/team6.ua-ppdb.me/privkey.pem \
+  --ssl-certfile=/etc/letsencrypt/live/team6.ua-ppdb.me/fullchain.pem\
   --name $NAME \
   --workers $WORKERS \
   --worker-class $WORKER_CLASS \

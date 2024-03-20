@@ -49,13 +49,13 @@ function ProfileViewer() {
                 </div>
 
                 {selectedCategory === "Cities" &&
-                    <div className="profile_viewer_list absolute" style={{"overflow-y": "scroll", "width":"80%", "height": "80%", "scrollbarWidth:": "none"}} >
+                    <div className="profile_viewer_list absolute" style={{"overflowY": "scroll", "width":"80%", "height": "80%", "scrollbarWidth:": "none"}} >
                         {citiesList.map((c, index) => <ProfileListEntry key={index} text={`city ${c.id} on ${c.planet_name}`} type={"City"} x={c.x} y={c.y}/>)}
                     </div>
                 }
 
                 {selectedCategory === "Armies" &&
-                    <div className="profile_viewer_list absolute" style={{"overflow-y": "scroll", "width":"80%", "height": "80%", "scrollbarWidth:": "none"}} >
+                    <div className="profile_viewer_list absolute" style={{"overflowY": "scroll", "width":"80%", "height": "80%", "scrollbarWidth:": "none"}} >
                         {armiesList.map((c, index) => <ProfileListEntry key={index} text={`army ${c.id}`} type={"Army"} x={c.x} y={c.y}/>)}
                     </div>
                 }

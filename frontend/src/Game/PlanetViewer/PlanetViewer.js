@@ -121,6 +121,19 @@ function PlanetViewer(props) {
          <h1>{props.planetName}</h1>
          <RiArrowRightSLine className="transition ease-in-out hover:scale-150" onClick={() => {let new_id = planetListIndex+1; new_id = new_id % planetList.length; setPlanetListIndex(new_id)}}/>
          </div>
+
+            {
+                activeArmyViewers.map(({id, position}) => (
+                    <div key={id} style={{
+                        position: 'absolute',
+                        left: `${position.x}px`,
+                        top: `${position.y}px`,
+                    }}>
+                        <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
+                    </div>
+                ))
+            }
+
         {
         image &&
             <MapInteractionCSS
@@ -136,11 +149,23 @@ function PlanetViewer(props) {
                     }}
                 >
                     <img src={image.src} alt="map"
-                         style={{imageRendering: "pixelated", width: "100%", height: "auto"}}/>
+                         style={{imageRendering: "pixelated", width: "100vw", height: "auto"}}/>
                     {armyImages.map((army, index) => (
                         <img key={index} src={army.src} alt="army" style={army.style}
                              onClick={(e) => toggleArmyViewer(e, army.id)}/>
                     ))}
+
+                    {/*Display cities on the map*/}
+                        {showCities && cityImages.map((city, index) => (
+                          <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
+                        ))}
+
+                    {/*Display cityManager over the map*/}
+                    {selectedCityId && showCityManager && (
+                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
+                                <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
+                            </div>
+                    )}
 
                 </MapInteractionCSS>
 

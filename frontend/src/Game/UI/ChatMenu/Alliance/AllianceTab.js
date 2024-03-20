@@ -119,7 +119,7 @@ const AllianceTab = (props) => {
                             {/*this part gives an overview of the alliance, when the user is part of an alliance*/}
 
                             {/*visualize all alliance join requests*/}
-                            <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
+                            <div style={{"overflowY": "scroll", "height":"85%", "scrollbarWidth:": "none"}}>
                                     {
                                     /*display all friend requests*/
                                     allianceRequests.map((elem, index) => <AllianceRequestEntry user={elem[0]} user_id={elem[1]} key={index}

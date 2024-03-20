@@ -77,7 +77,9 @@ function PlanetViewer(props) {
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
         const fetchCities = async () => {
-            const cities = await getCities(1); // replace with actual planetID
+            const cities = await getCities(1);
+
+            // replace with actual planetID
             const cityElements = cities.map(city => ({
                 ...city,
                 onClick: () => handleCityClick(city.id),

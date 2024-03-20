@@ -4,9 +4,6 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import getCities from './CityViewer/getCities';
 import CityManager from "./CityViewer/cityManager";
 import {PlanetListContext} from "./../Context/PlanetListContext"
-import {MapInteractionCSS} from 'react-map-interaction';
-import {useState, useEffect} from 'react';
-import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
 import ArmyViewer from '../UI/armyViewer/armyViewer'
 import getArmies from "./getArmies";
 

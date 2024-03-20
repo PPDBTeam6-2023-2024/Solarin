@@ -35,16 +35,20 @@ const Game = () => {
         }
     }
 
+    const setPlanetListToDefault = async() => {
+        setPlanetList([[1, "Terra"]])
+    }
+
     const getAllPlanets = async () => {
         /*retrieve a list of planet id's and planet names to switch between them*/
         try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets`)
-        setPlanetList(response.data)
-
+        if (response.data.length > 0) setPlanetList(response.data)
+        else setPlanetListToDefault()
         }
         catch(error) {
-            setPlanetList([[1, "Terra"]])
+            setPlanetListToDefault()
         }
     }
 

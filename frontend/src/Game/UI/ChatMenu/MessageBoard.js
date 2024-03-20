@@ -29,7 +29,7 @@ function MessageBoard(props) {
 
        is_connected.current = true;
 
-       const web_socket = new WebSocket(`ws://${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/chat/dm/${props.message_board}`, `${localStorage.getItem('access-token')}`);
+       const web_socket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/chat/dm/${props.message_board}`, `${localStorage.getItem('access-token')}`);
         setSocket(web_socket);
     }, []);
 

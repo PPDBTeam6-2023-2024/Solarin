@@ -65,3 +65,19 @@ async def update_army_coordinates(
 
     # for now the traveltime is set to 1 until we implement the speed calculation and stuff
     return JSONResponse(content={"message": "Army coordinates updated successfully", "travel_time": 1}, status_code=200)
+
+
+@router.get("/armies_user")
+async def friend_requests(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+):
+    """
+    send a list of all armies owned by a user
+    """
+
+    data_access = DataAccess(db)
+    armies = await data_access.ArmyAccess.getUserArmies(user_id)
+    armies_schemas = [army[0].to_army_schema() for army in armies]
+    return armies_schemas

@@ -101,3 +101,10 @@ class ArmyAccess:
 
         await self.__session.commit()
         return True
+
+    async def getUserArmies(self, userid: int):
+        getentry = Select(Army).where(Army.user_id==userid)
+        armies = await self.__session.execute(getentry)
+        await self.__session.flush()
+        armies = armies.all()
+        return armies

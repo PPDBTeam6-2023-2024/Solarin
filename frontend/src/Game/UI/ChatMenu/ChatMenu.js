@@ -24,7 +24,7 @@ const CategoryTab = (props) => {
       nav_bar_list.push(
           <>
               {selectedCategory === elem ? <li style={{"color": selected_hex}}>{elem}</li>:
-                  <li style={{"color": not_selected_hex}} onClick={() => setSelectedCategory(elem)}>{elem}</li>
+                  <li key={elem} style={{"color": not_selected_hex}} onClick={() => setSelectedCategory(elem)}>{elem}</li>
               }
           </>
       )

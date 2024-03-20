@@ -116,7 +116,7 @@ function MessageBoard(props) {
     return (
       <>
           {/*Display the messages*/}
-          <div ref={scroll_bar} style={{"overflow-y": "scroll", "height":"80%", "scrollbar-width:": "none", "borderBottom":"0.3vw solid var(--tertiaryColor)"}}>
+          <div ref={scroll_bar} style={{"overflow-y": "scroll", "height":"80%", "scrollbarWidth:": "none", "borderBottom":"0.3vw solid var(--tertiaryColor)"}}>
               {messageList.map((d, index) => <Message key={index} message={d}/>)}
               <div ref={scroll_bottom}/>
           </div>

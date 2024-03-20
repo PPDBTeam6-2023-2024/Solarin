@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Query
 
-from ...database.database import get_db
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
 from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion
-
+from ..authentication.router import get_my_id
+from ...database.database import get_db, AsyncSession
 router = APIRouter(prefix="/cityManager", tags=["City"])
 
 
@@ -42,6 +42,23 @@ async def get_cities(
 
     # Iterate through each building, creating a BuildingInstanceSchema for each one
     cities_schemas = [city[0].to_city_schema() for city in cities]
-
     # Return the list of BuildingInstanceSchema instances
+    return cities_schemas
+
+
+@router.get("/cities_user")
+async def friend_requests(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+):
+    """
+    send a list of all cities controlled by a user
+    """
+
+    data_access = DataAccess(db)
+    data = await data_access.CityAccess.getCitiesByController(user_id)
+
+    cities_schemas = [city[0].to_city_schema() for city in data]
+
     return cities_schemas

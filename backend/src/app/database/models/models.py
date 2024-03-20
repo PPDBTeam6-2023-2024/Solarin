@@ -7,9 +7,11 @@ from sqlalchemy.orm import declarative_base, relationship, declared_attr
 from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
+from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from datetime import timedelta
 
 from sqlalchemy.orm.state import InstanceState
+
 
 class User(Base):
     """
@@ -21,6 +23,8 @@ class User(Base):
     username = Column(String, unique=True)
     hashed_password = Column(String)
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED'))
+    faction_name = Column(String)
+
 
 class HasResources(Base):
     """
@@ -135,7 +139,7 @@ class PlanetRegion(Base):
     planet_id = Column(Integer, ForeignKey("planet.id"))
     region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
 
-    planet = relationship("Planet", back_populates="regions", lazy='select')
+    planet = relationship("Planet", back_populates="regions", lazy='joined')
     cities = relationship("City", back_populates="region", lazy='select')
 
 
@@ -163,7 +167,7 @@ class City(Base):
 
     rank = Column(Integer, nullable=False, default=1)
 
-    region = relationship("PlanetRegion", back_populates="cities")
+    region = relationship("PlanetRegion", back_populates="cities", lazy='joined')
 
     def to_city_schema(self):
         return CitySchema(id=self.id,
@@ -172,7 +176,9 @@ class City(Base):
                           x=self.x,
                           y=self.y,
                           rank=self.rank,
-                          region_type=self.region.region_type)
+                          region_type=self.region.region_type,
+                          planet_name=self.region.planet.name,
+                          planet_id=self.region.planet_id)
 
 
 class BuildingInstance(Base):
@@ -385,6 +391,13 @@ class Army(Base):
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
 
+    def to_army_schema(self):
+        return ArmySchema(id=self.id,
+                          user_id=self.user_id,
+                          last_update=str(self.last_update),
+                          x=self.x,
+                          y=self.y)
+
 
 class ArmyConsistsOf(Base):
     """
@@ -398,6 +411,12 @@ class ArmyConsistsOf(Base):
 
     army = relationship("Army", back_populates="consists_of", lazy='select')
     troop = relationship("TroopType", back_populates="in_consist_of", lazy='select')
+
+    def to_armyconsistsof_schema(self):
+        return ArmyConsistsOfSchema(army_id=self.army_id,
+                                    troop_type=self.troop_type,
+                                    rank=self.rank,
+                                    size=self.size)
 
 
 class CreationCost(Base):

@@ -13,36 +13,51 @@ function ProfileViewer() {
     const [selectedCategory, setSelectedCategory] = useState("");
 
     const [citiesList, setCitiesList] = useState([]);
+    const [armiesList, setArmiesList] = useState([]);
 
-    const getCitiesPositions = async(planetId) => {
+    const getCitiesPositions = async() => {
         /*get the list of all the requests to join the alliance*/
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/cities?planet_id=${planetId}`)
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/cities_user`)
             setCitiesList(response.data)
-
         }
         catch(e) {setCitiesList([])}
     }
 
+    const getArmiesPositions = async() => {
+        /*get the list of all the requests to join the alliance*/
+        try {
+            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies_user`)
+            setArmiesList(response.data)
+        }
+        catch(e) {setArmiesList([])}
+    }
+
     return (
         <>
-            <div id="profile_viewer">
+            <div className="profile_viewer">
                 <h1>Username: {userInfo.username}</h1>
 
-                <div style={{"width":"9%", "height": "100%", "marginLeft": "5vw"}} >
+                <div style={{"width":"15%", "height": "100%", "marginLeft": "1vw"}} >
                     <ul>
-                        <div className="profile_viewer_category_button" onClick={() => {setSelectedCategory("Cities"); getCitiesPositions(1);}}>Cities</div>
-                        <div className="profile_viewer_category_button" onClick={() => setSelectedCategory("Armies")}>Armies</div>
+                        <div className="profile_viewer_category_button" onClick={() => {setSelectedCategory("Cities"); getCitiesPositions();}}>Cities</div>
+                        <div className="profile_viewer_category_button" onClick={() => {setSelectedCategory("Armies"); getArmiesPositions();}}>Armies</div>
                     </ul>
 
                 </div>
 
                 {selectedCategory === "Cities" &&
-                    <div className="profile_viewer_list absolute right-0" style={{"overflow-y": "scroll", "width":"80%", "height": "50vw", "scrollbar-width:": "none"}} >
-                        {citiesList.map((c, index) => <ProfileListEntry key={index} text={`city ${c.id}`} type={"City"} x={c.x} y={c.y}/>)}
+                    <div className="profile_viewer_list absolute" style={{"overflowY": "scroll", "width":"80%", "height": "80%", "scrollbarWidth:": "none"}} >
+                        {citiesList.map((c, index) => <ProfileListEntry key={index} text={`city ${c.id} on ${c.planet_name}`} type={"City"} x={c.x} y={c.y}/>)}
                     </div>
+                }
 
+                {selectedCategory === "Armies" &&
+                    <div className="profile_viewer_list absolute" style={{"overflowY": "scroll", "width":"80%", "height": "80%", "scrollbarWidth:": "none"}} >
+                        {armiesList.map((c, index) => <ProfileListEntry key={index} text={`army ${c.id}`} type={"Army"} x={c.x} y={c.y}/>)}
+                    </div>
                 }
 
             </div>

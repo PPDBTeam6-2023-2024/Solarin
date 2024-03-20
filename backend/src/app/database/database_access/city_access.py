@@ -34,3 +34,16 @@ class CityAccess:
         results = await self.__session.execute(get_user)
 
         return results.first()[0]
+
+    async def getCitiesByController(self, user_id: int):
+        """
+        get all the cities controlled by a certain user
+        :param: city_id: id of the city
+        :return: the id of the user who is currently in control of the city
+        """
+        get_cities = Select(City).where(City.controlled_by == user_id).order_by(asc(City.id))
+
+        results = await self.__session.execute(get_cities)
+        results = results.all()
+
+        return results

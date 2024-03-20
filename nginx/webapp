@@ -5,7 +5,7 @@ server {
     listen 80;
     location /api/ {
         rewrite ^/api/(.*)$ /$1 break;
-        proxy_pass https://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock;
+        proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock;
  }
 
     root /home/app/PPDB-Template-App/frontend/build;
@@ -18,7 +18,7 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_pass https://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
+        proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
     }
 
     listen 443 ssl; # managed by Certbot

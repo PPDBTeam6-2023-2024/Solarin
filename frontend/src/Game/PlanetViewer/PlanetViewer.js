@@ -123,44 +123,7 @@ function PlanetViewer(props) {
          </div>
         {
         image &&
-            <MapInteractionCSS minScale={1} maxScale={5} translationBounds={{xMin: image.width-mapState.scale*image.width, xMax: 0, yMin: image.height-mapState.scale*image.height, yMax: 0}} value={mapState} onChange={(value) => {setMapState(value)}}>
-              <img src={image.src} alt="map" style={{imageRendering: "pixelated", width:"100vw"}} />
-
-                        {/*Display cities on the map*/}
-                        {showCities && cityImages.map((city, index) => (
-                          <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
-                        ))}
-
-                        {/*Display cityManager over the map*/}
-                        {selectedCityId && showCityManager && (
-                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                                <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
-                            </div>
-                        )}
-
-            </MapInteractionCSS>
-
-        }
-            <div
-                className="bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl justify-between items-center flex">
-                <RiArrowLeftSLine className="transition ease-in-out hover:scale-150"/>
-                <h1>{props.planetName}</h1>
-                <RiArrowRightSLine className="transition ease-in-out hover:scale-150"/>
-            </div>
-            {
-                activeArmyViewers.map(({id, position}) => (
-                    <div key={id} style={{
-                        position: 'absolute',
-                        left: `${position.x}px`,
-                        top: `${position.y}px`,
-                    }}>
-                        <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
-                    </div>
-                ))
-            }
-            {
-                image &&
-                <MapInteractionCSS
+            <MapInteractionCSS
                     value={mapState}
                     onChange={(value) => setMapState(value)}
                     minScale={1}
@@ -180,7 +143,9 @@ function PlanetViewer(props) {
                     ))}
 
                 </MapInteractionCSS>
-            }
+
+        }
+
         </>
     );
 }

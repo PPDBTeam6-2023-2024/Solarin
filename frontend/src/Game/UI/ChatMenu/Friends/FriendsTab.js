@@ -49,7 +49,7 @@ const FriendsTab = (props) => {
 
     return (
         <>
-            {dmIndex === -1 && <div style={{"overflow-y": "scroll", "height":"85%", "scrollbar-width:": "none"}}>
+            {dmIndex === -1 && <div style={{"overflow-y": "scroll", "height":"85%", "scrollbarWidth:": "none"}}>
                     {/*Display an option to add friends*/
                         <SendFriendRequestEntry/>
                     }

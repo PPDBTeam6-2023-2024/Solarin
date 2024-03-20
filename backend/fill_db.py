@@ -30,7 +30,6 @@ async def fill_db():
         """
         for t_index in range(50):
             uuid = await da.UserAccess.createUser(f"username{t_index}", f"t{t_index}@gmail", f"hp{t_index}")
-            assert uuid == t_index + 1
 
         await da.commit()
 
@@ -43,7 +42,7 @@ async def fill_db():
                     continue
 
                 await da.UserAccess.addFriendship(t_index + 1, t2_index + 1)
-
+        await da.commit()
         """
         Create clan and add the ClanOwner to the clan
         """

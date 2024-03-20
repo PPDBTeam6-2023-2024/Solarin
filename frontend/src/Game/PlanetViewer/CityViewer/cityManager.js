@@ -62,7 +62,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
             case 'space-dock':
                 return shipyard;
             default:
-                return barracks; // Default image or empty string if no match
+                return barracks;
         }
     };
 
@@ -81,10 +81,10 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
             }
 
             if (!initialClick) {
-                console.log("Clicked outside AG Grid and the selected image!");
+                {/*case: Clicked outside AG Grid and the selected image*/}
                 onClose();
             } else {
-                console.log("initial click logged");
+                {/*case: log initial click*/}
                 setInitialClick(false);
             }
         };

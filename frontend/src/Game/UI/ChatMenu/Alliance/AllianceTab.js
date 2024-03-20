@@ -94,7 +94,7 @@ const AllianceTab = (props) => {
             }
         }
         makeOverviewEntries()
-    }, [])
+    }, [userInfo.alliance])
 
     return (
         <>

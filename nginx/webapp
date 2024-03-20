@@ -28,7 +28,7 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_pass https://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
+        proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
     }
 
 

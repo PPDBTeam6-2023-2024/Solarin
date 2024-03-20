@@ -14,18 +14,22 @@ server {
         try_files $uri $uri/ =404;
     }
 
-    location /chat/dm/{
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
-    }
-      
+
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/team6.ua-ppdb.me/fullchain.pem; # man>
     ssl_certificate_key /etc/letsencrypt/live/team6.ua-ppdb.me/privkey.pem; # m>
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    location /chat/dm/{
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass https://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
+    }
 
 
 

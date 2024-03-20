@@ -135,7 +135,7 @@ class PlanetRegion(Base):
     planet_id = Column(Integer, ForeignKey("planet.id"))
     region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
 
-    planet = relationship("Planet", back_populates="regions", lazy='select')
+    planet = relationship("Planet", back_populates="regions", lazy='joined')
     cities = relationship("City", back_populates="region", lazy='select')
 
 
@@ -163,7 +163,7 @@ class City(Base):
 
     rank = Column(Integer, nullable=False, default=1)
 
-    region = relationship("PlanetRegion", back_populates="cities")
+    region = relationship("PlanetRegion", back_populates="cities", lazy='joined')
 
     def to_city_schema(self):
         return CitySchema(id=self.id,
@@ -172,7 +172,9 @@ class City(Base):
                           x=self.x,
                           y=self.y,
                           rank=self.rank,
-                          region_type=self.region.region_type)
+                          region_type=self.region.region_type,
+                          planet_name=self.region.planet.name,
+                          planet_id=self.region.planet_id)
 
 
 class BuildingInstance(Base):

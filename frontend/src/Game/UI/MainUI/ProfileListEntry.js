@@ -7,12 +7,12 @@ function ProfileListEntry(props) {
 
     return (
         <div className="ProfileListEntry">
-            <div style={{"width": "40%", "display": "inline-block"}}>
+            <div style={{"width":"70%", "display": "inline-block"}}>
                 {props.text}
             </div>
 
-            <div className={"goto"} style={{"width": "40%", "display": "inline-block"}} onClick={() => setViewMode(View.PlanetView)}>
-                Go To {props.type}
+            <div className="goto" style={{"width":"30%", "display": "inline-block"}} onClick={() => setViewMode(View.PlanetView)}>
+                Go To {props.type} at ({props.x}, {props.y})
             </div>
         </div>
 

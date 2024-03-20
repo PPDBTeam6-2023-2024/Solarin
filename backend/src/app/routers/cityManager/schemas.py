@@ -22,6 +22,8 @@ class CitySchema(ConfigClass):
     controlled_by: int
     rank: int
     region_type: str
+    planet_name: str
+    planet_id: int
 
 
 class PlanetRegion(ConfigClass):

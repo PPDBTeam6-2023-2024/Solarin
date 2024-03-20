@@ -7,6 +7,7 @@ from sqlalchemy.orm import declarative_base, relationship, declared_attr
 from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
+from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from datetime import timedelta
 
 from sqlalchemy.orm.state import InstanceState
@@ -387,6 +388,13 @@ class Army(Base):
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
 
+    def to_army_schema(self):
+        return ArmySchema(id=self.id,
+                          user_id=self.user_id,
+                          last_update=str(self.last_update),
+                          x=self.x,
+                          y=self.y)
+
 
 class ArmyConsistsOf(Base):
     """
@@ -400,6 +408,12 @@ class ArmyConsistsOf(Base):
 
     army = relationship("Army", back_populates="consists_of", lazy='select')
     troop = relationship("TroopType", back_populates="in_consist_of", lazy='select')
+
+    def to_armyconsistsof_schema(self):
+        return ArmyConsistsOfSchema(army_id=self.army_id,
+                                    troop_type=self.troop_type,
+                                    rank=self.rank,
+                                    size=self.size)
 
 
 class CreationCost(Base):

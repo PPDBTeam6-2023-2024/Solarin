@@ -8,7 +8,6 @@ import { RiArrowLeftSLine } from "react-icons/ri";
 import { IoMdPlanet } from "react-icons/io";
 
 import planet_example from './Images/Planets/example.png'
-import army_example from './Images/troop_images/Soldier.png'
 
 // enum 
 const ViewMode = {
@@ -49,7 +48,7 @@ const Game = () => {
             <RiArrowLeftSLine className="basis-1/4"/>
             <IoMdPlanet/>
             </div>
-            <PlanetViewer mapImage={planet_example} planetName="Terra" armyImage={army_example}/>
+            <PlanetViewer mapImage={planet_example} planetName="Terra"/>
             </>
             }
 

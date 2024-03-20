@@ -13,7 +13,7 @@ LOG_LEVEL=error
 cd $DIR
 source $VENV
 
-sudo exec gunicorn src.app.__main__:app \
+exec gunicorn src.app.__main__:app \
   --keyfile=/etc/letsencrypt/live/team6.ua-ppdb.me/privkey.pem \
   --certfile=/etc/letsencrypt/live/team6.ua-ppdb.me/fullchain.pem\
   --name $NAME \

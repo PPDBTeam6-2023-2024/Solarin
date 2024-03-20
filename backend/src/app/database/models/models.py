@@ -12,6 +12,7 @@ from datetime import timedelta
 
 from sqlalchemy.orm.state import InstanceState
 
+
 class User(Base):
     """
     Store data of a users account
@@ -22,6 +23,8 @@ class User(Base):
     username = Column(String, unique=True)
     hashed_password = Column(String)
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED'))
+    faction_name = Column(String)
+
 
 class HasResources(Base):
     """

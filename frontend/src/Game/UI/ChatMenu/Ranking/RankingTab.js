@@ -28,7 +28,7 @@ const RankingTab = (props) => {
 
 
     return (
-        <div style={{"overflow-y": "scroll", "height":"93%", "scrollbar-width:": "none"}}>
+        <div style={{"overflow-y": "scroll", "height":"90%", "scrollbar-width:": "none"}}>
             {/*Ranking entry containing the rank column headers*/}
             <RankingEntry key={"header"} user={"username"} quantity={"quantity"} index={"ranking"}/>
 

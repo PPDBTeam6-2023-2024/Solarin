@@ -282,3 +282,10 @@ async def get_ranking(
     data_access = DataAccess(db)
     ranking = await data_access.RankingAccess.getTopRanking(30)
     return ranking
+
+@router.websocket("/wss")
+async def websocket_test(
+        websocket: WebSocket
+):
+
+    await websocket.accept()

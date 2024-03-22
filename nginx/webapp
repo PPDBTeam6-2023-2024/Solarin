@@ -1,20 +1,12 @@
 server {
     server_name 0.0.0.0 team6.ua-ppdb.me;
-    access_log /home/app/PPDB-Template-App/backend/logs/nginx-access.log;
+   access_log /home/app/PPDB-Template-App/backend/logs/nginx-access.log;
     error_log /home/app/PPDB-Template-App/backend/logs/nginx-error.log;
-
-
-    listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/team6.ua-ppdb.me/fullchain.pem; # man>
-    ssl_certificate_key /etc/letsencrypt/live/team6.ua-ppdb.me/privkey.pem; # m>
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
-
+    listen 80;
     location /api/ {
         rewrite ^/api/(.*)$ /$1 break;
-        proxy_pass https://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock;
-    }
+        proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock;
+ }
 
     root /home/app/PPDB-Template-App/frontend/build;
     index index.html;
@@ -26,10 +18,14 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_pass https://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
+        proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
     }
 
-
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/team6.ua-ppdb.me/fullchain.pem; # man>
+    ssl_certificate_key /etc/letsencrypt/live/team6.ua-ppdb.me/privkey.pem; # m>
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
 
 

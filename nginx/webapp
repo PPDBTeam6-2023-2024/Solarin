@@ -18,8 +18,22 @@ server {
         proxy_ssl_server_name on;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+
+        map $http_connection $connection_upgrade {
+        "~*Upgrade" $http_connection;
+        default keep-alive;
+        }
+
         proxy_pass https://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/wss;
+    }
+
+    location /api/chat/dm/{
+        proxy_ssl_server_name on;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+
+        proxy_set_header   Connection $connection_upgrade;
+        proxy_pass https://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
     }
 
     listen 443 ssl; # managed by Certbot

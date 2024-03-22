@@ -8,7 +8,7 @@ WORKERS=3
 WORKER_CLASS=uvicorn.workers.UvicornWorker
 VENV=$DIR/.venv/bin/activate
 BIND=unix:$DIR/run/gunicorn.sock
-LOG_LEVEL=error
+LOG_LEVEL=debug
 
 cd $DIR
 source $VENV

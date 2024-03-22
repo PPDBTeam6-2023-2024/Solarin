@@ -2,7 +2,7 @@ server {
     server_name 0.0.0.0 team6.ua-ppdb.me;
    access_log /home/app/PPDB-Template-App/backend/logs/nginx-access.log;
     error_log /home/app/PPDB-Template-App/backend/logs/nginx-error.log;
-    listen 80;
+    listen 443 ssl;
     location /api/ {
         rewrite ^/api/(.*)$ /$1 break;
         proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock;
@@ -11,6 +11,10 @@ server {
     root /home/app/PPDB-Template-App/frontend/build;
     index index.html;
     location / {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
         try_files $uri $uri/ =404;
     }
 

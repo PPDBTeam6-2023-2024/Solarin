@@ -4,6 +4,10 @@ server {
     error_log /home/app/PPDB-Template-App/backend/logs/nginx-error.log;
     listen 80;
     location /api/ {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
         rewrite ^/api/(.*)$ /$1 break;
         proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock;
  }
@@ -14,11 +18,11 @@ server {
         try_files $uri $uri/ =404;
     }
 
-    location /chat/dm/{
+    location /api/chat/dm/{
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
-        proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/chat/dm/;
+        proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock/api/chat/dm/;
     }
 
     listen 443 ssl; # managed by Certbot

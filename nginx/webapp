@@ -2,7 +2,7 @@ server {
     server_name 0.0.0.0 team6.ua-ppdb.me;
    access_log /home/app/PPDB-Template-App/backend/logs/nginx-access.log;
     error_log /home/app/PPDB-Template-App/backend/logs/nginx-error.log;
-    listen 443;
+    listen 80;
     location /api/ {
         rewrite ^/api/(.*)$ /$1 break;
         proxy_pass http://unix:/home/app/PPDB-Template-App/backend/run/gunicorn.sock;
@@ -32,7 +32,7 @@ server {
 }
 #server {
  #   if ($host = team6.ua-ppdb.me) {
-  #      return 301 http://$host$request_uri;
+  #      return 301 https://$host$request_uri;
    # } # managed by Certbot
 #
  #   listen 80;

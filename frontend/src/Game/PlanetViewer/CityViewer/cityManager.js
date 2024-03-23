@@ -29,7 +29,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [rowData, setRowData] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
     const [initialClick, setInitialClick] = useState(true);
-    const [buildings, setBuildings] = useState([]);
 
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType" },
@@ -38,9 +37,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     ]);
 
     useEffect(() => {
-        if (cityId && buildings.length === 0) {
+        if (cityId && rowData.length === 0) {
             getBuildings(cityId).then(buildings => {
-                setBuildings(buildings);
                 setRowData(buildings.map(building => ({
                     buildingType: building.building_type,
                     buildingRank: building.rank,
@@ -49,15 +47,15 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                 })));
             });
         }
-    }, [cityId, buildings]);
+    }, [cityId, rowData]);
 
     const getImageForBuildingType = (buildingType) => {
         switch (buildingType) {
             case 'barracks':
                 return barracks;
-            case 'reactor':
+            case 'The mines of moria':
                 return mine;
-            case 'nexus':
+            case 'Solarin mansion':
                 return factory;
             case 'space-dock':
                 return shipyard;

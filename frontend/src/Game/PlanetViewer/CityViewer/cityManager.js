@@ -28,6 +28,10 @@ const getBuildings = async (cityId) => {
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [rowData, setRowData] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
+
+
+    const [selectedClick, setSelectedClick] = useState(null);
+
     const [initialClick, setInitialClick] = useState(true);
     const [buildings, setBuildings] = useState([]);
 

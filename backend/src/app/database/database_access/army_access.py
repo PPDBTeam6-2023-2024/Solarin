@@ -79,7 +79,7 @@ class ArmyAccess:
         getentry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==armyid)
         troops = await self.__session.execute(getentry)
         await self.__session.flush()
-        return troops
+        return troops.all()
 
     async def getArmyById(self, army_id: int):
         getentry = Select(Army).where(Army.id==army_id)

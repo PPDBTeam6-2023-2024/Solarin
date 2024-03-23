@@ -317,6 +317,7 @@ async def test_friend_requests():
         r = await da.UserAccess.getFriendRequests(41)
         assert len(r) == 2
 
+
 async def test_ranking():
     """
     test ranking
@@ -327,3 +328,37 @@ async def test_ranking():
         assert len(ranking) == 10
         assert ranking[0][0] == "username0"
         assert ranking[9][0] == "username9"
+
+
+async def test_training():
+    """
+    test ranking
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        await da.TrainingAccess.check_queue(2, 11.5*14400)
+
+        after_queues = await da.TrainingAccess.get_queue(2)
+        assert len(after_queues) == 1
+        assert after_queues[0][1] == 14400
+
+        """
+        assert for remaining time
+        """
+        assert after_queues[0][0].train_remaining == 122400
+        assert after_queues[0][0].training_size == 9
+
+        army_troops = await da.ArmyAccess.getTroops(1)
+        assert len(army_troops) == 2
+
+        """
+        check troops other rank are the same
+        """
+        assert army_troops[0][0].size == 30
+        assert army_troops[0][0].rank == 2
+
+        """
+        check 11 troops are added
+        """
+        assert army_troops[1][0].size == 10+11
+        assert army_troops[1][0].rank == 3

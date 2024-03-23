@@ -211,7 +211,8 @@ class BuildingInstance(Base):
     """
     stores when the data about this building is last checked
     """
-    last_checked = Column(TIME)
+    last_checked = Column(TIMESTAMP, nullable=True, default=func.now())
+
 
 class BuildingType(Base):
     """

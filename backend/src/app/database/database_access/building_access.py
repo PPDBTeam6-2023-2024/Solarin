@@ -1,3 +1,5 @@
+import datetime
+
 from ..models.models import *
 from ..database import AsyncSession
 
@@ -56,3 +58,17 @@ class BuildingAccess:
         building_types = await self.__session.execute(Select(BuildingType))
 
         return building_types.all()
+
+    async def getDeltaTime(self, building_id: int):
+        """
+        get the between now and when the building was last checked
+        :param: building_id: id of the building
+        :return: datetime of when the building was last checked
+        """
+        last_checked = Select(BuildingInstance.last_checked).where(BuildingInstance.id == building_id)
+        results = await self.__session.execute(last_checked)
+        last = results.first()
+        if last is None:
+            raise Exception("Building does not exist")
+
+        return datetime.datetime.now()-last[0]

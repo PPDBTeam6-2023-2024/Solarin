@@ -1,7 +1,9 @@
 import datetime
-
+import math
 from ..models.models import *
 from ..database import AsyncSession
+from .building_access import BuildingAccess
+from .army_access import ArmyAccess
 
 
 class TrainingAccess:
@@ -45,6 +47,14 @@ class TrainingAccess:
             highest_nr = highest_nr[0]+1
 
         """
+        when the highest_nr == 0, it means the queue is empty, to make sure the remaining time is not affected (in case user leaves training menu open)
+        And so reduces its waiting time in advance, we will set the last_checked to current time if the queue was empty before
+        """
+        if highest_nr == 0:
+            u = update(BuildingInstance).values({"last_checked": datetime.datetime.now()}).where(BuildingInstance.id == building_id)
+            await self.__session.execute(u)
+
+        """
         create queue
         """
         training_time: datetime.timedelta = await self.__getTrainingTime(troop_type)
@@ -66,4 +76,83 @@ class TrainingAccess:
 
         results = results.first()[0]
 
+        return results
+
+    async def check_queue(self, building_id, seconds=None):
+        """
+        this function will check the queue of a building type, it check which units are done training and assign
+        them to an army
+
+        :param: building_id: id of buildings whose queue we will check
+        :param: seconds: time in between provided (ONLY USED BY DEVELOPERS) if None, the real time will be used
+        """
+
+        results = await self.get_queue(building_id)
+
+        """
+        developers should be allowed to change the time, that is why seconds can be provided
+        """
+        if seconds is None:
+            delta_time = await BuildingAccess(self.__session).getDeltaTime(building_id)
+            seconds = delta_time.total_seconds()
+
+        for r in results:
+            if seconds <= 0:
+                break
+
+            """
+            this loop will go through the training queues
+            It will take the first entry and do remaining_time -= seconds passed
+            if remaining_time < 0: remove queue entry and add the troops to the army,
+            If multiple troops trained add only part to army when not fully done
+            """
+
+            per_unit_training_time = r[1]
+            queue_entry: TrainingQueue = r[0]
+
+            """
+            make sure we don't train more units than are in a queue => use min
+            """
+            troops_trained = min(math.floor(seconds/per_unit_training_time), queue_entry.training_size)
+
+            diff = queue_entry.train_remaining - seconds
+            if diff < 0:
+                seconds = seconds - queue_entry.train_remaining
+            else:
+                queue_entry.train_remaining = diff
+                seconds = 0
+
+            """
+            handle the trained unit changes
+            """
+            army_access = ArmyAccess(self.__session)
+            await army_access.addToArmy(queue_entry.army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
+            queue_entry.training_size -= troops_trained
+
+            """
+            when entry done, remove training queue entry
+            """
+            if diff < 0:
+                await self.__session.delete(queue_entry)
+
+        """
+        make a commit of the training changes and potentially removed training queue entries
+        """
+        await self.__session.flush()
+
+    async def get_queue(self, building_id):
+        """
+        get the training queue of a building id
+        :param: building_id: id of buildings whose queue we will check
+        :return: list of trainingQueueObjects and the time/unit for that unit type
+        """
+
+        """
+                query to get the training queue, sorted by asc Training id, so the first entry will be first in the list 
+                """
+        get_queue_entries = Select(TrainingQueue, TroopType.training_time).join(TroopType,
+                                                                                TroopType.type == TrainingQueue.troop_type).where(
+            TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))
+        results = await self.__session.execute(get_queue_entries)
+        results = results.all()
         return results

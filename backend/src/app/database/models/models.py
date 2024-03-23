@@ -333,6 +333,11 @@ class TrainingQueue(Base):
     rank = Column(Integer)
     training_size = Column(Integer)
 
+    """
+    stores last time we checked this trainingQueueEntry
+    """
+    last_update = Column(TIME, nullable=False)
+
 
 class TroopType(Base):
     """

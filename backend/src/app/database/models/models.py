@@ -208,6 +208,10 @@ class BuildingInstance(Base):
             rank=rank_nr
         )
 
+    """
+    stores when the data about this building is last checked
+    """
+    last_checked = Column(TIME)
 
 class BuildingType(Base):
     """
@@ -332,11 +336,6 @@ class TrainingQueue(Base):
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'))
     rank = Column(Integer)
     training_size = Column(Integer)
-
-    """
-    stores last time we checked this trainingQueueEntry
-    """
-    last_update = Column(TIME, nullable=False)
 
 
 class TroopType(Base):

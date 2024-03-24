@@ -4,7 +4,6 @@ import ProfileButton from "./MainUI/ProfileButton";
 import "./UI.css"
 import ChatIcon from "./ChatMenu/ChatIcon";
 import ResourceViewer from "./ResourceViewer/ResourceViewer";
-import CityViewer from "./CityViewer/CityViewer";
 //component that contains all the UI components
 
 const getColorString = (r, g, b, a) => {
@@ -42,8 +41,6 @@ function UI() {
             {/*display chatIcon which can be clicked to open the chat menu*/}
             <ChatIcon/>
 
-            {/*display the city view UI*/}
-            <CityViewer viewCity={true} />
         </div>
 
     )

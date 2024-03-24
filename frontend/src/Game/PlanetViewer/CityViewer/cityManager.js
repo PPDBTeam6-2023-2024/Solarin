@@ -70,7 +70,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     useEffect(() => {
         const handleClickOutside = event => {
             const { target } = event;
-            const agGridElement = document.querySelector('.ag-theme-alpine-dark.buildings_grid');
+            const agGridElement = document.querySelector('.building_view');
             const selectedImageElement = document.querySelector('.selected-image');
 
             if (agGridElement.contains(target) || (selectedImageElement && selectedImageElement.contains(target))) {
@@ -89,6 +89,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, [onClose, initialClick]);
+
 
     return (
         <div className="darken_background">
@@ -112,11 +113,12 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 suppressDragLeaveHidesColumns={true}
                                 onCellMouseOver={onRowMouseOver}
                                 onCellClicked={(event) => setSelectedClick(event.data.index)}
-      o                         onGridReady={params => params.api.sizeColumnsToFit()}
+                                onGridReady={params => params.api.sizeColumnsToFit()}
+                                onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                             />
 
                         </div>
-                        <div>
+                        <div className="building_image">
                             {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
                         </div>
                     </div>

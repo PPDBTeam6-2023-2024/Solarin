@@ -25,18 +25,31 @@
     max-width: 500%;
     max-height: 500%;
     object-fit: contain; /* This ensures the image maintains its aspect ratio */
+    width: 70%;
+    height: 70%;
+    margin: auto;
 }
 
 .buildings_grid{
     display: inline-block;
-    width: 60vw;
-    height: 15vw;
-    background: linear-gradient(to top, black, black) !important;
+    width: 40vw;
+    height: 100%;
+    background: transparent !important;
     overflow: scroll;
+    margin-top: auto;
 }
 
 .building_view{
-    width: 70vw;
+    width: 80vw;
     height: 20vw;
-    background: linear-gradient(to top, black, black) !important;
+    background: linear-gradient(to top, black, #d20000) !important;
+}
+
+.building_image{
+    width: 40vw;
+    height: 20vw;
+    position: relative;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
 }

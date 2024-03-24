@@ -26,11 +26,11 @@ const getBuildings = async (cityId) => {
 };
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
-    const [rowData, setRowData] = useState([]);
+    const [buildings, setBuildings] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
 
-
-    const [selectedClick, setSelectedClick] = useState(null);
+    /*stores which building has been clicked*/
+    const [selectedClick, setSelectedClick] = useState(-1);
 
     const [initialClick, setInitialClick] = useState(true);
 
@@ -41,17 +41,12 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     ]);
 
     useEffect(() => {
-        if (cityId && rowData.length === 0) {
+        if (cityId && buildings.length === 0) {
             getBuildings(cityId).then(buildings => {
-                setRowData(buildings.map(building => ({
-                    buildingType: building.building_type,
-                    buildingRank: building.rank,
-                    resourceTimer: 'Unknown',
-                    image: getImageForBuildingType(building.building_type)
-                })));
+                setBuildings(buildings)
             });
         }
-    }, [cityId, rowData]);
+    }, [cityId, buildings]);
 
     const getImageForBuildingType = (buildingType) => {
         switch (buildingType) {
@@ -75,7 +70,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     useEffect(() => {
         const handleClickOutside = event => {
             const { target } = event;
-            const agGridElement = document.querySelector('.ag-theme-alpine-dark.ag-grid-container');
+            const agGridElement = document.querySelector('.ag-theme-alpine-dark.buildings_grid');
             const selectedImageElement = document.querySelector('.selected-image');
 
             if (agGridElement.contains(target) || (selectedImageElement && selectedImageElement.contains(target))) {
@@ -96,24 +91,37 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     }, [onClose, initialClick]);
 
     return (
-        <div className="flex-container">
-            <div className="left-container">
+        <div className="darken_background">
                 <Draggable>
-                    <div className="ag-theme-alpine-dark ag-grid-container">
-                        <AgGridReact
-                            rowData={rowData}
-                            columnDefs={columns}
-                            domLayout='autoHeight'
-                            suppressMovableColumns={false}
-                            suppressDragLeaveHidesColumns={true}
-                            onCellMouseOver={onRowMouseOver}
-                        />
+                    <div className="building_view">
+                        <div className="ag-theme-alpine-dark buildings_grid">
+                            <AgGridReact
+                                rowData={
+                                    /*maps the building to a row*/
+                                    buildings.map((building, index) => ({
+                                        buildingType: building.building_type,
+                                        buildingRank: building.rank,
+                                        resourceTimer: 'Unknown',
+                                        image: getImageForBuildingType(building.building_type),
+                                        index: index
+                                    }))
+                                }
+                                columnDefs={columns}
+                                domLayout='autoHeight'
+                                suppressMovableColumns={true}
+                                suppressDragLeaveHidesColumns={true}
+                                onCellMouseOver={onRowMouseOver}
+                                onCellClicked={(event) => setSelectedClick(event.data.index)}
+      o                         onGridReady={params => params.api.sizeColumnsToFit()}
+                            />
+
+                        </div>
+                        <div>
+                            {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
+                        </div>
                     </div>
                 </Draggable>
-            </div>
-            <div className="right-container">
-                {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
-            </div>
+
         </div>
     );
 };

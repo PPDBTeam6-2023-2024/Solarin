@@ -7,6 +7,7 @@ import Message from "./Message";
 import SendMessage from "./SendMessage";
 import { Component } from 'react';
 
+
 function MessageBoard(props) {
     /**
      * This shows the message stream of a message board

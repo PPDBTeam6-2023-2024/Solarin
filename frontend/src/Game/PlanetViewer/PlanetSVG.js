@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Delaunay } from 'd3'; 
-import * as d3 from "d3";
 
 import rocks from '../Images/region_types/rocks.jpeg'
 import sandyrocks from '../Images/region_types/sandyrocks.jpeg'
@@ -17,21 +16,18 @@ function getImagePath(regionType) {
     return imagePaths[regionType] || rocks;
 }
 
-function PlanetSVG(props) {
-    console.log(props)
+function PlanetSVG(props) {    
     const width = 1920;
     const height = 1080;
 
-    const xScale = d3.scaleLinear().domain([0, 1]).range([0, width]);
-    const yScale = d3.scaleLinear().domain([0, 1]).range([0, height]);
-
     const delaunay = useMemo(() => {
-        const formattedData = props.data.map((d) => [xScale(d.x), yScale(d.y)]);
+        const formattedData = props.data.map((d) => [width*d.x, height*d.y]);
         return Delaunay.from(formattedData);
-    }, [props.data, xScale, yScale]);
+    }, [props.data, width, height]);
+
 
     const voronoi = useMemo(() => {
-        return delaunay.voronoi();
+        return delaunay.voronoi([0, 0, width, height]);
       }, [delaunay]);
 
     const renderClippedImages = () => {
@@ -58,9 +54,9 @@ function PlanetSVG(props) {
     };
 
     return (
-        <svg width="100vw" height="100%" viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
+        <svg width="100%" height="100%" viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
             {renderClippedImages()}
-            <path key={`voronoi-total`} d={voronoi.render()} stroke="black" strokeWidth={2} />
+            <path key="voronoi-total" d={voronoi.render()} stroke="black" strokeWidth={2} />
         </svg>
     );
 }

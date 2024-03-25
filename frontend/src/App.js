@@ -28,22 +28,25 @@ function App() {
       scale: 1,
       translation: {x: 0, y: 0},
   });
+
+  // return (          
+  //   <PlanetSVG data={data} />
+  // )
   
   return (
     <MapInteractionCSS
-              value={mapState}
-              onChange={(value) => setMapState(value)}
-              minScale={1}
-              maxScale={5}
-              translationBounds={{
-                  xMin: 1920 - mapState.scale * 1920,
-                  xMax: 0,
-                  yMin: 1080 - mapState.scale * 1080,
-                  yMax: 0,
-              }}
-          >
-          <PlanetSVG data={data} />
-      </MapInteractionCSS>
+      value={mapState}
+      onChange={(value) => setMapState(value)}
+      minScale={1}
+      maxScale={5}
+      translationBounds={{
+          xMin: window.innerWidth - mapState.scale * window.innerWidth,
+          xMax: 0,
+          yMin: window.innerHeight - mapState.scale * window.innerHeight,
+          yMax: 0,
+      }}>
+      <PlanetSVG data={data} />
+    </MapInteractionCSS>
   );
 }
 

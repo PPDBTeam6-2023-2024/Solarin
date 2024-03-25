@@ -1,52 +1,20 @@
 import './App.css';
-import PlanetSVG from './Game/PlanetViewer/PlanetSVG';
-import { MapInteractionCSS } from 'react-map-interaction';
-import { useState } from 'react';
-
-
-function generateData(width, height) {
-const data = [];
-const cellWidth = 1 / width;
-const cellHeight = 1 / height;
-
-for (let i = 0; i < height; i++) {
-    for (let j = 0; j < width; j++) {
-    const x = Math.random() * cellWidth + j * cellWidth;
-    const y = Math.random() * cellHeight + i * cellHeight;
-    const types = ['type1', 'type2', 'type3']
-    const regionType = types[Math.floor(Math.random()*types.length)];
-    data.push({ x, y, regionType });
-    }
-  }
-  return data;
-}
-const data = generateData(10,10);
+import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import Login from './Login/Login'
+import Game from './Game/Game'
 
 
 function App() {  
-    const [mapState, setMapState] = useState({
-      scale: 1,
-      translation: {x: 0, y: 0},
-  });
-
-  // return (          
-  //   <PlanetSVG data={data} />
-  // )
-  
   return (
-    <MapInteractionCSS
-      value={mapState}
-      onChange={(value) => setMapState(value)}
-      minScale={1}
-      maxScale={5}
-      translationBounds={{
-          xMin: window.innerWidth - mapState.scale * window.innerWidth,
-          xMax: 0,
-          yMin: window.innerHeight - mapState.scale * window.innerHeight,
-          yMax: 0,
-      }}>
-      <PlanetSVG data={data} />
-    </MapInteractionCSS>
+    <div className="App">
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />}/>
+        <Route path="/game" element={<Game />}/>
+        <Route path="*" element={<Navigate to="/"/>}/>
+      </Routes>
+    </BrowserRouter>
+    </div>
   );
 }
 

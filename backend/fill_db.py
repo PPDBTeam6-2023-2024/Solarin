@@ -101,7 +101,7 @@ async def fill_db():
         await da.DeveloperAccess.createPlanetType("Shadow planet", "planet where it is hard to see")
         p_id = await da.PlanetAccess.createPlanet("Umbara", "Shadow planet", sr_id)
         await da.DeveloperAccess.createPlanetRegionType("valley of death", "Ooh.. very scary")
-        r_id = await da.PlanetAccess.createPlanetRegion(p_id, "valley of death")
+        r_id = await da.PlanetAccess.createPlanetRegion(p_id, "valley of death", [0.1, 0.2])
         c_id = await da.CityAccess.createCity(r_id, 1, 0.2, 0.8)
         c_id2 = await da.CityAccess.createCity(r_id, 1, 0.8, 0.2)
 

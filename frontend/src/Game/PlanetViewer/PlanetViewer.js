@@ -6,14 +6,27 @@ import CityManager from "./CityViewer/cityManager";
 import {PlanetListContext} from "./../Context/PlanetListContext"
 import ArmyViewer from '../UI/armyViewer/armyViewer'
 import getArmies from "./getArmies";
+import PlanetSVG from './PlanetSVG';
 
-const loadImage = async (imgPath, stateSetter) => {
-    let img = new Image()
-    img.src = imgPath
-    img.onload = () => {
-        stateSetter(img)
+function generateData(width, height) {
+    const data = [];
+    const cellWidth = 1 / width;
+    const cellHeight = 1 / height;
+    
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            const x = Math.random() * cellWidth + j * cellWidth;
+            const y = Math.random() * cellHeight + i * cellHeight;
+            const types = ['type1', 'type2', 'type3']
+            const regionType = types[Math.floor(Math.random()*types.length)];
+            data.push({ x, y, regionType });
+        }
     }
+
+    return data;
 }
+
+const data = generateData(10,10);
 
 function PlanetViewer(props) {
 
@@ -21,7 +34,6 @@ function PlanetViewer(props) {
         scale: 1,
         translation: {x: 0, y: 0},
     });
-    const [image, setImage] = useState();
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -54,14 +66,6 @@ function PlanetViewer(props) {
         }));
         setUpdateTrigger(prev => !prev)
     };
-
-    useEffect(() => {
-        loadImage(props.mapImage, setImage);
-    }, [props.mapImage]);
-
-    useEffect(() => {
-        loadImage(props.mapImage, setImage)
-    }, [props.mapImage])
 
     {/*Get images of cities on map cities on the map*/}
     const [selectedCityId, setSelectedCityId] = useState(null);
@@ -137,21 +141,21 @@ function PlanetViewer(props) {
             }
 
         {
-        image &&
             <MapInteractionCSS
                     value={mapState}
                     onChange={(value) => setMapState(value)}
                     minScale={1}
                     maxScale={5}
                     translationBounds={{
-                        xMin: image.width - mapState.scale * image.width,
+                        xMin: window.innerWidth - mapState.scale * window.innerWidth,
                         xMax: 0,
-                        yMin: image.height - mapState.scale * image.height,
+                        yMin: window.innerHeight - mapState.scale * window.innerHeight,
                         yMax: 0,
                     }}
                 >
-                    <img src={image.src} alt="map"
-                         style={{imageRendering: "pixelated", width: "100vw", height: "auto"}}/>
+                    {/*Display planet on the map*/}
+                    <PlanetSVG data={data} />
+
                     {armyImages.map((army, index) => (
                         <img key={index} src={army.src} alt="army" style={army.style}
                              onClick={(e) => toggleArmyViewer(e, army.id)}/>

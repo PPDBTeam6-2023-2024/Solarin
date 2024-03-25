@@ -18,8 +18,9 @@ function getImagePath(regionType) {
 }
 
 function PlanetSVG(props) {
-    const width = 500;
-    const height = 500;
+    console.log(props)
+    const width = 1920;
+    const height = 1080;
 
     const xScale = d3.scaleLinear().domain([0, 1]).range([0, width]);
     const yScale = d3.scaleLinear().domain([0, 1]).range([0, height]);
@@ -57,7 +58,7 @@ function PlanetSVG(props) {
     };
 
     return (
-        <svg width="100%" height="100%" viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
+        <svg width="100vw" height="100%" viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
             {renderClippedImages()}
             <path key={`voronoi-total`} d={voronoi.render()} stroke="black" strokeWidth={2} />
         </svg>

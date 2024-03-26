@@ -19,7 +19,7 @@ def generate_regions(regions: list[str], row_col_count: int = 10) -> dict[str, l
     return regions_dict
 
 
-async def generate_random_planet(session: AsyncSession) -> int:
+async def generate_random_planet(session: AsyncSession, space_region_id: int) -> int:
     planet_access = PlanetAccess(session)
 
     random_planet_type_row = await planet_access.get_random_planet_type()
@@ -28,7 +28,7 @@ async def generate_random_planet(session: AsyncSession) -> int:
     planet_id = await planet_access.createPlanet(
         planet_name=generate_planet_name(),
         planet_type=planet_type,
-        space_region_id=0
+        space_region_id=space_region_id
     )
 
     planet_region_types = await planet_access.get_planet_region_types(planet_type)

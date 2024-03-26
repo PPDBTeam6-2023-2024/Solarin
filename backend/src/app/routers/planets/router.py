@@ -20,28 +20,23 @@ async def get_planets(
     return planets
 
 
-@router.get("/{planet_id}")
-async def get_planet(
+@router.get("/regions/{planet_id}")
+async def get_planet_regions(
         user_id: Annotated[int, Depends(get_my_id)],
         planet_id: int,
         db=Depends(get_db)
-) -> Optional[PlanetOut]:
+) -> Optional[list[Region]]:
     data_access = DataAccess(db)
     planet = await data_access.PlanetAccess.getPlanet(planet_id)
 
     if not planet:
-        return None
+        return []
 
-    return PlanetOut(
-        id=planet.id,
-        name=planet.name,
-        planet_type=planet.planet_type,
-        regions=[
-            Region(
-                region_type=region.region_type,
-                x=region.x,
-                y=region.y
-            )
-            for region in planet.regions
-        ]
-    )
+    return [
+        Region(
+            region_type=region.region_type,
+            x=region.x,
+            y=region.y
+        )
+        for region in planet.regions
+    ]

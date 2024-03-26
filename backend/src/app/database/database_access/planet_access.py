@@ -55,7 +55,7 @@ class PlanetAccess:
         region_id = region.id
         return region_id
 
-    async def getRegions(self, planet_id: int):
+    async def getRegions(self, planet_id: int) -> list[PlanetRegion]:
         """
         Get all the regions belonging to the given planet
 
@@ -64,7 +64,7 @@ class PlanetAccess:
         """
         select_regions = Select(PlanetRegion).where(PlanetRegion.planet_id == planet_id)
         results = await self.__session.execute(select_regions)
-        return results.all()
+        return results.scalars().all()
 
     async def getPlanetCities(self, planet_id: int):
         """

@@ -230,7 +230,7 @@ async def test_planet():
 
         regions = await da.PlanetAccess.getRegions(1)
         assert len(regions) == 1
-        assert regions[0][0].id == 1
+        assert regions[0].id == 1
 
         cities = await da.PlanetAccess.getPlanetCities(1)
         assert len(cities) == 2

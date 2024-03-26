@@ -7,7 +7,6 @@ import {PlanetListContext} from "./../Context/PlanetListContext"
 import ArmyViewer from '../UI/armyViewer/armyViewer'
 import getArmies from "./getArmies";
 import PlanetSVG from './PlanetSVG';
-import getPlanet from './getPlanet';
 
 
 function PlanetViewer(props) {
@@ -18,16 +17,6 @@ function PlanetViewer(props) {
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
-    const [planet, setPlanet] = useState();
-
-    useEffect(() => {
-        const fetchPlanet = async () => {
-            setPlanet(await getPlanet({planetId: props.planetId}));
-        };
-        if (!planet) {
-            fetchPlanet();
-        }
-    }, [props.planetId]);
 
     const toggleArmyViewer = (e, armyId) => {
         const overlayRect = e.target.getBoundingClientRect();
@@ -144,7 +133,7 @@ function PlanetViewer(props) {
                     }}
                 >
                     {/*Display planet on the map*/}
-                    planet && <PlanetSVG data={planet["regions"]} />
+                    <PlanetSVG planetId={props.planetId} />
 
                     {armyImages.map((army, index) => (
                         <img key={index} src={army.src} alt="army" style={army.style}

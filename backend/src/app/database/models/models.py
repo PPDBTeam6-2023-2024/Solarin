@@ -117,7 +117,7 @@ class Planet(Base):
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
-    regions = relationship("PlanetRegion", back_populates="planet", lazy='select')
+    regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')
 
 
 class PlanetType(Base):

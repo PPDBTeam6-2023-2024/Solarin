@@ -7,29 +7,10 @@ import {PlanetListContext} from "./../Context/PlanetListContext"
 import ArmyViewer from '../UI/armyViewer/armyViewer'
 import getArmies from "./getArmies";
 import PlanetSVG from './PlanetSVG';
+import getPlanet from './getPlanet';
 
-function generateData(width, height) {
-    const data = [];
-    const cellWidth = 1 / width;
-    const cellHeight = 1 / height;
-    
-    for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
-            const x = Math.random() * cellWidth + j * cellWidth;
-            const y = Math.random() * cellHeight + i * cellHeight;
-            const types = ['type1', 'type2', 'type3']
-            const regionType = types[Math.floor(Math.random()*types.length)];
-            data.push({ x, y, regionType });
-        }
-    }
-
-    return data;
-}
-
-const data = generateData(10,10);
 
 function PlanetViewer(props) {
-
     const [mapState, setMapState] = useState({
         scale: 1,
         translation: {x: 0, y: 0},
@@ -37,7 +18,16 @@ function PlanetViewer(props) {
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
+    const [planet, setPlanet] = useState();
 
+    useEffect(() => {
+        const fetchPlanet = async () => {
+            setPlanet(await getPlanet({planetId: props.planetId}));
+        };
+        if (!planet) {
+            fetchPlanet();
+        }
+    }, [props.planetId]);
 
     const toggleArmyViewer = (e, armyId) => {
         const overlayRect = e.target.getBoundingClientRect();
@@ -154,7 +144,7 @@ function PlanetViewer(props) {
                     }}
                 >
                     {/*Display planet on the map*/}
-                    <PlanetSVG data={data} />
+                    planet && <PlanetSVG data={planet["regions"]} />
 
                     {armyImages.map((army, index) => (
                         <img key={index} src={army.src} alt="army" style={army.style}

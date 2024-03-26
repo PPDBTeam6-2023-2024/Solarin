@@ -25,7 +25,6 @@ function PlanetSVG(props) {
         return Delaunay.from(formattedData);
     }, [props.data, width, height]);
 
-
     const voronoi = useMemo(() => {
         return delaunay.voronoi([0, 0, width, height]);
       }, [delaunay]);
@@ -33,7 +32,7 @@ function PlanetSVG(props) {
     const renderClippedImages = () => {
         return props.data.map((d, i) => {
             const regionPath = voronoi.renderCell(i);
-            const imagePath = getImagePath(d.regionType);
+            const imagePath = getImagePath(d.region_type);
             return (
                 <g key={`group-${i}`}>
                     <clipPath id={`clip-${i}`}>

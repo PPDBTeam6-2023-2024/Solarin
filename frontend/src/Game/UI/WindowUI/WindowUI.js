@@ -22,7 +22,7 @@ const WindowUI = ({canDrag=true, canResize=true, children}) => {
         container={null}
         origin={true}
         onDragStart={({inputEvent}) => {
-            if (inputEvent.detail == 2) return false
+            return !(inputEvent.detail == 2)
         }}
         onDrag={({target, transform}) => {
             target.style.transform = transform

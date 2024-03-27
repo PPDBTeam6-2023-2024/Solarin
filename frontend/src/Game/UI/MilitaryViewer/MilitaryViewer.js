@@ -41,7 +41,7 @@ function MilitaryViewer(props) {
       <h1 className="text-2xl my-1">Armies</h1>
       {example_armies_output}
     </TreeView>
-    </WindowUI>
+      </WindowUI>
     )
 }
 export default MilitaryViewer;

@@ -1,10 +1,12 @@
 import { MapInteractionCSS } from 'react-map-interaction';
 import {useState, useEffect, useContext} from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+
 import getCities from './CityViewer/getCities';
 import CityManager from "./CityViewer/CityManager";
+
 import {PlanetListContext} from "./../Context/PlanetListContext"
-import ArmyViewer from '../UI/armyViewer/armyViewer'
+import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import getArmies from "./getArmies";
 
 const loadImage = async (imgPath, stateSetter) => {

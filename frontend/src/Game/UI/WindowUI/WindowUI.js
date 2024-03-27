@@ -18,6 +18,12 @@ const WindowUI = ({canDrag=true, canResize=true, children}) => {
         draggable={canDrag}
         scalable={canResize}
         keepRatio={true}
+        throttleDrag={0}
+        container={null}
+        origin={true}
+        onDragStart={({inputEvent}) => {
+            if (inputEvent.detail == 2) return false
+        }}
         onDrag={({target, transform}) => {
             target.style.transform = transform
         }}

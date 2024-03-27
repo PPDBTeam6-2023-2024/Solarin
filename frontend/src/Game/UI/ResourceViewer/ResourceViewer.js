@@ -40,7 +40,7 @@ function ResourceViewer(props) {
         </div>
     </div>
     return (
-        <WindowUI canDrag={draggable}>
+        <WindowUI draggable={draggable}>
             {content}
         </WindowUI>
     )

@@ -2,7 +2,7 @@ import Moveable from 'react-moveable'
 import { useRef, cloneElement, Children} from 'react'
 
 
-const WindowUI = ({canDrag=true, canResize=true, children}) => {
+const WindowUI = ({draggable=true, scalable=true, resizable=false, children}) => {
     const childrenRef = useRef([])
     return (
         <>
@@ -15,8 +15,9 @@ const WindowUI = ({canDrag=true, canResize=true, children}) => {
         hideDefaultLines={true}
         target={childrenRef}
         edge={false}
-        draggable={canDrag}
-        scalable={canResize}
+        draggable={draggable}
+        scalable={scalable}
+        resizable={resizable}
         keepRatio={true}
         throttleDrag={0}
         container={null}
@@ -29,7 +30,12 @@ const WindowUI = ({canDrag=true, canResize=true, children}) => {
         }}
         onScale={({target, transform}) => {
                 target.style.transform = transform;
-            }}/>
+            }}
+        onResize={({target, delta, width, height}) => {
+            delta[0] && (target.style.width = `${width}px`);
+            delta[1] && (target.style.height = `${height}px`);
+        }}    
+        />
         </>
     )
 }

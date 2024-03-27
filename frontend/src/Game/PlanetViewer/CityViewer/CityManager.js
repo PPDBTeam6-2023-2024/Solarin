@@ -4,8 +4,8 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
-import Draggable from "react-draggable";
 import { getBuildings, getImageForBuildingType } from './BuildingManager';
+import WindowUI from '../../UI/WindowUI/WindowUI';
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [buildings, setBuildings] = useState([]);
@@ -56,7 +56,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
     return (
         <div className="darken_background">
-            <Draggable>
+            <WindowUI>
                 <div className="building_view">
                     <div className="ag-theme-alpine-dark buildings_grid">
                         <AgGridReact
@@ -81,7 +81,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
                     </div>
                 </div>
-            </Draggable>
+            </WindowUI>
         </div>
     );
 };

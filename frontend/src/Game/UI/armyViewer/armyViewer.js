@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { TreeView, TreeItem } from '@mui/x-tree-view';
-import Draggable from 'react-draggable';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import WindowUI from '../WindowUI/WindowUI';
 
 function ArmyViewer({ armyId, onUpdatePosition }) {
     const [troops, setTroops] = useState([]);
@@ -51,7 +51,7 @@ function ArmyViewer({ armyId, onUpdatePosition }) {
     let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);
 
     return (
-        <Draggable>
+        <WindowUI>
             <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: 'auto', minWidth: '300px', height: 'auto' }}>
                 <TreeView aria-label="file system navigator">
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
@@ -73,7 +73,7 @@ function ArmyViewer({ armyId, onUpdatePosition }) {
                     </TreeItem>
                 </TreeView>
             </div>
-        </Draggable>
+        </WindowUI>
     );
 }
 

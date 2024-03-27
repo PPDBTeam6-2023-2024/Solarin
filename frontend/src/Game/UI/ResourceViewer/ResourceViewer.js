@@ -1,8 +1,7 @@
-import Draggable from "react-draggable"
 import resourcesJson from "./resources.json"
 import { useMemo } from "react";
 import Tooltip from '@mui/material/Tooltip';
-
+import WindowUI from "../WindowUI/WindowUI";
 const getResourceStats = (resources, resourcesInfo) => {
     const elements = []
     for (let resource in resources){
@@ -41,14 +40,9 @@ function ResourceViewer(props) {
         </div>
     </div>
     return (
-        <>
-        {
-            draggable && <Draggable>{content}</Draggable>
-        }
-        {
-            !draggable && <>{content}</>
-        }
-        </>
+        <WindowUI canDrag={draggable}>
+            {content}
+        </WindowUI>
     )
 }
 export default ResourceViewer

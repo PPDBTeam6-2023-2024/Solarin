@@ -8,6 +8,7 @@ import barracks from "../../Images/building_images/Barracks.png";
 import mine from "../../Images/building_images/Mine.png";
 import factory from "../../Images/building_images/Factory.png";
 import shipyard from "../../Images/building_images/Shipyard.png";
+import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
 import axios from "axios";
 
 const getBuildings = async (cityId) => {
@@ -119,7 +120,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
                         </div>
                         <div className="building_image">
+                            <TrainingViewer/>
                             {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
+
                         </div>
                     </div>
                 </Draggable>

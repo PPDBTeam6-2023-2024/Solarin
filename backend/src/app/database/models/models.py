@@ -8,6 +8,7 @@ from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
+from ...routers.buildingManagement.schemas import TrainingQueueEntry
 from datetime import timedelta
 
 from sqlalchemy.orm.state import InstanceState
@@ -337,6 +338,17 @@ class TrainingQueue(Base):
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'))
     rank = Column(Integer)
     training_size = Column(Integer)
+
+    def toTrainingQueueEntry(self):
+        return TrainingQueueEntry(
+            id=self.id,
+            building_id=self.building_id,
+            army_id=self.army_id,
+            train_remaining=self.train_remaining,
+            troop_type=self.troop_type,
+            rank=self.rank,
+            training_size=self.training_size
+        )
 
 
 class TroopType(Base):

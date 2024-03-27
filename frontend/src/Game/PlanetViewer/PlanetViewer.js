@@ -138,6 +138,13 @@ function PlanetViewer(props) {
                 ))
             }
 
+
+                {/*Display cityManager over the map*/}
+                {selectedCityId && showCityManager && (
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
+                            <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
+                        </div>
+                )}
         {
         image &&
             <MapInteractionCSS
@@ -163,13 +170,6 @@ function PlanetViewer(props) {
                         {showCities && cityImages.map((city, index) => (
                           <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
                         ))}
-
-                    {/*Display cityManager over the map*/}
-                    {selectedCityId && showCityManager && (
-                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                                <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
-                            </div>
-                    )}
 
                 </MapInteractionCSS>
 

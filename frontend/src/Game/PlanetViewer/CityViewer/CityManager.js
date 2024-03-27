@@ -68,7 +68,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 index: index
                             }))}
                             columnDefs={columns}
-                            domLayout='autoHeight'
+                            domLayout='normal'
                             suppressMovableColumns={true}
                             suppressDragLeaveHidesColumns={true}
                             onCellMouseOver={onRowMouseOver}

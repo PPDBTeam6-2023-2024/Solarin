@@ -104,7 +104,7 @@ function PlanetViewer(props) {
     const [planetListIndex, setPlanetListIndex] = props.planetListIndex;
     useEffect(() => {
         const fetchArmies = async () => {
-            const armies = await getArmies(1);
+            const armies = await getArmies(props.planetId);
             const armyElements = armies.map(army => ({
                 ...army,
                 onClick: (e) => toggleArmyViewer(e, army.id),
@@ -113,7 +113,7 @@ function PlanetViewer(props) {
         };
         fetchArmies();
 
-    }, [updateTrigger]); // get the armies again when an army has been moved
+    }, [updateTrigger, props.planetId]); // get the armies again when an army has been moved
 
 
     return (

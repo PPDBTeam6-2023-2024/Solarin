@@ -70,7 +70,8 @@ class ArmyAccess:
         await self.__session.flush()
 
     async def getArmies(self, userid: int, planetid: int):
-        getentry = Select(Army).where(Army.user_id==userid)
+        print(f"planetID in backend: {planetid}")
+        getentry = Select(Army).where(Army.user_id==userid, Army.planet_id==planetid)
         armies = await self.__session.execute(getentry)
         await self.__session.flush()
         return armies

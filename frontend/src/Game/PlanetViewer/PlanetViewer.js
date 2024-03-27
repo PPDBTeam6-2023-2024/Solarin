@@ -6,6 +6,7 @@ import CityManager from "./CityViewer/CityManager";
 import {PlanetListContext} from "./../Context/PlanetListContext"
 import ArmyViewer from '../UI/armyViewer/armyViewer'
 import getArmies from "./getArmies";
+import {UserInfoContext} from "../Context/UserInfoContext";
 
 const loadImage = async (imgPath, stateSetter) => {
     let img = new Image()
@@ -68,11 +69,16 @@ function PlanetViewer(props) {
     const [showCities, setShowCities] = useState(true);
     const [citiesLoaded, setCitiesLoaded] = useState(false)
 
-    const handleCityClick = (cityId) => {
-        setSelectedCityId(cityId);
-        setShowCityManager(true);
-        setShowCities(false);
+    const [userInfo, setUserInfo] = useContext(UserInfoContext)
+
+    const handleCityClick = (cityId, controlledBy) => {
+        if (controlledBy === userInfo.id){
+            setSelectedCityId(cityId);
+            setShowCityManager(true);
+            setShowCities(false);
+        }
     };
+
     const [cityImages,setCityImages] = useState([]);
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
@@ -82,7 +88,7 @@ function PlanetViewer(props) {
             // replace with actual planetID
             const cityElements = cities.map(city => ({
                 ...city,
-                onClick: () => handleCityClick(city.id),
+                onClick: () => handleCityClick(city.id, city.controlled_by),
             }));
             setCityImages(cityElements);
             setCitiesLoaded(true);

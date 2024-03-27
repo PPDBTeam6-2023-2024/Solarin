@@ -1,6 +1,6 @@
 import sqlalchemy.orm.state
 from sqlalchemy import *
-
+import datetime
 from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship, declared_attr
 
@@ -8,7 +8,7 @@ from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
-from ...routers.buildingManagement.schemas import TrainingQueueEntry
+from ...routers.buildingManagement.schemas import TrainingQueueEntry, TimestampDone
 from datetime import timedelta
 
 from sqlalchemy.orm.state import InstanceState
@@ -339,7 +339,9 @@ class TrainingQueue(Base):
     rank = Column(Integer)
     training_size = Column(Integer)
 
-    def toTrainingQueueEntry(self):
+    def toTrainingQueueEntry(self, unit_training_time):
+        delta_time = datetime.timedelta(seconds=self.train_remaining)
+
         return TrainingQueueEntry(
             id=self.id,
             building_id=self.building_id,
@@ -347,7 +349,8 @@ class TrainingQueue(Base):
             train_remaining=self.train_remaining,
             troop_type=self.troop_type,
             rank=self.rank,
-            training_size=self.training_size
+            troop_size=self.training_size,
+            unit_training_time=unit_training_time
         )
 
 

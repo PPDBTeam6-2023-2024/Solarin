@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import Draggable from "react-draggable";
 import './TrainingViewer.css'
 import axios from "axios";
+import TrainingQueueEntry from "./TrainingQueueEntry";
 
 
 const getTrainingQueue = async() => {
@@ -15,22 +16,21 @@ const getTrainingQueue = async() => {
 
 function TrainingViewer(props) {
 
+    const [trainingQueueList, setTrainingQueueList] = useState([])
+
     useEffect(() => {
         async function makeTrainingQueueOverview() {
             let data = await getTrainingQueue()
-            setDmData(data)
-
-            data = await getFriendRequests()
-            setFriendRequests(data)
+            setTrainingQueueList(data);
         }
-        makeOverviewEntries()
+        makeTrainingQueueOverview()
     }, [])
 
 
 
     return (
         <div className="TrainingViewScreen">
-
+            {trainingQueueList.map((queue_entry, index) => <TrainingQueueEntry key={index} queue_data={queue_entry}/>)}
         </div>
     )
 }

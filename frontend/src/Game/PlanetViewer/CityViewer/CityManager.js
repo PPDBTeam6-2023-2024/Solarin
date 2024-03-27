@@ -6,6 +6,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import Draggable from "react-draggable";
 import { getBuildings, getImageForBuildingType } from './BuildingManager';
+import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [buildings, setBuildings] = useState([]);
@@ -77,7 +78,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                             onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                         />
                     </div>
+
                     <div className="building_image">
+                        <TrainingViewer/>
                         {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
                     </div>
                 </div>

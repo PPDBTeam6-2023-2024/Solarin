@@ -19,8 +19,8 @@ async def get_buildings(
     retrieve training queue of a specific building
     """
     da = DataAccess(db)
-    training_queue: List[TrainingQueue] = da.TrainingAccess.get_queue(building_id)
-    output = [t.toTrainingQueueEntry() for t in training_queue]
+    training_queue: List[TrainingQueue] = await da.TrainingAccess.get_queue(building_id)
+    output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
 
     return output
 

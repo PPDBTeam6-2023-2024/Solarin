@@ -56,10 +56,6 @@ function PlanetViewer(props) {
     };
 
     useEffect(() => {
-        loadImage(props.mapImage, setImage);
-    }, [props.mapImage]);
-
-    useEffect(() => {
         loadImage(props.mapImage, setImage)
     }, [props.mapImage])
 
@@ -73,11 +69,16 @@ function PlanetViewer(props) {
         setShowCityManager(true);
         setShowCities(false);
     };
+
+    useEffect(() => {
+        setCitiesLoaded(false)
+    },[props.planetId])
+
     const [cityImages,setCityImages] = useState([]);
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
         const fetchCities = async () => {
-            const cities = await getCities(1);
+            const cities = await getCities(props.planetId);
 
             // replace with actual planetID
             const cityElements = cities.map(city => ({
@@ -90,7 +91,7 @@ function PlanetViewer(props) {
         if (!citiesLoaded) {
             fetchCities();
         }
-    }, [props.planetId, handleCityClick, citiesLoaded]);
+    }, [handleCityClick, citiesLoaded]);
 
     {/*handle closing of cityManager window*/}
     const [showCityManager, setShowCityManager] = useState(true);

@@ -127,7 +127,7 @@ async def insert_test_data(connection_test):
         create some types of troops
         """
 
-        a_id = await da.ArmyAccess.createArmy(user_id=1)
+        a_id = await da.ArmyAccess.createArmy(user_id=1, planet_id=p_id, x=0, y=0)
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))

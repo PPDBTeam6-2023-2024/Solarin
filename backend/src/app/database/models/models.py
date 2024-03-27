@@ -1,5 +1,6 @@
 import sqlalchemy.orm.state
 from sqlalchemy import *
+from datetime import datetime
 
 from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship, declared_attr
@@ -386,8 +387,8 @@ class Army(Base):
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     planet_id = Column(Integer, ForeignKey("planet.id"), nullable=False)
-    departure_time = Column(DATETIME, nullable=False)
-    arrival_time = Column(DATETIME, nullable=False)
+    departure_time = Column(DateTime(), nullable=False, default=datetime.utcnow)
+    arrival_time = Column(DateTime(), nullable=False, default=datetime.utcnow)
     from_x = Column(Float(precision=53), nullable=False)
     from_y = Column(Float(precision=53), nullable=False)
     to_x = Column(Float(precision=53), nullable=False)

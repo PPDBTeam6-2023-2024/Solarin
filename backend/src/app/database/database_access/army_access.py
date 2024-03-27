@@ -13,14 +13,21 @@ class ArmyAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createArmy(self, user_id: int):
+    async def createArmy(self, user_id: int, planet_id: int, x: float, y: float):
         """
         Create a new army corresponding to a user_id
 
         :param: user_id: the id of the user who created the army
         :return: army_id: id of the army that was just generated
         """
-        army = Army(user_id=user_id, x=0, y=0)
+        army = Army(
+            user_id=user_id,
+            planet_id=planet_id,
+            from_x=x,
+            from_y=y,
+            to_x=x,
+            to_y=y
+        )
         self.__session.add(army)
         await self.__session.flush()
         return army.id
@@ -160,4 +167,5 @@ class ArmyAccess:
         army.arrival_time = current_time + delta
 
         await self.__session.commit()
+        await self.__session.refresh(army)
         return True, army

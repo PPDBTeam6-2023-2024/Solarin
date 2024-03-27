@@ -1,3 +1,7 @@
+from datetime import datetime
+from typing import Optional
+from math import dist
+
 from ..models.models import *
 from ..database import AsyncSession
 
@@ -108,3 +112,52 @@ class ArmyAccess:
         await self.__session.flush()
         armies = armies.all()
         return armies
+
+    async def get_armies_on_planet(self, planet_id: int) -> list[Army]:
+        stmt = (
+            select(Army)
+            .where(Army.planet_id == planet_id)
+        )
+        result = await self.__session.execute(stmt)
+        return result.scalars().all()
+
+    async def get_army_time_delta(self, army_id: int, distance: float) -> timedelta:
+        # TODO: make speed army specific
+        return timedelta(seconds=10*distance)
+
+    async def change_army_direction(self, user_id: int, army_id: int, to_x: float, to_y: float) -> tuple[bool, Optional[Army]]:
+        stmt = (
+            select(Army)
+            .where(Army.user_id == user_id)
+            .where(Army.id == army_id)
+        )
+        result = await self.__session.execute(stmt)
+        army: Optional[Army] = result.scalar_one_or_none()
+
+        if not army:
+            return False, None
+
+        current_time = datetime.utcnow()
+
+        total_time_diff = (army.arrival_time - army.departure_time).total_seconds()
+        current_time_diff = (min(current_time, army.arrival_time) - army.departure_time).total_seconds()
+
+        x_diff = army.to_x - army.from_x
+        y_diff = army.to_y - army.from_y
+
+        current_x = x_diff * (current_time_diff / total_time_diff)
+        current_y = y_diff * (current_time_diff / total_time_diff)
+
+        army.from_x = current_x
+        army.from_y = current_y
+        army.to_x = to_x
+        army.to_y = to_y
+
+        distance = dist((current_x, current_y), (to_x, to_y))
+        delta = await self.get_army_time_delta(army_id, distance=distance)
+
+        army.departure_time = current_time
+        army.arrival_time = current_time + delta
+
+        await self.__session.commit()
+        return True, army

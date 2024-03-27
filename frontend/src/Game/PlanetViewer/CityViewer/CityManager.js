@@ -1,15 +1,18 @@
 // CityManager.js
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {useState, useEffect, useMemo, useContext} from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import Draggable from "react-draggable";
 import { getBuildings, getImageForBuildingType } from './BuildingManager';
+import {UserInfoContext} from "../../Context/UserInfoContext";
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [buildings, setBuildings] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
+
+    const [userInfo, setUserInfo] = useContext(UserInfoContext)
 
     /* stores selected building*/
     const [selectedClick, setSelectedClick] = useState(-1);
@@ -25,6 +28,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         if (cityId && buildings.length === 0) {
             getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
+                console.log(buildings)
             });
         }
     }, [cityId, buildings]);
@@ -44,6 +48,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
             }
 
             if (!initialClick) {
+                console.log("test")
+                console.log(userInfo)
                 onClose();
             } else {
                 setInitialClick(false);

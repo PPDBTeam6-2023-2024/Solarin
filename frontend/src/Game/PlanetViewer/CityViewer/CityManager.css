@@ -8,8 +8,11 @@
 }
 
 .ag-theme-alpine-dark .ag-row{
-    font-size: 115%;
+    font-size: 1vw;
     height: 3vw;
+    line-height: 3vw;
+    margin : auto;
+    align-items: center;
 }
 
 
@@ -33,13 +36,11 @@
 .buildings_grid{
     display: inline-block;
     width: 40vw;
-    height: 100%;
+    height: 15vw;
     background: transparent;
     overflow: scroll;
-    margin-top: 5%;
-    margin-left: 2%;
-    margin-right: auto;
-    border-radius: 5px
+    margin: 2vw auto 3vw 0.1vw;
+    border-radius: 0.1vw;
 }
 
 .building_view{

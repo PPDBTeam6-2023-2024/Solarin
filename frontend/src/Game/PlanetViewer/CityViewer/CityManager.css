@@ -32,19 +32,19 @@
 
 .buildings_grid{
     display: inline-block;
-    width: 40vw;
+    width: 50%;
     height: 19vw;
-    background: transparent;
     overflow: scroll;
     margin-top: 1vw;
     margin-bottom: auto;
     margin-left: 2%;
     margin-right: auto;
-    border-radius: 1vw 1vw 3vw 3vw;
+    border-radius: 1vw 1vw 0 0;
 }
 
 .building_view{
-    width: 80vw;
+    display: flex;
+    width: 90vw;
     height: 20vw;
     background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(139,0,0,0.5));
     border-radius: 3vw;

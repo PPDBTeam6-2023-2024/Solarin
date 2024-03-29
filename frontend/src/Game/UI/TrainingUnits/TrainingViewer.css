@@ -1,5 +1,12 @@
 .TrainingViewScreen{
-    width: 100%;
+    width: 50%;
     height: 100%;
-    background-image: linear-gradient(5deg, sandybrown, #d26032);
+    background-image: linear-gradient(5deg, sandybrown, #d2603280);
+    display: inline-block;
+    vertical-align: top;
+    overflow-x: scroll;
+     white-space: nowrap;
+
+    /*prevent overlap of the corners with the background*/
+    border-radius: 0 3vw 3vw 0;
 }

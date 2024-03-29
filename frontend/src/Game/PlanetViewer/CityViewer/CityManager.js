@@ -79,10 +79,13 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         />
                     </div>
 
-                    <div className="building_image">
-                        <TrainingViewer/>
-                        {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
-                    </div>
+                    <TrainingViewer/>
+                    {selectedImage &&
+                        <div className="building_image">
+
+                             <img src={selectedImage} alt="Building" className="selected-image" />
+                        </div>
+                    }
                 </div>
             </Draggable>
         </div>

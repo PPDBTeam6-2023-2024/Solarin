@@ -1,10 +1,12 @@
 import { MapInteractionCSS } from 'react-map-interaction';
 import {useState, useEffect, useContext} from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+
 import getCities from './CityViewer/getCities';
 import CityManager from "./CityViewer/CityManager";
+
 import {PlanetListContext} from "./../Context/PlanetListContext"
-import ArmyViewer from '../UI/armyViewer/armyViewer'
+import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import getArmies from "./getArmies";
 
 const loadImage = async (imgPath, stateSetter) => {
@@ -136,6 +138,13 @@ function PlanetViewer(props) {
                 ))
             }
 
+
+                {/*Display cityManager over the map*/}
+                {selectedCityId && showCityManager && (
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
+                            <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
+                        </div>
+                )}
         {
         image &&
             <MapInteractionCSS
@@ -161,13 +170,6 @@ function PlanetViewer(props) {
                         {showCities && cityImages.map((city, index) => (
                           <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
                         ))}
-
-                    {/*Display cityManager over the map*/}
-                    {selectedCityId && showCityManager && (
-                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                                <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
-                            </div>
-                    )}
 
                 </MapInteractionCSS>
 

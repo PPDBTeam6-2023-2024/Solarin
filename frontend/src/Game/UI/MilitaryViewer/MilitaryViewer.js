@@ -1,6 +1,5 @@
 import {TreeView, TreeItem} from '@mui/x-tree-view'
-import Draggable from 'react-draggable'
-
+import WindowUI from '../WindowUI/WindowUI'
 function MilitaryViewer(props) {
   // TODO: with more info (ap, dp, cap, cdp, ...) and more icons, ...
     const example_armies_input = [
@@ -33,7 +32,7 @@ function MilitaryViewer(props) {
         </TreeItem>)
     })
     return (
-        <Draggable>
+      <WindowUI>
         <TreeView
         className="bg-gray-600 fixed border-4"
       aria-label="file system navigator"
@@ -42,7 +41,7 @@ function MilitaryViewer(props) {
       <h1 className="text-2xl my-1">Armies</h1>
       {example_armies_output}
     </TreeView>
-    </Draggable>
+      </WindowUI>
     )
 }
 export default MilitaryViewer;

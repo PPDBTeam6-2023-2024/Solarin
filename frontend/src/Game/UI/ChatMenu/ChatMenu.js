@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import Draggable from "react-draggable";
 import "./ChatMenu.css"
 import FriendsTab from "./Friends/FriendsTab";
 import AllianceTab from "./Alliance/AllianceTab";
 import RankingTab from "./Ranking/RankingTab";
+import WindowUI from "../WindowUI/WindowUI";
 
 const categories = ["Friends", "Alliances", "Ranking"]
 
@@ -51,7 +51,7 @@ function ChatMenu(props) {
 
     const [selectedCategory, setSelectedCategory] = useState("Friends");
     return (
-      <Draggable>
+      <WindowUI>
           {/*Creates the div that contains the chat menu*/}
       <div className="ChatMenuWidget absolute right-0">
           <CategoryTab selected={[selectedCategory, setSelectedCategory]}/>
@@ -60,7 +60,7 @@ function ChatMenu(props) {
           {selectedCategory === "Ranking" && <RankingTab/>}
 
       </div>
-    </Draggable>
+      </WindowUI>
     )
 }
 

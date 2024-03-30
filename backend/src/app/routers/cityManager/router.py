@@ -30,7 +30,7 @@ async def get_buildings(
 
     # Iterate through each building, creating a BuildingInstanceSchema for each one
     for building in buildings:
-        schema = BuildingInstanceSchema.from_orm(building[0])
+        schema = building[0].to_schema(building[1].type)
         buildings_schemas.append(schema)
 
     # Return the list of BuildingInstanceSchema instances

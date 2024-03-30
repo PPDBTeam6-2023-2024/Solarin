@@ -92,7 +92,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         </div>
                     }
 
-                    {selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick} building_id={selectedClick[0]}/>}
+                    {selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
 
                 </div>
             </WindowUI>

@@ -2,6 +2,7 @@
  "medic": {"icon":  "Medic.png"},
  "soldier": {"icon":  "Soldier.png"},
  "tank": {"icon":  "Tank.png"},
- "fighter": {"icon":  "Fighter.png"}
+ "fighter": {"icon":  "Fighter.png"},
+ "bomber": {"icon":  "Bomber.png"}
 
 }

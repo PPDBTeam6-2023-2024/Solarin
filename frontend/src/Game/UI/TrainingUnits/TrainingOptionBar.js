@@ -14,8 +14,7 @@ function TrainingOptionBar(props) {
 
     const [selected, setSelected] = useState("");
 
-    const changeSelected = (key) => {if (selected === key){setSelected(-1)}else{setSelected(key)}}
-
+    const changeSelected = (key) => {if (selected === key){setSelected("")}else{setSelected(key)}}
     return (
         <>
             <div className="TrainingOptionList">
@@ -24,15 +23,15 @@ function TrainingOptionBar(props) {
 
                 <>
                   {selected === key?
-                    <TrainingOptionEntry key={index} type={key} image={troopsJson[key]["icon"]} selected={true} onSelect={() => changeSelected(key)}/>:
-                    <TrainingOptionEntry key={index} type={key} image={troopsJson[key]["icon"]} selected={false} onSelect={() => changeSelected(key)}/>
+                    <TrainingOptionEntry key={index} type={key} image={troopsJson[key]["icon"]} select={true} onSelect={() => changeSelected(key)}/>:
+                    <TrainingOptionEntry key={index} type={key} image={troopsJson[key]["icon"]} select={false} onSelect={() => changeSelected(key)}/>
                     }
                 </>
 
                 )
             }
             </div>
-            {selected !== "" && <TrainingOptionAdder/>}
+            {selected !== "" && <TrainingOptionAdder onTrain={props.onTrain} type={selected}/>}
         </>
     )
 }

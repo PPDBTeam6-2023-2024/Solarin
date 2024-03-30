@@ -1,27 +1,86 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import './TrainingViewer.css'
 import axios from "axios";
-import TrainingQueueEntry from "./TrainingQueueEntry";
 import './TrainingOptionBar.css'
-import TrainingOptionEntry from "./TrainingOptionEntry";
-import troopsJson from "./../troops.json"
 import './TrainingOptionAdder.css'
+import TrainingCostEntry from "./TrainingCostEntry";
+
 function TrainingOptionAdder(props) {
     /*
     * This menu will be used to submit the information about how many and which units we want to train
     * */
 
+    /*This state takes the typecost into account so, it can display the cost before the user starts training*/
+    const [typeCost, setTypeCost] = useState([]);
+
     const getTypeCosts = async() => {
-    try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/dm_overview`)
-        return response.data
+        try{
+            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/unit/train_cost/${props.type}`)
+            return response.data
+        }
+        catch(e) {return []}
+
     }
-    catch(e) {return []}
-}
+
+   useEffect(() => {
+        async function getTrainingCost() {
+            let data = await getTypeCosts ()
+            setTypeCost(data);
+        }
+        getTrainingCost()
+    }, [props.type]);
+
+    /*reference to the div that displays the resources needed for the upgrade*/
+    const resource_bar = React.useRef(null);
+
+    /*slider related states*/
+    const [unitAmount, setUnitAmount] = useState(1);
+
+    const onSliderChange = (e) => {
+        setUnitAmount(e.target.value);
+    };
+
+    /*Put value in scrollbar*/
+    useEffect(() => {
+        slider_pos.current.style.left = (unitAmount*78.5/100)+5+"%";
+    }, [unitAmount]);
+
+    /*
+    * We want our number to follow the scrollbar, To do this we will move our text corresponding to the value
+    * */
+    const slider_ref = useRef(null);
+    const slider_pos = useRef(null);
+
+    const trainJson = () => {
+        return JSON.stringify({
+            "type": props.type,
+            "amount": unitAmount
+        })
+    }
 
     return (
-        <div className="TrainingOptionAdderWidget">lala</div>
+        <div className="TrainingOptionAdderWidget">
+            <div ref={resource_bar} style={{"height": "40%", "display": "flex", "marginTop": "3%", "justifyContent": "center", "alignItems": "center"}}>
+                {typeCost.map((value, index) => <TrainingCostEntry key={index} resource={value[0]} cost={value[1]*unitAmount}/>)}
+            </div>
+
+
+            <div style={{"position": "relative", "marginTop": "5%"}}>
+                {/*This makes sure that our number follows the scroll bar*/}
+                <span ref={slider_pos} style={{"position": "absolute", "left":"5%", "fontSize": "1.3vw", "userSelect": "none", "pointerEvents": "none"}}>{unitAmount}</span>
+
+                <input ref={slider_ref}  className="TroopAmountSlider" type="range" min="1" max="100" value={unitAmount} onInput={onSliderChange}/>
+
+            </div>
+
+            {/*button to train units*/}
+            <div style={{"display": "flex", "justifyContent": "center", "alignItems": "center"}}>
+                <button className="TrainButton"  onClick={() => props.onTrain(trainJson())}> Train Units</button>
+            </div>
+
+
+        </div>
     )
 }
 

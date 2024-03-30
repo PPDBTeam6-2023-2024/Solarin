@@ -13,7 +13,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [selectedImage, setSelectedImage] = useState(null);
 
     /* stores selected building*/
-    const [selectedClick, setSelectedClick] = useState(-1);
+    const [selectedClick, setSelectedClick] = useState([-1, ""]);
     const [initialClick, setInitialClick] = useState(true);
 
     const columns = useMemo(() => [
@@ -66,25 +66,34 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 buildingRank: building.rank,
                                 resourceTimer: 'Unknown',
                                 image: getImageForBuildingType(building.building_type),
-                                index: index
+                                index: index,
+                                id: building.id,
+                                type: building.type
                             }))}
                             columnDefs={columns}
                             domLayout='normal'
                             suppressMovableColumns={true}
                             suppressDragLeaveHidesColumns={true}
                             onCellMouseOver={onRowMouseOver}
-                            onCellClicked={(event) => setSelectedClick(event.data.index)}
+                            onCellClicked={(event) => {setSelectedClick(event.data.index)}}
                             onGridReady={params => params.api.sizeColumnsToFit()}
                             onGridSizeChanged={params => params.api.sizeColumnsToFit()}
+                            onRowClicked={params => {
+                                if (selectedClick === [params.data.id, params.data.type] )
+                                {setSelectedClick(-1)}
+                                else{setSelectedClick([params.data.id, params.data.type])}}}
                         />
                     </div>
-                    <TrainingViewer/>
-                    {selectedImage &&
+
+                    {selectedImage && selectedClick[0] === -1 &&
                         <div className="building_image">
 
                              <img src={selectedImage} alt="Building" className="selected-image" />
                         </div>
                     }
+
+                    {selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
+
                 </div>
             </WindowUI>
         </div>

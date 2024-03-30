@@ -25,12 +25,12 @@ async def get_buildings(
     """
     do the city check, checking all the idle mechanics
     """
-    city_checker = CityChecker(city_id)
-    city_checker.check_all()
+    city_checker = CityChecker(city_id, data_access)
+    await city_checker.check_all()
 
     # Iterate through each building, creating a BuildingInstanceSchema for each one
     for building in buildings:
-        schema = BuildingInstanceSchema.from_orm(building[0])
+        schema = building[0].to_schema(building[1].type)
         buildings_schemas.append(schema)
 
     # Return the list of BuildingInstanceSchema instances

@@ -10,7 +10,7 @@ router = APIRouter(prefix="/building", tags=["City"])
 
 
 @router.get("/training_queue/{building_id}")
-async def get_buildings(
+async def get_training_queue(
         user_id: Annotated[int, Depends(get_my_id)],
         building_id: int,
         db=Depends(get_db)
@@ -20,9 +20,10 @@ async def get_buildings(
     do a training progress check
     """
     da = DataAccess(db)
-    #TODO: Need to make sure delta time of building changes after check
-    #await da.TrainingAccess.check_queue(building_id)
-    #await da.commit()
+
+    await da.TrainingAccess.check_queue(building_id)
+    await da.BuildingAccess.checked(building_id)
+    await da.commit()
 
     """
     retrieve training queue of a specific building
@@ -31,7 +32,6 @@ async def get_buildings(
     training_queue: List[TrainingQueue] = await da.TrainingAccess.get_queue(building_id)
 
     output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
-
     return output
 
 

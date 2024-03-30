@@ -30,7 +30,7 @@ class PropertyUtility:
 
     @staticmethod
     def getGUC(creation_cost: int, level: int) -> int:
-        return int(floor((creation_cost * level) / 2))
+        return int(floor((creation_cost * (level+1)) / 2))
 
     @staticmethod
     def getGPR(modifier: float, base_rate: int, level: int) -> int:

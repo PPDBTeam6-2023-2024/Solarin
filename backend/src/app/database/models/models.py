@@ -3,7 +3,6 @@ from sqlalchemy import *
 import datetime
 from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship, declared_attr
-
 from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
@@ -198,16 +197,16 @@ class BuildingInstance(Base):
     """
     type = relationship("BuildingType", back_populates="instances", lazy='joined')
 
-    def to_pydantic(self) -> BuildingInstanceSchema:
-        return BuildingInstanceSchema.from_orm(self)
-    def to_BuildingOverview(self, building_id: int, city_id_nr: int, building_type_name: str,
-                            rank_nr: int) -> "BuildingInstanceSchema":
-        return BuildingInstanceSchema(
-            id=building_id,
-            city_id=city_id_nr,
-            building_type=building_type_name,
-            rank=rank_nr
+    def to_schema(self, type_category) -> BuildingInstanceSchema:
+        b = BuildingInstanceSchema(
+            id=self.id,
+            city_id=self.city_id,
+            building_type=self.building_type,
+            rank=self.rank,
+            type=type_category
         )
+
+        return b
 
     """
     stores when the data about this building is last checked

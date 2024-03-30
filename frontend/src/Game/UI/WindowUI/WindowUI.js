@@ -22,10 +22,11 @@ const WindowUI = ({draggable=true, scalable=true, resizable=false, children}) =>
         throttleDrag={0}
         container={null}
         origin={true}
+        
         onDragStart={({inputEvent}) => {
-            return !(inputEvent.detail == 2)
+            return inputEvent.detail === 2
         }}
-        onDrag={({target, transform}) => {
+        onDrag={({target, transform, inputEvent}) => {
             target.style.transform = transform
         }}
         onScale={({target, transform}) => {

@@ -1,22 +1,7 @@
 from fastapi.websockets import WebSocket
+from typing import Optional
 
-
-class ConnectionPool:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    def empty(self) -> bool:
-        return len(self.active_connections) == 0
-
-    async def connect(self, websocket: WebSocket):
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def broadcast(self, data):
-        for connection in self.active_connections:
-            await connection.send_json(data)
+from ..core.connection_pool import ConnectionPool
 
 
 class ConnectionManager:
@@ -24,11 +9,11 @@ class ConnectionManager:
         # dictionary like this -> boardId: connectionPool
         self.boards: dict[int, ConnectionPool] = {}
 
-    async def connect_board(self, board_id: int, websocket: WebSocket) -> ConnectionPool:
+    async def connect_board(self, board_id: int, websocket: WebSocket, sub_protocol: Optional[str]=None) -> ConnectionPool:
         if board_id not in self.boards:
             self.boards[board_id] = ConnectionPool()
         con_pool = self.boards[board_id]
-        await con_pool.connect(websocket)
+        await con_pool.connect(websocket, sub_protocol)
         return con_pool
 
     def disconnect_board(self, board_id: int, websocket: WebSocket) -> None:

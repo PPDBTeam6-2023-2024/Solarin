@@ -387,6 +387,17 @@ class TroopType(Base):
     in_consist_of = relationship("ArmyConsistsOf", back_populates="troop", lazy='select')
 
 
+class TroopRank(Base):
+    """
+    Stores the rank of the unit for a specific user (if no entry, the rank is 1)
+    (because storing an entry for users that do not get far in the game before stopping does not seem efficient)
+    """
+    __tablename__ = 'troopRank'
+    troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+    rank = Column(Integer, default=1)
+
+
 class TroopTypeCost(Base):
     """
     Stores which resources and how much of them it costs to train a unit

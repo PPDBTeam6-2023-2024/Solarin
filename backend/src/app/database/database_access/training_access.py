@@ -158,3 +158,28 @@ class TrainingAccess:
         results = await self.__session.execute(get_queue_entries)
         results = results.all()
         return results
+
+    async def get_troop_cot(self, user_id: int, troop_type: str):
+        """
+        Calculate the cost of 1 unit, based on the rank the user has leveled the unit to
+
+        :param: user_id: id of the user who wants to know the unit cost
+        :param: troop_type: type of unit it wants to train
+        :return: list of following format (resource_type, amount)
+        """
+
+    async def get_troop_rank(self, user_id: int, troop_type: str):
+        """
+        Get the rank of a specific unit for a specific user
+
+        :param: user_id: id of the user who wants to know the unit cost
+        :param: troop_type: type of unit whose rank we want to retrieve corresponding to the user id
+        """
+
+        rank = Select(TroopRank.rank).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
+        results = await self.__session.execute(rank)
+        result = results.first()
+
+        if result is None:
+            return 1
+        return result

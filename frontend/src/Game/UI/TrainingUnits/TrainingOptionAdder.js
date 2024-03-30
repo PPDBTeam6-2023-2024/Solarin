@@ -11,6 +11,15 @@ function TrainingOptionAdder(props) {
     * This menu will be used to submit the information about how many and which units we want to train
     * */
 
+    const getTypeCosts = async() => {
+    try {
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/dm_overview`)
+        return response.data
+    }
+    catch(e) {return []}
+}
+
     return (
         <div className="TrainingOptionAdderWidget">lala</div>
     )

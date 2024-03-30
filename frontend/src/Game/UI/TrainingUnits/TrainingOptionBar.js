@@ -12,14 +12,27 @@ function TrainingOptionBar(props) {
     * This component will have the list of units we can train
     * */
 
-    const [selected, setSelected] = useState(-1);
+    const [selected, setSelected] = useState("");
+
+    const changeSelected = (key) => {if (selected === key){setSelected(-1)}else{setSelected(key)}}
 
     return (
         <>
             <div className="TrainingOptionList">
-            {Object.keys(troopsJson).map((key, index) => <TrainingOptionEntry key={index} type={key} image={troopsJson[key]["icon"]} onSelect={() => setSelected(index)}/>)}
+            {Object.keys(troopsJson).map((key, index) =>
+
+
+                <>
+                  {selected === key?
+                    <TrainingOptionEntry key={index} type={key} image={troopsJson[key]["icon"]} selected={true} onSelect={() => changeSelected(key)}/>:
+                    <TrainingOptionEntry key={index} type={key} image={troopsJson[key]["icon"]} selected={false} onSelect={() => changeSelected(key)}/>
+                    }
+                </>
+
+                )
+            }
             </div>
-            {selected !== -1 && <TrainingOptionAdder/>}
+            {selected !== "" && <TrainingOptionAdder/>}
         </>
     )
 }

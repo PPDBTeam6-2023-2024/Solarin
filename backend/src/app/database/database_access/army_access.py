@@ -23,8 +23,8 @@ class ArmyAccess:
         army = Army(
             user_id=user_id,
             planet_id=planet_id,
-            from_x=x,
-            from_y=y,
+            x=x,
+            y=y,
             to_x=x,
             to_y=y
         )
@@ -149,14 +149,14 @@ class ArmyAccess:
         total_time_diff = (army.arrival_time - army.departure_time).total_seconds()
         current_time_diff = (min(current_time, army.arrival_time) - army.departure_time).total_seconds()
 
-        x_diff = army.to_x - army.from_x
-        y_diff = army.to_y - army.from_y
+        x_diff = army.to_x - army.x
+        y_diff = army.to_y - army.y
 
         current_x = x_diff * (current_time_diff / total_time_diff)
         current_y = y_diff * (current_time_diff / total_time_diff)
 
-        army.from_x = current_x
-        army.from_y = current_y
+        army.x = current_x
+        army.y = current_y
         army.to_x = to_x
         army.to_y = to_y
 

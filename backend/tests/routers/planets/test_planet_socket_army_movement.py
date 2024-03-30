@@ -48,7 +48,7 @@ async def test_get_armies(client):
         data = websocket.receive_json()
         assert data["request_type"] == "get_armies"
         assert len(data["data"]) == 2
-        assert "from_x" in data["data"][0]
+        assert "x" in data["data"][0]
 
 
 async def test_move_army(client):

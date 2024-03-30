@@ -51,7 +51,7 @@ class TrainingAccess:
         And so reduces its waiting time in advance, we will set the last_checked to current time if the queue was empty before
         """
         if highest_nr == 0:
-            u = update(BuildingInstance).values({"last_checked": datetime.datetime.now()}).where(BuildingInstance.id == building_id)
+            u = update(BuildingInstance).values({"last_checked": datetime.now()}).where(BuildingInstance.id == building_id)
             await self.__session.execute(u)
 
         """

@@ -341,7 +341,6 @@ class TrainingQueue(Base):
     training_size = Column(Integer)
 
     def toTrainingQueueEntry(self, unit_training_time):
-        delta_time = datetime.timedelta(seconds=self.train_remaining)
 
         return TrainingQueueEntry(
             id=self.id,
@@ -417,13 +416,14 @@ class Army(Base):
     __tablename__ = "army"
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    planet_id = Column(Integer, ForeignKey("planet.id"), nullable=False)
-    departure_time = Column(DateTime(), nullable=False, default=datetime.utcnow)
-    arrival_time = Column(DateTime(), nullable=False, default=datetime.utcnow)
-    from_x = Column(Float(precision=53), nullable=False)
-    from_y = Column(Float(precision=53), nullable=False)
+    planet_id = Column(Integer, ForeignKey("planet.id"), nullable=True)
+    departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
+    arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
+    x = Column(Float(precision=53), nullable=False)
+    y = Column(Float(precision=53), nullable=False)
     to_x = Column(Float(precision=53), nullable=False)
     to_y = Column(Float(precision=53), nullable=False)
+    last_update = Column(TIME)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
 
@@ -439,8 +439,8 @@ class Army(Base):
             "id": self.id,
             "departure_time": self.departure_time.isoformat(),
             "arrival_time": self.arrival_time.isoformat(),
-            "from_x": self.from_x,
-            "from_y": self.from_y,
+            "x": self.x,
+            "y": self.y,
             "to_x": self.to_x,
             "to_y": self.to_y
         }

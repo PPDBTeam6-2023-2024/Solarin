@@ -30,19 +30,17 @@ const addTrainingQueue = async(building_id, train_json) => {
 
 function TrainingViewer(props) {
 
-
-
     const [trainingQueueList, setTrainingQueueList] = useState([])
     const scroll_bar = React.useRef(null);
 
     async function addTrainingData(train_json) {
-        let data = await addTrainingQueue(2, train_json)
+        let data = await addTrainingQueue(props.building_id, train_json)
         setTrainingQueueList(data);
     }
 
     useEffect(() => {
         async function makeTrainingQueueOverview() {
-            let data = await getTrainingQueue(2)
+            let data = await getTrainingQueue(props.building_id)
             setTrainingQueueList(data);
         }
 
@@ -75,7 +73,7 @@ function TrainingViewer(props) {
                 {trainingQueueList.map((queue_entry, index) => <TrainingQueueEntry OnTrainedFunction={
                 async() => {
                     /*When a unit should be trained we recalibrate with the backend*/
-                    let data = await getTrainingQueue(2);
+                    let data = await getTrainingQueue(props.building_id);
                     setTrainingQueueList(data);
 
                     }

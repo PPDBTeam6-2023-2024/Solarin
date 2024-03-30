@@ -66,25 +66,30 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 buildingRank: building.rank,
                                 resourceTimer: 'Unknown',
                                 image: getImageForBuildingType(building.building_type),
-                                index: index
+                                index: index,
+                                id: building.id
                             }))}
                             columnDefs={columns}
                             domLayout='normal'
                             suppressMovableColumns={true}
                             suppressDragLeaveHidesColumns={true}
                             onCellMouseOver={onRowMouseOver}
-                            onCellClicked={(event) => setSelectedClick(event.data.index)}
+                            onCellClicked={(event) => {setSelectedClick(event.data.index)}}
                             onGridReady={params => params.api.sizeColumnsToFit()}
                             onGridSizeChanged={params => params.api.sizeColumnsToFit()}
+                            onRowClicked={params => {if (selectedClick === params.data.id) {setSelectedClick(-1)} else{setSelectedClick(params.data.id)}}}
                         />
                     </div>
-                    <TrainingViewer/>
-                    {selectedImage &&
+
+                    {selectedImage && selectedClick === -1 &&
                         <div className="building_image">
 
                              <img src={selectedImage} alt="Building" className="selected-image" />
                         </div>
                     }
+
+                    {selectedClick !== -1 && <TrainingViewer key={selectedClick} building_id={selectedClick}/>}
+
                 </div>
             </WindowUI>
         </div>

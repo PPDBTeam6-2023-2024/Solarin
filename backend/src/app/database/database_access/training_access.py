@@ -95,6 +95,8 @@ class TrainingAccess:
         if seconds is None:
             delta_time = await BuildingAccess(self.__session).getDeltaTime(building_id)
             seconds = delta_time.total_seconds()
+            print("s", seconds)
+        print("s2", seconds)
 
         for r in results:
             if seconds <= 0:

@@ -1,0 +1,10 @@
+.TrainingOptionAdderWidget{
+    display: inline-block;
+    vertical-align: top;
+    width: 51%;
+    height: 45%;
+    background-color: #5a3168;
+
+    /*Support curve of background*/
+    border-radius: 0 0 3vw 0;
+}

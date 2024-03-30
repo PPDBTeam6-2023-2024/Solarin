@@ -1,24 +1,40 @@
 .TrainingQueueEntry{
     display: inline-block;
-    width: 7vw;
+    position: relative;
+    width: 6.5vw;
+    height: 100%;
+
     border: 0.1vw solid gold;
     border-radius: 0.5vw;
     padding: 0.2vw;
     margin: 0.1vw;
 }
 
-.TrainingQueueEntry img{
-    width: 6vw;
-    height: 8.5vw;
+.TrainingQueueImageWrapper{
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    height: 60%;
 }
 
-.TrainingQueueEntry div{
-    font-size: 70%;
+
+.TrainingQueueImageWrapper img{
+    position: absolute;
+    bottom: 0;
 }
 
-.TrainingQueueEntry div .QueueLabel{
-    font-size: 90%;
+.TrainingQueueStats div{
+    font-size: 0.8vw;
+}
+
+.TrainingQueueStats div .QueueLabel{
+    font-size: 0.7vw;
     color: gray;
     display: inline;
     margin-right: 0.3vw;
+}
+
+.TrainingQueueStats{
+    position: absolute;
+    bottom: 0;
 }

@@ -15,11 +15,21 @@ async def get_buildings(
         building_id: int,
         db=Depends(get_db)
 ):
+
+    """
+    do a training progress check
+    """
+    da = DataAccess(db)
+    #TODO: Need to make sure delta time of building changes after check
+    #await da.TrainingAccess.check_queue(building_id)
+    #await da.commit()
+
     """
     retrieve training queue of a specific building
     """
     da = DataAccess(db)
     training_queue: List[TrainingQueue] = await da.TrainingAccess.get_queue(building_id)
+
     output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
 
     return output

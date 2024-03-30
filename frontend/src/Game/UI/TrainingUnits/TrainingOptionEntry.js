@@ -8,7 +8,7 @@ function TrainingOptionEntry(props) {
     * */
 
     let style_att = {};
-    if (props.selected){
+    if (props.select){
         style_att = {"transform": "scale(110%)", "backgroundColor": "gold"}
     }
 

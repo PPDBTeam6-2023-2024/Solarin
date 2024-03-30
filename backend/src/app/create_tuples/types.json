@@ -45,7 +45,7 @@
   ],
   "resources": ["TF", "RA", "SOL", "POP", "INF", "minerals", "uranium", "oil", "coal"],
   "units": [
-    {"name":  "assault", "spec": "land", "base-points":
+    {"name":  "soldier", "spec": "land", "base-points":
     {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250}
     },
     {"name":  "tank", "spec": "land", "base-points":

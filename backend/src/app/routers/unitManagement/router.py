@@ -18,7 +18,9 @@ async def get_buildings(
     """
     This endpoint will give back the training cost of a unit, based on the rank of the unit the user has
     """
+
     da = DataAccess(db)
+
     cost_list = await da.TrainingAccess.get_troop_cost(user_id, unit_type)
     return cost_list
 
@@ -39,8 +41,14 @@ async def get_buildings(
     troop_type = data["type"]
     amount = int(data["amount"])
 
-    rank = await da.TrainingAccess.get_troop_rank(user_id, troop_type)
+    """
+    re-check current training progress
+    """
+    await da.TrainingAccess.check_queue(building_id)
+    await da.BuildingAccess.checked(building_id)
+    await da.commit()
 
+    rank = await da.TrainingAccess.get_troop_rank(user_id, troop_type)
     await da.TrainingAccess.trainType(1, building_id, troop_type, rank, amount)
     await da.commit()
 

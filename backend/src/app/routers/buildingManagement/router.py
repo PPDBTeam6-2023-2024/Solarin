@@ -20,8 +20,9 @@ async def get_training_queue(
     do a training progress check
     """
     da = DataAccess(db)
-    #TODO: Need to make sure delta time of building changes after check
+
     await da.TrainingAccess.check_queue(building_id)
+    await da.BuildingAccess.checked(building_id)
     await da.commit()
 
     """

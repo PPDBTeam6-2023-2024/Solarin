@@ -75,7 +75,7 @@ function TrainingViewer(props) {
                 {trainingQueueList.map((queue_entry, index) => <TrainingQueueEntry OnTrainedFunction={
                 async() => {
                     /*When a unit should be trained we recalibrate with the backend*/
-                    let data = await getTrainingQueue();
+                    let data = await getTrainingQueue(2);
                     setTrainingQueueList(data);
 
                     }

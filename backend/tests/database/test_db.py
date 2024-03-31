@@ -127,7 +127,7 @@ async def insert_test_data(connection_test):
         create some types of troops
         """
 
-        a_id = await da.ArmyAccess.createArmy(user_id=1)
+        a_id = await da.ArmyAccess.createArmy(user_id=1, planet_id=p_id, x=0, y=0)
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))
@@ -332,7 +332,7 @@ async def test_ranking():
 
 async def test_training():
     """
-    test ranking
+    test training
     """
     async with sessionmanager.session() as session:
         da = DataAccess(session)
@@ -362,3 +362,40 @@ async def test_training():
         """
         assert army_troops[1][0].size == 10+11
         assert army_troops[1][0].rank == 3
+
+
+async def test_troop_rank():
+    """
+    test that troop ank works correctly
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        """
+        Tests that retrieving and upgrading unit ranks occurs correctly
+        """
+        rank = await da.TrainingAccess.get_troop_rank(1, "soldier")
+        assert rank == 1
+
+        cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
+        assert len(cost_list) == 1
+        assert cost_list[0][0] == "Vibranium"
+        assert cost_list[0][1] == 5
+
+        await da.TrainingAccess.upgrade_troop_rank(1, "soldier")
+
+        rank = await da.TrainingAccess.get_troop_rank(1, "soldier")
+        assert rank == 2
+
+        rank = await da.TrainingAccess.get_troop_rank(2, "soldier")
+        assert rank == 1
+
+        rank = await da.TrainingAccess.get_troop_rank(1, "medic")
+        assert rank == 1
+
+        cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
+        assert len(cost_list) == 1
+        assert cost_list[0][0] == "Vibranium"
+        assert cost_list[0][1] == 7
+
+

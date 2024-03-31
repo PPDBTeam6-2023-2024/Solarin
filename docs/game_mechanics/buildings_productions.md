@@ -1,4 +1,4 @@
-                                                                     # Buildings & Production
+# Buildings & Production
 ## General Production Cost (GPC)
 
 * Our base point bounds are currently $[0,499]$
@@ -13,7 +13,7 @@
                         * $\text{GPC(unit)}= 50\left(\left\lfloor\dfrac{\text{AP+DP+...+MS}}{1497}\right \rfloor\right)^5$ SOL
                 * The currency type of GPC depends on the product type, therefore let's say the GPC is given in SOL (solarium) by default.
 ## General Upgrade Cost (GUC)
-* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot\text{level}}{2}\right\rfloor$ TF 
+* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1}){2}\right\rfloor$ TF 
 	* $\text{level}$ is the current (pre-upgrade) level of the building
 	* $\text{CC}$ is the creation cost of the building
 	* GUC and CC is given in Techforge (TF) currency by default

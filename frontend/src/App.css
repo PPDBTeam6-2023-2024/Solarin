@@ -8,3 +8,6 @@
   height: 100%;
   z-index: -1;
 }
+.moveable-control {
+  opacity: 0!important;
+}

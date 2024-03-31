@@ -4,7 +4,7 @@ from ..models.models import *
 from ..database import AsyncSession
 from .building_access import BuildingAccess
 from .army_access import ArmyAccess
-
+from ....logic.utils.compute_properties import *
 
 class TrainingAccess:
     """
@@ -51,13 +51,13 @@ class TrainingAccess:
         And so reduces its waiting time in advance, we will set the last_checked to current time if the queue was empty before
         """
         if highest_nr == 0:
-            u = update(BuildingInstance).values({"last_checked": datetime.datetime.now()}).where(BuildingInstance.id == building_id)
+            u = update(BuildingInstance).values({"last_checked": datetime.now()}).where(BuildingInstance.id == building_id)
             await self.__session.execute(u)
 
         """
         create queue
         """
-        training_time: datetime.timedelta = await self.__getTrainingTime(troop_type)
+        training_time: int = await self.__getTrainingTime(troop_type)
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,
                            training_size=amount, army_id=army_id, train_remaining=training_time*amount)
 
@@ -76,7 +76,7 @@ class TrainingAccess:
 
         results = results.first()[0]
 
-        return results
+        return int(results)
 
     async def check_queue(self, building_id, seconds=None):
         """
@@ -156,3 +156,79 @@ class TrainingAccess:
         results = await self.__session.execute(get_queue_entries)
         results = results.all()
         return results
+
+    async def get_troop_cost(self, user_id: int, troop_type: str):
+        """
+        Calculate the cost of 1 unit, based on the rank the user has leveled the unit to
+
+        :param: user_id: id of the user who wants to know the unit cost
+        :param: troop_type: type of unit it wants to train
+        :return: list of following format (resource_type, amount)
+        """
+
+        rank = await self.get_troop_rank(user_id, troop_type)
+
+        get_cost = Select(TroopTypeCost.resource_type, TroopTypeCost.amount).where(TroopTypeCost.troop_type == troop_type)
+
+        resources = await self.__session.execute(get_cost)
+        resources = resources.all()
+        ranked_cost = []
+
+        """
+        Make sure the cost depend on the rank
+        """
+        for r, c in resources:
+            real_cost = PropertyUtility.getGUC(c, rank)
+            ranked_cost.append((r, real_cost))
+
+        return ranked_cost
+
+    async def get_troop_rank(self, user_id: int, troop_type: str):
+        """
+        Get the rank of a specific unit for a specific user
+
+        :param: user_id: id of the user who wants to know the unit cost
+        :param: troop_type: type of unit whose rank we want to retrieve corresponding to the user id
+        """
+
+        rank = Select(TroopRank.rank).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
+        results = await self.__session.execute(rank)
+        result = results.first()
+
+        if result is None:
+            return 1
+        return result[0]
+
+    async def upgrade_troop_rank(self, user_id: int, troop_type: str):
+        """
+        Upgrade the rank of a specific unit, for a specific user
+
+        :param: user_id: id of the user who wants to know the unit cost
+        :param: troop_type: type of unit whose rank we want to upgrade corresponding to the user id
+        """
+
+        rank = await self.get_troop_rank(user_id, troop_type)
+
+        """
+        rank 1 is not yet stored, so if the original rank mis 1, we need to create a row with the new rank
+        """
+        create_new_row = False
+        if rank == 1:
+            create_new_row = True
+
+        rank += 1
+
+        if create_new_row:
+            """
+            create new row entry
+            """
+            self.__session.add(TroopRank(user_id=user_id, troop_type=troop_type, rank=rank))
+        else:
+            """
+            alter row entry
+            """
+            u = update(TroopRank).values({"rank": rank}).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
+            await self.__session.execute(u)
+
+        await self.__session.flush()
+

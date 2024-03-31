@@ -59,7 +59,7 @@ class BuildingAccess:
 
         return building_types.all()
 
-    async def getDeltaTime(self, building_id: int):
+    async def getDeltaTime(self, building_id: int) -> timedelta:
         """
         get the between now and when the building was last checked
         :param: building_id: id of the building
@@ -71,4 +71,19 @@ class BuildingAccess:
         if last is None:
             raise Exception("Building does not exist")
 
-        return datetime.datetime.now()-last[0]
+        # Check if last[0] is None, which means the building was never checked
+        if last[0] is None:
+            # Handle the never checked scenario. For example, return None or raise an exception.
+            return timedelta(seconds=0)
+
+            # Calculate the delta time since the building was last checked
+        return datetime.utcnow() - last[0]
+
+    async def checked(self, building_id: int):
+        """
+        Indicates that the building is checked, and so set the last checked to current time
+        """
+        u = update(BuildingInstance).values({"last_checked": datetime.utcnow()}).where(BuildingInstance.id == building_id)
+        await self.__session.execute(u)
+
+        await self.__session.flush()

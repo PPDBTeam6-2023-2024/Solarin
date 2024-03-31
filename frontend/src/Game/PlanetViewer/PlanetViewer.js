@@ -1,12 +1,15 @@
 import { MapInteractionCSS } from 'react-map-interaction';
 import {useState, useEffect, useContext} from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+
 import getCities from './CityViewer/getCities';
 import CityManager from "./CityViewer/CityManager";
+
 import {PlanetListContext} from "./../Context/PlanetListContext"
-import ArmyViewer from '../UI/armyViewer/armyViewer'
+import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import getArmies from "./getArmies";
 import {UserInfoContext} from "../Context/UserInfoContext";
+import PlanetSVG from './PlanetSVG';
 
 const loadImage = async (imgPath, stateSetter) => {
     let img = new Image()
@@ -16,13 +19,35 @@ const loadImage = async (imgPath, stateSetter) => {
     }
 }
 
+
+
+function generateData(width, height) {
+    const data = [];
+    const cellWidth = 1 / width;
+    const cellHeight = 1 / height;
+
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            const x = Math.random() * cellWidth + j * cellWidth;
+            const y = Math.random() * cellHeight + i * cellHeight;
+            const types = ['type1', 'type2', 'type3']
+            const regionType = types[Math.floor(Math.random()*types.length)];
+            data.push({ x, y, regionType });
+        }
+    }
+
+    return data;
+}
+
+const data = generateData(10,10);
+
+
 function PlanetViewer(props) {
 
     const [mapState, setMapState] = useState({
         scale: 1,
         translation: {x: 0, y: 0},
     });
-    const [image, setImage] = useState();
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -56,13 +81,6 @@ function PlanetViewer(props) {
         setUpdateTrigger(prev => !prev)
     };
 
-    useEffect(() => {
-        loadImage(props.mapImage, setImage);
-    }, [props.mapImage]);
-
-    useEffect(() => {
-        loadImage(props.mapImage, setImage)
-    }, [props.mapImage])
 
     {/*Get images of cities on map cities on the map*/}
     const [selectedCityId, setSelectedCityId] = useState(null);
@@ -142,42 +160,41 @@ function PlanetViewer(props) {
                 ))
             }
 
-        {
-        image &&
-            <MapInteractionCSS
-                    value={mapState}
-                    onChange={(value) => setMapState(value)}
-                    minScale={1}
-                    maxScale={5}
-                    translationBounds={{
-                        xMin: image.width - mapState.scale * image.width,
-                        xMax: 0,
-                        yMin: image.height - mapState.scale * image.height,
-                        yMax: 0,
-                    }}
-                >
-                    <img src={image.src} alt="map"
-                         style={{imageRendering: "pixelated", width: "100vw", height: "auto"}}/>
-                    {armyImages.map((army, index) => (
-                        <img key={index} src={army.src} alt="army" style={army.style}
-                             onClick={(e) => toggleArmyViewer(e, army.id)}/>
+
+                {/*Display cityManager over the map*/}
+                {selectedCityId && showCityManager && (
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
+                            <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
+                        </div>
+                )}
+
+        <MapInteractionCSS
+                value={mapState}
+                onChange={(value) => setMapState(value)}
+                minScale={1}
+                maxScale={5}
+                translationBounds={{
+                    xMin: 100 - mapState.scale * 100,
+                    xMax: 0,
+                    yMin: 100 - mapState.scale * 100,
+                    yMax: 0,
+                }}
+            >
+
+                <PlanetSVG data={data} />
+                {armyImages.map((army, index) => (
+                    <img key={index} src={army.src} alt="army" style={army.style}
+                         onClick={(e) => toggleArmyViewer(e, army.id)}/>
+                ))}
+
+                {/*Display cities on the map*/}
+                    {showCities && cityImages.map((city, index) => (
+                      <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
                     ))}
 
-                    {/*Display cities on the map*/}
-                        {showCities && cityImages.map((city, index) => (
-                          <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
-                        ))}
+            </MapInteractionCSS>
 
-                    {/*Display cityManager over the map*/}
-                    {selectedCityId && showCityManager && (
-                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                                <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
-                            </div>
-                    )}
 
-                </MapInteractionCSS>
-
-        }
 
         </>
     );

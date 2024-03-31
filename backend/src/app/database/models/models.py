@@ -119,7 +119,7 @@ class Planet(Base):
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
-    regions = relationship("PlanetRegion", back_populates="planet", lazy='select')
+    regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')
 
 
 class PlanetType(Base):
@@ -140,6 +140,8 @@ class PlanetRegion(Base):
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
     planet_id = Column(Integer, ForeignKey("planet.id"))
     region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
+    x = Column(Float(precision=53), nullable=False)
+    y = Column(Float(precision=53), nullable=False)
 
     planet = relationship("Planet", back_populates="regions", lazy='joined')
     cities = relationship("City", back_populates="region", lazy='select')
@@ -507,3 +509,8 @@ class AllianceRequest(Base):
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
     alliance_name = Column(String, ForeignKey("alliance.name"), nullable=False)
 
+
+class AssociatedWith(Base):
+    __tablename__ = 'associatedWith'
+    planet_type = Column(String, ForeignKey("planetType.type"), primary_key=True)
+    region_type = Column(String, ForeignKey("planetRegionType.region_type"), primary_key=True)

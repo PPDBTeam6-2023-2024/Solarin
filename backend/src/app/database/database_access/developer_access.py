@@ -166,3 +166,6 @@ class DeveloperAccess:
             upgrade = CreationCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
             self.__session.add(upgrade)
 
+    async def createAssociatedWith(self, planet_type: str, region_type: str):
+        self.__session.add(AssociatedWith(planet_type=planet_type, region_type=region_type))
+        await self.__session.flush()

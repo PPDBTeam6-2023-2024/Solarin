@@ -2,10 +2,14 @@ from fastapi import APIRouter, Depends
 from typing import Annotated, Tuple, List
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 
+from fastapi import APIRouter, Depends
+from typing import Annotated, Tuple, List, Optional
+
 from ..authentication.router import get_my_id
 from ...database.database import get_db
 from ...database.database_access.data_access import DataAccess
 from .connection_manager import ConnectionManager
+from .schemas import PlanetOut, Region
 
 router = APIRouter(prefix="/planet", tags=["Planet"])
 
@@ -63,3 +67,24 @@ async def planet_socket(
                     })
     except WebSocketDisconnect:
         connection_pool.disconnect(websocket)
+
+@router.get("/regions/{planet_id}")
+async def get_planet_regions(
+        user_id: Annotated[int, Depends(get_my_id)],
+        planet_id: int,
+        db=Depends(get_db)
+) -> Optional[list[Region]]:
+    data_access = DataAccess(db)
+    planet = await data_access.PlanetAccess.getPlanet(planet_id)
+
+    if not planet:
+        return []
+
+    return [
+        Region(
+            region_type=region.region_type,
+            x=region.x,
+            y=region.y
+        )
+        for region in planet.regions
+    ]

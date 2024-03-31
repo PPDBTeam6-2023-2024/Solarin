@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { TreeView, TreeItem } from '@mui/x-tree-view';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import WindowUI from '../WindowUI/WindowUI';
 
 function ArmyViewer({ armyId, onUpdatePosition }) {
@@ -55,20 +53,8 @@ function ArmyViewer({ armyId, onUpdatePosition }) {
             <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: 'auto', minWidth: '300px', height: 'auto' }}>
                 <TreeView aria-label="file system navigator">
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
-                    <Button variant="contained" onClick={() => setShowInputFields(true)} sx={{ margin: "10px" }}>
-                        Move Army
-                    </Button>
-                    {showInputFields && (
-                        <div>
-                            <TextField label="X Coordinate" variant="outlined" name="x" value={coordinates.x} onChange={handleInputChange} sx={{ margin: "10px" }} />
-                            <TextField label="Y Coordinate" variant="outlined" name="y" value={coordinates.y} onChange={handleInputChange} sx={{ margin: "10px" }} />
-                            <Button variant="contained" onClick={submitCoordinates} sx={{ margin: "10px" }}>
-                                Submit Coordinates
-                            </Button>
-                        </div>
-                    )}
-                    <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`stats-${armyId}`} label={`stats`}></TreeItem>
-                    <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`total-${armyId}`} label={`${totalCount} troops`}>
+                    <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`stats-${armyId}`} label={`Stats`}></TreeItem>
+                    <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`total-${armyId}`} label={`${totalCount} Units`}>
                         {troopsOutput}
                     </TreeItem>
                 </TreeView>

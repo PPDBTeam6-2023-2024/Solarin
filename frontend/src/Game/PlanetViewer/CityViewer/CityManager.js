@@ -1,5 +1,5 @@
 // CityManager.js
-import React, {useState, useEffect, useMemo, useContext} from 'react';
+import React, { useState, useEffect, useMemo, useContext} from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -33,7 +33,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         if (cityId && buildings.length === 0) {
             getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
-                console.log(buildings)
             });
         }
     }, [cityId, buildings]);
@@ -41,6 +40,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const onRowMouseOver = event => {
         setSelectedImage(getImageForBuildingType(event.data.buildingType));
     };
+
 
     const renderGrid = () => (
         <>
@@ -51,14 +51,16 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         buildingRank: building.rank,
                         resourceTimer: 'Unknown',
                         image: getImageForBuildingType(building.building_type),
-                        index: index
+                        index: index,
+                        id: building.id,
+                        type: building.type
                     }))}
                     columnDefs={columns}
+                    domLayout='normal'
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
-                    domLayout='normal'
                     onCellMouseOver={onRowMouseOver}
-                    onCellClicked={(event) => setSelectedClick(event.data.index)}
+                    onCellClicked={(event) => {setSelectedClick(event.data.index)}}
                     onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                     onRowClicked={params => {
@@ -67,15 +69,20 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         else{setSelectedClick([params.data.id, params.data.type])}}}
                 />
             </div>
-            <div className="building_image">
-                {selectedImage && <img src={selectedImage} alt="Building" className="selected-image"/>}
-            </div>
+
+            {selectedImage && selectedClick[0] === -1 &&
+                <div className="building_image">
+
+                     <img src={selectedImage} alt="Building" className="selected-image" />
+                </div>
+            }
         </>
-        );
+    );
+
 
     useEffect(() => {
         const handleClickOutside = event => {
-            const {target} = event;
+            const { target } = event;
             const agGridElement = document.querySelector('.building_view');
             const selectedImageElement = document.querySelector('.selected-image');
 
@@ -89,6 +96,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                 setInitialClick(false);
             }
         };
+
+        document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, [onClose, initialClick]);
 
@@ -101,9 +110,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         <button onClick={() => setSelectedTab('newBuildings')}>New Buildings</button>
                         <button onClick={() => setSelectedTab('plus')}>+</button>
                     </div>
-                    <div>
-                        {selectedTab === 'currentBuildings' && renderGrid()}
-                        {selectedTab === 'newBuildings' && (
+
+                    {selectedTab === 'currentBuildings' && renderGrid()}
+                    {selectedTab === 'newBuildings' && (
                               <NewBuildingGrid
                                 buildings={buildings}
                                 onRowMouseOver={onRowMouseOver}
@@ -112,23 +121,14 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                               />
                             )}
 
-                        {selectedTab === 'plus' && <div>Additional content here</div>}
-                    </div>
+                    {selectedTab === 'plus' && <div>Additional content here</div>}
 
-
-                    {selectedImage && selectedClick[0] === -1 &&
-                        <div className="building_image">
-
-                             <img src={selectedImage} alt="Building" className="selected-image" />
-                        </div>
-                    }
-
-                    {selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
+                    {/*Displays a training menu*/}
+                    {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
 
                 </div>
             </WindowUI>
         </div>
-
     );
 };
 

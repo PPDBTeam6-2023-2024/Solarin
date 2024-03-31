@@ -1,5 +1,5 @@
 import { MapInteractionCSS } from 'react-map-interaction';
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useRef} from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 import getCities from './CityViewer/getCities';
@@ -139,6 +139,7 @@ function PlanetViewer(props) {
 
     }, [updateTrigger]); // get the armies again when an army has been moved
 
+    const planetImageRef = useRef(null);
 
     return (
         <>
@@ -174,14 +175,15 @@ function PlanetViewer(props) {
                 minScale={1}
                 maxScale={5}
                 translationBounds={{
-                    xMin: 100 - mapState.scale * 100,
+
+                    xMin: 1920 - mapState.scale * 1920,
                     xMax: 0,
-                    yMin: 100 - mapState.scale * 100,
+                    yMin: 1080 - mapState.scale * 1080,
                     yMax: 0,
                 }}
             >
 
-                <PlanetSVG data={data} />
+                <PlanetSVG ref={planetImageRef} data={data} />
                 {armyImages.map((army, index) => (
                     <img key={index} src={army.src} alt="army" style={army.style}
                          onClick={(e) => toggleArmyViewer(e, army.id)}/>

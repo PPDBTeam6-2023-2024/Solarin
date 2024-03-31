@@ -8,8 +8,12 @@ import CityManager from "./CityViewer/CityManager";
 import {PlanetListContext} from "./../Context/PlanetListContext"
 import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import getArmies from "./getArmies";
-
+import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
+import WindowUI from '../UI/WindowUI/WindowUI';
+
+import { IoMdClose } from "react-icons/io";
+
 
 const loadImage = async (imgPath, stateSetter) => {
     let img = new Image()
@@ -19,13 +23,36 @@ const loadImage = async (imgPath, stateSetter) => {
     }
 }
 
+
+
+function generateData(width, height) {
+    const data = [];
+    const cellWidth = 1 / width;
+    const cellHeight = 1 / height;
+
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            const x = Math.random() * cellWidth + j * cellWidth;
+            const y = Math.random() * cellHeight + i * cellHeight;
+            const types = ['type1', 'type2', 'type3']
+            const regionType = types[Math.floor(Math.random()*types.length)];
+            data.push({ x, y, regionType });
+        }
+    }
+
+    return data;
+}
+
+const data = generateData(10,10);
+
+
 function PlanetViewer(props) {
+    const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
 
     const [mapState, setMapState] = useState({
         scale: 1,
         translation: {x: 0, y: 0},
     });
-    const [image, setImage] = useState();
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
     const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -66,9 +93,6 @@ function PlanetViewer(props) {
         setUpdateTrigger(prev => !prev)
     };
 
-    useEffect(() => {
-        loadImage(props.mapImage, setImage);
-    }, [props.mapImage]);
 
     {/*Get images of cities on map cities on the map*/}
     const [selectedCityId, setSelectedCityId] = useState(null);
@@ -124,11 +148,16 @@ function PlanetViewer(props) {
 
     return (
         <>
-        <div className="bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl justify-between items-center flex z-30">
-        <RiArrowLeftSLine className="transition ease-in-out hover:scale-150" onClick={() => {let new_id = planetListIndex-1; if (new_id < 0){new_id+= planetList.length;} setPlanetListIndex(new_id)}}/>
-         <h1>{props.planetName}</h1>
-         <RiArrowRightSLine className="transition ease-in-out hover:scale-150" onClick={() => {let new_id = planetListIndex+1; new_id = new_id % planetList.length; setPlanetListIndex(new_id)}}/>
-         </div>
+        <WindowUI hideButtonState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
+            <div className='bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl'>
+            <IoMdClose className="top-0 text-sm ml-1 absolute mt-1 left-0" onClick={() => setHidePlanetSwitcherWindow(!hidePlanetSwitcherWindow)}/>
+            <div className="justify-between items-center flex z-30">
+            <RiArrowLeftSLine className="transition ease-in-out hover:scale-150" onClick={() => {let new_id = planetListIndex-1; if (new_id < 0){new_id+= planetList.length;} setPlanetListIndex(new_id)}}/>
+            <h1>{props.planetName}</h1>
+            <RiArrowRightSLine className="transition ease-in-out hover:scale-150" onClick={() => {let new_id = planetListIndex+1; new_id = new_id % planetList.length; setPlanetListIndex(new_id)}}/>
+            </div>
+            </div>
+         </WindowUI>
 
             {
                 activeArmyViewers.map(({id, position, anchorEl, detailsOpen}) => (
@@ -155,35 +184,34 @@ function PlanetViewer(props) {
                             <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
                         </div>
                 )}
-        {
-        image &&
-            <MapInteractionCSS
-                    value={mapState}
-                    onChange={(value) => setMapState(value)}
-                    minScale={1}
-                    maxScale={5}
-                    translationBounds={{
-                        xMin: image.width - mapState.scale * image.width,
-                        xMax: 0,
-                        yMin: image.height - mapState.scale * image.height,
-                        yMax: 0,
-                    }}
-                >
-                    <img src={image.src} alt="map"
-                         style={{imageRendering: "pixelated", width: "100vw", height: "auto"}}/>
-                    {armyImages.map((army, index) => (
-                        <img key={index} src={army.src} alt="army" style={army.style}
-                             onClick={(e) => toggleArmyViewer(e, army.id)}/>
+
+        <MapInteractionCSS
+                value={mapState}
+                onChange={(value) => setMapState(value)}
+                minScale={1}
+                maxScale={5}
+                translationBounds={{
+                    xMin: 100 - mapState.scale * 100,
+                    xMax: 0,
+                    yMin: 100 - mapState.scale * 100,
+                    yMax: 0,
+                }}
+            >
+
+                <PlanetSVG data={data} />
+                {armyImages.map((army, index) => (
+                    <img key={index} src={army.src} alt="army" style={army.style}
+                         onClick={(e) => toggleArmyViewer(e, army.id)}/>
+                ))}
+
+                {/*Display cities on the map*/}
+                    {showCities && cityImages.map((city, index) => (
+                      <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
                     ))}
 
-                    {/*Display cities on the map*/}
-                        {showCities && cityImages.map((city, index) => (
-                          <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
-                        ))}
+            </MapInteractionCSS>
 
-                </MapInteractionCSS>
 
-        }
 
         </>
     );

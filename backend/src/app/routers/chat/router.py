@@ -15,17 +15,14 @@ router = APIRouter(prefix="/chat", tags=["Chat"])
 
 manager = ConnectionManager()
 
-security = HTTPBearer()
-
 
 @router.websocket("/dm/{board_id}")
 async def websocket_endpoint(
         websocket: WebSocket, board_id: int, db: AsyncSession = Depends(get_db)
 ):
-
     auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
     user_id = get_my_id(auth_token)
-    await websocket.accept(subprotocol=auth_token)
+    connection_pool = await manager.connect_board(board_id=board_id, websocket=websocket, sub_protocol=auth_token)
 
     can_access = True  # TODO: CHECK IF THIS USER CAN ACCESS THIS BOARD CHAT OF FRIEND
     if not can_access:
@@ -39,9 +36,8 @@ async def websocket_endpoint(
     for d in messages:
         output_list.append(d[0].toMessageOut(d[1]).model_dump())
 
-    await websocket.send_json({"type": "paging", "message": output_list})
+    await connection_pool.send_personal_message(websocket, {"type": "paging", "message": output_list})
 
-    connection_pool = await manager.connect_board(board_id=board_id, websocket=websocket)
 
     """
     start receiving new requests

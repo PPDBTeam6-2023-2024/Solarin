@@ -30,14 +30,25 @@ class PropertyUtility:
 
     @staticmethod
     def getGUC(creation_cost: int, level: int) -> int:
+        """
+        Calculate the general upgrade cost, based on the base creation cost and the level
+
+        """
         return int(floor((creation_cost * (level+1)) / 2))
 
     @staticmethod
     def getGPR(modifier: float, base_rate: int, level: int) -> int:
+        """
+        General production cost decides how fast resources will be produced
+        """
         return int(floor(modifier * base_rate * (level ** 2)))
 
     @staticmethod
     def getUnitStrength(current_points: list[int], unit_rank: int) -> float:
+        """
+        Units have a lot of modifiers, the mean of these modifiers will be taken to calculate
+        the strength of the amry
+        """
         return (unit_rank*mean(current_points))/(mean(PropertyUtility.base_point_bounds))
 
     @staticmethod
@@ -71,5 +82,5 @@ class PropertyUtility:
 
     @staticmethod
     def getSurvivedUnitsAmount(pbr: int, number_of_units: int) -> int:
-        survival : float = PropertyUtility.getTruncNormSample(pbr/PropertyUtility.base_point_bounds[1], 0.1, (0,1))
+        survival: float = PropertyUtility.getTruncNormSample(pbr/PropertyUtility.base_point_bounds[1], 0.1, (0,1))
         return int(round(survival*number_of_units))

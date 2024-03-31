@@ -5,6 +5,7 @@ import AllianceTab from "./Alliance/AllianceTab";
 import RankingTab from "./Ranking/RankingTab";
 import WindowUI from "../WindowUI/WindowUI";
 
+
 const categories = ["Friends", "Alliances", "Ranking"]
 
 const CategoryTab = (props) => {
@@ -58,7 +59,6 @@ function ChatMenu(props) {
           {selectedCategory === "Friends" && <FriendsTab/>}
           {selectedCategory === "Alliances" && <AllianceTab/>}
           {selectedCategory === "Ranking" && <RankingTab/>}
-
       </div>
       </WindowUI>
     )

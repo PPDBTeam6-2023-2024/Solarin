@@ -196,7 +196,9 @@ function PlanetViewer(props) {
                 }}
             >
 
-                <PlanetSVG data={data} />
+                {/*Display planet on the map*/}
+                 <PlanetSVG planetId={props.planetId} />
+
                 {armyImages.map((army, index) => (
                     <img key={index} src={army.src} alt="army" style={army.style}
                          onClick={(e) => toggleArmyViewer(e, army.id)}/>

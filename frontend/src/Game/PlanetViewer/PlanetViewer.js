@@ -148,7 +148,7 @@ function PlanetViewer(props) {
 
     return (
         <>
-        <WindowUI hideButtonState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
+        <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
             <div className='bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl'>
             <IoMdClose className="top-0 text-sm ml-1 absolute mt-1 left-0" onClick={() => setHidePlanetSwitcherWindow(!hidePlanetSwitcherWindow)}/>
             <div className="justify-between items-center flex z-30">

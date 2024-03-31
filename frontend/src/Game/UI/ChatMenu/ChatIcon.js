@@ -11,7 +11,7 @@ function ChatIcon() {
     const [chatMenuOpen, setChatMenuOpen] = useState(false);
     const [hideChat, setHideChat] = useState(false)
     return (
-        <WindowUI windowName="chatMenu" hideButtonState={hideChat}>
+        <WindowUI windowName="chatMenu" hideState={hideChat}>
             <>
             <div id={"chat_icon"} className="bottom-0 right-0 fixed transition ease-in-out" onClick={() => setChatMenuOpen(!chatMenuOpen)}>
                 <IoMdClose className='text-7xl' onClick={() => setHideChat(!hideChat)}/>

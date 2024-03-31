@@ -4,7 +4,7 @@ import { useDispatch, useSelector} from 'react-redux'
 import { addWindow, removeWindow } from '../../../redux/slices/hiddenWindowsSlice'
 
 
-const WindowUI = ({draggable=true, scalable=true, resizable=false, hideButtonState, windowName=null, children}) => {
+const WindowUI = ({draggable=true, scalable=true, resizable=false, hideState, windowName=null, children}) => {
     const childrenRef = useRef([])
 
     const dispatch = useDispatch()
@@ -15,9 +15,9 @@ const WindowUI = ({draggable=true, scalable=true, resizable=false, hideButtonSta
     const window = windowName || id
 
     useEffect(() => {
-        if(hideButtonState) dispatch(addWindow(window))
+        if(hideState) dispatch(addWindow(window))
         else dispatch(removeWindow(window))
-    }, [hideButtonState])
+    }, [hideState])
 
     return ( hiddenWindows.indexOf(window) === -1 &&
         <>

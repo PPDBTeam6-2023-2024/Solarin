@@ -34,7 +34,7 @@ function ResourceViewer(props) {
     const resourcesInfo = useMemo(() => resourcesJson)
     const [hideButton, setHideButton] = useState(false)
     return (
-        <WindowUI draggable={draggable} hideButtonState={hideButton} windowName="Resource Viewer">
+        <WindowUI draggable={draggable} hideState={hideButton} windowName="Resource Viewer">
             <div className={className}>
         <div className="bg-gray-800 p-3 border-2 border-white">
             <IoMdClose onClick={() => setHideButton(!hideButton)}/>

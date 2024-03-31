@@ -45,7 +45,7 @@ function ProfileButton() {
         }
     }
     return(
-        <WindowUI hideButtonState={hideWindow} windowName="Profile Viewer">
+        <WindowUI hideState={hideWindow} windowName="Profile Viewer">
             <ProfileElement onProfileClick={onPressProfileButton}/>
             {/*Below is the bar we have which will contain all the resources*/}
             <div id="profile_bar" className="bottom-0 left-0 fixed"><IoMdClose className="text-lg right-0 top-0 absolute" onClick={() => setHideWindow(!hideWindow)}/></div>

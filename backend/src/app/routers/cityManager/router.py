@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
-from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion
+from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, BuildingTypeSchema
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 
@@ -53,6 +53,36 @@ async def get_cities(
     cities_schemas = [city[0].to_city_schema() for city in cities]
     # Return the list of BuildingInstanceSchema instances
     return cities_schemas
+
+@router.get("/new_building_types", response_model=List[BuildingTypeSchema])
+async def get_new_building_types(
+        city_id: int,
+        city_rank: int,
+        db = Depends(get_db)
+):
+    data_access = DataAccess(db)
+    new_building_type_list = await data_access.BuildingAccess.getAvailableBuildingTypes(city_id,city_rank)
+
+    building_type_schema = [new_building_type[0].to_schema() for new_building_type in new_building_type_list]
+
+    return building_type_schema
+
+@router.post("/create_new_building")
+async def create_building(
+        city_id: int,
+        building_type: str,
+        db = Depends(get_db)
+):
+    data_access = DataAccess(db)
+    building_id = await data_access.BuildingAccess.createBuilding(city_id, building_type)
+
+    print(building_id)
+
+    if not building_id:
+        raise HTTPException(status_code=400, detail="Building could not be created.")
+
+
+
 
 
 @router.get("/cities_user")

@@ -7,7 +7,7 @@ from sqlalchemy.orm import declarative_base, relationship, declared_attr
 
 from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
-from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
+from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema, BuildingTypeSchema
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from ...routers.buildingManagement.schemas import TrainingQueueEntry, TimestampDone
 from datetime import timedelta
@@ -228,6 +228,16 @@ class BuildingType(Base):
     __mapper_args__ = {
         'polymorphic_on': type
     }
+    def to_schema(self) -> BuildingTypeSchema:
+        rank = self.required_rank
+        if rank is None:
+            rank = 0
+        b_type_schema = BuildingTypeSchema(
+            name = self.name,
+            type = self.type,
+            required_rank=rank
+        )
+        return b_type_schema
 
     """
     This relation is NOT joined, in comparison to its corresponding relation, because we don't always 

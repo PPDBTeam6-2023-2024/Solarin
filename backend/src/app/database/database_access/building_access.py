@@ -2,6 +2,7 @@ import datetime
 
 from ..models.models import *
 from ..database import AsyncSession
+from sqlalchemy import select, not_, or_
 
 
 class BuildingAccess:
@@ -24,7 +25,11 @@ class BuildingAccess:
         self.__session.add(building_instance)
         await self.__session.flush()
 
-        return building_instance.id
+        building_id = building_instance.id
+
+        await self.__session.commit()
+
+        return building_id
 
     async def getCityBuildings(self, city_id: int):
         """
@@ -87,3 +92,29 @@ class BuildingAccess:
         await self.__session.execute(u)
 
         await self.__session.flush()
+
+    async def getAvailableBuildingTypes(self, city_id: int, city_rank: int):
+        """
+        Get all building types that are not yet present in the city and for which
+        the required rank is null or less than or equal to the city's rank.
+
+        :param city_id: ID of the city
+        :param city_rank: Rank of the city
+        :return: List of available building types for the city
+        """
+        # Get all building names in the city
+        city_buildings = select(BuildingInstance.building_type).where(BuildingInstance.city_id == city_id)
+        city_buildings_results = await self.__session.execute(city_buildings)
+        city_building_names = [result[0] for result in city_buildings_results]
+
+        # Select building types not in the city and meeting the rank requirement
+        available_buildings = select(BuildingType).where(
+            or_(
+                BuildingType.required_rank == None,
+                BuildingType.required_rank <= city_rank
+            ),
+            not_(BuildingType.name.in_(city_building_names))
+        )
+
+        results = await self.__session.execute(available_buildings)
+        return results.all()

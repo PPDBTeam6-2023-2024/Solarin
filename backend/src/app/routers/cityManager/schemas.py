@@ -33,3 +33,8 @@ class PlanetRegion(ConfigClass):
     region_type: str
     planet: str
     cities: str
+
+class BuildingTypeSchema(ConfigClass):
+    name: str
+    type: str
+    required_rank: int

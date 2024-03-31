@@ -7,6 +7,8 @@ import './CityManager.css';
 import Draggable from "react-draggable";
 import { getBuildings, getImageForBuildingType } from './BuildingManager';
 import {UserInfoContext} from "../../Context/UserInfoContext";
+import NewBuildingGrid from './NewBuildingGrid';
+
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [buildings, setBuildings] = useState([]);
@@ -17,6 +19,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     /* stores selected building*/
     const [selectedClick, setSelectedClick] = useState(-1);
     const [initialClick, setInitialClick] = useState(true);
+
+    const [selectedTab, setSelectedTab] = useState('currentBuildings');
+
 
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType" },
@@ -37,9 +42,35 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         setSelectedImage(getImageForBuildingType(event.data.buildingType));
     };
 
+    const renderGrid = () => (
+        <>
+            <div className="ag-theme-alpine-dark buildings_grid">
+                <AgGridReact
+                    rowData={buildings.map((building, index) => ({
+                        buildingType: building.building_type,
+                        buildingRank: building.rank,
+                        resourceTimer: 'Unknown',
+                        image: getImageForBuildingType(building.building_type),
+                        index: index
+                    }))}
+                    columnDefs={columns}
+                    suppressMovableColumns={true}
+                    suppressDragLeaveHidesColumns={true}
+                    onCellMouseOver={onRowMouseOver}
+                    onCellClicked={(event) => setSelectedClick(event.data.index)}
+                    onGridReady={params => params.api.sizeColumnsToFit()}
+                    onGridSizeChanged={params => params.api.sizeColumnsToFit()}
+                />
+            </div>
+            <div className="building_image">
+                {selectedImage && <img src={selectedImage} alt="Building" className="selected-image"/>}
+            </div>
+        </>
+        );
+
     useEffect(() => {
         const handleClickOutside = event => {
-            const { target } = event;
+            const {target} = event;
             const agGridElement = document.querySelector('.building_view');
             const selectedImageElement = document.querySelector('.selected-image');
 
@@ -48,15 +79,11 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
             }
 
             if (!initialClick) {
-                console.log("test")
-                console.log(userInfo)
                 onClose();
             } else {
                 setInitialClick(false);
             }
         };
-
-        document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, [onClose, initialClick]);
 
@@ -64,31 +91,28 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         <div className="darken_background">
             <Draggable>
                 <div className="building_view">
-                    <div className="ag-theme-alpine-dark buildings_grid">
-                        <AgGridReact
-                            rowData={buildings.map((building, index) => ({
-                                buildingType: building.building_type,
-                                buildingRank: building.rank,
-                                resourceTimer: 'Unknown',
-                                image: getImageForBuildingType(building.building_type),
-                                index: index
-                            }))}
-                            columnDefs={columns}
-                            domLayout='autoHeight'
-                            suppressMovableColumns={true}
-                            suppressDragLeaveHidesColumns={true}
-                            onCellMouseOver={onRowMouseOver}
-                            onCellClicked={(event) => setSelectedClick(event.data.index)}
-                            onGridReady={params => params.api.sizeColumnsToFit()}
-                            onGridSizeChanged={params => params.api.sizeColumnsToFit()}
-                        />
+                    <div className="tabs">
+                        <button onClick={() => setSelectedTab('currentBuildings')}>Current Buildings</button>
+                        <button onClick={() => setSelectedTab('newBuildings')}>New Buildings</button>
+                        <button onClick={() => setSelectedTab('plus')}>+</button>
                     </div>
-                    <div className="building_image">
-                        {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
+                    <div>
+                        {selectedTab === 'currentBuildings' && renderGrid()}
+                        {selectedTab === 'newBuildings' && (
+                              <NewBuildingGrid
+                                buildings={buildings}
+                                onRowMouseOver={onRowMouseOver}
+                                setSelectedClick={setSelectedClick}
+                                selectedImage={selectedImage}
+                              />
+                            )}
+
+                        {selectedTab === 'plus' && <div>Additional content here</div>}
                     </div>
                 </div>
             </Draggable>
         </div>
+
     );
 };
 

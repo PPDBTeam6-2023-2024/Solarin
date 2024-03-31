@@ -26,7 +26,7 @@ const WindowUI = ({draggable=true, scalable=true, resizable=false, children}) =>
         onDragStart={({inputEvent}) => {
             return inputEvent.detail === 2
         }}
-        onDrag={({target, transform, inputEvent}) => {
+        onDrag={({target, transform}) => {
             target.style.transform = transform
         }}
         onScale={({target, transform}) => {

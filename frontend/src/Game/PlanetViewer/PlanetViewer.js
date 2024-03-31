@@ -11,6 +11,8 @@ import getArmies from "./getArmies";
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
 
+import { Popper, Box, List, ListItemButton} from '@mui/material';
+
 const loadImage = async (imgPath, stateSetter) => {
     let img = new Image()
     img.src = imgPath
@@ -49,9 +51,17 @@ function PlanetViewer(props) {
         translation: {x: 0, y: 0},
     });
     const [armyImages, setArmyImages] = useState([]);
-    const [activeArmyViewers, setActiveArmyViewers] = useState([]);
+    const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
     const [updateTrigger, setUpdateTrigger] = useState(false);
 
+    const toggleArmyDetails = (armyId) => {
+        setActiveArmyViewers(activeArmyViewers.map((elem, i) => {
+            if (elem.id == armyId) {
+                elem.detailsOpen = !elem.detailsOpen
+            }
+            return elem
+        }))
+    }
 
     const toggleArmyViewer = (e, armyId) => {
         const overlayRect = e.target.getBoundingClientRect();
@@ -59,14 +69,13 @@ function PlanetViewer(props) {
             x: overlayRect.left + window.scrollX,
             y: overlayRect.top + window.scrollY
         };
-
         setActiveArmyViewers(prev => {
             const index = prev.findIndex(viewer => viewer.id === armyId);
             if (index >= 0) {
                 // Remove viewer if already active
                 return prev.filter(viewer => viewer.id !== armyId);
             } else {
-                return [...prev, {id: armyId, position}];
+                return [...prev, {id: armyId, position, anchorEl: e.target, detailsOpen: false}];
             }
         });
     };
@@ -148,14 +157,20 @@ function PlanetViewer(props) {
          </div>
 
             {
-                activeArmyViewers.map(({id, position}) => (
-                    <div key={id} style={{
-                        position: 'absolute',
-                        left: `${position.x}px`,
-                        top: `${position.y}px`,
-                    }}>
-                        <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
-                    </div>
+                activeArmyViewers.map(({id, position, anchorEl, detailsOpen}) => (
+                    <>
+                        <Popper open={true} anchorEl={anchorEl} placement='left-start'>
+                        <Box className="bg-black rounded-3xl" >
+                        <List>
+                        <ListItemButton>Move</ListItemButton>
+                        <ListItemButton onClick={() => toggleArmyDetails(id)}>Details</ListItemButton>
+                        </List>
+                        </Box>
+                        </Popper>
+                        <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
+                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
+                        </Popper>
+                        </>
                 ))
             }
 

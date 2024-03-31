@@ -47,7 +47,7 @@ function ProfileButton() {
             <ProfileElement onProfileClick={onPressProfileButton}/>
             {/*Below is the bar we have which will contain all the resources*/}
             <div id="profile_bar" className="bottom-0 left-0 fixed"></div>
-       </WindowUI>
+        </WindowUI>
     )
 
 

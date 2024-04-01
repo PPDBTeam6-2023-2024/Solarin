@@ -59,7 +59,7 @@ class BuildingAccess:
 
         return building_types.all()
 
-    async def getDeltaTime(self, building_id: int):
+    async def getDeltaTime(self, building_id: int) -> timedelta:
         """
         get the between now and when the building was last checked
         :param: building_id: id of the building
@@ -71,7 +71,13 @@ class BuildingAccess:
         if last is None:
             raise Exception("Building does not exist")
 
-        return datetime.utcnow()-last[0]
+        # Check if last[0] is None, which means the building was never checked
+        if last[0] is None:
+            # Handle the never checked scenario. For example, return None or raise an exception.
+            return timedelta(seconds=0)
+
+            # Calculate the delta time since the building was last checked
+        return datetime.utcnow() - last[0]
 
     async def checked(self, building_id: int):
         """
@@ -81,3 +87,28 @@ class BuildingAccess:
         await self.__session.execute(u)
 
         await self.__session.flush()
+
+    async def get_city(self, building_id: int):
+        """
+        get the city corresponding to this building
+        """
+
+        gc = Select(City).join(BuildingInstance, BuildingInstance.city_id ==City.id).where(building_id == BuildingInstance.id)
+        results = await self.__session.execute(gc)
+        result = results.first()
+        return result[0]
+
+    async def is_owner(self, building_id: int, user_id: int):
+        """
+        Checks if the user is owner of this building
+        """
+
+        get_building = Select(City.controlled_by).join(BuildingInstance, City.id == BuildingInstance.city_id).where(BuildingInstance.id == building_id)
+        results = await self.__session.execute(get_building)
+        results = results.first()
+
+        if results is None:
+            return False
+        if results[0] != user_id:
+            return False
+        return True

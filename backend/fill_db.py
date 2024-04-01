@@ -6,6 +6,7 @@ from src.app.database.database import *
 from src.app.database.database_access.data_access import DataAccess
 from src.app.routers.authentication.schemas import MessageToken
 from src.app.database.models.models import *
+from src.app.routers.spawn.planet_generation import generate_random_planet
 from src.app.config import APIConfig
 from confz import FileSource
 
@@ -99,11 +100,14 @@ async def fill_db():
         """
         sr_id = await da.PlanetAccess.createSpaceRegion("the expansion region")
         await da.DeveloperAccess.createPlanetType("Shadow planet", "planet where it is hard to see")
-        p_id = await da.PlanetAccess.createPlanet("Umbara", "Shadow planet", sr_id)
         await da.DeveloperAccess.createPlanetRegionType("valley of death", "Ooh.. very scary")
-        r_id = await da.PlanetAccess.createPlanetRegion(p_id, "valley of death")
-        c_id = await da.CityAccess.createCity(r_id, 1, 0.2, 0.8)
-        c_id2 = await da.CityAccess.createCity(r_id, 1, 0.8, 0.2)
+        await da.DeveloperAccess.createPlanetRegionType("dark valley", "Ooh.. i cant see")
+        await da.DeveloperAccess.createAssociatedWith("Shadow planet", "valley of death")
+        await da.DeveloperAccess.createAssociatedWith("Shadow planet", "dark valley")
+
+        p_id = await generate_random_planet(session, sr_id)
+        c_id = await da.CityAccess.createCity(p_id, 1, 0.2, 0.8)
+        c_id2 = await da.CityAccess.createCity(p_id, 1, 0.8, 0.2)
 
         """
         Create some types of buildings and resources
@@ -133,7 +137,7 @@ async def fill_db():
         create some types of troops
         """
 
-        a_id = await da.ArmyAccess.createArmy(user_id=1)
+        a_id = await da.ArmyAccess.createArmy(user_id=1,planet_id=1,x=0.25, y=0.75)
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))

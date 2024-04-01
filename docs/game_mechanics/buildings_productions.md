@@ -12,8 +12,18 @@
                 * Example: production of a single land unit in the barracks:
                         * $\text{GPC(unit)}= 50\left(\left\lfloor\dfrac{\text{AP+DP+...+MS}}{1497}\right \rfloor\right)^5$ SOL
                 * The currency type of GPC depends on the product type, therefore let's say the GPC is given in SOL (solarium) by default.
+## Unit Stats Ranked
+Calculating the units their stats can easily be done using the getUnitStatsRanked function
+This function has the following formula: $base_value*grow_rate^level$
+The grow_rate is configurable, by the developers. This should be greater than 1, to have the 
+wanted effect. This makes sure that the units become drastically stronger the higher rank (level) the get
+
+## Unit Train Cost
+Units training costs are calculated using the following formula: $base_value*grow_rate^level$
+This grow_rate can differ from the grow rate used for calculating the Unit Stats
+
 ## General Upgrade Cost (GUC)
-* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1}){2}\right\rfloor$ TF 
+* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}}){2}\right\rfloor$ TF 
 	* $\text{level}$ is the current (pre-upgrade) level of the building
 	* $\text{CC}$ is the creation cost of the building
 	* GUC and CC is given in Techforge (TF) currency by default

@@ -1,5 +1,5 @@
 import { MapInteractionCSS } from 'react-map-interaction';
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useRef} from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 import getCities from './CityViewer/getCities';
@@ -8,6 +8,7 @@ import CityManager from "./CityViewer/CityManager";
 import {PlanetListContext} from "./../Context/PlanetListContext"
 import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import getArmies from "./getArmies";
+import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
@@ -99,11 +100,16 @@ function PlanetViewer(props) {
     const [showCities, setShowCities] = useState(true);
     const [citiesLoaded, setCitiesLoaded] = useState(false)
 
-    const handleCityClick = (cityId) => {
-        setSelectedCityId(cityId);
-        setShowCityManager(true);
-        setShowCities(false);
+    const [userInfo, setUserInfo] = useContext(UserInfoContext)
+
+    const handleCityClick = (cityId, controlledBy) => {
+        if (controlledBy === userInfo.id){
+            setSelectedCityId(cityId);
+            setShowCityManager(true);
+            setShowCities(false);
+        }
     };
+
     const [cityImages,setCityImages] = useState([]);
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
@@ -113,7 +119,7 @@ function PlanetViewer(props) {
             // replace with actual planetID
             const cityElements = cities.map(city => ({
                 ...city,
-                onClick: () => handleCityClick(city.id),
+                onClick: () => handleCityClick(city.id, city.controlled_by),
             }));
             setCityImages(cityElements);
             setCitiesLoaded(true);
@@ -171,7 +177,7 @@ function PlanetViewer(props) {
                         </Box>
                         </Popper>
                         <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/> 
+                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
                         </Popper>
                         </>
                 ))
@@ -191,14 +197,17 @@ function PlanetViewer(props) {
                 minScale={1}
                 maxScale={5}
                 translationBounds={{
-                    xMin: 100 - mapState.scale * 100,
+
+                    xMin: 1920 - mapState.scale * 1920,
                     xMax: 0,
-                    yMin: 100 - mapState.scale * 100,
+                    yMin: 1080 - mapState.scale * 1080,
                     yMax: 0,
                 }}
             >
 
-                <PlanetSVG data={data} />
+                {/*Display planet on the map*/}
+                 <PlanetSVG planetId={props.planetId} />
+
                 {armyImages.map((army, index) => (
                     <img key={index} src={army.src} alt="army" style={army.style}
                          onClick={(e) => toggleArmyViewer(e, army.id)}/>

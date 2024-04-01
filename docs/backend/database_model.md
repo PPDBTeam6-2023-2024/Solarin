@@ -86,14 +86,18 @@ An overview of each the tables in the database:
 <summary><strong>Armies</strong></summary>
 <p>
 
-|     Table      |  Type  | Purpose                                                                                                                                          |
-|:--------------:|:------:|:-------------------------------------------------------------------------------------------------------------------------------------------------|
-| TrainingQueue  |  Data  | One entry stores the training data of 1 Entry in a trainingQueue,<br/>The table keeps track of which units need to be trained and in which order |  
-|   TroopType    | Lookup | Types of troops that are in the game                                                                                                             |
-| TroopTypeCost  | Lookup | Stores which resources and how much of them it costs to train a unit                                                                             |
-|      Army      |  Data  | Stores data about an army                                                                                                                        |
-| ArmyConsistsOf |  Data  | The relation indication which types of units are part of the army and in what quantities                                                         |
-|   TroopRank    |  Data  | Stores the rank of the unit for a specific user (if no entry, the rank is 1)                                                                     |
+|     Table      |  Type  | Purpose                                                                                                                                                              |
+|:--------------:|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TrainingQueue  |  Data  | One entry stores the training data of 1 Entry in a trainingQueue,<br/>The table keeps track of which units need to be trained and in which order                     |  
+|   TroopType    | Lookup | Types of troops that are in the game                                                                                                                                 |
+| TroopTypeCost  | Lookup | Stores which resources and how much of them it costs to train a unit                                                                                                 |
+|      Army      |  Data  | Stores data about an army                                                                                                                                            |
+| ArmyConsistsOf |  Data  | The relation indication which types of units are part of the army and in what quantities                                                                             |
+|   TroopRank    |  Data  | Stores the rank of the unit for a specific user (if no entry, the rank is 1)                                                                                         |
+| AttackOnArrive |  Data  | To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position (This table is the parent of an ISA/polymorphic relation) |
+|   AttackArmy   |  Data  | Stores which other army we might attack when our army arrives at its position  (This table is a child of an ISA/polymorphic relation with AttackArmy)                |
+|   AttackCity   |  Data  | Stores which city we might attack when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                   |
+|   ArmyInCity   |  Data  | Stores the armies that are present inside a city                                                                                                                     |
 
 </p>
 </details>

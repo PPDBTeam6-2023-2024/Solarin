@@ -1,10 +1,12 @@
 // CityManager.js
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext} from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import { getBuildings, getImageForBuildingType } from './BuildingManager';
+import {UserInfoContext} from "../../Context/UserInfoContext";
+import NewBuildingGrid from './NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
 import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
 
@@ -12,9 +14,14 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [buildings, setBuildings] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
 
+    const [userInfo, setUserInfo] = useContext(UserInfoContext)
+
     /* stores selected building*/
     const [selectedClick, setSelectedClick] = useState([-1, ""]);
     const [initialClick, setInitialClick] = useState(true);
+
+    const [selectedTab, setSelectedTab] = useState('currentBuildings');
+
 
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType" },
@@ -33,6 +40,45 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const onRowMouseOver = event => {
         setSelectedImage(getImageForBuildingType(event.data.buildingType));
     };
+
+
+    const renderGrid = () => (
+        <>
+            <div className="ag-theme-alpine-dark buildings_grid">
+                <AgGridReact
+                    rowData={buildings.map((building, index) => ({
+                        buildingType: building.building_type,
+                        buildingRank: building.rank,
+                        resourceTimer: 'Unknown',
+                        image: getImageForBuildingType(building.building_type),
+                        index: index,
+                        id: building.id,
+                        type: building.type
+                    }))}
+                    columnDefs={columns}
+                    domLayout='normal'
+                    suppressMovableColumns={true}
+                    suppressDragLeaveHidesColumns={true}
+                    onCellMouseOver={onRowMouseOver}
+                    onCellClicked={(event) => {setSelectedClick(event.data.index)}}
+                    onGridReady={params => params.api.sizeColumnsToFit()}
+                    onGridSizeChanged={params => params.api.sizeColumnsToFit()}
+                    onRowClicked={params => {
+                        if (selectedClick[0] === params.data.id)
+                        {setSelectedClick([-1, ""])}
+                        else{setSelectedClick([params.data.id, params.data.type])}}}
+                />
+            </div>
+
+            {selectedImage && selectedClick[0] === -1 &&
+                <div className="building_image">
+
+                     <img src={selectedImage} alt="Building" className="selected-image" />
+                </div>
+            }
+        </>
+    );
+
 
     useEffect(() => {
         const handleClickOutside = event => {
@@ -54,45 +100,30 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, [onClose, initialClick]);
-
     return (
         <div className="darken_background">
             <WindowUI>
                 <div className="building_view">
-                    <div className="ag-theme-alpine-dark buildings_grid">
-                        <AgGridReact
-                            rowData={buildings.map((building, index) => ({
-                                buildingType: building.building_type,
-                                buildingRank: building.rank,
-                                resourceTimer: 'Unknown',
-                                image: getImageForBuildingType(building.building_type),
-                                index: index,
-                                id: building.id,
-                                type: building.type
-                            }))}
-                            columnDefs={columns}
-                            domLayout='normal'
-                            suppressMovableColumns={true}
-                            suppressDragLeaveHidesColumns={true}
-                            onCellMouseOver={onRowMouseOver}
-                            onCellClicked={(event) => {setSelectedClick(event.data.index)}}
-                            onGridReady={params => params.api.sizeColumnsToFit()}
-                            onGridSizeChanged={params => params.api.sizeColumnsToFit()}
-                            onRowClicked={params => {
-                                if (selectedClick === [params.data.id, params.data.type] )
-                                {setSelectedClick(-1)}
-                                else{setSelectedClick([params.data.id, params.data.type])}}}
-                        />
+                    <div className="tabs">
+                        <button onClick={() => setSelectedTab('currentBuildings')}>Current Buildings</button>
+                        <button onClick={() => setSelectedTab('newBuildings')}>New Buildings</button>
+                        <button onClick={() => setSelectedTab('plus')}>+</button>
                     </div>
 
-                    {selectedImage && selectedClick[0] === -1 &&
-                        <div className="building_image">
+                    {selectedTab === 'currentBuildings' && renderGrid()}
+                    {selectedTab === 'newBuildings' && (
+                              <NewBuildingGrid
+                                buildings={buildings}
+                                onRowMouseOver={onRowMouseOver}
+                                setSelectedClick={setSelectedClick}
+                                selectedImage={selectedImage}
+                              />
+                            )}
 
-                             <img src={selectedImage} alt="Building" className="selected-image" />
-                        </div>
-                    }
+                    {selectedTab === 'plus' && <div>Additional content here</div>}
 
-                    {selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
+                    {/*Displays a training menu*/}
+                    {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
 
                 </div>
             </WindowUI>

@@ -11,6 +11,7 @@ const getCities = async (planetId) => {
         id: city.id,
         x: city.x,
         y: city.y,
+        controlled_by: city.controlled_by,
         src: getCityImage(city.rank), // Assuming there's a 'type' field to determine the city image
         style: {
           position: 'absolute',

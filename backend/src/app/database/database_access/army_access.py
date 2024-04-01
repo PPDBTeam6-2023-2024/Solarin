@@ -83,19 +83,16 @@ class ArmyAccess:
     async def getArmies(self, userid: int, planetid: int):
         getentry = Select(Army).where(Army.user_id==userid)
         armies = await self.__session.execute(getentry)
-        await self.__session.flush()
         return armies
 
     async def getTroops(self, armyid: int):
         getentry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==armyid)
         troops = await self.__session.execute(getentry)
-        await self.__session.flush()
         return troops.all()
 
     async def getArmyById(self, army_id: int):
         getentry = Select(Army).where(Army.id==army_id)
         result = await self.__session.execute(getentry)
-        await self.__session.flush()
         army = result.first()
         return army
 
@@ -133,6 +130,10 @@ class ArmyAccess:
         return timedelta(seconds=10*distance)
 
     async def change_army_direction(self, user_id: int, army_id: int, to_x: float, to_y: float) -> tuple[bool, Optional[Army]]:
+        """
+        Change the go to position of an army
+        """
+
         stmt = (
             select(Army)
             .where(Army.user_id == user_id)
@@ -168,4 +169,189 @@ class ArmyAccess:
 
         await self.__session.commit()
         await self.__session.refresh(army)
+
+        """
+        When an army was on route to attack someone, we will remove it when the army changes its position
+        """
+        await self.cancel_attack(army_id)
+
+        """
+        Attackers cancel to, because the attacked army is not at the target location anymore
+        """
+        get_attackers = Select(AttackArmy).where(AttackArmy.target_id == army_id)
+        results = await self.__session.execute(get_attackers)
+        results = results.all()
+        for r in results:
+            await self.cancel_attack(r[0])
+
         return True, army
+
+    async def attack_army(self, attack_id: int, target_id: int):
+        """
+        This function will make sure the database keeps in mind that an army has the intention to attack another
+        army when it arrives at its position
+
+        param: attack_id: the id of the army that is planning to attack
+        param: target_id: the id of the army that will be attacked
+        """
+
+        army_owner = Select(User).join(Army, Army.user_id == User.id).where((Army.id == attack_id) | (Army.id == target_id))
+        results = await self.__session.execute(army_owner)
+        results = results.all()
+        if len(results) != 2:
+            raise Exception("One of the provided armies does not exist")
+        """
+        Check a user doesn't attack himself
+        """
+        if results[0][0].id == results[1][0].id:
+            raise Exception("You cannot attack your own army")
+
+        """
+        Check if users are not in the same alliance
+        """
+        if results[0][0].alliance == results[1][0].alliance:
+            raise Exception("You cannot attack your allies")
+        attack_object = AttackArmy(army_id=attack_id, target_id=target_id)
+        self.__session.add(attack_object)
+        await self.__session.flush()
+
+    async def attack_city(self, attack_id: int, target_id: int):
+        """
+        This function will make sure the database keeps in mind that an army has the intention to attack a city
+         when it arrives at its position
+
+        param: attack_id: the id of the army that is planning to attack
+        param: target_id: the id of the city that will be attacked
+        """
+
+        attack_object = AttackCity(army_id=attack_id, target_id=target_id)
+        self.__session.add(attack_object)
+        await self.__session.flush()
+
+    async def will_attack(self, army_id):
+        """
+        Will return what an army will attack when it arrives at its position
+
+        param: army_id: the id of the army that is planning to attack
+        return: an SQL attackArmy or attackCity object or None in case we don't attack anything
+        """
+
+        get_attacked = Select(AttackOnArrive).where(AttackOnArrive.army_id == army_id)
+        results = await self.__session.execute(get_attacked)
+        result = results.first()
+
+        if result is None:
+            return None
+
+        await self.__session.refresh(result[0])
+
+        return result[0]
+
+    async def cancel_attack(self, army_id):
+        """
+        Cancel attacking the target, if attacking anything
+        """
+        d = delete(AttackOnArrive).where(AttackOnArrive.army_id == army_id)
+        await self.__session.execute(d)
+
+    async def get_army_stats(self, army_id: int, army_stats=None):
+        """
+        Get the stats of an army
+
+        param: army_id: the id of the army whose stats we want to retrieve
+        param: army_stats is an optional parm, In case we just want to append our stats to an already existing stats dict
+        return: dict with the stats as keys and its stats as values
+        """
+
+        if army_stats is None:
+            army_stats = {}
+
+        get_troops = Select(ArmyConsistsOf.size, ArmyConsistsOf.rank, TroopType).join(TroopType, TroopType.type == ArmyConsistsOf.troop_type).where(ArmyConsistsOf.army_id == army_id)
+        results = await self.__session.execute(get_troops)
+        army_troops = results.all()
+
+        """
+        A dictionary that has all the stats of an army
+        """
+        total_troop_amount = 0
+
+        for troop_tup in army_troops:
+            troop_size = troop_tup[0]
+            troop_rank = troop_tup[1]
+            troop_stats = troop_tup[2].getStats(troop_rank,  troop_size)
+
+            total_troop_amount += troop_size
+
+            for stat_name, stat_value in troop_stats.items():
+                """
+                Add the stat to a big dict containing all the stats of an army
+                """
+                val = army_stats.get(stat_name, 0)
+                val += stat_value
+                army_stats[stat_name] = val
+
+        """
+        Speed is expresses as a weighted average
+        """
+
+        return army_stats
+
+    async def remove_army(self, army_id: int):
+        """
+        Remove the army and the troops that are a part of this army
+        param: army_id: army we want to remove
+        """
+
+        d = delete(Army).where(Army.id == army_id)
+        await self.__session.execute(d)
+
+    async def get_army_in_city(self, city_id: int):
+        """
+        Returns a list of army id's of armies that are inside a city
+
+        param: city_id: the id of the city we want to check
+        """
+
+        armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
+        results = await self.__session.execute(armies_in_cities)
+        results = results.all()
+
+        output = [r[0] for r in results]
+
+        return output
+
+    async def enter_city(self, city_id: int, army_id: int):
+        """
+        let an army enter a city
+
+        param: city_id: the city we want to enter
+        param: army_id: the id of the army who wants to enter the city
+        """
+
+        in_city = ArmyInCity(army_id=army_id, city_id=city_id)
+        self.__session.add(in_city)
+        await self.__session.flush()
+
+    async def get_army_owner(self, army_id: int):
+        """
+        Get the owner user of the army
+        param: army_id: the id of the army whose owner we want
+        """
+
+        get_owner = Select(User).join(Army, Army.user_id == User.id).where(Army.id == army_id)
+        results = await self.__session.execute(get_owner)
+
+        result = results.first()
+        return result[0]
+
+    async def army_arrived(self, army_id: int):
+        """
+        Checks if an army is arrived at its end location
+        """
+
+        get_army = Select(Army).where(Army.id == army_id)
+        results = await self.__session.execute(get_army)
+        army = results.first()
+        army = army[0]
+
+        return datetime.utcnow() > army.arrival_time

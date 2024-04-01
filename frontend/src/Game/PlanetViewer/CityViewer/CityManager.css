@@ -8,8 +8,11 @@
 }
 
 .ag-theme-alpine-dark .ag-row{
-    font-size: 115%;
+    font-size: 1vw;
     height: 3vw;
+    line-height: 3vw;
+    margin : auto;
+    align-items: center;
 }
 
 
@@ -30,17 +33,19 @@
     margin: auto;
 }
 
-.buildings_grid{
+.buildings_grid {
     display: inline-block;
     width: 50%;
     height: 27vw;
     overflow: scroll;
+    /*background: transparent;  => add if nescessary*/
     margin-top: 1vw;
     margin-bottom: auto;
     margin-left: 2%;
     margin-right: auto;
     border-radius: 1vw 0 0 1vw;
 }
+
 
 .building_view{
     display: flex;
@@ -51,10 +56,39 @@
 }
 
 .building_image{
-    width: 35vw;
+    width: 25vw;
     height: 20vw;
     position: relative;
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
 }
+
+.tabs {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    padding: 0.5vw;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+}
+
+
+.tabs button {
+    background: linear-gradient(to top, black, #d20000);
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0.5vw 1vw;
+    width: 100%;
+    margin: 0.2vw 0;
+    font-size: 1vw;
+    border-radius: 0.2vw;
+    transition: background 0.3s ease;
+}
+
+.tabs button:hover {
+    background: linear-gradient(to top, #d20000, black);
+}
+

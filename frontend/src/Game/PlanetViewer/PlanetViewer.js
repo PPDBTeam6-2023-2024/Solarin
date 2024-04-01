@@ -171,7 +171,7 @@ function PlanetViewer(props) {
                         </Box>
                         </Popper>
                         <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
+                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition} onCityCreated={reloadCities}/>
                         </Popper>
                         </>
                 ))

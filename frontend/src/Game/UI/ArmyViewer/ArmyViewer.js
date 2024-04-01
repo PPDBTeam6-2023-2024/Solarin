@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import { TreeView, TreeItem } from '@mui/x-tree-view';
 import WindowUI from '../WindowUI/WindowUI';
+import {Button} from "@mui/material";
 
 function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
     const [troops, setTroops] = useState([]);

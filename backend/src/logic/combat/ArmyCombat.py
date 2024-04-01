@@ -58,6 +58,13 @@ class ArmyCombat:
 
         if winner_index == 0:
             loss_list = [army_1]
+
+            """
+            Remove all armies inside a city if the city defense loses
+            """
+            for c in city_armies:
+                await da.ArmyAccess.remove_army(c)
+
             """
             Let user become new owner of the city
             """
@@ -65,10 +72,10 @@ class ArmyCombat:
             await da.CityAccess.set_new_controller(city_id, owner.id)
 
             """
-            Remove all armies inside a city if the city defense loses
+            The conquering army will enter the city
             """
-            for c in city_armies:
-                await da.ArmyAccess.remove_army(c)
+            await da.ArmyAccess.enter_city(city_id, army_1)
+
         else:
             await da.ArmyAccess.remove_army(army_1)
             loss_list = city_armies

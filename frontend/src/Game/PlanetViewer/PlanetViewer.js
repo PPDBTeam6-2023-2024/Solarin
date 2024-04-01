@@ -148,6 +148,8 @@ function PlanetViewer(props) {
 
     }, [updateTrigger]); // get the armies again when an army has been moved
 
+    const web_socket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/planet/ws/${1}`, `${localStorage.getItem('access-token')}`);
+
     return (
         <>
         <div className="bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl justify-between items-center flex z-30">

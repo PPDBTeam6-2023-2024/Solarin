@@ -127,8 +127,8 @@ class PropertyUtility:
         versus = [strength_1, strength_2]
 
         winner_index = versus.index(max(versus))
-        strength_ratio = versus[winner_index]/versus[(winner_index+1) % 2]
-        pbr_ratio = stats[winner_index].get("recovery", 1) / stats[(winner_index + 1) % 2].get("recovery", 1)
+        strength_ratio = versus[winner_index]/max(versus[(winner_index+1) % 2], 1)
+        pbr_ratio = stats[winner_index].get("recovery", 1) / max(stats[(winner_index + 1) % 2].get("recovery", 1), 1)
 
         return winner_index, strength_ratio, pbr_ratio
 

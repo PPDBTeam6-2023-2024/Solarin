@@ -1,7 +1,7 @@
 from ...app.database.database_access.data_access import DataAccess
 from ...app.database.models.models import AttackArmy, AttackCity
 from .ArmyCombat import ArmyCombat
-
+from ...app.routers.cityManager.city_checker import CityChecker
 
 class AttackCheck:
     """
@@ -43,5 +43,11 @@ class AttackCheck:
             await ArmyCombat.computeBattle(army_id, target.target_id, da)
 
         if isinstance(target, AttackCity):
+            """
+            Update city before calculating attack
+            """
+            ch = CityChecker(target.target_id, da)
+            await ch.check_all()
+
             await ArmyCombat.computeCityBattle(army_id, target.target_id, da)
         return True

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship, declared_attr
-
+from sqlalchemy import event
 from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
@@ -335,7 +335,7 @@ class TrainingQueue(Base):
     id = Column(Integer, primary_key=True)
     building_id = Column(Integer, ForeignKey("buildingInstance.id", deferrable=True, initially='DEFERRED'),
                          primary_key=True)
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), nullable=False)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), nullable=False)
     train_remaining = Column(Integer)
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'))
     rank = Column(Integer)
@@ -541,7 +541,7 @@ class AttackArmy(AttackOnArrive):
     army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
-    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
+    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'army'

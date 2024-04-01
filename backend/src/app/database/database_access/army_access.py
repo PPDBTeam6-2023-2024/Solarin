@@ -224,6 +224,17 @@ class ArmyAccess:
         param: target_id: the id of the city that will be attacked
         """
 
+        city_owner = Select(City).where(City.id == target_id)
+        results = await self.__session.execute(city_owner)
+        results = results.all()
+        if len(results) != 2:
+            raise Exception("One of the provided armies does not exist")
+        """
+        Check a user doesn't attack himself
+        """
+        if results[0][0].id == results[1][0].id:
+            raise Exception("You cannot attack your own army")
+
         attack_object = AttackCity(army_id=attack_id, target_id=target_id)
         self.__session.add(attack_object)
         await self.__session.flush()
@@ -264,7 +275,7 @@ class ArmyAccess:
         """
 
         if army_stats is None:
-            army_stats = {}
+            army_stats = {"attack": 0, "defense": 0, "city_defense": 0, "city_attack": 0}
 
         get_troops = Select(ArmyConsistsOf.size, ArmyConsistsOf.rank, TroopType).join(TroopType, TroopType.type == ArmyConsistsOf.troop_type).where(ArmyConsistsOf.army_id == army_id)
         results = await self.__session.execute(get_troops)
@@ -302,8 +313,19 @@ class ArmyAccess:
         param: army_id: army we want to remove
         """
 
+        s = Select(AttackArmy.army_id).where(AttackArmy.target_id == army_id)
+        results = await self.__session.execute(s)
+        results = results.all()
+
         d = delete(Army).where(Army.id == army_id)
         await self.__session.execute(d)
+
+        """
+        Proper removal (because SQL alchemy does not have cascade delete support for polymorphic tables)
+        """
+        for r in results:
+            d = delete(AttackOnArrive).where(AttackOnArrive.army_id == r[0])
+            await self.__session.execute(d)
 
     async def get_army_in_city(self, city_id: int):
         """
@@ -355,3 +377,15 @@ class ArmyAccess:
         army = army[0]
 
         return datetime.utcnow() > army.arrival_time
+
+    async def get_pending_attacks(self, planet_id: int):
+        """
+        Get the pending attacks that are currently planned on a given planet
+        param: planet_id: the id of the planet
+        return: list of army_id's of attackers and their time of arrival
+        """
+
+        get_attackers = Select(AttackOnArrive.army_id, Army.arrival_time).join(Army, AttackOnArrive.army_id == Army.id).where(Army.planet_id == planet_id)
+        results = await self.__session.execute(get_attackers)
+        results = results.all()
+        return results

@@ -6,7 +6,7 @@ import axios from "axios";
 import Message from "../ChatMenu/Message";
 import ProfileListEntry from "./ProfileListEntry";
 
-function ProfileViewer() {
+function ProfileViewer(props) {
 
     const [userInfo, setUserInfo] = useContext(UserInfoContext)
 
@@ -50,13 +50,13 @@ function ProfileViewer() {
 
                 {selectedCategory === "Cities" &&
                     <div className="profile_viewer_list absolute" style={{"overflowY": "scroll", "width":"80%", "height": "80%", "scrollbarWidth:": "none"}} >
-                        {citiesList.map((c, index) => <ProfileListEntry key={index} text={`city ${c.id} on ${c.planet_name}`} type={"City"} x={c.x} y={c.y}/>)}
+                        {citiesList.map((c, index) => <ProfileListEntry key={index} text={`city ${c.id} on ${c.planet_name}`} type={"City"} x={c.x} y={c.y} changePlanet={props.changePlanetByID} planet_id={c.planet_id}/>)}
                     </div>
                 }
 
                 {selectedCategory === "Armies" &&
                     <div className="profile_viewer_list absolute" style={{"overflowY": "scroll", "width":"80%", "height": "80%", "scrollbarWidth:": "none"}} >
-                        {armiesList.map((c, index) => <ProfileListEntry key={index} text={`army ${c.id}`} type={"Army"} x={c.x} y={c.y}/>)}
+                        {armiesList.map((c, index) => <ProfileListEntry key={index} text={`army ${c.id}`} type={"Army"} x={c.x} y={c.y} changePlanet={props.changePlanetByID} planet_id={c.planet_id}/>)}
                     </div>
                 }
 

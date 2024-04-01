@@ -96,7 +96,7 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.createPlanetType("Shadow planet", "planet where it is hard to see")
         p_id = await da.PlanetAccess.createPlanet("Umbara", "Shadow planet", sr_id)
         await da.DeveloperAccess.createPlanetRegionType("valley of death", "Ooh.. very scary")
-        r_id = await da.PlanetAccess.createPlanetRegion(p_id, "valley of death")
+        r_id = await da.PlanetAccess.createPlanetRegion(p_id, "valley of death", 0, 0)
         c_id = await da.CityAccess.createCity(r_id, 1, 0.2, 0.8)
         c_id2 = await da.CityAccess.createCity(r_id, 1, 0.8, 0.2)
 
@@ -127,7 +127,7 @@ async def insert_test_data(connection_test):
         create some types of troops
         """
 
-        a_id = await da.ArmyAccess.createArmy(user_id=1, planet_id=1)
+        a_id = await da.ArmyAccess.createArmy(user_id=1, planet_id=p_id, x=0, y=0)
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))
@@ -230,7 +230,7 @@ async def test_planet():
 
         regions = await da.PlanetAccess.getRegions(1)
         assert len(regions) == 1
-        assert regions[0][0].id == 1
+        assert regions[0].id == 1
 
         cities = await da.PlanetAccess.getPlanetCities(1)
         assert len(cities) == 2
@@ -317,6 +317,7 @@ async def test_friend_requests():
         r = await da.UserAccess.getFriendRequests(41)
         assert len(r) == 2
 
+
 async def test_ranking():
     """
     test ranking
@@ -327,3 +328,74 @@ async def test_ranking():
         assert len(ranking) == 10
         assert ranking[0][0] == "username0"
         assert ranking[9][0] == "username9"
+
+
+async def test_training():
+    """
+    test training
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        await da.TrainingAccess.check_queue(2, 11.5*14400)
+
+        after_queues = await da.TrainingAccess.get_queue(2)
+        assert len(after_queues) == 1
+        assert after_queues[0][1] == 14400
+
+        """
+        assert for remaining time
+        """
+        assert after_queues[0][0].train_remaining == 122400
+        assert after_queues[0][0].training_size == 9
+
+        army_troops = await da.ArmyAccess.getTroops(1)
+        assert len(army_troops) == 2
+
+        """
+        check troops other rank are the same
+        """
+        assert army_troops[0][0].size == 30
+        assert army_troops[0][0].rank == 2
+
+        """
+        check 11 troops are added
+        """
+        assert army_troops[1][0].size == 10+11
+        assert army_troops[1][0].rank == 3
+
+
+async def test_troop_rank():
+    """
+    test that troop ank works correctly
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        """
+        Tests that retrieving and upgrading unit ranks occurs correctly
+        """
+        rank = await da.TrainingAccess.get_troop_rank(1, "soldier")
+        assert rank == 1
+
+        cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
+        assert len(cost_list) == 1
+        assert cost_list[0][0] == "Vibranium"
+        assert cost_list[0][1] == 5
+
+        await da.TrainingAccess.upgrade_troop_rank(1, "soldier")
+
+        rank = await da.TrainingAccess.get_troop_rank(1, "soldier")
+        assert rank == 2
+
+        rank = await da.TrainingAccess.get_troop_rank(2, "soldier")
+        assert rank == 1
+
+        rank = await da.TrainingAccess.get_troop_rank(1, "medic")
+        assert rank == 1
+
+        cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
+        assert len(cost_list) == 1
+        assert cost_list[0][0] == "Vibranium"
+        assert cost_list[0][1] == 7
+
+

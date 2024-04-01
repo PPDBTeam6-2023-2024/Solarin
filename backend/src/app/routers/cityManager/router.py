@@ -5,6 +5,9 @@ from typing import Annotated, Tuple, List
 from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
+
+from .city_checker import CityChecker
+
 router = APIRouter(prefix="/cityManager", tags=["City"])
 
 
@@ -19,9 +22,15 @@ async def get_buildings(
     # Initialize an empty list to store the building schemas
     buildings_schemas = []
 
+    """
+    do the city check, checking all the idle mechanics
+    """
+    city_checker = CityChecker(city_id, data_access)
+    await city_checker.check_all()
+
     # Iterate through each building, creating a BuildingInstanceSchema for each one
     for building in buildings:
-        schema = BuildingInstanceSchema.from_orm(building[0])
+        schema = building[0].to_schema(building[1].type)
         buildings_schemas.append(schema)
 
     # Return the list of BuildingInstanceSchema instances

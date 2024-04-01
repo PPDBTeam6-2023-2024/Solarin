@@ -1,5 +1,8 @@
+import math
+
 from ..models.models import *
 from ..database import AsyncSession
+from .planet_access import PlanetAccess
 
 
 class CityAccess:
@@ -9,15 +12,23 @@ class CityAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createCity(self, region_id: int, founder_id: int, x :float, y :float):
+    async def createCity(self, planet_id: int, founder_id: int, x: float, y: float):
         """
         Creates a city like it was just founded
-        :param: region_id: the region on a planet we want to create the city in
         :param: founder_id: id of the user who created the city
         :return: the id of the city
         """
+        regions = await PlanetAccess(self.__session).getRegions(planet_id)
 
-        city = City(region_id=region_id, controlled_by=founder_id, x=x, y=y)
+        closest_region = regions[0]
+        closest_distance = math.dist((closest_region.x,closest_region.y), (x,y))
+        for region in regions[1:]:
+            distance = math.dist((region.x,region.y), (x,y))
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_region = region
+
+        city = City(region_id=closest_region.id, controlled_by=founder_id, x=x, y=y)
         self.__session.add(city)
         await self.__session.flush()
         city_id = city.id

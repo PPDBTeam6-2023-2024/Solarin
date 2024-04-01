@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import Draggable from "react-draggable";
 import "./FriendOverviewEntry.css"
 import axios from "axios";
 

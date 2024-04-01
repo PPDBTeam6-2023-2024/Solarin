@@ -1,0 +1,18 @@
+.build-button {
+    background: linear-gradient(to top, black, #d20000);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 0.5vw 0.5vh;
+    border-radius: 1vh;
+    transition: background 0.3s ease;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 80%; /* Take full height of the cell */
+}
+
+
+.build-button:hover {
+    background: linear-gradient(to bottom, black, #d20000);
+}

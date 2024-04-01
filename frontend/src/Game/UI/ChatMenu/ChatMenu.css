@@ -32,6 +32,6 @@
 }
 
 /* makes scrollbar invisible, because it is not really gameLike to have an ugly scrollbar*/
-::-webkit-scrollbar {
+::-webkit-scrollbar{
     display: none;
 }

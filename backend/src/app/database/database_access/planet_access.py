@@ -2,6 +2,7 @@ from sqlalchemy.orm import joinedload
 
 from ..models.models import *
 from ..database import AsyncSession
+from typing import Optional
 
 class PlanetAccess:
     """
@@ -38,21 +39,23 @@ class PlanetAccess:
         planet_id = planet.id
         return planet_id
 
-    async def createPlanetRegion(self, planet_id: int, region_type: str):
+    async def createPlanetRegion(self, planet_id: int, region_type: str, x: float, y: float):
         """
         create a region on a planet
 
         :param: planet_id: id of the planet the region will be on
         :param: region_type: type of the planet region
+        :param: x: the x position between [0-1]
+        :param: y: the y position between [0-1]
         :return: region_id of the region that is just created
         """
-        region = PlanetRegion(planet_id=planet_id, region_type=region_type)
+        region = PlanetRegion(planet_id=planet_id, region_type=region_type, x=x, y=y)
         self.__session.add(region)
         await self.__session.flush()
         region_id = region.id
         return region_id
 
-    async def getRegions(self, planet_id: int):
+    async def getRegions(self, planet_id: int) -> list[PlanetRegion]:
         """
         Get all the regions belonging to the given planet
 
@@ -61,7 +64,7 @@ class PlanetAccess:
         """
         select_regions = Select(PlanetRegion).where(PlanetRegion.planet_id == planet_id)
         results = await self.__session.execute(select_regions)
-        return results.all()
+        return results.scalars().all()
 
     async def getPlanetCities(self, planet_id: int):
         """
@@ -99,3 +102,44 @@ class PlanetAccess:
         results = await self.__session.execute(get_planets)
         results = results.all()
         return results
+
+    async def getPlanet(self, planet_id) -> Optional[Planet]:
+        """
+        get planet by id
+        :return: a planet column if it exists, otherwise None
+        """
+        stmt = (
+            Select(Planet)
+            .where(Planet.id == planet_id)
+        )
+        result = await self.__session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_planet_region_types(self, planet_type: str):
+        """
+        Get all the planet region types associated with a planet type
+
+        :param: planet_type: the planet type
+        :return: a list of all planet regions associated with the planet type
+        """
+        stmt = (
+            Select(PlanetRegionType)
+            .join(AssociatedWith, PlanetRegionType.region_type == AssociatedWith.region_type)
+            .filter(AssociatedWith.planet_type == planet_type)
+        )
+        results = await self.__session.execute(stmt)
+        return results.all()
+
+    async def get_random_planet_type(self):
+        """
+        Get a random planet type
+
+        :return: a random planet type
+        """
+        stmt = (
+            Select(PlanetType)
+            .order_by(func.random())
+            .limit(1)
+        )
+        results = await self.__session.execute(stmt)
+        return results.first()

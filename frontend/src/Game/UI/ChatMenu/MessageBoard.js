@@ -1,11 +1,11 @@
 import React, {useEffect, useRef, useState} from "react";
-import Draggable from "react-draggable";
 import "./Friends/FriendOverviewEntry.css"
 import axios from "axios";
 import {json} from "react-router-dom";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
 import { Component } from 'react';
+
 
 function MessageBoard(props) {
     /**

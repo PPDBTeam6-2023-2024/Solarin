@@ -48,8 +48,21 @@ async def get_buildings(
     await da.BuildingAccess.checked(building_id)
     await da.commit()
 
+    city = await da.BuildingAccess.get_city(building_id)
+    armies = await da.ArmyAccess.get_army_in_city(city.id)
+
+    """
+    When no armies inside the city, create a new army
+    """
+
+    if len(armies) == 0:
+        army_id = await da.ArmyAccess.createArmy(user_id, city.region.planet_id, city.x, city.y)
+        await da.ArmyAccess.enter_city(city.id, army_id)
+    else:
+        army_id = armies[0]
+
     rank = await da.TrainingAccess.get_troop_rank(user_id, troop_type)
-    await da.TrainingAccess.trainType(1, building_id, troop_type, rank, amount)
+    await da.TrainingAccess.trainType(army_id, building_id, troop_type, rank, amount)
     await da.commit()
 
     """

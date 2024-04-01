@@ -87,3 +87,13 @@ class BuildingAccess:
         await self.__session.execute(u)
 
         await self.__session.flush()
+
+    async def get_city(self, building_id: int):
+        """
+        get the city corresponding to this building
+        """
+
+        gc = Select(City).join(BuildingInstance, BuildingInstance.city_id ==City.id).where(building_id == BuildingInstance.id)
+        results = await self.__session.execute(gc)
+        result = results.first()
+        return result[0]

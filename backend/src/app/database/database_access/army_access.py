@@ -85,7 +85,7 @@ class ArmyAccess:
         getentry = Select(Army).where(Army.id==army_id)
         result = await self.__session.execute(getentry)
         await self.__session.flush()
-        army = result.first()
+        army = result.scalars().first()
         return army
 
     async def updateArmyCoordinates(self, army_id: int, x, y):

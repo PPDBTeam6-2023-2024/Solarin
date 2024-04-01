@@ -9,7 +9,6 @@ import './TrainingQueueEntry.css'
 function TrainingQueueEntry(props) {
 
     const remaining_timer = React.useRef(null);
-
     useEffect(() => {
         /*
         * We make sure that their is a

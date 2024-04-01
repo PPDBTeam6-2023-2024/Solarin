@@ -42,6 +42,13 @@ async def get_buildings(
     amount = int(data["amount"])
 
     """
+    check if the user owns the building
+    """
+    is_owner = await da.BuildingAccess.is_owner(building_id, user_id)
+    if not is_owner:
+        return {"queue": [], "success": False, "message": "Only the owner of this building can change its traing queue"}
+
+    """
     re-check current training progress
     """
     await da.TrainingAccess.check_queue(building_id)

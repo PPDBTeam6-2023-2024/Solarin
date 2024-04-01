@@ -64,8 +64,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                     onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                     onRowClicked={params => {
-                        if (selectedClick === [params.data.id, params.data.type] )
-                        {setSelectedClick(-1)}
+                        if (selectedClick[0] === params.data.id)
+                        {setSelectedClick([-1, ""])}
                         else{setSelectedClick([params.data.id, params.data.type])}}}
                 />
             </div>

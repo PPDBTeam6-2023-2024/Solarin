@@ -7,7 +7,6 @@ function ProfileListEntry(props) {
     const [viewMode, setViewMode] = useContext(ViewModeContext)
 
     const handleClick = () => {
-        console.log(`planetID of clicked entity: ${props.planet_id}`)
         props.changePlanet(props.planet_id)
         setViewMode(View.PlanetView)
     }

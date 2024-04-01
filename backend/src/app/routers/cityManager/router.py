@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Query
-
+from fastapi.responses import JSONResponse
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
-from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion
+from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, CityLocationSchema
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 router = APIRouter(prefix="/cityManager", tags=["City"])
@@ -45,6 +45,22 @@ async def get_cities(
     # Return the list of BuildingInstanceSchema instances
     return cities_schemas
 
+
+@router.post("/create_city")
+async def create_city(
+        user_id: Annotated[int, Depends(get_my_id)],
+        planet_id: int,
+        coordinates: CityLocationSchema,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+    # TODO get the correct region id using the planet_id
+    region_id = 1
+    city_id = None
+    city_id = await data_access.CityAccess.createCity(region_id, user_id, coordinates.x, coordinates.y)
+    if city_id is not None:
+        return JSONResponse(content={"message": "City was created successfully", "city_id": city_id},
+                            status_code=200)
 
 @router.get("/cities_user")
 async def friend_requests(

@@ -12,6 +12,7 @@ class BuildingInstanceSchema(ConfigClass):
     city_id: int
     building_type: str
     rank: int
+    type: str
 
 
 class CitySchema(ConfigClass):

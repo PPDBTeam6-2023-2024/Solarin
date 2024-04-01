@@ -27,7 +27,7 @@ A point is a natural number and always bounded by the interval [0,499]
     * The points a unit starts with
 ### Regular Units
 
-* Assault Unit
+* Soldier Unit
     * Spec: Land
     * Base Points:
         * (Moderate) 250 AP

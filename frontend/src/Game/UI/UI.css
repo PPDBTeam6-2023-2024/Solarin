@@ -14,5 +14,4 @@ enforces that all the UI components will be put at the front by default
 
 .UI *{
     z-index: 20;
-
 }

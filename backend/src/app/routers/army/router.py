@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
+from typing import List, Annotated
+
 from ...database.database import get_db
 from ...database.database_access.army_access import *
 from ..authentication.router import get_my_id
-from typing import List, Annotated
 from .schemas import *
 from ...database.database_access.data_access import DataAccess
 

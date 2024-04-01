@@ -63,10 +63,8 @@ async def create_city(
         db=Depends(get_db)
 ):
     data_access = DataAccess(db)
-    # TODO get the correct region id using the planet_id
-    region_id = 1
     city_id = None
-    city_id = await data_access.CityAccess.createCity(region_id, user_id, coordinates.x, coordinates.y)
+    city_id = await data_access.CityAccess.createCity(planet_id, user_id, coordinates.x, coordinates.y)
     if city_id is not None:
         return JSONResponse(content={"message": "City was created successfully", "city_id": city_id},
                             status_code=200)

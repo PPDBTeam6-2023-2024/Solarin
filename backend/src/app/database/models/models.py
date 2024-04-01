@@ -118,6 +118,7 @@ class Planet(Base):
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
     regions = relationship("PlanetRegion", back_populates="planet", lazy='select')
+    armies = relationship("Army", back_populates="planet", lazy="select")
 
 
 class PlanetType(Base):
@@ -385,15 +386,19 @@ class Army(Base):
     __tablename__ = "army"
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    planet_id = Column(Integer, ForeignKey("planet.id"))
     last_update = Column(TIME)
     x = Column(Float(precision=53), nullable=False)
     y = Column(Float(precision=53), nullable=False)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
+    planet = relationship("Planet", back_populates="armies", lazy='select')
 
     def to_army_schema(self):
+        print(f"planetID in army model: {self.planet_id}")
         return ArmySchema(id=self.id,
                           user_id=self.user_id,
+                          planet_id=self.planet_id,
                           last_update=str(self.last_update),
                           x=self.x,
                           y=self.y)

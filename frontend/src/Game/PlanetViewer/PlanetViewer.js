@@ -26,6 +26,9 @@ function PlanetViewer(props) {
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
 
+    const reloadCities = () => {
+        setCitiesLoaded(false)
+    }
 
     const toggleArmyViewer = (e, armyId) => {
         const overlayRect = e.target.getBoundingClientRect();
@@ -131,7 +134,7 @@ function PlanetViewer(props) {
                         left: `${position.x}px`,
                         top: `${position.y}px`,
                     }}>
-                        <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
+                        <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition} onCityCreated={reloadCities}/>
                     </div>
                 ))
             }

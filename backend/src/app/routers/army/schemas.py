@@ -21,6 +21,7 @@ class TroopTypeSchema(BaseModel):
 class ArmySchema(BaseModel):
     id: int
     user_id: int
+    planet_id: int
     last_update: Optional[str] = None
     x: float
     y: float

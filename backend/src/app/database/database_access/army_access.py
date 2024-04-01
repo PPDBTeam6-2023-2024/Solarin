@@ -4,7 +4,7 @@ from math import dist
 
 from ..models.models import *
 from ..database import AsyncSession
-
+from .city_access import CityAccess
 
 class ArmyAccess:
     """
@@ -224,15 +224,11 @@ class ArmyAccess:
         param: target_id: the id of the city that will be attacked
         """
 
-        city_owner = Select(City).where(City.id == target_id)
-        results = await self.__session.execute(city_owner)
-        results = results.all()
-        if len(results) != 2:
-            raise Exception("One of the provided armies does not exist")
         """
         Check a user doesn't attack himself
         """
-        if results[0][0].id == results[1][0].id:
+        city_owner = await CityAccess(self.__session).getCityController(target_id)
+        if attack_id == city_owner:
             raise Exception("You cannot attack your own army")
 
         attack_object = AttackCity(army_id=attack_id, target_id=target_id)

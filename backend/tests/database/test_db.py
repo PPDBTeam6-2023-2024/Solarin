@@ -5,7 +5,7 @@ from src.app.database.database_access.data_access import DataAccess
 from src.app.database.models.models import *
 from sqlalchemy import inspect
 from ...src.logic.combat.ArmyCombat import *
-from ...src.logic.combat.AttackCheck import *
+from ...src.logic.combat.ArriveCheck import *
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):
     async with sessionmanager.session() as session:
@@ -428,7 +428,7 @@ async def test_attack_store():
         await da.ArmyAccess.attack_army(1, 2)
 
         going_to_attack = await da.ArmyAccess.will_attack(1)
-        assert going_to_attack[0].target_id == 2
+        assert going_to_attack.target_id == 2
 
         going_to_attack = await da.ArmyAccess.will_attack(2)
         assert going_to_attack is None
@@ -446,7 +446,7 @@ async def test_attack_store():
         await da.ArmyAccess.attack_city(1, 1)
 
         going_to_attack = await da.ArmyAccess.will_attack(1)
-        assert going_to_attack[0].target_id == 1
+        assert going_to_attack.target_id == 1
 
         """
         Cancel attack and check if properly removed
@@ -474,7 +474,7 @@ async def test_army_combat():
 
         await da.ArmyAccess.attack_army(1, 2)
 
-        suc6 = await AttackCheck.check_arrive(1, da)
+        suc6 = await ArriveCheck.check_arrive(1, da)
         assert suc6
 
         a1 = await da.ArmyAccess.getArmyById(1)
@@ -497,7 +497,7 @@ async def test_city_combat():
 
         await da.ArmyAccess.attack_city(1, 1)
 
-        suc6 = await AttackCheck.check_arrive(1, da)
+        suc6 = await ArriveCheck.check_arrive(1, da)
         assert suc6
 
         owner = await da.CityAccess.getCityController(1)

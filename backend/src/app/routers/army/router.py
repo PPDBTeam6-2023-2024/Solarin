@@ -30,8 +30,8 @@ async def get_armies(
     return armies_schema
 
 
-@router.get("/troops", response_model=List[ArmyConsistsOfSchema])
-async def get_troops(armyid: int, db=Depends(get_db)) -> List[ArmyConsistsOfSchema]:
+@router.get("/troops")
+async def get_troops(armyid: int, db=Depends(get_db)):
     data_access = DataAccess(db)
     db_reply = await data_access.ArmyAccess.getTroops(armyid)
 
@@ -42,7 +42,8 @@ async def get_troops(armyid: int, db=Depends(get_db)) -> List[ArmyConsistsOfSche
             temp = troops.to_armyconsistsof_schema()
             troops_schema.append(temp)
 
-    return troops_schema
+    army_stats = await data_access.ArmyAccess.get_army_stats(armyid)
+    return {"troops": troops_schema, "stats": army_stats}
 
 
 @router.post("/armies/{army_id}/update-coordinates")

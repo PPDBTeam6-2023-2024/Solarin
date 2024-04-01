@@ -6,6 +6,7 @@ from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from ....logic.utils.compute_properties import *
 
+
 class TrainingAccess:
     """
     This class will manage the sql access for data related to information of training units
@@ -178,7 +179,7 @@ class TrainingAccess:
         Make sure the cost depend on the rank
         """
         for r, c in resources:
-            real_cost = PropertyUtility.getGUC(c, rank)
+            real_cost = PropertyUtility.getUnitTrainCost(c, rank)
             ranked_cost.append((r, real_cost))
 
         return ranked_cost

@@ -11,7 +11,7 @@ from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from ...routers.buildingManagement.schemas import TrainingQueueEntry, TimestampDone
 from datetime import timedelta
-
+from ....logic.utils.compute_properties import *
 from sqlalchemy.orm.state import InstanceState
 
 
@@ -315,7 +315,6 @@ class ProducesResources(Base):
     base_production = Column(Integer, nullable=False)
     max_capacity = Column(Integer, nullable=False)
 
-
     production_building = relationship("ProductionBuildingType", back_populates="producing_resources", lazy='select')
 
 
@@ -386,6 +385,17 @@ class TroopType(Base):
             required_rank=required_rank
         )
 
+    def getStats(self, rank, amount=1):
+        """
+        Get the stats of this unit type based on the rank and the amount of this type
+        """
+        return {"attack": PropertyUtility.getUnitStatsRanked(self.attack, rank)*amount,
+                "defense": PropertyUtility.getUnitStatsRanked(self.defense, rank)*amount,
+                "city_attack": PropertyUtility.getUnitStatsRanked(self.city_attack, rank)*amount,
+                "city_defense": PropertyUtility.getUnitStatsRanked(self.city_defense, rank)*amount,
+                "recovery": PropertyUtility.getUnitStatsRanked(self.recovery, rank)*amount,
+                "speed": PropertyUtility.getUnitStatsRanked(self.speed, rank)*amount}
+
     in_consist_of = relationship("ArmyConsistsOf", back_populates="troop", lazy='select')
 
 
@@ -453,7 +463,7 @@ class ArmyConsistsOf(Base):
     The relation indication which types of units are part of the army and in what quantities
     """
     __tablename__ = "armyConsistsOf"
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
     rank = Column(Integer, primary_key=True)
     size = Column(Integer, nullable=False)
@@ -504,3 +514,61 @@ class AssociatedWith(Base):
     __tablename__ = 'associatedWith'
     planet_type = Column(String, ForeignKey("planetType.type"), primary_key=True)
     region_type = Column(String, ForeignKey("planetRegionType.region_type"), primary_key=True)
+
+
+class AttackOnArrive(Base):
+    """
+    To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position
+    """
+    __tablename__ = 'attackOnArrive'
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+
+    """
+    TargetType indicates the difference between attacking an army and a city.
+    """
+    target_type = Column(String, nullable=False)
+    __mapper_args__ = {
+        'polymorphic_on': target_type
+    }
+
+
+class AttackArmy(AttackOnArrive):
+    """
+    Stores which other army we might attack when our army arrives at its position
+    """
+    __tablename__ = 'attackArmy'
+
+    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED'),
+                     primary_key=True)
+
+    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'army'
+    }
+
+
+class AttackCity(AttackOnArrive):
+    """
+    Stores which city we might attack when our army arrives at its position
+    """
+    __tablename__ = 'attackCity'
+
+    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED'),
+                     primary_key=True)
+
+    target_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+    __mapper_args__ = {
+        'polymorphic_identity': 'city'
+    }
+
+
+class ArmyInCity(Base):
+    """
+    Stores the armies that are present inside a city
+    """
+    __tablename__ = 'armyInCity'
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
+
+    city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), nullable=False)

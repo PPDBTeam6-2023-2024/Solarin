@@ -9,14 +9,14 @@ class ArmyAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createArmy(self, user_id: int):
+    async def createArmy(self, user_id: int, planet_id: int):
         """
         Create a new army corresponding to a user_id
 
         :param: user_id: the id of the user who created the army
         :return: army_id: id of the army that was just generated
         """
-        army = Army(user_id=user_id, x=0, y=0)
+        army = Army(user_id=user_id, planet_id=planet_id, x=0, y=0)
         self.__session.add(army)
         await self.__session.flush()
         return army.id
@@ -69,9 +69,8 @@ class ArmyAccess:
         """
         await self.__session.flush()
 
-    async def getArmies(self, userid: int, planetid: int):
-        print(f"planetID in backend: {planetid}")
-        getentry = Select(Army).where(Army.user_id==userid, Army.planet_id==planetid)
+    async def getArmies(self, planetid: int):
+        getentry = Select(Army).where(Army.planet_id==planetid)
         armies = await self.__session.execute(getentry)
         await self.__session.flush()
         return armies
@@ -86,7 +85,7 @@ class ArmyAccess:
         getentry = Select(Army).where(Army.id==army_id)
         result = await self.__session.execute(getentry)
         await self.__session.flush()
-        army = result.first()
+        army = result.scalars().first()
         return army
 
     async def updateArmyCoordinates(self, army_id: int, x, y):

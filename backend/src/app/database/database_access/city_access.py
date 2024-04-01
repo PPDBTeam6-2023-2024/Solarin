@@ -21,6 +21,7 @@ class CityAccess:
         self.__session.add(city)
         await self.__session.flush()
         city_id = city.id
+        await self.__session.commit()
         return city_id
 
     async def getCityController(self, city_id: int):

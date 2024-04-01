@@ -32,3 +32,8 @@ class PlanetRegion(ConfigClass):
     region_type: str
     planet: str
     cities: str
+
+
+class CityLocationSchema(BaseModel):
+    x: float
+    y: float

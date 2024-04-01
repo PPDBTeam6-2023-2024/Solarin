@@ -175,6 +175,15 @@ class ArmyAccess:
         """
         await self.cancel_attack(army_id)
 
+        """
+        Attackers cancel to, because the attacked army is not at the target location anymore
+        """
+        get_attackers = Select(AttackArmy).where(AttackArmy.target_id == army_id)
+        results = await self.__session.execute(get_attackers)
+        results = results.all()
+        for r in results:
+            await self.cancel_attack(r[0])
+
         return True, army
 
     async def attack_army(self, attack_id: int, target_id: int):
@@ -186,6 +195,22 @@ class ArmyAccess:
         param: target_id: the id of the army that will be attacked
         """
 
+        army_owner = Select(User).join(Army, Army.user_id == User.id).where((Army.id == attack_id) | (Army.id == target_id))
+        results = await self.__session.execute(army_owner)
+        results = results.all()
+        if len(results) != 2:
+            raise Exception("One of the provided armies does not exist")
+        """
+        Check a user doesn't attack himself
+        """
+        if results[0][0].id == results[1][0].id:
+            raise Exception("You cannot attack your own army")
+
+        """
+        Check if users are not in the same alliance
+        """
+        if results[0][0].alliance == results[1][0].alliance:
+            raise Exception("You cannot attack your allies")
         attack_object = AttackArmy(army_id=attack_id, target_id=target_id)
         self.__session.add(attack_object)
         await self.__session.flush()
@@ -220,7 +245,7 @@ class ArmyAccess:
 
         await self.__session.refresh(result[0])
 
-        return result
+        return result[0]
 
     async def cancel_attack(self, army_id):
         """
@@ -318,3 +343,15 @@ class ArmyAccess:
 
         result = results.first()
         return result[0]
+
+    async def army_arrived(self, army_id: int):
+        """
+        Checks if an army is arrived at its end location
+        """
+
+        get_army = Select(Army).where(Army.id == army_id)
+        results = await self.__session.execute(get_army)
+        army = results.first()
+        army = army[0]
+
+        return datetime.utcnow() > army.arrival_time

@@ -521,7 +521,7 @@ class AttackOnArrive(Base):
     To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position
     """
     __tablename__ = 'attackOnArrive'
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
 
     """
     TargetType indicates the difference between attacking an army and a city.
@@ -538,10 +538,10 @@ class AttackArmy(AttackOnArrive):
     """
     __tablename__ = 'attackArmy'
 
-    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED'),
+    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
-    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'army'
@@ -554,7 +554,7 @@ class AttackCity(AttackOnArrive):
     """
     __tablename__ = 'attackCity'
 
-    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED'),
+    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
     target_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), primary_key=True)

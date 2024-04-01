@@ -5,7 +5,7 @@ from src.app.database.database_access.data_access import DataAccess
 from src.app.database.models.models import *
 from sqlalchemy import inspect
 from ...src.logic.combat.ArmyCombat import *
-
+from ...src.logic.combat.AttackCheck import *
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):
     async with sessionmanager.session() as session:
@@ -136,7 +136,7 @@ async def insert_test_data(connection_test):
 
         a_id = await da.ArmyAccess.createArmy(user_id=1, planet_id=p_id, x=0, y=0)
 
-        a_id2 = await da.ArmyAccess.createArmy(user_id=2, planet_id=p_id, x=0, y=0)
+        a_id2 = await da.ArmyAccess.createArmy(user_id=3, planet_id=p_id, x=0, y=0)
 
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
@@ -472,7 +472,10 @@ async def test_army_combat():
         assert a1 is not None
         assert a2 is not None
 
-        await ArmyCombat.computeBattle(1, 2, da)
+        await da.ArmyAccess.attack_army(1, 2)
+
+        suc6 = await AttackCheck.check_attack(1, da)
+        assert suc6
 
         a1 = await da.ArmyAccess.getArmyById(1)
         a2 = await da.ArmyAccess.getArmyById(2)
@@ -491,8 +494,12 @@ async def test_city_combat():
         assert owner.id == 2
 
         await da.ArmyAccess.enter_city(1, 2)
-        await ArmyCombat.computeCityBattle(1, 1, da)
+
+        await da.ArmyAccess.attack_city(1, 1)
+
+        suc6 = await AttackCheck.check_attack(1, da)
+        assert suc6
 
         owner = await da.CityAccess.getCityController(1)
-        print(owner.id)
+        assert owner.id == 1
 

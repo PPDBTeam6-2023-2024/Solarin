@@ -516,11 +516,11 @@ class AssociatedWith(Base):
     region_type = Column(String, ForeignKey("planetRegionType.region_type"), primary_key=True)
 
 
-class AttackOnArrive(Base):
+class OnArrive(Base):
     """
     To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position
     """
-    __tablename__ = 'attackOnArrive'
+    __tablename__ = 'onArrive'
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
 
     """
@@ -532,13 +532,13 @@ class AttackOnArrive(Base):
     }
 
 
-class AttackArmy(AttackOnArrive):
+class AttackArmy(OnArrive):
     """
     Stores which other army we might attack when our army arrives at its position
     """
     __tablename__ = 'attackArmy'
 
-    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
     target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
@@ -548,19 +548,52 @@ class AttackArmy(AttackOnArrive):
     }
 
 
-class AttackCity(AttackOnArrive):
+class AttackCity(OnArrive):
     """
     Stores which city we might attack when our army arrives at its position
     """
     __tablename__ = 'attackCity'
 
-    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
     target_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), primary_key=True)
     __mapper_args__ = {
         'polymorphic_identity': 'city'
     }
+
+
+class EnterCity(OnArrive):
+    """
+    Stores which city we might attack when our army arrives at its position
+    """
+    __tablename__ = 'enterCity'
+
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
+
+    target_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'city enter'
+    }
+
+
+class MergeArmies(OnArrive):
+    """
+    Stores which city we might attack when our army arrives at its position
+    """
+    __tablename__ = 'mergeArmies'
+
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
+
+    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'merge army'
+    }
+
 
 
 class ArmyInCity(Base):

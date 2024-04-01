@@ -247,7 +247,7 @@ class ArmyAccess:
         return: an SQL attackArmy or attackCity object or None in case we don't attack anything
         """
 
-        get_attacked = Select(AttackOnArrive).where(AttackOnArrive.army_id == army_id)
+        get_attacked = Select(OnArrive).where(OnArrive.army_id == army_id)
         results = await self.__session.execute(get_attacked)
         result = results.first()
 
@@ -262,7 +262,7 @@ class ArmyAccess:
         """
         Cancel attacking the target, if attacking anything
         """
-        d = delete(AttackOnArrive).where(AttackOnArrive.army_id == army_id)
+        d = delete(OnArrive).where(OnArrive.army_id == army_id)
         await self.__session.execute(d)
 
     async def get_army_stats(self, army_id: int, army_stats=None):
@@ -324,7 +324,7 @@ class ArmyAccess:
         Proper removal (because SQL alchemy does not have cascade delete support for polymorphic tables)
         """
         for r in results:
-            d = delete(AttackOnArrive).where(AttackOnArrive.army_id == r[0])
+            d = delete(OnArrive).where(OnArrive.army_id == r[0])
             await self.__session.execute(d)
 
     async def get_army_in_city(self, city_id: int):
@@ -385,7 +385,36 @@ class ArmyAccess:
         return: list of army_id's of attackers and their time of arrival
         """
 
-        get_attackers = Select(AttackOnArrive.army_id, Army.arrival_time).join(Army, AttackOnArrive.army_id == Army.id).where(Army.planet_id == planet_id)
+        get_attackers = Select(OnArrive.army_id, Army.arrival_time).join(Army, OnArrive.army_id == Army.id).where(Army.planet_id == planet_id)
         results = await self.__session.execute(get_attackers)
         results = results.all()
         return results
+
+    async def merge_armies(self, army_id: int, from_army_id):
+        """
+        Merge 2 armies
+        param: army_id: is the army that will become stronger
+        param: from_army_id: is the army that will give his units away
+        """
+
+        """
+        Update the army ID's of the ArmyConsistOf to transfer the units
+        But in case those entries already exist we just need to add values,
+        So we will just 'add' our units to the first army
+        """
+
+        get_from_units = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == from_army_id)
+        from_troops = await self.__session.execute(get_from_units)
+        from_troops = from_troops.all()
+
+        """
+        Add the units to the army
+        """
+        for f in from_troops:
+            ac: ArmyConsistsOf = f[0]
+            await self.addToArmy(army_id, ac.troop_type, ac.rank, ac.size)
+
+        """
+        Remove original army
+        """
+        await self.remove_army(from_army_id)

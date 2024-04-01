@@ -70,7 +70,7 @@ async def update_army_coordinates(
 
 
 @router.get("/armies_user")
-async def friend_requests(
+async def armies_user(
         user_id: Annotated[int, Depends(get_my_id)],
         db: AsyncSession = Depends(get_db)
 
@@ -83,3 +83,17 @@ async def friend_requests(
     armies = await data_access.ArmyAccess.getUserArmies(user_id)
     armies_schemas = [army[0].to_army_schema() for army in armies]
     return armies_schemas
+
+
+@router.get("/enter_city/{army_id}/{city_id}")
+async def enter_city(
+        army_id: int,
+        city_id: int,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+):
+    """
+    Let an army enter the city on arrival
+    """
+

@@ -474,7 +474,7 @@ async def test_army_combat():
 
         await da.ArmyAccess.attack_army(1, 2)
 
-        suc6 = await AttackCheck.check_attack(1, da)
+        suc6 = await AttackCheck.check_arrive(1, da)
         assert suc6
 
         a1 = await da.ArmyAccess.getArmyById(1)
@@ -497,7 +497,7 @@ async def test_city_combat():
 
         await da.ArmyAccess.attack_city(1, 1)
 
-        suc6 = await AttackCheck.check_attack(1, da)
+        suc6 = await AttackCheck.check_arrive(1, da)
         assert suc6
 
         owner = await da.CityAccess.getCityController(1)

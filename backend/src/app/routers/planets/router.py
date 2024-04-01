@@ -6,7 +6,7 @@ from fastapi.websockets import WebSocket, WebSocketDisconnect
 import asyncio
 from fastapi import APIRouter, Depends
 from typing import Annotated, Tuple, List, Optional
-from ....logic.combat.AttackCheck import AttackCheck
+from ....logic.combat.ArriveCheck import ArriveCheck
 from ..authentication.router import get_my_id
 from ...database.database import get_db
 from ...database.database_access.data_access import DataAccess
@@ -35,7 +35,7 @@ async def check_army_combat(army: int, delay, da: DataAccess, connection_pool):
     """
 
     await asyncio.sleep(delay+2)  # safety wait a 2 seconds
-    await AttackCheck.check_attack(army, da)
+    await AttackCheck.check_arrive(army, da)
 
     """
     On reload frontend needs to reload its cities and armies on the map

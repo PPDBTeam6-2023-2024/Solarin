@@ -105,3 +105,20 @@ async def armies_user(
     armies = await data_access.ArmyAccess.getUserArmies(user_id)
     armies_schemas = [army[0].to_army_schema() for army in armies]
     return armies_schemas
+
+
+@router.post("/leave_city/{army_id}")
+async def update_army_coordinates(
+        userid: Annotated[int, Depends(get_my_id)],
+        army_id: int,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+
+    # Fetch current coordinates and speed of the army
+    owner = await data_access.ArmyAccess.get_army_owner(army_id)
+    if owner.id != userid:
+        return {"success": False, "message": "user is not the owner of this army"}
+
+    await data_access.ArmyAccess.leave_city(army_id)
+    return {"success": True, "message": "User has left the city"}

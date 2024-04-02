@@ -93,3 +93,5 @@ async def test_attack_army(client):
 
         data = websocket.receive_json()
         assert data["request_type"] == "reload"
+
+

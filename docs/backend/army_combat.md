@@ -10,7 +10,7 @@ Explanation how combat of an army works
 The combat of an army exists of 2 parts. The first part is detecting when combat needs to occur, the second part is to do the combat calculations and change the
 stored data accordingly.
 
-For detection of combat we use the Table 'AttackOnArrive'. This has 2 polymorphic children: 'AttackCity', 'AttackArmy'.
+For detection of combat we use the Table 'onArrive'. This has 2 polymorphic children: 'AttackCity', 'AttackArmy'.
 When a user decides to attack an army/city it will store that information in these tables. When our army later arrives on
 its destination, we check these tables. If we find a matching table entry (with our arrived army) we will execute the calculations.
 Armies cannot attack their own armies,cities or those of their allies
@@ -27,6 +27,10 @@ We also apply the losses to each troop entry of the winning army. Losing armies 
 the attacker will become owner of the city. And the conquering army will enter the city. 
 
 Armies that are presented in a city while it is attacked, will help defending the city, but will take losses when the defense is victorious. (if it loses they will just be removed).
+
+Another aspect of controlling armies, is being able to enter cities with your army, and to merge armies.
+This uses the same system as the attack. 'onArrive'. This has 2 polymorphic children: 'MergeArmies', 'EnterCity', that store whether
+to merge armies / enter an city when the army arrives at its destination.
 
 ## Issues
 

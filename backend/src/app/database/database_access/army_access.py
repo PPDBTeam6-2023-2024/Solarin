@@ -6,6 +6,7 @@ from ..models.models import *
 from ..database import AsyncSession
 from .city_access import CityAccess
 
+
 class ArmyAccess:
     """
     This class will manage the sql access for data related to information of armies
@@ -477,3 +478,13 @@ class ArmyAccess:
         enter_object = EnterCity(army_id=army_id, target_id=target_id)
         self.__session.add(enter_object)
         await self.__session.flush()
+
+    async def leave_city(self, army_id: int):
+        """
+        Let an army leave the city
+
+        param: army_id: the id of the army that is planning to leave the city
+        """
+
+        d = delete(ArmyInCity).where(ArmyInCity.army_id == army_id)
+        await self.__session.execute(d)

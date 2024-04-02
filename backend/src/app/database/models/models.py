@@ -565,7 +565,7 @@ class AttackCity(OnArrive):
 
 class EnterCity(OnArrive):
     """
-    Stores which city we might attack when our army arrives at its position
+    Stores which city we might enter when our army arrives at its position
     """
     __tablename__ = 'enterCity'
 
@@ -581,7 +581,7 @@ class EnterCity(OnArrive):
 
 class MergeArmies(OnArrive):
     """
-    Stores which city we might attack when our army arrives at its position
+    Stores which army we merge with when we arrive
     """
     __tablename__ = 'mergeArmies'
 

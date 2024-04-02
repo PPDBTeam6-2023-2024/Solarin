@@ -143,3 +143,19 @@ class PlanetAccess:
         )
         results = await self.__session.execute(stmt)
         return results.first()
+
+    async def get_planets_of_user(self, user_id: int) -> list[Planet]:
+        """
+        Get all the planets that a user has a city on
+
+        :param: user_id: id of the user we want to check
+        :return: a list of all planets this user has a city on
+        """
+        stmt = (
+            Select(Planet)
+            .join(PlanetRegion, PlanetRegion.planet_id == Planet.id)
+            .join(City, City.region_id == PlanetRegion.id)
+            .where(City.controlled_by == user_id)
+        )
+        results = await self.__session.execute(stmt)
+        return results.scalars().all()

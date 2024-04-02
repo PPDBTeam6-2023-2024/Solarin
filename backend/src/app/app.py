@@ -4,10 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from .routers.authentication.router import router as auth_router
 from .routers.chat.router import router as chat_router
 from .routers.army.router import router as army_router
+from .routers.spawn.router import router as spawn_router
 from .database.database import sessionmanager
 from .routers.planets.router import router as planet_router
 from .routers.logic.router import router as logic_router
 from .routers.cityManager.router import router as city_router
+from .routers.buildingManagement.router import router as building_router
+from .routers.unitManagement.router import router as unit_router
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
 from .create_tuples import *
@@ -34,6 +37,9 @@ def init_app(config: APIConfig) -> FastAPI:
     app.include_router(city_router)
     app.include_router(planet_router)
     app.include_router(army_router)
+    app.include_router(building_router)
+    app.include_router(unit_router)
+    app.include_router(spawn_router)
 
     if config.db:
         sessionmanager.init(config.db.get_connection_string().get_secret_value())

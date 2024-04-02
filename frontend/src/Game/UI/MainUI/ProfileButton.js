@@ -2,7 +2,7 @@ import React, {useState, useContext } from 'react';
 import "./ProfileButton.css"
 import profile from "./../../Images/profile_images/profile_1.png"
 import {ViewModeContext, View} from "../../Context/ViewModeContext"
-
+import WindowUI from '../WindowUI/WindowUI';
 
 
 const ProfileElement = (props) => {
@@ -42,18 +42,12 @@ function ProfileButton() {
             setViewMode(LastViewMode);
         }
     }
-
     return(
-
-        <>
-            <ProfileElement  onProfileClick={onPressProfileButton}/>
-
+        <WindowUI>
+            <ProfileElement onProfileClick={onPressProfileButton}/>
             {/*Below is the bar we have which will contain all the resources*/}
-            <div id={"profile_bar"} className="bottom-0 left-0 fixed"></div>
-        </>
-
-
-
+            <div id="profile_bar" className="bottom-0 left-0 fixed"></div>
+        </WindowUI>
     )
 
 

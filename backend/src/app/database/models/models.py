@@ -1,5 +1,6 @@
 import sqlalchemy.orm.state
 from sqlalchemy import *
+from datetime import datetime
 
 from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship, declared_attr
@@ -8,6 +9,7 @@ from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
+from ...routers.buildingManagement.schemas import TrainingQueueEntry, TimestampDone
 from datetime import timedelta
 
 from sqlalchemy.orm.state import InstanceState
@@ -117,7 +119,8 @@ class Planet(Base):
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
-    regions = relationship("PlanetRegion", back_populates="planet", lazy='select')
+    armies = relationship("Army", back_populates="planet", lazy="select")
+    regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')
 
 
 class PlanetType(Base):
@@ -138,6 +141,8 @@ class PlanetRegion(Base):
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
     planet_id = Column(Integer, ForeignKey("planet.id"))
     region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
+    x = Column(Float(precision=53), nullable=False)
+    y = Column(Float(precision=53), nullable=False)
 
     planet = relationship("Planet", back_populates="regions", lazy='joined')
     cities = relationship("City", back_populates="region", lazy='select')
@@ -197,16 +202,21 @@ class BuildingInstance(Base):
     """
     type = relationship("BuildingType", back_populates="instances", lazy='joined')
 
-    def to_pydantic(self) -> BuildingInstanceSchema:
-        return BuildingInstanceSchema.from_orm(self)
-    def to_BuildingOverview(self, building_id: int, city_id_nr: int, building_type_name: str,
-                            rank_nr: int) -> "BuildingInstanceSchema":
-        return BuildingInstanceSchema(
-            id=building_id,
-            city_id=city_id_nr,
-            building_type=building_type_name,
-            rank=rank_nr
+    def to_schema(self, type_category) -> BuildingInstanceSchema:
+        b = BuildingInstanceSchema(
+            id=self.id,
+            city_id=self.city_id,
+            building_type=self.building_type,
+            rank=self.rank,
+            type=type_category
         )
+
+        return b
+
+    """
+    stores when the data about this building is last checked
+    """
+    last_checked = Column(TIMESTAMP, nullable=True, default=func.now())
 
 
 class BuildingType(Base):
@@ -333,6 +343,19 @@ class TrainingQueue(Base):
     rank = Column(Integer)
     training_size = Column(Integer)
 
+    def toTrainingQueueEntry(self, unit_training_time):
+
+        return TrainingQueueEntry(
+            id=self.id,
+            building_id=self.building_id,
+            army_id=self.army_id,
+            train_remaining=self.train_remaining,
+            troop_type=self.troop_type,
+            rank=self.rank,
+            troop_size=self.training_size,
+            unit_training_time=unit_training_time
+        )
+
 
 class TroopType(Base):
     """
@@ -367,6 +390,17 @@ class TroopType(Base):
     in_consist_of = relationship("ArmyConsistsOf", back_populates="troop", lazy='select')
 
 
+class TroopRank(Base):
+    """
+    Stores the rank of the unit for a specific user (if no entry, the rank is 1)
+    (because storing an entry for users that do not get far in the game before stopping does not seem efficient)
+    """
+    __tablename__ = 'troopRank'
+    troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+    rank = Column(Integer, default=1)
+
+
 class TroopTypeCost(Base):
     """
     Stores which resources and how much of them it costs to train a unit
@@ -385,18 +419,37 @@ class Army(Base):
     __tablename__ = "army"
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    last_update = Column(TIME)
+    planet_id = Column(Integer, ForeignKey("planet.id"), nullable=True)
+    departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
+    arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
     x = Column(Float(precision=53), nullable=False)
     y = Column(Float(precision=53), nullable=False)
+    to_x = Column(Float(precision=53), nullable=False)
+    to_y = Column(Float(precision=53), nullable=False)
+    last_update = Column(TIME)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
+    planet = relationship("Planet", back_populates="armies", lazy='select')
+
 
     def to_army_schema(self):
         return ArmySchema(id=self.id,
                           user_id=self.user_id,
+                          planet_id=self.planet_id,
                           last_update=str(self.last_update),
                           x=self.x,
                           y=self.y)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "departure_time": self.departure_time.isoformat(),
+            "arrival_time": self.arrival_time.isoformat(),
+            "x": self.x,
+            "y": self.y,
+            "to_x": self.to_x,
+            "to_y": self.to_y
+        }
 
 
 class ArmyConsistsOf(Base):
@@ -450,3 +503,8 @@ class AllianceRequest(Base):
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
     alliance_name = Column(String, ForeignKey("alliance.name"), nullable=False)
 
+
+class AssociatedWith(Base):
+    __tablename__ = 'associatedWith'
+    planet_type = Column(String, ForeignKey("planetType.type"), primary_key=True)
+    region_type = Column(String, ForeignKey("planetRegionType.region_type"), primary_key=True)

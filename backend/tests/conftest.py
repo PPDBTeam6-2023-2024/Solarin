@@ -6,6 +6,7 @@ from pytest_postgresql import factories
 from pytest_postgresql.janitor import DatabaseJanitor
 
 from src.app.app import init_app
+from src.app.create_tuples import CreateTuples
 from src.app.config import APIConfig, DBConfig
 from src.app.database.database import get_db, sessionmanager
 from pydantic import SecretStr

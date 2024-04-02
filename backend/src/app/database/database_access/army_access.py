@@ -1,3 +1,7 @@
+from datetime import datetime
+from typing import Optional
+from math import dist
+
 from ..models.models import *
 from ..database import AsyncSession
 
@@ -9,14 +13,21 @@ class ArmyAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createArmy(self, user_id: int):
+    async def createArmy(self, user_id: int, planet_id: int, x: float, y: float):
         """
         Create a new army corresponding to a user_id
 
         :param: user_id: the id of the user who created the army
         :return: army_id: id of the army that was just generated
         """
-        army = Army(user_id=user_id, x=0, y=0)
+        army = Army(
+            user_id=user_id,
+            planet_id=planet_id,
+            x=x,
+            y=y,
+            to_x=x,
+            to_y=y
+        )
         self.__session.add(army)
         await self.__session.flush()
         return army.id
@@ -69,8 +80,8 @@ class ArmyAccess:
         """
         await self.__session.flush()
 
-    async def getArmies(self, userid: int, planetid: int):
-        getentry = Select(Army).where(Army.user_id==userid)
+    async def getArmies(self, planetid: int):
+        getentry = Select(Army).where(Army.planet_id==planetid)
         armies = await self.__session.execute(getentry)
         await self.__session.flush()
         return armies
@@ -79,13 +90,13 @@ class ArmyAccess:
         getentry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==armyid)
         troops = await self.__session.execute(getentry)
         await self.__session.flush()
-        return troops
+        return troops.all()
 
     async def getArmyById(self, army_id: int):
         getentry = Select(Army).where(Army.id==army_id)
         result = await self.__session.execute(getentry)
         await self.__session.flush()
-        army = result.first()
+        army = result.scalars().first()
         return army
 
     async def updateArmyCoordinates(self, army_id: int, x, y):
@@ -108,3 +119,53 @@ class ArmyAccess:
         await self.__session.flush()
         armies = armies.all()
         return armies
+
+    async def get_armies_on_planet(self, planet_id: int) -> list[Army]:
+        stmt = (
+            select(Army)
+            .where(Army.planet_id == planet_id)
+        )
+        result = await self.__session.execute(stmt)
+        return result.scalars().all()
+
+    async def get_army_time_delta(self, army_id: int, distance: float) -> timedelta:
+        # TODO: make speed army specific
+        return timedelta(seconds=10*distance)
+
+    async def change_army_direction(self, user_id: int, army_id: int, to_x: float, to_y: float) -> tuple[bool, Optional[Army]]:
+        stmt = (
+            select(Army)
+            .where(Army.user_id == user_id)
+            .where(Army.id == army_id)
+        )
+        result = await self.__session.execute(stmt)
+        army: Optional[Army] = result.scalar_one_or_none()
+
+        if not army:
+            return False, None
+
+        current_time = datetime.utcnow()
+
+        total_time_diff = (army.arrival_time - army.departure_time).total_seconds()
+        current_time_diff = (min(current_time, army.arrival_time) - army.departure_time).total_seconds()
+
+        x_diff = army.to_x - army.x
+        y_diff = army.to_y - army.y
+
+        current_x = x_diff * (current_time_diff / total_time_diff)
+        current_y = y_diff * (current_time_diff / total_time_diff)
+
+        army.x = current_x
+        army.y = current_y
+        army.to_x = to_x
+        army.to_y = to_y
+
+        distance = dist((current_x, current_y), (to_x, to_y))
+        delta = await self.get_army_time_delta(army_id, distance=distance)
+
+        army.departure_time = current_time
+        army.arrival_time = current_time + delta
+
+        await self.__session.commit()
+        await self.__session.refresh(army)
+        return True, army

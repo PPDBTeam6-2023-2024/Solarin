@@ -1,0 +1,48 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+import random
+
+from ...database.database_access.planet_access import PlanetAccess
+from src.logic.name_generator.random_name_generator import generate_planet_name
+
+
+def generate_regions(regions: list[str], row_col_count: int = 10) -> dict[str, list[tuple[float, float]]]:
+    regions_dict = {region_type: [] for region_type in regions}
+    cell_size = 1 / row_col_count
+
+    for i in range(row_col_count):
+        for j in range(row_col_count):
+            region_type = random.choice(regions)
+            x = random.uniform(i * cell_size, (i + 1) * cell_size)
+            y = random.uniform(j * cell_size, (j + 1) * cell_size)
+            regions_dict[region_type].append((x, y))
+
+    return regions_dict
+
+
+async def generate_random_planet(session: AsyncSession, space_region_id: int) -> int:
+    planet_access = PlanetAccess(session)
+
+    random_planet_type_row = await planet_access.get_random_planet_type()
+
+    planet_type = random_planet_type_row[0].type
+    planet_id = await planet_access.createPlanet(
+        planet_name=generate_planet_name(),
+        planet_type=planet_type,
+        space_region_id=space_region_id
+    )
+
+    planet_region_types = await planet_access.get_planet_region_types(planet_type)
+
+    planet_region_types = [region[0].region_type for region in planet_region_types]
+    regions = generate_regions(planet_region_types)
+
+    for region_type, coordinates in regions.items():
+        for x,y in coordinates:
+            await planet_access.createPlanetRegion(
+                planet_id=planet_id,
+                region_type=region_type,
+                x=x,
+                y=y
+            )
+
+    return planet_id

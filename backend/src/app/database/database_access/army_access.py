@@ -456,7 +456,7 @@ class ArmyAccess:
         Check a user doesn't attack himself
         """
         city_owner = await CityAccess(self.__session).getCityController(target_id)
-        if army_id != city_owner:
+        if army_id != city_owner.id:
             raise Exception("You enter someone else their city")
 
         enter_object = EnterCity(army_id=army_id, target_id=target_id)

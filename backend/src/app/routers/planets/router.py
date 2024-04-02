@@ -42,6 +42,7 @@ async def check_army_combat(army: int, delay, da: DataAccess, connection_pool):
     """
     await connection_pool.broadcast({"request_type": "reload"})
 
+
 @router.websocket("/ws/{planet_id}")
 async def planet_socket(
         websocket: WebSocket,

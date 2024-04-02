@@ -85,6 +85,21 @@ class ArmyAccess:
         armies = await self.__session.execute(getentry)
         return armies
 
+    async def getArmiesOutside(self, userid: int, planetid: int):
+        """
+        The get armies method but without displaying armies that are inside a city.
+        """
+        getentry = Select(Army).where(Army.user_id==userid)
+        armies = await self.__session.execute(getentry)
+        armies = armies.all()
+
+        get_entry_in_city = Select(Army).join(EnterCity, EnterCity.army_id == Army.id)
+        city_armies = await self.__session.execute(get_entry_in_city)
+        city_armies = city_armies.all()
+
+        return list(set(armies)-set(city_armies))
+
+
     async def getTroops(self, armyid: int):
         getentry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==armyid)
         troops = await self.__session.execute(getentry)

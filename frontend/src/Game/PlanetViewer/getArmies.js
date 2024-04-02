@@ -3,7 +3,7 @@ import army_example from "../Images/troop_images/Soldier.png"
 
 const getArmies = async (planetId) => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies?planet_id=${planetId}`);
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies_outside?planet_id=${planetId}`);
     if (response.status === 200 && Array.isArray(response.data)) {
       return response.data.map(army => ({
         id: army.id,

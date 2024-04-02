@@ -45,7 +45,6 @@ class ArmyCombat:
         city_stats = await da.CityAccess.get_cities_stats(city_id)
 
         city_armies = await da.ArmyAccess.get_army_in_city(city_id)
-
         """
         Calculate the stats based on all the armies that are inside the city
         """
@@ -53,7 +52,6 @@ class ArmyCombat:
             city_stats = await da.ArmyAccess.get_army_stats(c_army_id, city_stats)
 
         army_stats_1 = await da.ArmyAccess.get_army_stats(army_1)
-
         winner_index, strength_ratio, pbr_ratio = PropertyUtility.getBattleOutcome(army_stats_1, city_stats)
 
         if winner_index == 0:

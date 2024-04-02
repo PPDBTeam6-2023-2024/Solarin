@@ -110,6 +110,7 @@ class PropertyUtility:
 
     @staticmethod
     def getBattleOutcome(army_1_stats: dict[str, int], army_2_stats: dict[str, int], city_weight=0.2) -> Tuple[int, float, float]:
+
         """
         Calculate the battle results for a Battle between 2 armies
 

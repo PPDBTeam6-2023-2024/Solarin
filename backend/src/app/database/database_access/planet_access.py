@@ -172,6 +172,7 @@ class PlanetAccess:
             Select(Planet)
             .where(Planet.created_at >= start_time)
             .where(Planet.created_at <= end_time)
+            .order_by(Planet.created_at.asc())
         )
         results = await self.__session.execute(stmt)
         return results.scalars().all()

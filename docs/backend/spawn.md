@@ -17,6 +17,7 @@ The `/spawn` endpoint performs the following actions:
 
 ## Issues
 - Currently there must be a space region with id 1 present in the database in order for no errors to occur
+- Tables in the database need to be up to date
 
 ## Additional Information
 - Endpoints and database queries are tested using pytest

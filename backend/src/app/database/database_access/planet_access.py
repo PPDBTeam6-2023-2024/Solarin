@@ -159,3 +159,19 @@ class PlanetAccess:
         )
         results = await self.__session.execute(stmt)
         return results.scalars().all()
+
+    async def get_planets_between_times(self, start_time: datetime, end_time: datetime) -> list[Planet]:
+        """
+        Get all the planets created between two given times
+
+        :param: start_time: the start time
+        :param: end_time: the end time
+        :return: a list of planets created between the given times
+        """
+        stmt = (
+            Select(Planet)
+            .where(Planet.created_at >= start_time)
+            .where(Planet.created_at <= end_time)
+        )
+        results = await self.__session.execute(stmt)
+        return results.scalars().all()

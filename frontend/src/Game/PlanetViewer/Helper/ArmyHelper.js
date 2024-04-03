@@ -5,12 +5,12 @@ export const getArmies = async (socket) => {
   try {
     socket.onmessage = (event) => {
         let response = JSON.parse(event.data)
-        console.log(response.data)
         return response.data.map(army => ({
             id: army.id,
             x: army.x,
             y: army.y,
             src: army_example,
+            owner: army.owner,
             style: {
               position: 'absolute',
               left: `${army.x * 100}%`,

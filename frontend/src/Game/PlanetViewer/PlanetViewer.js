@@ -140,6 +140,7 @@ function PlanetViewer(props) {
         else setUnitsMoveMode(unitsMoveMode.filter((id) => armyId !== id))
     }
     const mapOnClick = (e) => {
+        console.log(e.pageX/1920, e.pageY/1080)
         unitsMoveMode.forEach((armyId) => {
             socket.send(JSON.stringify(
                 {

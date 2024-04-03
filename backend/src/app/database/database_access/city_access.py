@@ -76,9 +76,13 @@ class CityAccess:
         towers_attack = await self.__session.execute(get_towers_attack)
         towers_attack = towers_attack.all()
 
+        city_stats["speed"] = 0
+        city_stats["city_attack"] = 0
+
         city_stats["attack"] = 0
         for tower in towers_attack:
             city_stats["attack"] += PropertyUtility.getUnitStatsRanked(tower[0], tower[1])
+            city_stats["city_attack"] += PropertyUtility.getUnitStatsRanked(tower[0], tower[1])
 
         """
         Check the towers to calculate the attack stat
@@ -91,8 +95,10 @@ class CityAccess:
         walls_defense = walls_defense.all()
 
         city_stats["defense"] = 0
+        city_stats["city_defense"] = 0
         for wall in walls_defense:
             city_stats["defense"] += PropertyUtility.getUnitStatsRanked(wall[0], wall[1])
+            city_stats["city_defense"] += PropertyUtility.getUnitStatsRanked(wall[0], wall[1])
 
         return city_stats
 

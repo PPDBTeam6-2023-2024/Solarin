@@ -4,7 +4,7 @@ from datetime import datetime
 
 from ..database import Base
 from sqlalchemy.orm import declarative_base, relationship, declared_attr
-
+from sqlalchemy import event
 from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
@@ -117,6 +117,7 @@ class Planet(Base):
     name = Column(TEXT, nullable=False)
     planet_type = Column(TEXT, ForeignKey("planetType.type"), nullable=False)
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
+    created_at = Column(DateTime(), nullable=True, default=datetime.utcnow)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
     regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')
@@ -335,7 +336,7 @@ class TrainingQueue(Base):
     id = Column(Integer, primary_key=True)
     building_id = Column(Integer, ForeignKey("buildingInstance.id", deferrable=True, initially='DEFERRED'),
                          primary_key=True)
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), nullable=False)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), nullable=False)
     train_remaining = Column(Integer)
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'))
     rank = Column(Integer)
@@ -429,8 +430,8 @@ class Army(Base):
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     planet_id = Column(Integer, ForeignKey("planet.id"), nullable=True)
-    departure_time = Column(DateTime(), nullable=False, default=datetime.utcnow)
-    arrival_time = Column(DateTime(), nullable=False, default=datetime.utcnow)
+    departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
+    arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
     x = Column(Float(precision=53), nullable=False)
     y = Column(Float(precision=53), nullable=False)
     to_x = Column(Float(precision=53), nullable=False)
@@ -449,13 +450,13 @@ class Army(Base):
     def to_dict(self):
         return {
             "id": self.id,
-            "owner": self.user_id,
             "departure_time": self.departure_time.isoformat(),
             "arrival_time": self.arrival_time.isoformat(),
+            "owner": self.user_id,
             "x": self.x,
             "y": self.y,
             "to_x": self.to_x,
-            "to_y": self.to_y,
+            "to_y": self.to_y
         }
 
 
@@ -517,11 +518,11 @@ class AssociatedWith(Base):
     region_type = Column(String, ForeignKey("planetRegionType.region_type"), primary_key=True)
 
 
-class AttackOnArrive(Base):
+class OnArrive(Base):
     """
     To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position
     """
-    __tablename__ = 'attackOnArrive'
+    __tablename__ = 'onArrive'
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
 
     """
@@ -533,35 +534,68 @@ class AttackOnArrive(Base):
     }
 
 
-class AttackArmy(AttackOnArrive):
+class AttackArmy(OnArrive):
     """
     Stores which other army we might attack when our army arrives at its position
     """
     __tablename__ = 'attackArmy'
 
-    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
-    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
+    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'army'
     }
 
 
-class AttackCity(AttackOnArrive):
+class AttackCity(OnArrive):
     """
     Stores which city we might attack when our army arrives at its position
     """
     __tablename__ = 'attackCity'
 
-    army_id = Column(Integer, ForeignKey("attackOnArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
     target_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), primary_key=True)
     __mapper_args__ = {
         'polymorphic_identity': 'city'
     }
+
+
+class EnterCity(OnArrive):
+    """
+    Stores which city we might enter when our army arrives at its position
+    """
+    __tablename__ = 'enterCity'
+
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
+
+    target_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'city enter'
+    }
+
+
+class MergeArmies(OnArrive):
+    """
+    Stores which army we merge with when we arrive
+    """
+    __tablename__ = 'mergeArmies'
+
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
+
+    target_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'merge army'
+    }
+
 
 
 class ArmyInCity(Base):

@@ -143,3 +143,36 @@ class PlanetAccess:
         )
         results = await self.__session.execute(stmt)
         return results.first()
+
+    async def get_planets_of_user(self, user_id: int) -> list[Planet]:
+        """
+        Get all the planets that a user has a city on
+
+        :param: user_id: id of the user we want to check
+        :return: a list of all planets this user has a city on
+        """
+        stmt = (
+            Select(Planet)
+            .join(PlanetRegion, PlanetRegion.planet_id == Planet.id)
+            .join(City, City.region_id == PlanetRegion.id)
+            .where(City.controlled_by == user_id)
+        )
+        results = await self.__session.execute(stmt)
+        return results.scalars().all()
+
+    async def get_planets_between_times(self, start_time: datetime, end_time: datetime) -> list[Planet]:
+        """
+        Get all the planets created between two given times
+
+        :param: start_time: the start time
+        :param: end_time: the end time
+        :return: a list of planets created between the given times
+        """
+        stmt = (
+            Select(Planet)
+            .where(Planet.created_at >= start_time)
+            .where(Planet.created_at <= end_time)
+            .order_by(Planet.created_at.asc())
+        )
+        results = await self.__session.execute(stmt)
+        return results.scalars().all()

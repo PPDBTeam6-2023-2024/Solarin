@@ -1,8 +1,8 @@
 """
 
-Revision ID: 27f38912e23b
+Revision ID: d6fc9422bc69
 Revises: 
-Create Date: 2024-04-01 16:35:50.149748
+Create Date: 2024-04-03 15:54:30.860597
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '27f38912e23b'
+revision: str = 'd6fc9422bc69'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -100,6 +100,7 @@ def upgrade() -> None:
     sa.Column('name', sa.TEXT(), nullable=False),
     sa.Column('planet_type', sa.TEXT(), nullable=False),
     sa.Column('space_region_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['planet_type'], ['planetType.type'], ),
     sa.ForeignKeyConstraint(['space_region_id'], ['spaceRegion.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -254,12 +255,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['city_id'], ['city.id'], initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('army_id')
     )
-    op.create_table('attackOnArrive',
-    sa.Column('army_id', sa.Integer(), nullable=False),
-    sa.Column('target_type', sa.String(), nullable=False),
-    sa.ForeignKeyConstraint(['army_id'], ['army.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
-    sa.PrimaryKeyConstraint('army_id')
-    )
     op.create_table('buildingInstance',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('city_id', sa.Integer(), nullable=False),
@@ -271,18 +266,38 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_buildingInstance_id'), 'buildingInstance', ['id'], unique=False)
+    op.create_table('onArrive',
+    sa.Column('army_id', sa.Integer(), nullable=False),
+    sa.Column('target_type', sa.String(), nullable=False),
+    sa.ForeignKeyConstraint(['army_id'], ['army.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.PrimaryKeyConstraint('army_id')
+    )
     op.create_table('attackArmy',
     sa.Column('army_id', sa.Integer(), nullable=False),
     sa.Column('target_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['army_id'], ['attackOnArrive.army_id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
-    sa.ForeignKeyConstraint(['target_id'], ['army.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.ForeignKeyConstraint(['army_id'], ['onArrive.army_id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.ForeignKeyConstraint(['target_id'], ['army.id'], initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('army_id', 'target_id')
     )
     op.create_table('attackCity',
     sa.Column('army_id', sa.Integer(), nullable=False),
     sa.Column('target_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['army_id'], ['attackOnArrive.army_id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.ForeignKeyConstraint(['army_id'], ['onArrive.army_id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
     sa.ForeignKeyConstraint(['target_id'], ['city.id'], initially='DEFERRED', deferrable=True),
+    sa.PrimaryKeyConstraint('army_id', 'target_id')
+    )
+    op.create_table('enterCity',
+    sa.Column('army_id', sa.Integer(), nullable=False),
+    sa.Column('target_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['army_id'], ['onArrive.army_id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.ForeignKeyConstraint(['target_id'], ['city.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.PrimaryKeyConstraint('army_id', 'target_id')
+    )
+    op.create_table('mergeArmies',
+    sa.Column('army_id', sa.Integer(), nullable=False),
+    sa.Column('target_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['army_id'], ['onArrive.army_id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.ForeignKeyConstraint(['target_id'], ['army.id'], initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('army_id', 'target_id')
     )
     op.create_table('trainingQueue',
@@ -293,7 +308,7 @@ def upgrade() -> None:
     sa.Column('troop_type', sa.String(), nullable=True),
     sa.Column('rank', sa.Integer(), nullable=True),
     sa.Column('training_size', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['army_id'], ['army.id'], initially='DEFERRED', deferrable=True),
+    sa.ForeignKeyConstraint(['army_id'], ['army.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
     sa.ForeignKeyConstraint(['building_id'], ['buildingInstance.id'], initially='DEFERRED', deferrable=True),
     sa.ForeignKeyConstraint(['troop_type'], ['troopType.type'], initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('id', 'building_id')
@@ -304,11 +319,13 @@ def upgrade() -> None:
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('trainingQueue')
+    op.drop_table('mergeArmies')
+    op.drop_table('enterCity')
     op.drop_table('attackCity')
     op.drop_table('attackArmy')
+    op.drop_table('onArrive')
     op.drop_index(op.f('ix_buildingInstance_id'), table_name='buildingInstance')
     op.drop_table('buildingInstance')
-    op.drop_table('attackOnArrive')
     op.drop_table('armyInCity')
     op.drop_table('armyConsistsOf')
     op.drop_table('troopRank')

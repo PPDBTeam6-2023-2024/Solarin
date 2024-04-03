@@ -13,9 +13,9 @@ function TrainingQueueEntry(props) {
         /*
         * We make sure that their is a
         * */
-        var d = new Date(props.queue_data.train_remaining*1000);
+        var d = props.queue_data.train_remaining
 
-        remaining_timer.current.innerText = d.toLocaleTimeString();
+        remaining_timer.current.innerText = `${Math.floor(d/3600)}H ${Math.floor((d % 3600)/60)}M ${d % 60}S`;
 
         if (props.index !== 0){
             return
@@ -23,11 +23,10 @@ function TrainingQueueEntry(props) {
         var time_till_troop_trained = (props.queue_data.troop_size-1)*props.queue_data.unit_training_time;
 
         var interval = setInterval(() => {
-            d.setSeconds(d.getSeconds() - 1);
-            remaining_timer.current.innerText = d.toLocaleTimeString();
-
+            d -= 1;
+            remaining_timer.current.innerText = `${Math.floor(d/3600)}H ${Math.floor((d % 3600)/60)}M ${d % 60}S`;
             /*Call the OnTrainedFunction when 1 unit is trained*/
-            if (d.getTime() / 1000 <= time_till_troop_trained){
+            if (d <= time_till_troop_trained){
                 props.OnTrainedFunction()
 
             }

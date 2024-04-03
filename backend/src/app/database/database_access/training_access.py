@@ -96,7 +96,6 @@ class TrainingAccess:
         if seconds is None:
             delta_time = await BuildingAccess(self.__session).getDeltaTime(building_id)
             seconds = delta_time.total_seconds()
-
         for r in results:
             if seconds <= 0:
                 break
@@ -114,8 +113,9 @@ class TrainingAccess:
             """
             make sure we don't train more units than are in a queue => use min
             """
-            troops_trained = min(math.floor(seconds/per_unit_training_time), queue_entry.training_size)
+            trained = queue_entry.training_size-math.ceil((queue_entry.train_remaining - seconds)/per_unit_training_time)
 
+            troops_trained = min(trained, queue_entry.training_size)
             diff = queue_entry.train_remaining - seconds
             if diff < 0:
                 seconds = seconds - queue_entry.train_remaining
@@ -129,7 +129,6 @@ class TrainingAccess:
             army_access = ArmyAccess(self.__session)
             await army_access.addToArmy(queue_entry.army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
             queue_entry.training_size -= troops_trained
-
             """
             when entry done, remove training queue entry
             """

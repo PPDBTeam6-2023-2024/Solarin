@@ -551,3 +551,18 @@ async def test_army_enter_city():
         armies = await da.ArmyAccess.get_army_in_city(2)
         assert armies == [1]
 
+
+async def test_has_resources():
+    """
+    Test user has certain resources
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        p = await da.ResourceAccess.get_resource_amount(1, "Energon")
+        assert p == 0
+        await da.ResourceAccess.add_resource(1, "Energon", 5)
+        p = await da.ResourceAccess.get_resource_amount(1, "Energon")
+        assert p == 5
+
+        has_resources = await da.ResourceAccess.has_resources(1, [("Energon", 5)])
+        assert has_resources

@@ -10,6 +10,7 @@ from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from .training_access import TrainingAccess
 from .ranking_access import RankingAccess
+from .resource_access import ResourceAccess
 
 
 class DataAccess:
@@ -29,6 +30,7 @@ class DataAccess:
         self.ArmyAccess = ArmyAccess(session)
         self.TrainingAccess = TrainingAccess(session)
         self.RankingAccess = RankingAccess(session)
+        self.ResourceAccess = ResourceAccess(session)
 
     async def commit(self):
         """

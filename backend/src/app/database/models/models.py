@@ -117,6 +117,7 @@ class Planet(Base):
     name = Column(TEXT, nullable=False)
     planet_type = Column(TEXT, ForeignKey("planetType.type"), nullable=False)
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
+    created_at = Column(DateTime(), nullable=True, default=datetime.utcnow)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
     regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')

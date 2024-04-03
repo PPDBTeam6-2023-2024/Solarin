@@ -196,75 +196,68 @@ class BuildingAccess:
 
         user_id = user_id_row
 
-        # Determine city ids controlled by the user
-        city_ids_query = select(City.id).where(City.controlled_by == user_id)
-        city_ids_result = await self.__session.execute(city_ids_query)
-        city_ids = [row[0] for row in city_ids_result]
+        building_instances_query = select(BuildingInstance).where(
+            BuildingInstance.city_id == city_id)
+        building_instances_results = await self.__session.execute(building_instances_query)
 
-        # Determine building instances and their types for each city
-        for city_id in city_ids:
-            building_instances_query = select(BuildingInstance).where(
-                BuildingInstance.city_id == city_id)
-            building_instances_results = await self.__session.execute(building_instances_query)
+        for building_instance_row in building_instances_results:
+            building_instance: BuildingInstance = building_instance_row[0]
+            building_id = building_instance.id
+            building_name = building_instance.building_type
+            building_type = building_instance.type
 
-            for building_instance_row in building_instances_results:
-                building_instance: BuildingInstance = building_instance_row[0]
-                building_id = building_instance.id
-                building_name = building_instance.building_type
-                building_type = building_instance.type
+            if isinstance(building_type, ProductionBuildingType):
+                # Fetch all production details for the building
+                prod_details_query = select(ProducesResources).where(
+                    ProducesResources.building_name == building_name)
+                prod_details_result = await self.__session.execute(prod_details_query)
+                prod_details = prod_details_result.scalars().all()
 
-                if isinstance(building_type, ProductionBuildingType):
-                    # Fetch all production details for the building
-                    prod_details_query = select(ProducesResources).where(
-                        ProducesResources.building_name == building_name)
-                    prod_details_result = await self.__session.execute(prod_details_query)
-                    prod_details = prod_details_result.scalars().all()
+                for prod_detail in prod_details:
+                    resource_name = prod_detail.resource_name
+                    base_production = prod_detail.base_production
+                    max_capacity = prod_detail.max_capacity
 
-                    for prod_detail in prod_details:
-                        resource_name = prod_detail.resource_name
-                        base_production = prod_detail.base_production
-                        max_capacity = prod_detail.max_capacity
+                    # Calculate the amount to increase based on the time delta and base production
+                    time_delta = await self.getDeltaTime(building_id)
+                    time_delta_as_minutes = int(time_delta.total_seconds() / 60)
+                    amount_to_increase = time_delta_as_minutes * base_production
 
-                        # Calculate the amount to increase based on the time delta and base production
-                        time_delta = await self.getDeltaTime(building_id)
-                        time_delta_as_minutes = int(time_delta.total_seconds() / 60)
-                        amount_to_increase = time_delta_as_minutes * base_production
+                    # Fetch the current amount of the resource for the building
+                    current_amount_query = select(StoresResources.amount).where(
+                        and_(StoresResources.building_id == building_id,
+                             StoresResources.resource_type == resource_name))
+                    current_amount_result = await self.__session.execute(current_amount_query)
+                    current_amount_row = current_amount_result.fetchone()
 
-                        # Fetch the current amount of the resource for the building
-                        current_amount_query = select(StoresResources.amount).where(
-                            and_(StoresResources.building_id == building_id,
-                                 StoresResources.resource_type == resource_name))
-                        current_amount_result = await self.__session.execute(current_amount_query)
-                        current_amount_row = current_amount_result.fetchone()
+                    if current_amount_row is None:
+                        # No entry found, assume current amount is 0 and create a new entry
+                        current_amount = 0
+                        new_resource_entry = StoresResources(building_id=building_id,
+                                                             resource_type=resource_name, amount=current_amount)
+                        self.__session.add(new_resource_entry)
+                        await self.__session.flush()
+                    else:
+                        # Entry found, use the current amount from the result
+                        current_amount = current_amount_row[0]
 
-                        if current_amount_row is None:
-                            # No entry found, assume current amount is 0 and create a new entry
-                            current_amount = 0
-                            new_resource_entry = StoresResources(building_id=building_id,
-                                                                 resource_type=resource_name, amount=current_amount)
-                            self.__session.add(new_resource_entry)
-                            await self.__session.flush()
-                        else:
-                            # Entry found, use the current amount from the result
-                            current_amount = current_amount_row[0]
+                    new_amount = min(current_amount + amount_to_increase, max_capacity)
 
-                        new_amount = min(current_amount + amount_to_increase, max_capacity)
+                    # Update or create StoresResources entry with the new amount or the max capacity if exceeded
+                    if current_amount_row:
+                        update_query = (
+                            update(StoresResources)
+                            .where(and_(StoresResources.building_id == building_id,
+                                        StoresResources.resource_type == resource_name))
+                            .values(amount=new_amount)
+                        )
+                        await self.__session.execute(update_query)
+                    else:
+                        # Since we've already added the new entry, we just need to update its amount
+                        new_resource_entry.amount = new_amount
 
-                        # Update or create StoresResources entry with the new amount or the max capacity if exceeded
-                        if current_amount_row:
-                            update_query = (
-                                update(StoresResources)
-                                .where(and_(StoresResources.building_id == building_id,
-                                            StoresResources.resource_type == resource_name))
-                                .values(amount=new_amount)
-                            )
-                            await self.__session.execute(update_query)
-                        else:
-                            # Since we've already added the new entry, we just need to update its amount
-                            new_resource_entry.amount = new_amount
-
-                    update_last_checked = update(BuildingInstance).where(BuildingInstance.id == building_id).values(last_checked = datetime.utcnow() )
-                    await self.__session.execute(update_last_checked)
+                update_last_checked = update(BuildingInstance).where(BuildingInstance.id == building_id).values(last_checked = datetime.utcnow() )
+                await self.__session.execute(update_last_checked)
 
         await self.__session.commit()
         return True

@@ -85,7 +85,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                     <div className="tabs">
                         <button onClick={() => setSelectedTab('currentBuildings')}>Current Buildings</button>
                         <button onClick={() => setSelectedTab('newBuildings')}>New Buildings</button>
-                        <button onClick={() => setSelectedTab('productionBuildings')}>+</button>
+                        <button onClick={() => setSelectedTab('ArmyGrid')}>Army</button>
                         <button onClick={() => setSelectedTab('plus')}>+</button>
                     </div>
 

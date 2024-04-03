@@ -30,7 +30,7 @@ class ResourceAccess:
             """
             When not enough resources
             """
-            if resource[1] < resource_real[1]:
+            if resource[1] > resource_real[1]:
                 return False
 
         return True
@@ -44,6 +44,17 @@ class ResourceAccess:
         has_resources = has_resources.first()
 
         has_resources[0].quantity += amount
+        await self.__session.flush()
+
+    async def remove_resource(self, user_id: int, resource_name: str, amount: int):
+        """
+        Remove a resource value to the user
+        """
+        s = Select(HasResources).where((user_id == HasResources.owner_id) & (HasResources.resource_type == resource_name))
+        has_resources = await self.__session.execute(s)
+        has_resources = has_resources.first()
+
+        has_resources[0].quantity -= amount
         await self.__session.flush()
 
     async def get_resource_amount(self, user_id: int, resource_name: str):

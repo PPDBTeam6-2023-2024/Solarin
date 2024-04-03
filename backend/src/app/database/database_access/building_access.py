@@ -185,17 +185,6 @@ class BuildingAccess:
 
     async def IncreaseResourceStocks(self, city_id: int) -> bool:
 
-        # Get user id
-        user_id_query = select(City.controlled_by).where(City.id == city_id)
-        user_id_results = await self.__session.execute(user_id_query)
-        user_id_row = user_id_results.scalar()
-
-        # Check if user_id_row is None to handle cases where no results are returned
-        if user_id_row is None:
-            raise ValueError(f"No user found controlling city with ID {city_id}")
-
-        user_id = user_id_row
-
         building_instances_query = select(BuildingInstance).where(
             BuildingInstance.city_id == city_id)
         building_instances_results = await self.__session.execute(building_instances_query)

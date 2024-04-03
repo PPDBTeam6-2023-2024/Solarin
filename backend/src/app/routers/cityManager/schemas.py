@@ -26,6 +26,9 @@ class CitySchema(ConfigClass):
     planet_name: str
     planet_id: int
 
+class Confirmation(BaseModel):
+    confirmed: bool
+
 
 class PlanetRegion(ConfigClass):
     id: int
@@ -38,3 +41,6 @@ class BuildingTypeSchema(ConfigClass):
     name: str
     type: str
     required_rank: int
+    cost_type: str
+    cost_amount: int
+    can_build: bool

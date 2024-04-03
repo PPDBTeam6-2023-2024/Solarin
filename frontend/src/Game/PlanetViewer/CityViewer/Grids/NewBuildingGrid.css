@@ -16,3 +16,12 @@
 .build-button:hover {
     background: linear-gradient(to bottom, black, #d20000);
 }
+
+.build-button.disabled {
+    background: linear-gradient(to top, #555, #888);
+    cursor: not-allowed;
+}
+
+.build-button.disabled:hover {
+    background: linear-gradient(to top, #555, #888); /* Keep the same style on hover */
+}

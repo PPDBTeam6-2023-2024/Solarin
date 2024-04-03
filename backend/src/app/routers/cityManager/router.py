@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
-from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, BuildingTypeSchema
+from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, BuildingTypeSchema, Confirmation
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 
@@ -61,9 +61,19 @@ async def get_new_building_types(
         db = Depends(get_db)
 ):
     data_access = DataAccess(db)
-    new_building_type_list = await data_access.BuildingAccess.getAvailableBuildingTypes(city_id,city_rank)
+    # dictionary with new building types, creation cost and whether the owner has sufficient funds
+    type_dict_list = await data_access.BuildingAccess.getAvailableBuildingTypes(city_id,city_rank)
 
-    building_type_schema = [new_building_type[0].to_schema() for new_building_type in new_building_type_list]
+    building_type_schema = []
+
+    for row in type_dict_list:
+        required_rank = row["required_rank"]
+        if required_rank is None:
+            required_rank = 0
+        building_type_schema.append(BuildingTypeSchema(name = row['name'], type = row['type'], required_rank = required_rank,
+                           cost_type = row['cost_type'], cost_amount = row['cost_amount'], can_build = row['can_build']))
+
+
 
     return building_type_schema
 
@@ -76,13 +86,32 @@ async def create_building(
     data_access = DataAccess(db)
     building_id = await data_access.BuildingAccess.createBuilding(city_id, building_type)
 
-    print(building_id)
 
     if not building_id:
         raise HTTPException(status_code=400, detail="Building could not be created.")
 
+@router.get("/update", response_model=Confirmation)
+async def update_resources(
+        city_id: int,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+    confirmed = await data_access.BuildingAccess.IncreaseResourceStocks(city_id)
+    if not confirmed:
+        raise HTTPException(status_code=400, detail="Resources could not be updated created.")
+    return Confirmation(confirmed=confirmed)
 
-
+@router.get("/collect", response_model=Confirmation)
+async def collect_resource(
+        city_id: int,
+        building_id: int,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+    confirmed = await data_access.BuildingAccess.collectResources(building_id, city_id)
+    if not confirmed:
+        raise HTTPException(status_code=400, detail="Resources could not be updated or created.")
+    return Confirmation(confirmed=confirmed)
 
 
 @router.get("/cities_user")

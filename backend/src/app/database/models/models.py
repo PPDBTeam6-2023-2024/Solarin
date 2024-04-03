@@ -207,7 +207,7 @@ class BuildingInstance(Base):
             city_id=self.city_id,
             building_type=self.building_type,
             rank=self.rank,
-            type=type_category
+            type=type_category,
         )
 
         return b
@@ -230,14 +230,17 @@ class BuildingType(Base):
     __mapper_args__ = {
         'polymorphic_on': type
     }
-    def to_schema(self) -> BuildingTypeSchema:
+    def to_schema(self, resource_cost_type: str, resource_cost_amount: str) -> BuildingTypeSchema:
         rank = self.required_rank
         if rank is None:
             rank = 0
         b_type_schema = BuildingTypeSchema(
             name = self.name,
             type = self.type,
-            required_rank=rank
+            required_rank=rank,
+            resource_cost_type = resource_cost_type,
+            resource_cost_amount = resource_cost_amount
+
         )
         return b_type_schema
 
@@ -327,6 +330,15 @@ class ProducesResources(Base):
 
 
     production_building = relationship("ProductionBuildingType", back_populates="producing_resources", lazy='select')
+
+class StoresResources(Base):
+    """
+    Stores the resources produced in a production building instance
+    """
+    __tablename__ = 'storesResources'
+    building_id = Column(Integer, ForeignKey('buildingInstance.id', deferrable=True, initially='DEFERRED'), primary_key=True)
+    resource_type = Column(String, ForeignKey('resourceType.name', deferrable=True, initially='DEFERRED'))
+    amount = Column(Integer, nullable=False, default=0)
 
 
 class ResourceType(Base):

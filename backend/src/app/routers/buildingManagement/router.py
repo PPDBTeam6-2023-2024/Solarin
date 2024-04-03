@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, Query
-
+from fastapi import APIRouter, Depends, Query, HTTPException
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
 from ..authentication.router import get_my_id
@@ -33,5 +32,4 @@ async def get_training_queue(
 
     output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
     return output
-
 

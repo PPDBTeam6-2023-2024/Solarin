@@ -34,6 +34,11 @@ async def get_buildings(
 ):
     """
     This endpoint will give back the training cost of a unit, based on the rank of the unit the user has
+
+    The output format is a dict with 3 attributes:
+    queue: proving the current building queue
+    success: provides whether the get request was a success
+    message: the message for the user
     """
 
     data = await request.json()
@@ -46,7 +51,7 @@ async def get_buildings(
     """
     is_owner = await da.BuildingAccess.is_owner(building_id, user_id)
     if not is_owner:
-        return {"queue": [], "success": False, "message": "Only the owner of this building can change its traing queue"}
+        return {"queue": [], "success": False, "message": "Only the owner of this building can change its training queue"}
 
     """
     re-check current training progress

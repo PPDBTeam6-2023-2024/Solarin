@@ -58,3 +58,50 @@ class CityAccess:
         results = results.all()
 
         return results
+
+    async def get_cities_stats(self, city_id: int):
+        """
+        Get the attack and defense stats of a city
+        :param: city_id: id of the city
+        :return: dict of the city stats
+        """
+
+        city_stats = {}
+
+        """
+        Check the towers to calculate the attack stat
+        """
+
+        get_towers_attack = Select(TowerType.attack, BuildingInstance.rank).join(BuildingInstance, BuildingInstance.building_type==TowerType.name).where(BuildingInstance.city_id == city_id)
+        towers_attack = await self.__session.execute(get_towers_attack)
+        towers_attack = towers_attack.all()
+
+        city_stats["attack"] = 0
+        for tower in towers_attack:
+            city_stats["attack"] += PropertyUtility.getUnitStatsRanked(tower[0], tower[1])
+
+        """
+        Check the towers to calculate the attack stat
+        """
+
+        get_walls_defense = Select(WallType.defense, BuildingInstance.rank).join(BuildingInstance,
+                                                                                 BuildingInstance.building_type == WallType.name).where(
+            BuildingInstance.city_id == city_id)
+        walls_defense = await self.__session.execute(get_walls_defense)
+        walls_defense = walls_defense.all()
+
+        city_stats["defense"] = 0
+        for wall in walls_defense:
+            city_stats["defense"] += PropertyUtility.getUnitStatsRanked(wall[0], wall[1])
+
+        return city_stats
+
+    async def set_new_controller(self, city_id: int, user_id: int):
+        """
+        Give the city a new controller
+        param: city_id: the city whose owner we want to change
+        param: user_id: the user who will become the new owner
+        """
+
+        u = Update(City).values({"controlled_by": user_id}).where(City.id == city_id)
+        await self.__session.execute(u)

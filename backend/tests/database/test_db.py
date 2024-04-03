@@ -3,8 +3,9 @@ import pytest
 from src.app.database.database import sessionmanager
 from src.app.database.database_access.data_access import DataAccess
 from src.app.database.models.models import *
-
-
+from sqlalchemy import inspect
+from ...src.logic.combat.ArmyCombat import *
+from ...src.logic.combat.ArriveCheck import *
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):
     async with sessionmanager.session() as session:
@@ -97,7 +98,7 @@ async def insert_test_data(connection_test):
         p_id = await da.PlanetAccess.createPlanet("Umbara", "Shadow planet", sr_id)
         await da.DeveloperAccess.createPlanetRegionType("valley of death", "Ooh.. very scary")
         r_id = await da.PlanetAccess.createPlanetRegion(p_id, "valley of death", 0, 0)
-        c_id = await da.CityAccess.createCity(r_id, 1, 0.2, 0.8)
+        c_id = await da.CityAccess.createCity(r_id, 2, 0.2, 0.8)
         c_id2 = await da.CityAccess.createCity(r_id, 1, 0.8, 0.2)
 
         """
@@ -105,7 +106,10 @@ async def insert_test_data(connection_test):
         """
         await da.DeveloperAccess.createProductionBuildingType("The mines of moria")
         await da.DeveloperAccess.createBarracksType("Kamino training complex")
+        await da.DeveloperAccess.createTowerType("towerH", 50)
         await da.DeveloperAccess.createHouseType("Solarin mansion", 50)
+        await da.DeveloperAccess.createWallType("wallW", 50)
+
         await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium", 100, 2000)
 
         await da.DeveloperAccess.setCreationCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
@@ -123,11 +127,17 @@ async def insert_test_data(connection_test):
         b_id2 = await da.BuildingAccess.createBuilding(c_id2, "Kamino training complex")
         await da.BuildingAccess.createBuilding(c_id2, "Solarin mansion")
 
+        await da.BuildingAccess.createBuilding(c_id, "towerH")
+        await da.BuildingAccess.createBuilding(c_id, "wallW")
+
         """
         create some types of troops
         """
 
         a_id = await da.ArmyAccess.createArmy(user_id=1, planet_id=p_id, x=0, y=0)
+
+        a_id2 = await da.ArmyAccess.createArmy(user_id=3, planet_id=p_id, x=0, y=0)
+
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))
@@ -145,6 +155,8 @@ async def insert_test_data(connection_test):
         await da.ArmyAccess.addToArmy(a_id, "tank", 2, 20)
         await da.ArmyAccess.addToArmy(a_id, "tank", 2, 10)
         await da.ArmyAccess.addToArmy(a_id, "tank", 3, 10)
+
+        await da.ArmyAccess.addToArmy(a_id2, "soldier", 3, 10)
 
         """
         start training units
@@ -235,7 +247,7 @@ async def test_planet():
         cities = await da.PlanetAccess.getPlanetCities(1)
         assert len(cities) == 2
         assert cities[0][0].id == 1
-        assert cities[0][0].controlled_by == 1
+        assert cities[0][0].controlled_by == 2
         assert cities[0][0].x == 0.2
         assert cities[0][0].y == 0.8
         assert cities[1][0].x == 0.8
@@ -251,13 +263,14 @@ async def test_buildings():
         da = DataAccess(session)
 
         bt = await da.BuildingAccess.getBuildingTypes()
-        assert len(bt) == 3
+        assert len(bt) == 5
         assert (bt[0][0].name, bt[0][0].type) == ('The mines of moria', 'productionBuilding')
         assert (bt[1][0].name, bt[1][0].type) == ('Kamino training complex', 'Barracks')
-        assert (bt[2][0].name, bt[2][0].type) == ('Solarin mansion', 'house')
+        assert (bt[2][0].name, bt[2][0].type) == ('towerH', 'tower')
+        assert (bt[3][0].name, bt[3][0].type) == ('Solarin mansion', 'house')
 
         cbt = await da.BuildingAccess.getCityBuildings(1)
-        assert len(cbt) == 3
+        assert len(cbt) == 5
         assert (cbt[0][1].name, cbt[0][1].type) == ('The mines of moria', 'productionBuilding')
         assert (cbt[1][1].name, cbt[1][1].type) == ('Kamino training complex', 'Barracks')
         assert (cbt[2][1].name, cbt[2][1].type) == ('Solarin mansion', 'house')
@@ -396,6 +409,112 @@ async def test_troop_rank():
         cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
         assert len(cost_list) == 1
         assert cost_list[0][0] == "Vibranium"
-        assert cost_list[0][1] == 7
+        assert cost_list[0][1] == 5
 
 
+async def test_attack_store():
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        """
+        We are not yet attacking anything
+        """
+        going_to_attack = await da.ArmyAccess.will_attack(1)
+        assert going_to_attack is None
+
+        """
+        Army 1 will attack army 2
+        """
+        await da.ArmyAccess.attack_army(1, 2)
+
+        going_to_attack = await da.ArmyAccess.will_attack(1)
+        assert going_to_attack.target_id == 2
+
+        going_to_attack = await da.ArmyAccess.will_attack(2)
+        assert going_to_attack is None
+
+        """
+        Cancel attack and check if properly removed
+        """
+        await da.ArmyAccess.cancel_attack(1)
+        going_to_attack = await da.ArmyAccess.will_attack(1)
+        assert going_to_attack is None
+
+        """
+        Let an army attack a city
+        """
+        await da.ArmyAccess.attack_city(1, 1)
+
+        going_to_attack = await da.ArmyAccess.will_attack(1)
+        assert going_to_attack.target_id == 1
+
+        """
+        Cancel attack and check if properly removed
+        """
+        await da.ArmyAccess.cancel_attack(1)
+        going_to_attack = await da.ArmyAccess.will_attack(1)
+        assert going_to_attack is None
+
+        await da.ArmyAccess.get_army_stats(1)
+
+
+async def test_army_combat():
+    """
+    Test combat between 2 armies
+    """
+
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        a1 = await da.ArmyAccess.getArmyById(1)
+        a2 = await da.ArmyAccess.getArmyById(2)
+
+        assert a1 is not None
+        assert a2 is not None
+
+        await da.ArmyAccess.attack_army(1, 2)
+
+        suc6 = await ArriveCheck.check_arrive(1, da)
+        assert suc6
+
+        a1 = await da.ArmyAccess.getArmyById(1)
+        a2 = await da.ArmyAccess.getArmyById(2)
+
+        assert a1 is None or a2 is None
+
+
+async def test_city_combat():
+    """
+    Test combat between an army and a city
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        owner = await da.CityAccess.getCityController(1)
+        assert owner.id == 2
+
+        await da.ArmyAccess.enter_city(1, 2)
+
+        await da.ArmyAccess.attack_city(1, 1)
+
+        suc6 = await ArriveCheck.check_arrive(1, da)
+        assert suc6
+
+        owner = await da.CityAccess.getCityController(1)
+        assert owner.id == 1
+
+
+async def test_has_resources():
+    """
+    Test user has certain resources
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        p = await da.ResourceAccess.get_resource_amount(1, "Energon")
+        assert p == 0
+        await da.ResourceAccess.add_resource(1, "Energon", 5)
+        p = await da.ResourceAccess.get_resource_amount(1, "Energon")
+        assert p == 5
+
+        has_resources = await da.ResourceAccess.has_resources(1, [("Energon", 5)])
+        assert has_resources

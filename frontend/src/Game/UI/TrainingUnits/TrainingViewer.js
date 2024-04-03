@@ -3,6 +3,7 @@ import './TrainingViewer.css'
 import axios from "axios";
 import TrainingQueueEntry from "./TrainingQueueEntry";
 import TrainingOptionBar from "./TrainingOptionBar";
+import {cos} from "three/examples/jsm/nodes/math/MathNode";
 
 const getTrainingQueue = async(building_id) => {
     try {
@@ -23,7 +24,7 @@ const addTrainingQueue = async(building_id, train_json) => {
               },
             })
 
-        return response.data["queue"]
+        return response.data
     }
     catch(e) {return []}
 }
@@ -32,10 +33,16 @@ function TrainingViewer(props) {
 
     const [trainingQueueList, setTrainingQueueList] = useState([])
     const scroll_bar = React.useRef(null);
+    const [errorMessage, setErrorMessage] = useState("");
 
     async function addTrainingData(train_json) {
         let data = await addTrainingQueue(props.building_id, train_json)
-        setTrainingQueueList(data);
+        setTrainingQueueList(data["queue"]);
+        if (!data["success"]){
+            setErrorMessage(data["message"]);
+        }else{
+            setErrorMessage("");
+        }
     }
 
     useEffect(() => {
@@ -80,7 +87,9 @@ function TrainingViewer(props) {
                 } key={queue_entry.id+' '+queue_entry.r+' '+queue_entry.train_remaining} queue_data={queue_entry} index={index}/>)}
 
             </div>
+
             <TrainingOptionBar onTrain={(train_json) => addTrainingData(train_json)}/>
+            {errorMessage}
         </div>
     )
 }

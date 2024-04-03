@@ -21,6 +21,13 @@ async def get_training_queue(
     """
     da = DataAccess(db)
 
+    """
+    check if the user owns the building
+    """
+    is_owner = await da.BuildingAccess.is_owner(building_id, user_id)
+    if not is_owner:
+        return []
+
     await da.TrainingAccess.check_queue(building_id)
     await da.BuildingAccess.checked(building_id)
     await da.commit()

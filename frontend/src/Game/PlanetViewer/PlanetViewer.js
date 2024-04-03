@@ -7,44 +7,19 @@ import CityManager from "./CityViewer/CityManager";
 
 import {PlanetListContext} from "./../Context/PlanetListContext"
 import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
-import getArmies from "./getArmies";
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
+import { fetchArmies, toggleArmyDetails, toggleArmyViewer, updateArmyPosition } from './Helper/ArmyHelper';
+import { fetchCities } from './Helper/CityHelper';
+
 import { IoMdClose } from "react-icons/io";
 
+import army_example from "../Images/troop_images/Soldier.png"
 
-const loadImage = async (imgPath, stateSetter) => {
-    let img = new Image()
-    img.src = imgPath
-    img.onload = () => {
-        stateSetter(img)
-    }
-}
-
-
-
-function generateData(width, height) {
-    const data = [];
-    const cellWidth = 1 / width;
-    const cellHeight = 1 / height;
-
-    for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
-            const x = Math.random() * cellWidth + j * cellWidth;
-            const y = Math.random() * cellHeight + i * cellHeight;
-            const types = ['type1', 'type2', 'type3']
-            const regionType = types[Math.floor(Math.random()*types.length)];
-            data.push({ x, y, regionType });
-        }
-    }
-
-    return data;
-}
-
-const data = generateData(10,10);
+import {ArcherContainer, ArcherElement} from 'react-archer'
 
 
 function PlanetViewer(props) {
@@ -57,43 +32,6 @@ function PlanetViewer(props) {
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
     const [updateTrigger, setUpdateTrigger] = useState(false);
-
-    const toggleArmyDetails = (armyId) => {
-        setActiveArmyViewers(activeArmyViewers.map((elem, i) => {
-            if (elem.id == armyId) {
-                elem.detailsOpen = !elem.detailsOpen
-            }
-            return elem
-        }))
-    }
-
-    const toggleArmyViewer = (e, armyId) => {
-        const overlayRect = e.target.getBoundingClientRect();
-        const position = {
-            x: overlayRect.left + window.scrollX,
-            y: overlayRect.top + window.scrollY
-        };
-        setActiveArmyViewers(prev => {
-            const index = prev.findIndex(viewer => viewer.id === armyId);
-            if (index >= 0) {
-                // Remove viewer if already active
-                return prev.filter(viewer => viewer.id !== armyId);
-            } else {
-                return [...prev, {id: armyId, position, anchorEl: e.target, detailsOpen: false}];
-            }
-        });
-    };
-
-    const updateArmyPosition = (armyId, newX, newY) => {
-        setArmyImages(currentArmyImages => currentArmyImages.map(army => {
-            if (army.id === armyId) {
-                return {...army, x: newX, y: newY};
-            }
-            return army;
-        }));
-        setUpdateTrigger(prev => !prev)
-    };
-
 
     {/*Get images of cities on map cities on the map*/}
     const [selectedCityId, setSelectedCityId] = useState(null);
@@ -111,21 +49,11 @@ function PlanetViewer(props) {
     };
 
     const [cityImages,setCityImages] = useState([]);
+
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
-        const fetchCities = async () => {
-            const cities = await getCities(1);
-
-            // replace with actual planetID
-            const cityElements = cities.map(city => ({
-                ...city,
-                onClick: () => handleCityClick(city.id, city.controlled_by),
-            }));
-            setCityImages(cityElements);
-            setCitiesLoaded(true);
-        };
         if (!citiesLoaded) {
-            fetchCities();
+            fetchCities({getCities:getCities, handleCityClick:handleCityClick, setCityImages:setCityImages, setCitiesLoaded:setCitiesLoaded});
         }
     }, [props.planetId, handleCityClick, citiesLoaded]);
 
@@ -139,19 +67,91 @@ function PlanetViewer(props) {
 
     const [planetList, setPlanetList] = useContext(PlanetListContext)
     const [planetListIndex, setPlanetListIndex] = props.planetListIndex;
+
+    /*useEffect(() => {
+        //fetchArmies(props.planetId, setArmyImages);
+    }, [socket])*/
+    
+    const is_connected = useRef(false);
+    const [socket, setSocket] = useState(null)
+
     useEffect(() => {
-        const fetchArmies = async () => {
-            const armies = await getArmies(1);
-            const armyElements = armies.map(army => ({
-                ...army,
-                onClick: (e) => toggleArmyViewer(e, army.id),
-            }));
-            setArmyImages(armyElements);
-        };
-        fetchArmies();
+        if (is_connected.current) return
+ 
+        is_connected.current = true;
+ 
+        const web_socket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/planet/ws/${props.planetId}`, `${localStorage.getItem('access-token')}`);
+        setSocket(web_socket);
+        web_socket.onopen = () => {
+            web_socket.send(
+            JSON.stringify(
+                {
+                        type: "get_armies",
+                }))
+            }
+     }, []);
 
-    }, [updateTrigger]); // get the armies again when an army has been moved
+     const handleGetArmies = (data) => {
+        return data.map(army => ({
+            id: army.id,
+            x: army.x,
+            y: army.y,
+            to_x: army.to_x,
+            to_y: army.to_y,
+            owner: army.owner,
+            src: army_example,
+            style: {
+              position: 'absolute',
+              left: `${army.x * 100}%`,
+              top: `${army.y * 100}%`,
+              transform: 'translate(-50%, -50%)',
+              maxWidth: '10%',
+              maxHeight: '10%',
+              zIndex: 15,
+              cursor: 'pointer'
+            },
+          }));
+     }
 
+     useEffect(() => {
+        if (!socket) return;
+        socket.onmessage = async(event) => {
+            let response = JSON.parse(event.data)
+            switch(response.request_type) {
+                case "get_armies":
+                    const armies = await handleGetArmies(response.data)
+                    setArmyImages(armies);
+                    break
+                case "change_direction":
+                    break
+            }
+        }
+        return () => {
+            socket.close()
+        }
+    }, [socket])
+
+    const [unitsMoveMode, setUnitsMoveMode] = useState([])
+    const isMoveMode = (armyId) => {
+        return unitsMoveMode.indexOf(armyId) !== -1
+    }
+    const toggleMoveMode = (armyId) => {
+        if (!isMoveMode(armyId)) setUnitsMoveMode([...unitsMoveMode, armyId])
+        else setUnitsMoveMode(unitsMoveMode.filter((id) => armyId !== id))
+    }
+    const mapOnClick = (e) => {
+        unitsMoveMode.forEach((armyId) => {
+            socket.send(JSON.stringify(
+                {
+                        type: "change_direction",
+                        to_x: e.pageX/1920,
+                        to_y: e.pageY/1080,
+                        army_id: armyId
+                }))
+        })
+        setUnitsMoveMode([])
+    }
+     
     return (
         <>
         <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
@@ -166,20 +166,20 @@ function PlanetViewer(props) {
          </WindowUI>
 
             {
-                activeArmyViewers.map(({id, position, anchorEl, detailsOpen}) => (
+                activeArmyViewers.map(({id, owner, position, to_position, anchorEl, detailsOpen}) => (
                     <>
                         <Popper open={true} anchorEl={anchorEl} placement='left-start'>
                         <Box className="bg-black rounded-3xl" >
                         <List>
-                        <ListItemButton>Move</ListItemButton>
-                        <ListItemButton onClick={() => toggleArmyDetails(id)}>Details</ListItemButton>
+                        {owner === userInfo.id && <ListItemButton onClick={() => toggleMoveMode(id)}>{isMoveMode(id) ? 'Cancel Move To' : 'Move To'}</ListItemButton>}
+                        <ListItemButton onClick={() => toggleArmyDetails(id, setActiveArmyViewers, activeArmyViewers)}>Details</ListItemButton>
                         </List>
                         </Box>
                         </Popper>
                         <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
+                            <ArmyViewer armyId={id} onUpdatePosition={() => {updateArmyPosition(id, position.x, position.y, setArmyImages, setUpdateTrigger)}}/>
                         </Popper>
-                        </>
+                    </>
                 ))
             }
 
@@ -197,20 +197,19 @@ function PlanetViewer(props) {
                 minScale={1}
                 maxScale={5}
                 translationBounds={{
-
                     xMin: 1920 - mapState.scale * 1920,
                     xMax: 0,
                     yMin: 1080 - mapState.scale * 1080,
                     yMax: 0,
                 }}
             >
-
+                
                 {/*Display planet on the map*/}
-                 <PlanetSVG planetId={props.planetId} />
+                 <PlanetSVG planetId={props.planetId} onClick={mapOnClick}/>
 
                 {armyImages.map((army, index) => (
                     <img key={index} src={army.src} alt="army" style={army.style}
-                         onClick={(e) => toggleArmyViewer(e, army.id)}/>
+                         onClick={(e) => toggleArmyViewer(e, army, setActiveArmyViewers)}/>
                 ))}
 
                 {/*Display cities on the map*/}

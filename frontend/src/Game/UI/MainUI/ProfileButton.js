@@ -51,8 +51,6 @@ function ProfileButton() {
             <div id="profile_bar" className="bottom-0 left-0 fixed"><IoMdClose className="text-lg right-0 top-0 absolute" onClick={() => setHideWindow(!hideWindow)}/></div>
         </WindowUI>
     )
-
-
 }
 
 export default ProfileButton

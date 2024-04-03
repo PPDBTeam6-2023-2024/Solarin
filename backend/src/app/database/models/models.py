@@ -429,8 +429,8 @@ class Army(Base):
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     planet_id = Column(Integer, ForeignKey("planet.id"), nullable=True)
-    departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
-    arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
+    departure_time = Column(DateTime(), nullable=False, default=datetime.utcnow)
+    arrival_time = Column(DateTime(), nullable=False, default=datetime.utcnow)
     x = Column(Float(precision=53), nullable=False)
     y = Column(Float(precision=53), nullable=False)
     to_x = Column(Float(precision=53), nullable=False)
@@ -449,12 +449,13 @@ class Army(Base):
     def to_dict(self):
         return {
             "id": self.id,
+            "owner": self.user_id,
             "departure_time": self.departure_time.isoformat(),
             "arrival_time": self.arrival_time.isoformat(),
             "x": self.x,
             "y": self.y,
             "to_x": self.to_x,
-            "to_y": self.to_y
+            "to_y": self.to_y,
         }
 
 

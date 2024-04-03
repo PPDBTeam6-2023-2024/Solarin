@@ -40,7 +40,6 @@ async def spawn_user(
                 return {
                         "planet_id": recent_planets[0].id
                 }
-        
 
         planet_id = await generate_random_planet(db, 1)
         await db.commit()

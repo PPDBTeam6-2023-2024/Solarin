@@ -503,3 +503,18 @@ async def test_city_combat():
         owner = await da.CityAccess.getCityController(1)
         assert owner.id == 1
 
+
+async def test_has_resources():
+    """
+    Test user has certain resources
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+        p = await da.ResourceAccess.get_resource_amount(1, "Energon")
+        assert p == 0
+        await da.ResourceAccess.add_resource(1, "Energon", 5)
+        p = await da.ResourceAccess.get_resource_amount(1, "Energon")
+        assert p == 5
+
+        has_resources = await da.ResourceAccess.has_resources(1, [("Energon", 5)])
+        assert has_resources

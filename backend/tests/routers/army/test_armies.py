@@ -36,26 +36,7 @@ async def test_get_armies(client):
         await data_access.ArmyAccess.createArmy(user_id, planet_id, 0.25, 0.25)
         await data_access.ArmyAccess.createArmy(user_id, planet_id, 0.75, 0.75)
         await session.commit()
-
-    userdata = {
-        "username": "test",
-        "password": "test"
-    }
-
-    headers = {
-        "content-type": "application/x-www-form-urlencoded",
-        "accept": "application/json",
-    }
-
-    tokenresponse = client.post("auth/token", data=userdata, headers=headers)
-    assert response.status_code == 200
-
-    body = tokenresponse.json()
-    token = body["access_token"]
-
-    headers = {'Authorization': f"Bearer {token}"}
-
-    response = client.get("/army/armies", params={"planet_id": 1}, headers=headers)
+    response = client.get("/army/armies", params={"planet_id": 1})
     assert response.status_code == 200
 
 

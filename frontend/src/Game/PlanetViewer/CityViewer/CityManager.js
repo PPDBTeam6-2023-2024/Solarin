@@ -96,6 +96,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         selectedClick={selectedClick}
                         selectedImage={selectedImage}
                         cityId={cityId}
+                        resources={resources}
                     />}
                     {selectedTab === 'newBuildings' && (
                               <NewBuildingGrid
@@ -113,8 +114,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
                     {/*Displays a training menu*/}
                     {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
-
-                    {/*{selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "productionBuilding">}*/}
 
                 </div>
             </WindowUI>

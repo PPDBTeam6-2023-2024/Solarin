@@ -1,6 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect  } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { getImageForBuildingType, collectResources } from "../BuildingManager";
+import {
+    getImageForBuildingType,
+    collectResources,
+    upgradeBuilding,
+    getUpgradeCost,
+    getResources
+} from "../BuildingManager";
 import './NewBuildingGrid.css';
 
 const ResourceButtonComponent = ({ data, cityId }) => {
@@ -15,6 +21,8 @@ const ResourceButtonComponent = ({ data, cityId }) => {
         }
     };
 
+    getResources()
+
     if (data.type === "productionBuilding") {
         return (
             <button className={buttonStyle} onClick={() => collectResourcesHelper(cityId, data.id)}>Collect resources</button>
@@ -23,15 +31,62 @@ const ResourceButtonComponent = ({ data, cityId }) => {
     return null;
 };
 
+const UpgradeButtonComponent = ({ data, cityId, resources }) => {
+    const [upgradeCost, setUpgradeCost] = useState(null);
 
-const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, updateBuildingsAndTypes, resources }) => {
+    useEffect(() => {
+        const fetchUpgradeCost = async () => {
+            const cost = await getUpgradeCost(data.id);
+            setUpgradeCost(cost);
+        };
+
+        fetchUpgradeCost();
+    }, [data.id]);
+
+    const upgradeBuildingHelper = async (cityId, buildingId) => {
+        try {
+            await upgradeBuilding(cityId, buildingId);
+            console.log("Building upgraded successfully.");
+        } catch (error) {
+            console.error("Failed to upgrade building:", error);
+        }
+    };
+
+
+    // Set upgrade cost to loading while fetching/if undefined
+    const buttonText = upgradeCost === null ? 'Loading...' : `${upgradeCost.cost} ${upgradeCost.cost_type}`;
+    // Determine button style based upgrade cost
+    const buttonStyle = upgradeCost && upgradeCost.can_upgrade ? "build-button" : "build-button disabled";
+
+    return (
+        <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id)} disabled={!(upgradeCost && resources >= upgradeCost.cost)}>
+            {buttonText}
+        </button>
+    );
+};
+
+
+const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources }) => {
+    const upgradeButtonRenderer = useMemo(() => {
+        return params => <UpgradeButtonComponent data={params.data} cityId={cityId} resources={resources} />;
+    }, [cityId, resources]);  // Add resources as a dependency
+
+    const resourceButtonRenderer = useMemo(() => {
+        return params => <ResourceButtonComponent data={params.data} cityId={cityId} />;
+    }, [cityId]);
+
+
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType" },
         { headerName: "Building Rank", field: "buildingRank" },
         {
             headerName: "",
             field: "id",
-            cellRenderer: (params) => <ResourceButtonComponent data={params.data} cityId={cityId} />
+            cellRenderer: resourceButtonRenderer,
+        },{
+            headerName: "Upgrade",
+            field: "id",
+            cellRenderer: upgradeButtonRenderer,
         },
     ], [cityId]);
 

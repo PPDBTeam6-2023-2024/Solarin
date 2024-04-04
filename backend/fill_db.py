@@ -125,13 +125,13 @@ async def fill_db():
         """
         Create some actual buildings instances inside cities
         """
-        await da.BuildingAccess.createBuilding(c_id, "The mines of moria")
-        b_id = await da.BuildingAccess.createBuilding(c_id, "Kamino training complex")
-        await da.BuildingAccess.createBuilding(c_id, "Solarin mansion")
+        await da.BuildingAccess.createBuilding(c_id, "The mines of moria", 1)
+        b_id = await da.BuildingAccess.createBuilding(c_id, "Kamino training complex",1)
+        await da.BuildingAccess.createBuilding(c_id, "Solarin mansion",1)
 
-        await da.BuildingAccess.createBuilding(c_id2, "The mines of moria")
-        b_id2 = await da.BuildingAccess.createBuilding(c_id2, "Kamino training complex")
-        await da.BuildingAccess.createBuilding(c_id2, "Solarin mansion")
+        await da.BuildingAccess.createBuilding(c_id2, "The mines of moria",2)
+        b_id2 = await da.BuildingAccess.createBuilding(c_id2, "Kamino training complex",2)
+        await da.BuildingAccess.createBuilding(c_id2, "Solarin mansion",2)
 
         """
         create some types of troops

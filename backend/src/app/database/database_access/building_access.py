@@ -3,8 +3,7 @@ import datetime
 from ..models.models import *
 from ..database import AsyncSession
 from sqlalchemy import select, not_, or_, join
-
-
+from ....logic.utils.compute_properties import *
 class BuildingAccess:
     """
     This class will manage the sql access for data related to information of planets
@@ -12,31 +11,26 @@ class BuildingAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createBuilding(self, city_id: int, building_type: str):
+    async def __get_creation_cost(self, building_type: str) -> (CreationCost.cost_amount, CreationCost.cost_type):
+        cost_query = select(CreationCost.cost_amount, CreationCost.cost_type).where(
+            CreationCost.building_name == building_type)
+        cost_query_results = await self.__session.execute(cost_query)
+        cost_query_row = cost_query_results.all()
+        if cost_query_row is None:
+            raise ValueError(f"No creation cost found for building type {building_type}")
+        assert len(cost_query_row) > 0, "No creation cost found for building"
+        return cost_query_row[0]
+
+    async def createBuilding(self, city_id: int, building_type: str, user_id: int):
         """
         Create a new instance of building corresponding to a city
         :param: city_id: the id of the city we want to add a building to
         :param: building_type: the type of building we want to add
         :return: the id of the building we just created
         """
-        cost_query = select(CreationCost.cost_amount, CreationCost.cost_type).where(CreationCost.building_name == building_type)
-        cost_query_results = await self.__session.execute(cost_query)
-        cost_query_row = cost_query_results.all()
-        if cost_query_row is None:
-            raise ValueError(f"No user found controlling city with ID {city_id}")
-        cost_amount = cost_query_row[0][0]
-        cost_type = cost_query_row[0][1]
-
-        # Get user id
-        user_id_query = select(City.controlled_by).where(City.id==city_id)
-        user_id_results = await self.__session.execute(user_id_query)
-        user_id_row = user_id_results.scalar()
-
-        # Check if user_id_row is None to handle cases where no results are returned
-        if user_id_row is None:
-            raise ValueError(f"No user found controlling city with ID {city_id}")
-
-        user_id = user_id_row
+        creation_cost = await self.__get_creation_cost(building_type)
+        cost_amount = creation_cost[0]
+        cost_type = creation_cost[1]
 
         # reduce resources in has resources table, by cost
         # Update the HasResources table by subtracting the cost amount from the user's resource quantity
@@ -120,7 +114,7 @@ class BuildingAccess:
 
         await self.__session.flush()
 
-    async def getAvailableBuildingTypes(self, city_id: int, city_rank: int):
+    async def getAvailableBuildingTypes(self, city_id: int, city_rank: int, user_id:int):
         """
         Get all building types that are not yet present in the city and for which
         the required rank is null or less than or equal to the city's rank. Join
@@ -132,17 +126,6 @@ class BuildingAccess:
         :param user_id: ID of the user
         :return: List of available building types for the city along with a boolean indicating if the user can build it
         """
-
-        # Get user id
-        user_id_query = select(City.controlled_by).where(City.id==city_id)
-        user_id_results = await self.__session.execute(user_id_query)
-        user_id_row = user_id_results.scalar()
-
-        # Check if user_id_row is None to handle cases where no results are returned
-        if user_id_row is None:
-            raise ValueError(f"No user found controlling city with ID {city_id}")
-
-        user_id = user_id_row
 
         # Get all building names in the city
         city_buildings_query = select(BuildingInstance.building_type).where(BuildingInstance.city_id == city_id)
@@ -251,18 +234,7 @@ class BuildingAccess:
         await self.__session.commit()
         return True
 
-    async def collectResources(self, building_id: int, city_id: int):
-
-        # Get user id
-        user_id_query = select(City.controlled_by).where(City.id == city_id)
-        user_id_results = await self.__session.execute(user_id_query)
-        user_id_row = user_id_results.scalar()
-
-        # Check if user_id_row is None to handle cases where no results are returned
-        if user_id_row is None:
-            raise ValueError(f"No user found controlling city with ID {city_id}")
-
-        user_id = user_id_row
+    async def collectResources(self, building_id: int, user_id: int):
 
         # First, retrieve the current resource amount from StoresResources for the building
         current_amount_query = select(StoresResources.amount).where(StoresResources.building_id == building_id)
@@ -289,3 +261,83 @@ class BuildingAccess:
         await self.__session.commit()
 
         return True
+
+
+    async def upgradeBuilding(self, building_id: int, user_id: int):
+
+        # get building instance
+        building_instance_query = select(BuildingInstance).where(
+            BuildingInstance.id == building_id)
+        building_instances_results = await self.__session.execute(building_instance_query)
+
+        building_instance = building_instances_results.first()[0]
+
+        # get current rank
+        current_rank = building_instance.rank
+        current_type = building_instance.building_type
+
+
+        # increase rank
+        rank_increase_query = update(BuildingInstance).\
+        where(BuildingInstance.id == building_id).\
+        values(rank=current_rank + 1)
+        rank_increase = await self.__session.execute(rank_increase_query)
+
+        await self.__session.flush()
+
+        # get creation cost
+        creation_cost = await self.__get_creation_cost(current_type)
+        cost_type = creation_cost[1]
+
+        current_resource_query = select(HasResources.quantity).where(HasResources.resource_type == cost_type)
+        current_resource_results = await self.__session.execute(current_resource_query)
+        current_resources = current_resource_results.first()[0]
+
+        cost = await self.get_upgrade_cost(building_id)
+
+        if (current_resources - cost) <= 0:
+            raise ValueError("insufficient resources")
+
+        # decrease resources
+        decrease_resources = update(HasResources).where(HasResources.owner_id==user_id).values(quantity=current_resources-cost)
+        await self.__session.execute(decrease_resources)
+
+        await self.__session.commit()
+
+        return True
+
+    async def get_upgrade_cost(self, building_id: int, user_id: int):
+        # Get building rank and type
+        building_instance_query = select(BuildingInstance).where(BuildingInstance.id == building_id)
+        building_instances_results = await self.__session.execute(building_instance_query)
+        building_instance = building_instances_results.scalar_one()
+
+        current_rank = building_instance.rank
+        current_type = building_instance.building_type
+
+        # Get creation cost
+        creation_cost = await self.__get_creation_cost(current_type)
+        if not creation_cost:
+            raise ValueError("Creation cost not found.")
+        cost_amount, cost_type = creation_cost
+
+        # Get user's available resources
+        available_resources_query = select(HasResources).where(HasResources.owner_id == user_id,
+                                                               HasResources.resource_type == cost_type)
+        available_resources_results = await self.__session.execute(available_resources_query)
+        user_resources = available_resources_results.scalar_one_or_none()
+
+        # If no resources found, create a new entry with 0 amount
+        if not user_resources:
+            user_resources = HasResources(owner_id=user_id, resource_type=cost_type, quantity=0)
+            self.__session.add(user_resources)
+            await self.__session.commit()  # Make sure to commit the new entry to the database
+
+        # Calculate upgrade cost
+        upgrade_cost = PropertyUtility.getGUC(cost_amount, current_rank)
+
+        # Since the user has no resources, they can't afford the upgrade
+        can_upgrade = user_resources.quantity >= upgrade_cost
+
+        # Return upgrade cost and whether the user can afford it
+        return upgrade_cost, cost_type, can_upgrade

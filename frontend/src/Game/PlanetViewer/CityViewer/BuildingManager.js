@@ -21,7 +21,7 @@ export const getBuildings = async (cityId) => {
     }
 };
 
-export const getNewBuildingTypes = async (cityId,cityRank, userInfo) => {
+export const getNewBuildingTypes = async (cityId,cityRank) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/new_building_types?city_id=${cityId}&city_rank=${cityRank}`);
@@ -85,9 +85,6 @@ export const collectResources = async (cityId, buildingId) => {
         if (response.status === 200) {
             console.log(response.data);
             return response.data;
-        } else {
-            console.error("Error collecting resources");
-            return null;
         }
     } catch (error) {
         console.error('Error collecting resources:', error);
@@ -95,8 +92,34 @@ export const collectResources = async (cityId, buildingId) => {
     }
 };
 
+export const upgradeBuilding = async (cityId, buildingId) => {
+    try {
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/upgrade_building?city_id=${cityId}&building_id=${buildingId}`);
+        if (response.status === 200) {
+            console.log(response.data);
+            return response.data;
+        }
+    } catch (error) {
+        console.error('Error upgrading building:', error);
+        return null;
+    }
+};
 
 
+export const getUpgradeCost = async (buildingId) => {
+    try {
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_upgrade_cost?building_id=${buildingId}`);
+        if (response.status === 200) {
+            console.log(response.data);
+            return response.data;
+        }
+    } catch (error) {
+        console.error('Error retrieving upgrade cost:', error);
+        return null;
+    }
+};
 
 
 export const getImageForBuildingType = (buildingType) => {

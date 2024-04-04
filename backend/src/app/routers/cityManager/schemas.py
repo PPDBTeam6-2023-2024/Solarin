@@ -44,3 +44,8 @@ class BuildingTypeSchema(ConfigClass):
     cost_type: str
     cost_amount: int
     can_build: bool
+
+class CostSchema(ConfigClass):
+    cost: int
+    cost_type: str
+    can_upgrade: bool

@@ -6,8 +6,6 @@ import WindowUI from '../WindowUI/WindowUI';
 function ArmyViewer({ armyId, onUpdatePosition }) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
-    const [showInputFields, setShowInputFields] = useState(false);
-    const [coordinates, setCoordinates] = useState({ x: '', y: '' });
 
     useEffect(() => {
         const fetchTroops = async () => {
@@ -23,26 +21,6 @@ function ArmyViewer({ armyId, onUpdatePosition }) {
         };
         fetchTroops();
     }, [armyId]);
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setCoordinates(prev => ({ ...prev, [name]: value }));
-    };
-
-    const submitCoordinates = async () => {
-        const { x, y } = coordinates;
-        try {
-            const newX = parseFloat(x);
-            const newY = parseFloat(y);
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/army/armies/${armyId}/update-coordinates`, { x: newX, y: newY });
-            console.log("Army moved successfully");
-            onUpdatePosition(armyId, newX, newY); // Use the callback to update the position in the PlanetViewer
-            setShowInputFields(false);
-            setCoordinates({ x: '', y: '' });
-        } catch (error) {
-            console.error("Failed to move army", error);
-        }
-    };
 
     let troopsOutput = troops.map((troop, index) => (
         <TreeItem key={index} nodeId={`${index}`} label={`${troop.size}x Troop ${troop.troop_type}`} />

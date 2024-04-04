@@ -1,5 +1,5 @@
 import { MapInteractionCSS } from 'react-map-interaction';
-import {useState, useEffect, useContext, useRef} from 'react';
+import {useState, useEffect, useContext, useRef, Fragment} from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
 import getCities from './CityViewer/getCities';
@@ -12,15 +12,12 @@ import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
-import { fetchArmies, toggleArmyDetails, toggleArmyViewer, updateArmyPosition } from './Helper/ArmyHelper';
+import { toggleArmyDetails, toggleArmyViewer } from './Helper/ArmyHelper';
 import { fetchCities } from './Helper/CityHelper';
 
 import { IoMdClose } from "react-icons/io";
 
 import army_example from "../Images/troop_images/Soldier.png"
-
-import {ArcherContainer, ArcherElement} from 'react-archer'
-
 
 function PlanetViewer(props) {
     const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
@@ -31,7 +28,6 @@ function PlanetViewer(props) {
     });
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
-    const [updateTrigger, setUpdateTrigger] = useState(false);
 
     {/*Get images of cities on map cities on the map*/}
     const [selectedCityId, setSelectedCityId] = useState(null);
@@ -67,10 +63,6 @@ function PlanetViewer(props) {
 
     const [planetList, setPlanetList] = useContext(PlanetListContext)
     const [planetListIndex, setPlanetListIndex] = props.planetListIndex;
-
-    /*useEffect(() => {
-        //fetchArmies(props.planetId, setArmyImages);
-    }, [socket])*/
     
     const is_connected = useRef(false);
     const [socket, setSocket] = useState(null)
@@ -90,67 +82,104 @@ function PlanetViewer(props) {
                 }))
             }
      }, []);
-
+     const lerp = ({source_position, target_position, arrival_time, departure_time}) => {
+        const elapsedTime = Date.now() - departure_time
+        const totalTime = arrival_time - departure_time
+        const percentComplete = (elapsedTime < totalTime) ? elapsedTime / totalTime : 1;
+        const currentX = source_position.x + (target_position.x - source_position.x) * percentComplete
+        const currentY = source_position.y + (target_position.y - source_position.y) * percentComplete
+        return {x: currentX, y: currentY}
+     }
      const handleGetArmies = (data) => {
-        return data.map(army => ({
+        return data.map(army => {
+            const current_pos = lerp({source_position: {x: army.x, y: army.y}, target_position: {x: army.to_x, y: army.to_y}, 
+                arrival_time: army.arrival_time, departure_time: army.departure_time})
+            return {
             id: army.id,
             x: army.x,
             y: army.y,
             to_x: army.to_x,
             to_y: army.to_y,
             owner: army.owner,
+            arrival_time: new Date(army.arrival_time).getTime(),
+            departure_time: new Date(army.departure_time).getTime(),
             src: army_example,
             style: {
               position: 'absolute',
-              left: `${army.x * 100}%`,
-              top: `${army.y * 100}%`,
+              left: `${current_pos.x * 100}%`,
+              top: `${current_pos.y * 100}%`,
               transform: 'translate(-50%, -50%)',
               maxWidth: '10%',
               maxHeight: '10%',
               zIndex: 15,
               cursor: 'pointer'
             },
-          }));
-     }
-
-     useEffect(() => {
-        if (!socket) return;
-        socket.onmessage = async(event) => {
-            let response = JSON.parse(event.data)
-            switch(response.request_type) {
-                case "get_armies":
-                    const armies = await handleGetArmies(response.data)
-                    setArmyImages(armies);
-                    break
-                case "change_direction":
-                    break
             }
-        }
+            });
+     }
+     useEffect(() => {
+        const interval = setInterval(async() => {
+            setArmyImages(armyImages.map((elem) => {
+            const current_position = lerp({source_position: {x: elem.x, y: elem.y}, 
+                target_position: {x: elem.to_x, y: elem.to_y}, arrival_time: elem.arrival_time, departure_time: elem.departure_time})
+            return {...elem, curr_x: current_position.x, curr_y: current_position.y}
+            }))
+          }, 100);
+          return () => {
+            clearInterval(interval)
+          }
+     })
+     const handleChangeDirection = (data) => {
+        return armyImages.map((army) => {
+            if(army.id === data.id) {
+                return {...army, ...handleGetArmies([data])[0]}
+            }
+            return army
+        })
+     }
+     useEffect(() => {
+        if (!socket) return
         return () => {
             socket.close()
         }
     }, [socket])
 
-    const [unitsMoveMode, setUnitsMoveMode] = useState([])
+    useEffect(() => {
+        if(!socket) return
+        socket.onmessage = async(event) => {
+            let response = JSON.parse(event.data)
+            switch(response.request_type) {
+                case "get_armies":
+                    const armies = await handleGetArmies(response.data)
+                    setArmyImages(armies)
+                    break
+                case "change_direction":
+                    const newArmies = handleChangeDirection(response.data)
+                    setArmyImages(newArmies)
+                    break
+            }
+        }
+    }, [socket, armyImages])
+
+    const [armiesMoveMode, setArmiesMoveMode] = useState([])
     const isMoveMode = (armyId) => {
-        return unitsMoveMode.indexOf(armyId) !== -1
+        return armiesMoveMode.indexOf(armyId) !== -1
     }
     const toggleMoveMode = (armyId) => {
-        if (!isMoveMode(armyId)) setUnitsMoveMode([...unitsMoveMode, armyId])
-        else setUnitsMoveMode(unitsMoveMode.filter((id) => armyId !== id))
+        if (!isMoveMode(armyId)) setArmiesMoveMode(prev => [...prev, armyId])
+        else setArmiesMoveMode(armiesMoveMode.filter((id) => armyId !== id))
     }
     const mapOnClick = (e) => {
-        console.log(e.pageX/1920, e.pageY/1080)
-        unitsMoveMode.forEach((armyId) => {
-            socket.send(JSON.stringify(
+        armiesMoveMode.forEach(async(armyId) => {
+            await socket.send(JSON.stringify(
                 {
                         type: "change_direction",
                         to_x: e.pageX/1920,
                         to_y: e.pageY/1080,
                         army_id: armyId
                 }))
+            toggleMoveMode(armyId)
         })
-        setUnitsMoveMode([])
     }
      
     return (
@@ -167,8 +196,8 @@ function PlanetViewer(props) {
          </WindowUI>
 
             {
-                activeArmyViewers.map(({id, owner, position, to_position, anchorEl, detailsOpen}) => (
-                    <>
+                activeArmyViewers.map(({id, owner, position, anchorEl, detailsOpen}) => (
+                    <Fragment key={`army-viewer-${id}`}>
                         <Popper open={true} anchorEl={anchorEl} placement='left-start'>
                         <Box className="bg-black rounded-3xl" >
                         <List>
@@ -178,9 +207,9 @@ function PlanetViewer(props) {
                         </Box>
                         </Popper>
                         <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={id} onUpdatePosition={() => {updateArmyPosition(id, position.x, position.y, setArmyImages, setUpdateTrigger)}}/>
+                            <ArmyViewer armyId={id}/>
                         </Popper>
-                    </>
+                    </Fragment>
                 ))
             }
 
@@ -209,7 +238,7 @@ function PlanetViewer(props) {
                  <PlanetSVG planetId={props.planetId} onClick={mapOnClick}/>
 
                 {armyImages.map((army, index) => (
-                    <img key={index} src={army.src} alt="army" style={army.style}
+                    <img key={index} src={army.src} alt="army" className="transition-all ease-linear" style={{...army.style, left: `${army.curr_x * 100}%`, top: `${army.curr_y * 100}%`}} 
                          onClick={(e) => toggleArmyViewer(e, army, setActiveArmyViewers)}/>
                 ))}
 

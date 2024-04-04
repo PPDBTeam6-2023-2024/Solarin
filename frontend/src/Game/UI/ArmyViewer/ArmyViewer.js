@@ -6,6 +6,7 @@ import {Button} from "@mui/material";
 
 function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
     const [troops, setTroops] = useState([]);
+    const [stats, setStats] = useState([]);
     const [showInputFields, setShowInputFields] = useState(false);
     const [coordinates, setCoordinates] = useState({x: '', y: ''});
 
@@ -13,8 +14,9 @@ function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
         const fetchTroops = async () => {
             try {
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops?armyid=${armyId}`);
-                if (response.status === 200 && Array.isArray(response.data)) {
-                    setTroops(response.data);
+                if (response.status === 200) {
+                    setTroops(response.data.troops);
+                    setStats(response.data.stats);
                 }
             } catch (error) {
                 console.error("Failed to fetch troops", error);
@@ -64,6 +66,11 @@ function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
         <TreeItem key={index} nodeId={`${index}`} label={`${troop.size}x Troop ${troop.troop_type}`}/>
     ));
 
+    /*displays the stats*/
+    let statsOutput = Object.entries(stats).map(([key, value], index) => (
+        <TreeItem key={index} nodeId={`${index}`} label={`${key}: ${value}`} />
+    ));
+
     let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);
 
     return (
@@ -74,7 +81,10 @@ function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
                     <Button variant="contained" onClick={createCity} sx={{margin: "10px"}}>
                         Create City
                     </Button>
-                    <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`stats-${armyId}`} label={`Stats`}></TreeItem>
+                    <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`stats-${armyId}`} label={`Stats`}>
+                        {statsOutput}
+                    </TreeItem>
+
                     <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`total-${armyId}`} label={`${totalCount} Units`}>
                         {troopsOutput}
                     </TreeItem>

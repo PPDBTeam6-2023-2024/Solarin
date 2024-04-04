@@ -4,7 +4,7 @@ from math import dist
 
 from ..models.models import *
 from ..database import AsyncSession
-
+from .city_access import CityAccess
 
 class ArmyAccess:
     """
@@ -80,8 +80,8 @@ class ArmyAccess:
         """
         await self.__session.flush()
 
-    async def getArmies(self, userid: int, planetid: int):
-        getentry = Select(Army).where(Army.user_id==userid)
+    async def getArmies(self, planetid: int):
+        getentry = Select(Army).where(Army.planet_id==planetid)
         armies = await self.__session.execute(getentry)
         return armies
 
@@ -175,6 +175,15 @@ class ArmyAccess:
         """
         await self.cancel_attack(army_id)
 
+        """
+        Attackers cancel to, because the attacked army is not at the target location anymore
+        """
+        get_attackers = Select(AttackArmy).where(AttackArmy.target_id == army_id)
+        results = await self.__session.execute(get_attackers)
+        results = results.all()
+        for r in results:
+            await self.cancel_attack(r[0])
+
         return True, army
 
     async def attack_army(self, attack_id: int, target_id: int):
@@ -186,6 +195,22 @@ class ArmyAccess:
         param: target_id: the id of the army that will be attacked
         """
 
+        army_owner = Select(User).join(Army, Army.user_id == User.id).where((Army.id == attack_id) | (Army.id == target_id))
+        results = await self.__session.execute(army_owner)
+        results = results.all()
+        if len(results) != 2:
+            raise Exception("One of the provided armies does not exist")
+        """
+        Check a user doesn't attack himself
+        """
+        if results[0][0].id == results[1][0].id:
+            raise Exception("You cannot attack your own army")
+
+        """
+        Check if users are not in the same alliance
+        """
+        if results[0][0].alliance == results[1][0].alliance:
+            raise Exception("You cannot attack your allies")
         attack_object = AttackArmy(army_id=attack_id, target_id=target_id)
         self.__session.add(attack_object)
         await self.__session.flush()
@@ -199,6 +224,13 @@ class ArmyAccess:
         param: target_id: the id of the city that will be attacked
         """
 
+        """
+        Check a user doesn't attack himself
+        """
+        city_owner = await CityAccess(self.__session).getCityController(target_id)
+        if attack_id == city_owner:
+            raise Exception("You cannot attack your own army")
+
         attack_object = AttackCity(army_id=attack_id, target_id=target_id)
         self.__session.add(attack_object)
         await self.__session.flush()
@@ -211,7 +243,7 @@ class ArmyAccess:
         return: an SQL attackArmy or attackCity object or None in case we don't attack anything
         """
 
-        get_attacked = Select(AttackOnArrive).where(AttackOnArrive.army_id == army_id)
+        get_attacked = Select(OnArrive).where(OnArrive.army_id == army_id)
         results = await self.__session.execute(get_attacked)
         result = results.first()
 
@@ -220,13 +252,13 @@ class ArmyAccess:
 
         await self.__session.refresh(result[0])
 
-        return result
+        return result[0]
 
     async def cancel_attack(self, army_id):
         """
         Cancel attacking the target, if attacking anything
         """
-        d = delete(AttackOnArrive).where(AttackOnArrive.army_id == army_id)
+        d = delete(OnArrive).where(OnArrive.army_id == army_id)
         await self.__session.execute(d)
 
     async def get_army_stats(self, army_id: int, army_stats=None):
@@ -239,7 +271,7 @@ class ArmyAccess:
         """
 
         if army_stats is None:
-            army_stats = {}
+            army_stats = {"attack": 0, "defense": 0, "city_defense": 0, "city_attack": 0}
 
         get_troops = Select(ArmyConsistsOf.size, ArmyConsistsOf.rank, TroopType).join(TroopType, TroopType.type == ArmyConsistsOf.troop_type).where(ArmyConsistsOf.army_id == army_id)
         results = await self.__session.execute(get_troops)
@@ -277,8 +309,19 @@ class ArmyAccess:
         param: army_id: army we want to remove
         """
 
+        s = Select(AttackArmy.army_id).where(AttackArmy.target_id == army_id)
+        results = await self.__session.execute(s)
+        results = results.all()
+
         d = delete(Army).where(Army.id == army_id)
         await self.__session.execute(d)
+
+        """
+        Proper removal (because SQL alchemy does not have cascade delete support for polymorphic tables)
+        """
+        for r in results:
+            d = delete(OnArrive).where(OnArrive.army_id == r[0])
+            await self.__session.execute(d)
 
     async def get_army_in_city(self, city_id: int):
         """
@@ -318,3 +361,56 @@ class ArmyAccess:
 
         result = results.first()
         return result[0]
+
+    async def army_arrived(self, army_id: int):
+        """
+        Checks if an army is arrived at its end location
+        """
+
+        get_army = Select(Army).where(Army.id == army_id)
+        results = await self.__session.execute(get_army)
+        army = results.first()
+        army = army[0]
+
+        return datetime.utcnow() > army.arrival_time
+
+    async def get_pending_attacks(self, planet_id: int):
+        """
+        Get the pending attacks that are currently planned on a given planet
+        param: planet_id: the id of the planet
+        return: list of army_id's of attackers and their time of arrival
+        """
+
+        get_attackers = Select(OnArrive.army_id, Army.arrival_time).join(Army, OnArrive.army_id == Army.id).where(Army.planet_id == planet_id)
+        results = await self.__session.execute(get_attackers)
+        results = results.all()
+        return results
+
+    async def merge_armies(self, army_id: int, from_army_id):
+        """
+        Merge 2 armies
+        param: army_id: is the army that will become stronger
+        param: from_army_id: is the army that will give his units away
+        """
+
+        """
+        Update the army ID's of the ArmyConsistOf to transfer the units
+        But in case those entries already exist we just need to add values,
+        So we will just 'add' our units to the first army
+        """
+
+        get_from_units = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == from_army_id)
+        from_troops = await self.__session.execute(get_from_units)
+        from_troops = from_troops.all()
+
+        """
+        Add the units to the army
+        """
+        for f in from_troops:
+            ac: ArmyConsistsOf = f[0]
+            await self.addToArmy(army_id, ac.troop_type, ac.rank, ac.size)
+
+        """
+        Remove original army
+        """
+        await self.remove_army(from_army_id)

@@ -13,12 +13,11 @@ router = APIRouter(prefix="/army", tags=["Army"])
 
 @router.get("/armies", response_model=List[ArmySchema])
 async def get_armies(
-        userid: Annotated[int, Depends(get_my_id)],
         planet_id: int,
         db=Depends(get_db)
 ) -> List[ArmySchema]:
     data_access = DataAccess(db)
-    db_reply = await data_access.ArmyAccess.getArmies(userid, planet_id)
+    db_reply = await data_access.ArmyAccess.getArmies(planet_id)
 
     armies_schema = []
 
@@ -26,7 +25,6 @@ async def get_armies(
         for army in armies:
             temp = army.to_army_schema()
             armies_schema.append(temp)
-
     return armies_schema
 
 
@@ -43,8 +41,8 @@ async def get_army(
     return army
 
 
-@router.get("/troops", response_model=List[ArmyConsistsOfSchema])
-async def get_troops(armyid: int, db=Depends(get_db)) -> List[ArmyConsistsOfSchema]:
+@router.get("/troops")
+async def get_troops(armyid: int, db=Depends(get_db)):
     data_access = DataAccess(db)
     db_reply = await data_access.ArmyAccess.getTroops(armyid)
 
@@ -55,7 +53,8 @@ async def get_troops(armyid: int, db=Depends(get_db)) -> List[ArmyConsistsOfSche
             temp = troops.to_armyconsistsof_schema()
             troops_schema.append(temp)
 
-    return troops_schema
+    army_stats = await data_access.ArmyAccess.get_army_stats(armyid)
+    return {"troops": troops_schema, "stats": army_stats}
 
 
 @router.post("/armies/{army_id}/update-coordinates")
@@ -82,7 +81,7 @@ async def update_army_coordinates(
 
 
 @router.get("/armies_user")
-async def friend_requests(
+async def armies_user(
         user_id: Annotated[int, Depends(get_my_id)],
         db: AsyncSession = Depends(get_db)
 
@@ -95,3 +94,17 @@ async def friend_requests(
     armies = await data_access.ArmyAccess.getUserArmies(user_id)
     armies_schemas = [army[0].to_army_schema() for army in armies]
     return armies_schemas
+
+
+@router.get("/enter_city/{army_id}/{city_id}")
+async def enter_city(
+        army_id: int,
+        city_id: int,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+):
+    """
+    Let an army enter the city on arrival
+    """
+

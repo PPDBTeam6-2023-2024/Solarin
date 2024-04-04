@@ -42,6 +42,28 @@ async def get_buildings(
     amount = int(data["amount"])
 
     """
+    check if the user owns the building
+    """
+    is_owner = await da.BuildingAccess.is_owner(building_id, user_id)
+    if not is_owner:
+        return {"queue": [], "success": False, "message": "Only the owner of this building can change its training queue"}
+
+    cost_list = await da.TrainingAccess.get_troop_cost(user_id, troop_type)
+    cost_list = [(c[0], c[1]*amount) for c in cost_list]
+    has_resources = await da.ResourceAccess.has_resources(user_id, cost_list)
+    if not has_resources:
+        training_queue: List[TrainingQueue] = await da.TrainingAccess.get_queue(building_id)
+
+        output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
+        return {"queue": output, "success": False, "message": "User does not have the right amount of the needed resources"}
+
+    """
+    Remove the resources
+    """
+    for c in cost_list:
+        await da.ResourceAccess.remove_resource(user_id, c[0], c[1])
+
+    """
     re-check current training progress
     """
     await da.TrainingAccess.check_queue(building_id)
@@ -68,7 +90,6 @@ async def get_buildings(
     """
     return all the training queue entries, combined with a status and message indicating if the training was successfully
     """
-    da = DataAccess(db)
     training_queue: List[TrainingQueue] = await da.TrainingAccess.get_queue(building_id)
 
     output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]

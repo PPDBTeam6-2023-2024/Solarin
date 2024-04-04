@@ -97,3 +97,18 @@ class BuildingAccess:
         results = await self.__session.execute(gc)
         result = results.first()
         return result[0]
+
+    async def is_owner(self, building_id: int, user_id: int):
+        """
+        Checks if the user is owner of this building
+        """
+
+        get_building = Select(City.controlled_by).join(BuildingInstance, City.id == BuildingInstance.city_id).where(BuildingInstance.id == building_id)
+        results = await self.__session.execute(get_building)
+        results = results.first()
+
+        if results is None:
+            return False
+        if results[0] != user_id:
+            return False
+        return True

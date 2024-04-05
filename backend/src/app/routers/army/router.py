@@ -108,3 +108,15 @@ async def enter_city(
     Let an army enter the city on arrival
     """
 
+@router.get("/armies_in_city/")
+async def get_armies_in_city(
+        city_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Get detailed information about the army in a city, including their troops.
+    """
+    data_access = DataAccess(db)
+    army_ids = await data_access.ArmyAccess.get_army_in_city(city_id)
+
+    return await get_troops(army_ids[0], db)

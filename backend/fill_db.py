@@ -146,8 +146,8 @@ async def fill_db():
                                                 BattleStats(attack=30, defense=30, city_attack=30, city_defense=20,
                                                             recovery=5, speed=0.9))
 
-        await da.DeveloperAccess.setTroopTypeCost("tank", [("Vibranium", 20), ("Energon", 2)])
-        await da.DeveloperAccess.setTroopTypeCost("soldier", [("Vibranium", 5)])
+        await da.DeveloperAccess.setTroopTypeCost("tank", [("SOL", 20)])
+        await da.DeveloperAccess.setTroopTypeCost("soldier", [("SOL", 5)])
 
         """
         add some troops to an army

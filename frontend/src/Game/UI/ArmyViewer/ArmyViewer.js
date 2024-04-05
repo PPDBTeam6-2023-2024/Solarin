@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import { TreeView, TreeItem } from '@mui/x-tree-view';
 import WindowUI from '../WindowUI/WindowUI';
+import {Button} from "@mui/material";
 
-function ArmyViewer({ armyId, onUpdatePosition }) {
+function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
 
@@ -23,7 +24,7 @@ function ArmyViewer({ armyId, onUpdatePosition }) {
     }, [armyId]);
 
     let troopsOutput = troops.map((troop, index) => (
-        <TreeItem key={index} nodeId={`${index}`} label={`${troop.size}x Troop ${troop.troop_type}`} />
+        <TreeItem key={index} nodeId={`${index}`} label={`${troop.size}x Troop ${troop.troop_type}`}/>
     ));
 
     /*displays the stats*/
@@ -38,6 +39,9 @@ function ArmyViewer({ armyId, onUpdatePosition }) {
             <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: 'auto', minWidth: '300px', height: 'auto' }}>
                 <TreeView aria-label="file system navigator">
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
+                    <Button variant="contained" onClick={createCity} sx={{margin: "10px"}}>
+                        Create City
+                    </Button>
                     <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`stats-${armyId}`} label={`Stats`}>
                         {statsOutput}
                     </TreeItem>

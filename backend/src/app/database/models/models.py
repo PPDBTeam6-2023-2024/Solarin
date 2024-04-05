@@ -120,6 +120,7 @@ class Planet(Base):
     created_at = Column(DateTime(), nullable=True, default=datetime.utcnow)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
+    armies = relationship("Army", back_populates="planet", lazy="select")
     regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')
 
 
@@ -439,10 +440,13 @@ class Army(Base):
     last_update = Column(TIME)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
+    planet = relationship("Planet", back_populates="armies", lazy='select')
+
 
     def to_army_schema(self):
         return ArmySchema(id=self.id,
                           user_id=self.user_id,
+                          planet_id=self.planet_id,
                           last_update=str(self.last_update),
                           x=self.x,
                           y=self.y)

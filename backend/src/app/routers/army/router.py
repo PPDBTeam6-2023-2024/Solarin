@@ -13,12 +13,11 @@ router = APIRouter(prefix="/army", tags=["Army"])
 
 @router.get("/armies", response_model=List[ArmySchema])
 async def get_armies(
-        userid: Annotated[int, Depends(get_my_id)],
         planet_id: int,
         db=Depends(get_db)
 ) -> List[ArmySchema]:
     data_access = DataAccess(db)
-    db_reply = await data_access.ArmyAccess.getArmies(userid, planet_id)
+    db_reply = await data_access.ArmyAccess.getArmies(planet_id)
 
     armies_schema = []
 
@@ -26,8 +25,20 @@ async def get_armies(
         for army in armies:
             temp = army.to_army_schema()
             armies_schema.append(temp)
-
     return armies_schema
+
+
+@router.get("/getarmy", response_model=ArmySchema)
+async def get_army(
+        army_id: int,
+        db=Depends(get_db)
+) -> ArmySchema:
+    data_access = DataAccess(db)
+    db_reply = await data_access.ArmyAccess.getArmyById(army_id)
+
+    army = db_reply.to_army_schema()
+
+    return army
 
 
 @router.get("/armies_outside", response_model=List[ArmySchema])

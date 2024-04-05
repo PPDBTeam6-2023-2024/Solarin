@@ -44,6 +44,10 @@ function PlanetViewer(props) {
         }
     };
 
+    useEffect(() => {
+        setCitiesLoaded(false)
+    }, [props.planetId])
+
     const [cityImages,setCityImages] = useState([]);
 
     {/*Load cities from databank, and get images*/}
@@ -51,7 +55,7 @@ function PlanetViewer(props) {
         if (!citiesLoaded) {
             fetchCities({getCities:getCities, handleCityClick:handleCityClick, setCityImages:setCityImages, setCitiesLoaded:setCitiesLoaded});
         }
-    }, [props.planetId, handleCityClick, citiesLoaded]);
+    }, [handleCityClick, citiesLoaded]);
 
     {/*handle closing of cityManager window*/}
     const [showCityManager, setShowCityManager] = useState(true);

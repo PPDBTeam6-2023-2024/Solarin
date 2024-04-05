@@ -29,7 +29,7 @@ An overview of the current DataAccess categories:
 | Category        | Purpose                                    | Extra Info                                                                                                                                           |
 |:----------------|:-------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|
 | AllianceAccess  | methods that manage alliances              |
-| ArmyAccess      | methods that manage armies                 |
+| ArmyAccess      | methods that manage armies                 | Everything related to armies can be accessed from here
 | BuildingAccess  | methods that manage buildings              | Everything with regards to a building can be managed from here, that also means all types of buildings                                               |
 | CityAccess      | methods that manage cities                 |
 | DeveloperAccess | methods that manage developer only actions | Every table whose entries are changed from this access, are meant as lookup tables. Changing these tables from another Access is highly undesirable. |

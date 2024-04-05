@@ -81,8 +81,8 @@ class ArmyAccess:
         """
         await self.__session.flush()
 
-    async def getArmies(self, userid: int, planetid: int):
-        getentry = Select(Army).where(Army.user_id==userid)
+    async def getArmies(self, planetid: int):
+        getentry = Select(Army).where(Army.planet_id==planetid)
         armies = await self.__session.execute(getentry)
         return armies
 
@@ -109,7 +109,7 @@ class ArmyAccess:
     async def getArmyById(self, army_id: int):
         getentry = Select(Army).where(Army.id==army_id)
         result = await self.__session.execute(getentry)
-        army = result.first()
+        army = result.scalars().first()
         return army
 
     async def updateArmyCoordinates(self, army_id: int, x, y):

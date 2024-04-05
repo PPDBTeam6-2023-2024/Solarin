@@ -4,7 +4,7 @@ import { TreeView, TreeItem } from '@mui/x-tree-view';
 import WindowUI from '../WindowUI/WindowUI';
 import {Button} from "@mui/material";
 
-function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
+function ArmyViewer({armyId, onCityCreated}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
 
@@ -22,6 +22,23 @@ function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
         };
         fetchTroops();
     }, [armyId]);
+
+    const createCity = async () => {
+        try {
+            // get the planetID and coordinates from the army using the armyID
+            const army = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/getarmy?army_id=${armyId}`)
+        const armyData = army.data;
+        let planet_id = armyData.planet_id
+        const cityData = {
+            x: armyData.x,
+            y: armyData.y
+        };
+            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/create_city?planet_id=${planet_id}`, cityData);
+            onCityCreated()
+        } catch (error) {
+            console.error("Failed creating city", error);
+        }
+    };
 
     let troopsOutput = troops.map((troop, index) => (
         <TreeItem key={index} nodeId={`${index}`} label={`${troop.size}x Troop ${troop.troop_type}`}/>

@@ -88,6 +88,7 @@ async def planet_socket(
                 to_x = data["to_x"]
                 to_y = data["to_y"]
 
+
                 changed, army = await data_access.ArmyAccess.change_army_direction(
                     user_id=user_id,
                     army_id=army_id,

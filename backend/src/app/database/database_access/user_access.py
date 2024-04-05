@@ -63,6 +63,19 @@ class UserAccess:
         if results is None:
             raise Exception("SQL UserAccess --> getFactionName: user_id is invalid")
         return results[0]
+    async def getUsernameUserId(self, user_id: str):
+        """
+        Get the username corresponding to given user id
+
+        :param: user_id: the user id
+        :return: the username
+        """
+        find_username = select(User.username).where(User.id == user_id)
+        results = await self.__session.execute(find_username)
+        results = results.first()
+        if results is None:
+            raise Exception("SQL UserAccess --> getUsernameUserId: no id corresponds to username")
+
 
     async def getUserIdEmail(self, email: str):
         """

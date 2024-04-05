@@ -74,7 +74,7 @@ function PlanetSVG(props) {
     };
 
     return (
-        <svg style={{width: "100vw", height: "auto"}} viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
+        <svg onClick={props.onClick} style={{width: "100vw", height: "auto"}} viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
             {renderClippedImages()}
             <path key="voronoi-total" d={voronoi.render()} stroke="black" strokeWidth={2} />
         </svg>

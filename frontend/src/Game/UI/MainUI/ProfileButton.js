@@ -3,6 +3,7 @@ import "./ProfileButton.css"
 import profile from "./../../Images/profile_images/profile_1.png"
 import {ViewModeContext, View} from "../../Context/ViewModeContext"
 import WindowUI from '../WindowUI/WindowUI';
+import { IoMdClose } from 'react-icons/io';
 
 
 const ProfileElement = (props) => {
@@ -26,6 +27,7 @@ const ProfileElement = (props) => {
 function ProfileButton() {
     const [viewMode, setViewMode] = useContext(ViewModeContext)
     const [LastViewMode, setLastViewMode] = useState(View.PlanetView)
+    const [hideWindow, setHideWindow] = useState(false)
 
     const onPressProfileButton = () => {
 
@@ -43,14 +45,12 @@ function ProfileButton() {
         }
     }
     return(
-        <WindowUI>
+        <WindowUI hideState={hideWindow} windowName="Profile Viewer">
             <ProfileElement onProfileClick={onPressProfileButton}/>
             {/*Below is the bar we have which will contain all the resources*/}
-            <div id="profile_bar" className="bottom-0 left-0 fixed"></div>
+            <div id="profile_bar" className="bottom-0 left-0 fixed"><IoMdClose className="text-lg right-0 top-0 absolute" onClick={() => setHideWindow(!hideWindow)}/></div>
         </WindowUI>
     )
-
-
 }
 
 export default ProfileButton

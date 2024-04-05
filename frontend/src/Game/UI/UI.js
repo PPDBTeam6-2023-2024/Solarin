@@ -4,6 +4,7 @@ import ProfileButton from "./MainUI/ProfileButton";
 import "./UI.css"
 import ChatIcon from "./ChatMenu/ChatIcon";
 import ResourceViewer from "./ResourceViewer/ResourceViewer";
+import HiddenWindowsViewer from "./HiddenWIndowsViewer/HIddenWIndowsViewer";
 //component that contains all the UI components
 
 const getColorString = (r, g, b, a) => {
@@ -29,6 +30,8 @@ function UI() {
             '--secundaryColor': secondaryColor,
             "--tertiaryColor": tertiaryColor}}>
 
+            {/*load hidden windows viewer */}
+            <HiddenWindowsViewer />
                 
             {/*load resource viewer*/}
             <ResourceViewer className="fixed z-20 bottom-0 right-0" title="Resources" resources={{"SOL" : {"collected": 150, "producing": 10}, "TF": {"collected": 50}}} draggable={true}/>

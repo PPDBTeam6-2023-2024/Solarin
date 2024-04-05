@@ -5,7 +5,11 @@ from src.app.database.database_access.data_access import DataAccess
 from src.app.database.models.models import *
 from sqlalchemy import inspect
 from ...src.logic.combat.ArmyCombat import *
+<<<<<<< HEAD
+from ...src.logic.combat.AttackCheck import *
+=======
 from ...src.logic.combat.ArriveCheck import *
+>>>>>>> training_branch
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):
     async with sessionmanager.session() as session:
@@ -138,8 +142,11 @@ async def insert_test_data(connection_test):
 
         a_id2 = await da.ArmyAccess.createArmy(user_id=3, planet_id=p_id, x=0, y=0)
 
+<<<<<<< HEAD
+=======
         a_id3 = await da.ArmyAccess.createArmy(user_id=1, planet_id=p_id, x=0, y=0)
 
+>>>>>>> training_branch
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))
@@ -430,7 +437,11 @@ async def test_attack_store():
         await da.ArmyAccess.attack_army(1, 2)
 
         going_to_attack = await da.ArmyAccess.will_attack(1)
+<<<<<<< HEAD
+        assert going_to_attack[0].target_id == 2
+=======
         assert going_to_attack.target_id == 2
+>>>>>>> training_branch
 
         going_to_attack = await da.ArmyAccess.will_attack(2)
         assert going_to_attack is None
@@ -448,7 +459,11 @@ async def test_attack_store():
         await da.ArmyAccess.attack_city(1, 1)
 
         going_to_attack = await da.ArmyAccess.will_attack(1)
+<<<<<<< HEAD
+        assert going_to_attack[0].target_id == 1
+=======
         assert going_to_attack.target_id == 1
+>>>>>>> training_branch
 
         """
         Cancel attack and check if properly removed
@@ -476,7 +491,11 @@ async def test_army_combat():
 
         await da.ArmyAccess.attack_army(1, 2)
 
+<<<<<<< HEAD
+        suc6 = await AttackCheck.check_attack(1, da)
+=======
         suc6 = await ArriveCheck.check_arrive(1, da)
+>>>>>>> training_branch
         assert suc6
 
         a1 = await da.ArmyAccess.getArmyById(1)
@@ -499,12 +518,18 @@ async def test_city_combat():
 
         await da.ArmyAccess.attack_city(1, 1)
 
+<<<<<<< HEAD
+        suc6 = await AttackCheck.check_attack(1, da)
+=======
         suc6 = await ArriveCheck.check_arrive(1, da)
+>>>>>>> training_branch
         assert suc6
 
         owner = await da.CityAccess.getCityController(1)
         assert owner.id == 1
 
+<<<<<<< HEAD
+=======
 
 async def test_army_merge():
     """
@@ -566,3 +591,4 @@ async def test_has_resources():
 
         has_resources = await da.ResourceAccess.has_resources(1, [("Energon", 5)])
         assert has_resources
+>>>>>>> training_branch

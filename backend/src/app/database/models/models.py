@@ -456,6 +456,7 @@ class Army(Base):
             "id": self.id,
             "departure_time": self.departure_time.isoformat(),
             "arrival_time": self.arrival_time.isoformat(),
+            "owner": self.user_id,
             "x": self.x,
             "y": self.y,
             "to_x": self.to_x,

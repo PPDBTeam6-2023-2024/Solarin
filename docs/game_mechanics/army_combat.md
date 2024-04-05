@@ -26,7 +26,12 @@ A battle is initiated when player 1 decides to attack player 2 by either directl
 The Post-Battle Recovery gives information about how many troops are reamining after an attack.
 
 We define 2 ratio's:
+<<<<<<< HEAD
+* $PBR ratio = $ \dfrac{\text{winning PBR}}{\text{losing PBR}}$
+* $strength ratio = $ \dfrac{\text{winning strength}}{\text{losing strength}}$ (This will almost always be > 1 (unless the random factor changes the outcome to much) )
+=======
 * $PBR ratio = \dfrac{\text{winning PBR}}{\text{losing PBR}}$
 * $strength ratio = \dfrac{\text{winning strength}}{\text{losing strength}}$ (This will almost always be > 1 (unless the random factor changes the outcome to much) )
+>>>>>>> training_branch
 
 $\text{armySurvival} \in \left[0,1\right] \sim N(\text{PBR ratio}\cdot\left(1-\dfrac{1}{\text{strength ratio}}\right), 0.1)$ where $\left\lfloor\text{armySurvival}\cdot\text{numOfUnits(army)}\right\rceil$ is the number of units surviving after a battle.

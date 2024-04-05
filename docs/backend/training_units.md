@@ -16,10 +16,14 @@ A queue entry contains an amount of troops, Even when de queue is not yet finish
 When trained these troops will automatically be assigned to the provided army.
 
 Units will currently be added to the lowest id army that is inside a city
+<<<<<<< HEAD
+When no army is inside the city, automatically a new army will be created
+=======
 When no army is inside the city, automatically a new army will be created.
 
 Training units will cost a certain amount of resources.
 When a user sends a request to train units, first it will be checked if the user has these amount of resources.
+>>>>>>> training_branch
 
 ## Issues
 

@@ -158,30 +158,22 @@ class ArmyAccess:
         result = await self.__session.execute(stmt)
         army: Optional[Army] = result.scalar_one_or_none()
 
-        if not army:
-            return False, None
+        x_diff = army.to_x - army.x
+        y_diff = army.to_y - army.y
 
         current_time = datetime.utcnow()
 
         total_time_diff = (army.arrival_time - army.departure_time).total_seconds()
         current_time_diff = (min(current_time, army.arrival_time) - army.departure_time).total_seconds()
 
-        x_diff = army.to_x - army.x
-        y_diff = army.to_y - army.y
+        if total_time_diff != 0:
+            army.x += x_diff * (current_time_diff / total_time_diff)
+            army.y += y_diff * (current_time_diff / total_time_diff)
 
-        if total_time_diff == 0:
-            current_x = army.x
-            current_y = army.y
-        else:
-            current_x = x_diff * (current_time_diff / total_time_diff)
-            current_y = y_diff * (current_time_diff / total_time_diff)
-
-        army.x = current_x
-        army.y = current_y
         army.to_x = to_x
         army.to_y = to_y
 
-        distance = dist((current_x, current_y), (to_x, to_y))
+        distance = dist((army.x, army.y), (army.to_x, army.to_y))
         delta = await self.get_army_time_delta(army_id, distance=distance)
 
         army.departure_time = current_time

@@ -97,8 +97,11 @@ An overview of each the tables in the database:
 | AttackOnArrive |  Data  | To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position (This table is the parent of an ISA/polymorphic relation) |
 |   AttackArmy   |  Data  | Stores which other army we might attack when our army arrives at its position  (This table is a child of an ISA/polymorphic relation with AttackArmy)                |
 |   AttackCity   |  Data  | Stores which city we might attack when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                   |
+<<<<<<< HEAD
+=======
 |   EnterCity    |  Data  | Stores which city we might enter when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                    |
 |  MergeArmies   |  Data  | SStores which army we merge with when we arrive     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                           |
+>>>>>>> training_branch
 |   ArmyInCity   |  Data  | Stores the armies that are present inside a city                                                                                                                     |
 
 </p>

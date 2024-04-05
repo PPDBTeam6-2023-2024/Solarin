@@ -17,7 +17,7 @@ const getArmies = async (planetId) => {
           transform: 'translate(-50%, -50%)',
           maxWidth: '10%',
           maxHeight: '10%',
-          zIndex: 15,
+          zIndex: 20,
           cursor: 'pointer'
         },
         onClick: () => {},

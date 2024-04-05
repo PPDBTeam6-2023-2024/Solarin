@@ -52,6 +52,16 @@ const Game = () => {
         }
     }
 
+    const changePlanetId = (planetId) => {
+        const newIndex = planetList.findIndex(planet => planet[0] === planetId);
+        if (newIndex !== -1) {
+            setPlanetListIndex(newIndex);
+        } else {
+            console.error("Planet with the given ID not found.");
+        }
+    };
+
+
     useEffect(() => {
         authenticate()
         getAllPlanets()
@@ -78,7 +88,7 @@ const Game = () => {
             }
 
             {viewMode === View.ProfileView &&
-                <ProfileViewer/>
+                <ProfileViewer changePlanetByID={changePlanetId}/>
             }
 
             </Suspense>

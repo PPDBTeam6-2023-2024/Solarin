@@ -45,7 +45,6 @@ const data = generateData(10,10);
 
 
 function PlanetViewer(props) {
-
     const [mapState, setMapState] = useState({
         scale: 1,
         translation: {x: 0, y: 0},
@@ -61,6 +60,9 @@ function PlanetViewer(props) {
             }
             return elem
         }))
+    }
+    const reloadCities = () => {
+        setCitiesLoaded(false)
     }
 
     const toggleArmyViewer = (e, armyId) => {
@@ -106,11 +108,15 @@ function PlanetViewer(props) {
         }
     };
 
+    useEffect(() => {
+        setCitiesLoaded(false)
+    }, [props.planetId])
+
     const [cityImages,setCityImages] = useState([]);
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
         const fetchCities = async () => {
-            const cities = await getCities(1);
+            const cities = await getCities(props.planetId);
 
             // replace with actual planetID
             const cityElements = cities.map(city => ({
@@ -123,7 +129,7 @@ function PlanetViewer(props) {
         if (!citiesLoaded) {
             fetchCities();
         }
-    }, [props.planetId, handleCityClick, citiesLoaded]);
+    }, [handleCityClick, citiesLoaded]);
 
     {/*handle closing of cityManager window*/}
     const [showCityManager, setShowCityManager] = useState(true);
@@ -137,7 +143,7 @@ function PlanetViewer(props) {
     const [planetListIndex, setPlanetListIndex] = props.planetListIndex;
     useEffect(() => {
         const fetchArmies = async () => {
-            const armies = await getArmies(1);
+            const armies = await getArmies(props.planetId);
             const armyElements = armies.map(army => ({
                 ...army,
                 onClick: (e) => toggleArmyViewer(e, army.id),
@@ -146,7 +152,8 @@ function PlanetViewer(props) {
         };
         fetchArmies();
 
-    }, [updateTrigger]); // get the armies again when an army has been moved
+    }, [updateTrigger, props.planetId]); // get the armies again when an army has been moved
+
 
     return (
         <>
@@ -168,7 +175,7 @@ function PlanetViewer(props) {
                         </Box>
                         </Popper>
                         <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
+                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition} onCityCreated={reloadCities}/>
                         </Popper>
                         </>
                 ))

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
-
+from fastapi.responses import JSONResponse
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
-from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, BuildingTypeSchema, Confirmation, CostSchema
+from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, CityLocationSchema, BuildingTypeSchema, Confirmation, CostSchema
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 
@@ -140,6 +140,20 @@ async def get_upgrade_cost(
         raise HTTPException(status_code=400, detail="Upgrade cost could not be retrieved.")
     return CostSchema(cost=cost[0], cost_type=cost[1], can_upgrade=cost[2])
 
+
+@router.post("/create_city")
+async def create_city(
+        user_id: Annotated[int, Depends(get_my_id)],
+        planet_id: int,
+        coordinates: CityLocationSchema,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+    city_id = None
+    city_id = await data_access.CityAccess.createCity(planet_id, user_id, coordinates.x, coordinates.y)
+    if city_id is not None:
+        return JSONResponse(content={"message": "City was created successfully", "city_id": city_id},
+                            status_code=200)
 
 @router.get("/cities_user")
 async def friend_requests(

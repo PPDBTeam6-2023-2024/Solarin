@@ -83,7 +83,9 @@ function PlanetViewer(props) {
             }
      }, []);
      const lerp = ({source_position, target_position, arrival_time, departure_time}) => {
-        const elapsedTime = Date.now() - departure_time
+        var d  = new Date()
+        d.setHours(d.getHours()-2)
+        const elapsedTime = d - departure_time
         const totalTime = arrival_time - departure_time
         const percentComplete = (elapsedTime < totalTime) ? elapsedTime / totalTime : 1;
         const currentX = source_position.x + (target_position.x - source_position.x) * percentComplete
@@ -92,8 +94,10 @@ function PlanetViewer(props) {
      }
      const handleGetArmies = (data) => {
         return data.map(army => {
+            const arrival_time = new Date(army.arrival_time).getTime()
+            const departure_time = new Date(army.departure_time).getTime()
             const current_pos = lerp({source_position: {x: army.x, y: army.y}, target_position: {x: army.to_x, y: army.to_y}, 
-                arrival_time: army.arrival_time, departure_time: army.departure_time})
+                arrival_time: arrival_time, departure_time: departure_time})
             return {
             id: army.id,
             x: army.x,
@@ -101,8 +105,8 @@ function PlanetViewer(props) {
             to_x: army.to_x,
             to_y: army.to_y,
             owner: army.owner,
-            arrival_time: new Date(army.arrival_time).getTime(),
-            departure_time: new Date(army.departure_time).getTime(),
+            arrival_time: arrival_time,
+            departure_time: departure_time,
             src: army_example,
             style: {
               position: 'absolute',

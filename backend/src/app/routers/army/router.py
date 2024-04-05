@@ -28,6 +28,19 @@ async def get_armies(
     return armies_schema
 
 
+@router.get("/getarmy", response_model=ArmySchema)
+async def get_army(
+        army_id: int,
+        db=Depends(get_db)
+) -> ArmySchema:
+    data_access = DataAccess(db)
+    db_reply = await data_access.ArmyAccess.getArmyById(army_id)
+
+    army = db_reply.to_army_schema()
+
+    return army
+
+
 @router.get("/troops")
 async def get_troops(armyid: int, db=Depends(get_db)):
     data_access = DataAccess(db)

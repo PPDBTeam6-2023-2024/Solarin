@@ -61,6 +61,9 @@ function PlanetViewer(props) {
             return elem
         }))
     }
+    const reloadCities = () => {
+        setCitiesLoaded(false)
+    }
 
     const toggleArmyViewer = (e, armyId) => {
         const overlayRect = e.target.getBoundingClientRect();
@@ -172,7 +175,7 @@ function PlanetViewer(props) {
                         </Box>
                         </Popper>
                         <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition}/>
+                            <ArmyViewer armyId={id} onUpdatePosition={updateArmyPosition} onCityCreated={reloadCities}/>
                         </Popper>
                         </>
                 ))

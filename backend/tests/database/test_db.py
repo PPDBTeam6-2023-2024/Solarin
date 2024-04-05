@@ -138,6 +138,8 @@ async def insert_test_data(connection_test):
 
         a_id2 = await da.ArmyAccess.createArmy(user_id=3, planet_id=p_id, x=0, y=0)
 
+        a_id3 = await da.ArmyAccess.createArmy(user_id=1, planet_id=p_id, x=0, y=0)
+
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))
@@ -502,6 +504,52 @@ async def test_city_combat():
 
         owner = await da.CityAccess.getCityController(1)
         assert owner.id == 1
+
+
+async def test_army_merge():
+    """
+    Test combat between 2 armies
+    """
+
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        a1 = await da.ArmyAccess.getArmyById(1)
+        a2 = await da.ArmyAccess.getArmyById(3)
+
+        assert a1 is not None
+        assert a2 is not None
+
+        await da.ArmyAccess.add_merge_armies(1, 3)
+
+        suc6 = await ArriveCheck.check_arrive(1, da)
+        assert suc6
+
+        a1 = await da.ArmyAccess.getArmyById(1)
+        a2 = await da.ArmyAccess.getArmyById(3)
+
+        assert a1 is None
+        assert a2 is not None
+
+
+async def test_army_enter_city():
+    """
+    Test combat between 2 armies
+    """
+
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        armies = await da.ArmyAccess.get_army_in_city(2)
+        assert armies == []
+
+        await da.ArmyAccess.add_enter_city(1, 2)
+
+        suc6 = await ArriveCheck.check_arrive(1, da)
+        assert suc6
+
+        armies = await da.ArmyAccess.get_army_in_city(2)
+        assert armies == [1]
 
 
 async def test_has_resources():

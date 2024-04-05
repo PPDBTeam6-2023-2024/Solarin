@@ -41,6 +41,28 @@ async def get_army(
     return army
 
 
+@router.get("/armies_outside", response_model=List[ArmySchema])
+async def get_armies(
+        userid: Annotated[int, Depends(get_my_id)],
+        planet_id: int,
+        db=Depends(get_db)
+) -> List[ArmySchema]:
+    """
+    Tet the armies that are not inside a city
+
+    """
+    data_access = DataAccess(db)
+    armies = await data_access.ArmyAccess.getArmies(userid, planet_id)
+
+    armies_schema = []
+
+    for army in armies:
+        temp = army[0].to_army_schema()
+        armies_schema.append(temp)
+
+    return armies_schema
+
+
 @router.get("/troops")
 async def get_troops(armyid: int, db=Depends(get_db)):
     data_access = DataAccess(db)
@@ -96,15 +118,18 @@ async def armies_user(
     return armies_schemas
 
 
-@router.get("/enter_city/{army_id}/{city_id}")
-async def enter_city(
+@router.post("/leave_city/{army_id}")
+async def update_army_coordinates(
+        userid: Annotated[int, Depends(get_my_id)],
         army_id: int,
-        city_id: int,
-        user_id: Annotated[int, Depends(get_my_id)],
-        db: AsyncSession = Depends(get_db)
-
+        db=Depends(get_db)
 ):
-    """
-    Let an army enter the city on arrival
-    """
+    data_access = DataAccess(db)
 
+    # Fetch current coordinates and speed of the army
+    owner = await data_access.ArmyAccess.get_army_owner(army_id)
+    if owner.id != userid:
+        return {"success": False, "message": "user is not the owner of this army"}
+
+    await data_access.ArmyAccess.leave_city(army_id)
+    return {"success": True, "message": "User has left the city"}

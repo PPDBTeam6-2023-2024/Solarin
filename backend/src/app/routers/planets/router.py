@@ -33,14 +33,15 @@ async def check_army_combat(army: int, delay, da: DataAccess, connection_pool):
     """
     This function will wait some time before checking army combat
     """
-
-    await asyncio.sleep(delay+2)  # safety wait a 2 seconds
-    await AttackCheck.check_arrive(army, da)
+    delay = max(0, delay)
+    await asyncio.sleep(delay+1)  # safety wait a 1 seconds
+    await ArriveCheck.check_arrive(army, da)
 
     """
     On reload frontend needs to reload its cities and armies on the map
     """
-    connection_pool.broadcast({"request_type": "reload"})
+    await connection_pool.broadcast({"request_type": "reload"})
+
 
 @router.websocket("/ws/{planet_id}")
 async def planet_socket(
@@ -68,7 +69,6 @@ async def planet_socket(
         for pending_attack in pending_attacks:
             asyncio.create_task(check_army_combat(pending_attack[0], pending_attack[1] - datetime.datetime.utcnow(),
                                                   data_access, connection_pool))
-
 
     """
     Start the websocket loop
@@ -98,17 +98,21 @@ async def planet_socket(
                 """
                 Here we will check if some attack target message is added, If so we will set the attack target
                 """
-                if data.get("attack", False):
-                    if data["target_type"] == "city":
+                if data.get("on_arrive", False):
+                    if data["target_type"] == "attack_city":
                         await data_access.ArmyAccess.attack_city(army_id, data["target_id"])
-                    elif data["target_type"] == "army":
+                    elif data["target_type"] == "attack_army":
                         await data_access.ArmyAccess.attack_army(army_id, data["target_id"])
+                    elif data["target_type"] == "merge":
+                        await data_access.ArmyAccess.add_merge_armies(army_id, data["target_id"])
+                    elif data["target_type"] == "enter":
+                        await data_access.ArmyAccess.add_enter_city(army_id, data["target_id"])
 
                     """
                     When we add an attack we need to setup an async check
                     """
-                    asyncio.create_task(check_army_combat(army_id, army.arrival_time-datetime.datetime.utcnow(),
-                                                          data_access, websocket))
+                    asyncio.create_task(check_army_combat(army_id, (army.arrival_time-datetime.datetime.utcnow()).total_seconds(),
+                                                          data_access, connection_pool))
 
                 if changed:
                     await connection_pool.broadcast({

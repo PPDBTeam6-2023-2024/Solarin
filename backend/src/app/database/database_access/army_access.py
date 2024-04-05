@@ -6,6 +6,7 @@ from ..models.models import *
 from ..database import AsyncSession
 from .city_access import CityAccess
 
+
 class ArmyAccess:
     """
     This class will manage the sql access for data related to information of armies
@@ -85,6 +86,21 @@ class ArmyAccess:
         armies = await self.__session.execute(getentry)
         return armies
 
+    async def getArmiesOutside(self, userid: int, planetid: int):
+        """
+        The get armies method but without displaying armies that are inside a city.
+        """
+        getentry = Select(Army).where(Army.user_id==userid)
+        armies = await self.__session.execute(getentry)
+        armies = armies.all()
+
+        get_entry_in_city = Select(Army).join(EnterCity, EnterCity.army_id == Army.id)
+        city_armies = await self.__session.execute(get_entry_in_city)
+        city_armies = city_armies.all()
+
+        return list(set(armies)-set(city_armies))
+
+
     async def getTroops(self, armyid: int):
         getentry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==armyid)
         troops = await self.__session.execute(getentry)
@@ -153,8 +169,12 @@ class ArmyAccess:
         x_diff = army.to_x - army.x
         y_diff = army.to_y - army.y
 
-        current_x = x_diff * (current_time_diff / total_time_diff)
-        current_y = y_diff * (current_time_diff / total_time_diff)
+        if total_time_diff == 0:
+            current_x = army.x
+            current_y = army.y
+        else:
+            current_x = x_diff * (current_time_diff / total_time_diff)
+            current_y = y_diff * (current_time_diff / total_time_diff)
 
         army.x = current_x
         army.y = current_y
@@ -209,7 +229,7 @@ class ArmyAccess:
         """
         Check if users are not in the same alliance
         """
-        if results[0][0].alliance == results[1][0].alliance:
+        if results[0][0].alliance == results[1][0].alliance and results[0][0].alliance is not None:
             raise Exception("You cannot attack your allies")
         attack_object = AttackArmy(army_id=attack_id, target_id=target_id)
         self.__session.add(attack_object)
@@ -414,3 +434,57 @@ class ArmyAccess:
         Remove original army
         """
         await self.remove_army(from_army_id)
+
+    async def add_merge_armies(self, army_id: int, target_id: int):
+        """
+        This function will make sure the database keeps in mind that an army has the intention to merge with another
+        army when it arrives at its position
+
+        param: army_id: the id of the army that is planning to attack
+        param: target_id: the id of the army that will be attacked
+        """
+
+        army_owner = Select(User).join(Army, Army.user_id == User.id).where((Army.id == army_id) | (Army.id == target_id))
+        results = await self.__session.execute(army_owner)
+        results = results.all()
+        if len(results) != 2:
+            raise Exception("One of the provided armies does not exist")
+        """
+        Check a user doesn't attack himself
+        """
+        if results[0][0].id != results[1][0].id:
+            raise Exception("You cannot merge with another user their army")
+
+        merge_object = MergeArmies(army_id=army_id, target_id=target_id)
+        self.__session.add(merge_object)
+        await self.__session.flush()
+
+    async def add_enter_city(self, army_id: int, target_id: int):
+        """
+        This function will make sure the database keeps in mind that an army has the intention to enter a city
+        when it arrives at its position
+
+        param: army_id: the id of the army that is planning to attack
+        param: target_id: the id of the city that will be attacked
+        """
+
+        """
+        Check a user doesn't attack himself
+        """
+        city_owner = await CityAccess(self.__session).getCityController(target_id)
+        if army_id != city_owner.id:
+            raise Exception("You enter someone else their city")
+
+        enter_object = EnterCity(army_id=army_id, target_id=target_id)
+        self.__session.add(enter_object)
+        await self.__session.flush()
+
+    async def leave_city(self, army_id: int):
+        """
+        Let an army leave the city
+
+        param: army_id: the id of the army that is planning to leave the city
+        """
+
+        d = delete(ArmyInCity).where(ArmyInCity.army_id == army_id)
+        await self.__session.execute(d)

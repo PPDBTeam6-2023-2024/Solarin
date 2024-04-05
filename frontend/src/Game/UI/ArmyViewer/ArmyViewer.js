@@ -20,7 +20,7 @@ function ArmyViewer({armyId, onCityCreated}) {
                 console.error("Failed to fetch troops", error);
             }
         };
-        fetchTroops();
+        fetchTroops(); 
     }, [armyId]);
 
     const createCity = async () => {

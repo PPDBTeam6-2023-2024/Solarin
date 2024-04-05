@@ -12,7 +12,7 @@ import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
-import { toggleArmyDetails, toggleArmyViewer } from './Helper/ArmyHelper';
+import { toggleArmyDetails, toggleArmyViewer } from './Helper/ArmyViewerHelper';
 import { fetchCities } from './Helper/CityHelper';
 
 import { IoMdClose } from "react-icons/io";
@@ -112,7 +112,8 @@ function PlanetViewer(props) {
               maxWidth: '10%',
               maxHeight: '10%',
               zIndex: 15,
-              cursor: 'pointer'
+              cursor: 'pointer',
+              transition: "all ease-linear",
             },
             }
             });
@@ -174,8 +175,8 @@ function PlanetViewer(props) {
             await socket.send(JSON.stringify(
                 {
                         type: "change_direction",
-                        to_x: e.pageX/1920,
-                        to_y: e.pageY/1080,
+                        to_x: e.pageX/e.target.getBoundingClientRect().width,
+                        to_y: e.pageY/e.target.getBoundingClientRect().height,
                         army_id: armyId
                 }))
             toggleMoveMode(armyId)

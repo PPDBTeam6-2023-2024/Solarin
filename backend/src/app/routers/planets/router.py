@@ -36,7 +36,6 @@ async def check_army_combat(army: int, delay, da: DataAccess, connection_pool):
     delay = max(0, delay)
     await asyncio.sleep(delay+1)  # safety wait a 1 seconds
     await ArriveCheck.check_arrive(army, da)
-
     """
     On reload frontend needs to reload its cities and armies on the map
     """

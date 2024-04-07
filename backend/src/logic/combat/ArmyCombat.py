@@ -17,7 +17,6 @@ class ArmyCombat:
         army_stats_2 = await da.ArmyAccess.get_army_stats(army_2)
 
         winner_index, strength_ratio, pbr_ratio = PropertyUtility.getBattleOutcome(army_stats_1, army_stats_2)
-
         army_tup = (army_1, army_2)
 
         winner = army_tup[winner_index]

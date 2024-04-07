@@ -310,12 +310,12 @@ function PlanetViewer(props) {
                      <PlanetSVG planetId={props.planetId}/>
 
                     {armyImages.map((army, index) => (
-                        <ArmyMapEntry key={index} army={army} onClick={(e) => {toggleArmyViewer(e, army, setActiveArmyViewers);}}/>
+                        <ArmyMapEntry key={index} army={army} onClick={(e) => {if (armiesMoveMode.length === 0){toggleArmyViewer(e, army, setActiveArmyViewers);}}}/>
                     ))}
 
                     {/*Display cities on the map*/}
                     {showCities && cityImages.map((city, index) => (
-                        <CityMapEntry key={index} city={city}/>
+                        <CityMapEntry key={index} city={city} onClick={()=>{if (armiesMoveMode.length === 0){city.onClick();}}}/>
                     ))}
                 </div>
 

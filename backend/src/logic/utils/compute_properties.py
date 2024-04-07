@@ -101,7 +101,6 @@ class PropertyUtility:
         strength is mean*median, thinks makes a well bal
         """
         strength = mean(army_stats.values())
-
         return strength
 
     @staticmethod
@@ -148,5 +147,5 @@ class PropertyUtility:
         When You are better than the enemy those ratios will each be > 1
         """
 
-        survival: float = PropertyUtility.getTruncNormSample(min(pbr_ratio*(1 - 1/strength_ratio), 1), 0.1, (0, 1))
+        survival: float = PropertyUtility.getTruncNormSample(min(pbr_ratio*(1 - 1/strength_ratio), 1.06), 0.1, (0, 1))
         return round(survival*number_of_units)

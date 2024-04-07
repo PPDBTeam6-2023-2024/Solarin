@@ -66,8 +66,9 @@ async def planet_socket(
         """
 
         pending_attacks = await data_access.ArmyAccess.get_pending_attacks(planet_id)
+
         for pending_attack in pending_attacks:
-            asyncio.create_task(check_army_combat(pending_attack[0], pending_attack[1] - datetime.datetime.utcnow(),
+            asyncio.create_task(check_army_combat(pending_attack[0], (pending_attack[1] - datetime.datetime.utcnow()).total_seconds(),
                                                   data_access, connection_pool))
 
     """
@@ -80,7 +81,7 @@ async def planet_socket(
                 armies = await data_access.ArmyAccess.get_armies_on_planet(planet_id=planet_id)
                 data = {
                     "request_type": data["type"],
-                    "data": [army.to_dict() for army in armies]
+                    "data": [army[0].to_dict() for army in armies]
                 }
                 await connection_pool.send_personal_message(websocket, data)
             elif data["type"] == "change_direction":

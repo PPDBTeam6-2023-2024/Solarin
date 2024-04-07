@@ -17,7 +17,7 @@ async def get_armies(
         db=Depends(get_db)
 ) -> List[ArmySchema]:
     data_access = DataAccess(db)
-    db_reply = await data_access.ArmyAccess.getArmies(planet_id)
+    db_reply = await data_access.ArmyAccess.getArmiesOutside(planet_id)
 
     armies_schema = []
 

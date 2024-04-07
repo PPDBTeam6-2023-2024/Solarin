@@ -41,10 +41,10 @@ class CityAccess:
         :param: city_id: id of the city
         :return: the id of the user who is currently in control of the city
         """
+
         get_user = Select(User).join(City, City.controlled_by == User.id).where(city_id == City.id)
 
         results = await self.__session.execute(get_user)
-
         return results.first()[0]
 
     async def getCitiesByController(self, user_id: int):

@@ -18,6 +18,9 @@ import { fetchCities } from './Helper/CityHelper';
 import { IoMdClose } from "react-icons/io";
 
 import army_example from "../Images/troop_images/Soldier.png"
+import ArmyMapEntry from "./ArmyMapEntry";
+import CityMapEntry from "./CityMapEntry";
+import {string} from "three/examples/jsm/nodes/shadernode/ShaderNode";
 
 function PlanetViewer(props) {
     const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
@@ -85,6 +88,7 @@ function PlanetViewer(props) {
                         type: "get_armies",
                 }))
             }
+
      }, []);
      const lerp = ({source_position, target_position, arrival_time, departure_time}) => {
         var d  = new Date()
@@ -166,6 +170,20 @@ function PlanetViewer(props) {
                     const newArmies = handleChangeDirection(response.data)
                     setArmyImages(newArmies)
                     break
+                case "reload":
+                    /*
+                    This event just indicates that frontend needs to reload both armies and cities,
+                    to be consistent with the backend
+                    * */
+                    fetchCities({getCities:getCities, handleCityClick:handleCityClick, setCityImages:setCityImages, setCitiesLoaded:setCitiesLoaded});
+                    socket.send(
+                        JSON.stringify(
+                            {
+                                    type: "get_armies",
+                            })
+                    )
+
+                    break
             }
         }
     }, [socket, armyImages])
@@ -178,15 +196,50 @@ function PlanetViewer(props) {
         if (!isMoveMode(armyId)) setArmiesMoveMode(prev => [...prev, armyId])
         else setArmiesMoveMode(armiesMoveMode.filter((id) => armyId !== id))
     }
+
+    {/*For calculating the position we need to know the size of the map on the client, to calculate the position in range[0, 1]*/}
+    const screenSize = useRef();
+
     const mapOnClick = (e) => {
+
+        let action_json = {}
+
+        const image_type = e.target.getAttribute("image_type")
+        if (image_type !== null){
+            const clickedArmy = image_type === "army";
+            const clickedCity = image_type === "city";
+
+            const index = parseInt(e.target.getAttribute("index"));
+            const is_owner = Boolean(parseInt(e.target.getAttribute("is_owner")));
+
+
+            let target = ""
+
+            if (clickedCity && !is_owner){
+
+                target = "attack_city"
+            }
+
+            action_json = {
+                on_arrive: true,
+                target_type: target,
+                target_id: index
+
+            }
+        }
+
+        
         armiesMoveMode.forEach(async(armyId) => {
-            await socket.send(JSON.stringify(
-                {
+            const data_json  = {
                         type: "change_direction",
-                        to_x: e.pageX/e.target.getBoundingClientRect().width,
-                        to_y: e.pageY/e.target.getBoundingClientRect().height,
+                        to_x: e.pageX/screenSize.current?.clientWidth,
+                        to_y: e.pageY/screenSize.current?.clientHeight,
                         army_id: armyId
-                }))
+                };
+
+            const merged_data = Object.assign({}, data_json, action_json);
+
+            await socket.send(JSON.stringify(merged_data));
             toggleMoveMode(armyId)
         })
     }
@@ -242,19 +295,20 @@ function PlanetViewer(props) {
                     yMax: 0,
                 }}
             >
-                
-                {/*Display planet on the map*/}
-                 <PlanetSVG planetId={props.planetId} onClick={mapOnClick}/>
+                <div ref={screenSize} style={{"width": "100%", "height": "100%"}} onClick={mapOnClick}>
+                    {/*Display planet on the map*/}
+                     <PlanetSVG planetId={props.planetId}/>
 
-                {armyImages.map((army, index) => (
-                    <img key={index} src={army.src} alt="army" className="transition-all ease-linear" style={{...army.style, left: `${army.curr_x * 100}%`, top: `${army.curr_y * 100}%`}} 
-                         onClick={(e) => toggleArmyViewer(e, army, setActiveArmyViewers)}/>
-                ))}
-
-                {/*Display cities on the map*/}
-                    {showCities && cityImages.map((city, index) => (
-                      <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
+                    {armyImages.map((army, index) => (
+                        <ArmyMapEntry index={index} key={index} army={army} onClick={(e) => {toggleArmyViewer(e, army, setActiveArmyViewers);}}/>
                     ))}
+
+                    {/*Display cities on the map*/}
+                    {showCities && cityImages.map((city, index) => (
+                        <CityMapEntry index={index} key={index} city={city}/>
+                    ))}
+                </div>
+
 
             </MapInteractionCSS>
 

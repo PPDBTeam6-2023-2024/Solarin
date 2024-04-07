@@ -212,12 +212,22 @@ function PlanetViewer(props) {
             const index = parseInt(e.target.getAttribute("index"));
             const is_owner = Boolean(parseInt(e.target.getAttribute("is_owner")));
 
-
+            /*Decide which target action to do*/
             let target = ""
 
-            if (clickedCity && !is_owner){
+            if (clickedCity){
+                if (!is_owner){
+                    target = "attack_city"
+                }else{
+                    target = "enter"
+                }
 
-                target = "attack_city"
+            }else if (clickedArmy){
+                if (!is_owner){
+                    target = "attack_army"
+                }else{
+                    target = "merge"
+                }
             }
 
             action_json = {
@@ -300,12 +310,12 @@ function PlanetViewer(props) {
                      <PlanetSVG planetId={props.planetId}/>
 
                     {armyImages.map((army, index) => (
-                        <ArmyMapEntry index={index} key={index} army={army} onClick={(e) => {toggleArmyViewer(e, army, setActiveArmyViewers);}}/>
+                        <ArmyMapEntry key={index} army={army} onClick={(e) => {toggleArmyViewer(e, army, setActiveArmyViewers);}}/>
                     ))}
 
                     {/*Display cities on the map*/}
                     {showCities && cityImages.map((city, index) => (
-                        <CityMapEntry index={index} key={index} city={city}/>
+                        <CityMapEntry key={index} city={city}/>
                     ))}
                 </div>
 

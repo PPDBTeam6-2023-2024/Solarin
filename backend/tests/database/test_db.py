@@ -503,3 +503,8 @@ async def test_city_combat():
         owner = await da.CityAccess.getCityController(1)
         assert owner.id == 1
 
+        army = await da.ArmyAccess.getArmyById(1)
+        troops = await da.ArmyAccess.getTroops(1)
+
+        assert army is not None
+        assert len(troops) > 0

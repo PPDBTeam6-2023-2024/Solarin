@@ -36,5 +36,7 @@ $\text{armySurvival} \in \left[0,1\right] \sim N(\text{PBR ratio}\cdot\left(1-\d
 ## Army movement
 Armies can move between 2 positions, but it will take some time. The time needed will depend on the speed of an army
 The formula we use for calculating the duration is as follows:
+
 $ map_cross_time = \dfrac{1000}{army speed}\cdot 3600$ (The 3600, just makes sure we have hours)
+
 $ duration =  map_cross_time\cdot distance$

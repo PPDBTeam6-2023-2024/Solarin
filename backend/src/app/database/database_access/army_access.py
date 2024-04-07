@@ -197,7 +197,7 @@ class ArmyAccess:
         army.to_y = to_y
 
         distance = dist((army.x, army.y), (army.to_x, army.to_y))
-        delta = await self.get_army_time_delta(army_id, distance=distance, developer_speed=10)
+        delta = await self.get_army_time_delta(army_id, distance=distance)
 
         army.departure_time = current_time
         army.arrival_time = current_time + delta

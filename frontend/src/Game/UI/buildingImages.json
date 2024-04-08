@@ -1,0 +1,23 @@
+{
+  "barracks": {
+    "icon": "Barracks.png"
+  },
+  "cloning chamber": {
+    "icon": "Cloning-Chamber.png"
+  },
+  "extractor": {
+    "icon": "Extractor.png"
+  },
+  "farmpod": {
+    "icon": "Farmpod.png"
+  },
+  "generator": {
+    "icon": "Generator.png"
+  },
+  "nexus": {
+    "icon": "Nexus.png"
+  },
+  "space-dock": {
+      "icon": "Space-Docks.png"
+  }
+}

@@ -54,9 +54,9 @@ const UpgradeButtonComponent = ({ data, cityId, resources }) => {
 
 
     // Set upgrade cost to loading while fetching/if undefined
-    const buttonText = upgradeCost === null ? 'Loading...' : `${upgradeCost.cost} ${upgradeCost.cost_type}`;
+    const buttonText = upgradeCost === null ? 'Loading...' : `Upgrade: ${upgradeCost.cost} ${upgradeCost.cost_type}`;
     // Determine button style based upgrade cost
-    const buttonStyle = upgradeCost && upgradeCost.can_upgrade ? "build-button" : "build-button disabled";
+    const buttonStyle = upgradeCost && upgradeCost.can_upgrade ? "wide-button" : "wide-button disabled";
 
     return (
         <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id)} disabled={!(upgradeCost && resources >= upgradeCost.cost)}>
@@ -66,10 +66,13 @@ const UpgradeButtonComponent = ({ data, cityId, resources }) => {
 };
 
 
+
 const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources }) => {
+    const [selectedBuilding, setSelectedBuilding] = useState(null);
+
     const upgradeButtonRenderer = useMemo(() => {
         return params => <UpgradeButtonComponent data={params.data} cityId={cityId} resources={resources} />;
-    }, [cityId, resources]);  // Add resources as a dependency
+    }, [cityId, resources]);
 
     const resourceButtonRenderer = useMemo(() => {
         return params => <ResourceButtonComponent data={params.data} cityId={cityId} />;
@@ -83,10 +86,6 @@ const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick
             headerName: "",
             field: "id",
             cellRenderer: resourceButtonRenderer,
-        },{
-            headerName: "Upgrade",
-            field: "id",
-            cellRenderer: upgradeButtonRenderer,
         },
     ], [cityId]);
 
@@ -106,7 +105,10 @@ const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick
                     domLayout='normal'
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
-                    onCellMouseOver={onRowMouseOver}
+                    onCellMouseOver={event => {
+                        setSelectedBuilding(event.data);
+                        onRowMouseOver(event);
+                    }}
                     onCellClicked={(event) => { setSelectedClick(event.data.index); }}
                     onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
@@ -119,12 +121,17 @@ const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick
                     }}
                 />
             </div>
-
             {selectedImage && selectedClick[0] === -1 &&
-                <div className="building_image">
-                    <img src={selectedImage} alt="Building" className="selected-image" />
-                </div>
-            }
+            <div className="right-screen">
+                    <div className="building_image">
+                        <img src={selectedImage} alt="Building" className="selected-image"/>
+                    </div>
+
+                {selectedBuilding &&
+                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} />
+                }
+            </div>
+                }
         </>
     );
 };

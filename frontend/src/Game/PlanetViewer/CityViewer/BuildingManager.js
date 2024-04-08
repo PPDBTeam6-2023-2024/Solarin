@@ -1,16 +1,12 @@
 // BuildingManager.js
 import axios from "axios";
-import barracks from "../../Images/building_images/Barracks.png";
-import mine from "../../Images/building_images/Mine.png";
-import factory from "../../Images/building_images/Factory.png";
-import shipyard from "../../Images/building_images/Shipyard.png";
-
+import Records from "./../../UI/buildingImages.json"
+import buildingJSON from "../../UI/buildingImages.json";
 
 export const getBuildings = async (cityId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/buildings?city_id=${cityId}`);
-        console.log('Response data:', response.data);
         if (response.status === 200 && Array.isArray(response.data)) {
             return response.data;
         }
@@ -83,7 +79,6 @@ export const collectResources = async (cityId, buildingId) => {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/collect?city_id=${cityId}&building_id=${buildingId}`);
         if (response.status === 200) {
-            console.log(response.data);
             return response.data;
         }
     } catch (error) {
@@ -97,7 +92,6 @@ export const upgradeBuilding = async (cityId, buildingId) => {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/upgrade_building?city_id=${cityId}&building_id=${buildingId}`);
         if (response.status === 200) {
-            console.log(response.data);
             return response.data;
         }
     } catch (error) {
@@ -112,6 +106,19 @@ export const getUpgradeCost = async (buildingId) => {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_upgrade_cost?building_id=${buildingId}`);
         if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error) {
+        console.error('Error retrieving upgrade cost:', error);
+        return null;
+    }
+};
+
+export const GetArmyInCity = async (cityId) => {
+    try {
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies_in_city?city_id=${cityId}`);
+        if (response.status === 200) {
             console.log(response.data);
             return response.data;
         }
@@ -122,17 +129,11 @@ export const getUpgradeCost = async (buildingId) => {
 };
 
 
+
 export const getImageForBuildingType = (buildingType) => {
-    switch (buildingType) {
-        case 'barracks':
-            return barracks;
-        case 'The mines of moria':
-            return mine;
-        case 'Solarin mansion':
-            return factory;
-        case 'space-dock':
-            return shipyard;
-        default:
-            return barracks;
+    if (Records && Records[buildingType]) {
+        return `${process.env.PUBLIC_URL}/Images/building_images/${Records[buildingType].icon}`;
     }
-};
+    return null;
+}
+

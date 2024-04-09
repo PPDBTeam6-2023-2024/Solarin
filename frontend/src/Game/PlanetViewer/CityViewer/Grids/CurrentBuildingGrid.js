@@ -64,9 +64,9 @@ const UpgradeButtonComponent = ({data, cityId, resources, upgradeCost}) => {
 
 
     // Set upgrade cost to loading while fetching/if undefined
-    const buttonText = upgradeCost === null ? 'Loading...' : `Upgrade: ${upgradeCost.cost} ${upgradeCost.cost_type}`;
+    const buttonText = upgradeCost[data.id] === null ? 'Loading...' : `Upgrade: ${upgradeCost[data.id].cost} ${upgradeCost[data.id].cost_type}`;
     // Determine button style based upgrade cost
-    const buttonStyle = upgradeCost && upgradeCost.can_upgrade ? "wide-button" : "wide-button disabled";
+    const buttonStyle = upgradeCost[data.id] && upgradeCost[data.id].can_upgrade ? "wide-button" : "wide-button disabled";
 
     return (
         <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id)}>
@@ -135,7 +135,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     <ResourceButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap[selectedBuilding.id]} />
                 }
                 {selectedBuilding &&
-                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap[selectedBuilding.id]} />
+                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap} />
                 }
             </div>
             }

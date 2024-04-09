@@ -338,7 +338,7 @@ class StoresResources(Base):
     """
     __tablename__ = 'storesResources'
     building_id = Column(Integer, ForeignKey('buildingInstance.id', deferrable=True, initially='DEFERRED'), primary_key=True)
-    resource_type = Column(String, ForeignKey('resourceType.name', deferrable=True, initially='DEFERRED'))
+    resource_type = Column(String, ForeignKey('resourceType.name', deferrable=True, initially='DEFERRED'), primary_key=True)
     amount = Column(Integer, nullable=False, default=0)
 
 

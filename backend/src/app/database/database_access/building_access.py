@@ -236,38 +236,25 @@ class BuildingAccess:
         return True
 
     async def collectResources(self, building_id: int, user_id: int):
+        # Retrieve all resource amounts from StoresResources for the building
+        current_amounts_query = select(StoresResources).where(StoresResources.building_id == building_id)
+        results = await self.__session.execute(current_amounts_query)
+        resources = results.scalars().all()
 
-        # First, retrieve the current resource amount from StoresResources for the building
-        current_amount_query = select(StoresResources.amount).where(StoresResources.building_id == building_id)
-        result = await self.__session.execute(current_amount_query)
-        current_amount = result.scalar_one_or_none()
+        # Iterate over each resource and update HasResources
+        for resource in resources:
 
-        print("building_id :", building_id)
-        print("user_id :", user_id)
-        print("current_amount before update :", current_amount)
 
-        # If there is a current amount, update HasResources with this amount
-        if current_amount is not None:
-            print("current_amount:", current_amount)
-            print(current_amount)
-            update_has_resources = (
-                update(HasResources)
-                .where(StoresResources.building_id == building_id, HasResources.owner_id == user_id)
-                .values(quantity=HasResources.quantity + current_amount)
-            )
-            await self.__session.execute(update_has_resources)
-        if current_amount is None:
-            print("current_amount:", current_amount)
-            new_resource = StoresResources(building_id=building_id, user_id=user_id, resource_amount=0)
-            await self.__session.add(new_resource)
+            # Update HasResources with the current amount for each resource type
+            if resource.amount is not None:
+                update_has_resources = (
+                    update(HasResources)
+                    .where(HasResources.owner_id == user_id, HasResources.resource_type == resource.resource_type)
+                    .values(quantity=HasResources.quantity + resource.amount)
+                )
+                await self.__session.execute(update_has_resources)
 
-        current_amount_query = select(StoresResources.amount).where(StoresResources.building_id == building_id)
-        result = await self.__session.execute(current_amount_query)
-
-        current_amount = result.scalar_one_or_none()
-        print("current_amount after update :", current_amount)
-
-        # Then, set the StoresResources amount to zero for the building
+        # Then, set the StoresResources amount to zero for all entries of the building
         reset_stores_resources = (
             update(StoresResources)
             .where(StoresResources.building_id == building_id)

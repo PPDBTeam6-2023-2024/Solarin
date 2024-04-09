@@ -8,30 +8,49 @@ import {
     getResources
 } from "../BuildingManager";
 import './NewBuildingGrid.css';
+import TrainingViewer from "../../../UI/TrainingUnits/TrainingViewer";
+
 
 const ResourceButtonComponent = ({ data, cityId }) => {
-    const buttonStyle = "build-button";
+    const buttonStyle = "wide-button";
 
     const collectResourcesHelper = async (cityId, buildingId) => {
-        console.log("collecting resources 1")
+        console.log("Attempting to collect resources from building ID:", buildingId);
         try {
-            await collectResources(cityId, buildingId);
+            const response = await collectResources(cityId, buildingId);
+            console.log("Resources collected successfully:", response);
+            // Optionally, you can do something with the response here, like updating the state or UI
         } catch (error) {
             console.error("Failed to collect resources:", error);
         }
     };
-
     if (data.type === "productionBuilding") {
         return (
             <button className={buttonStyle} onClick={() => collectResourcesHelper(cityId, data.id)}>
-                Collect resources
+                Collect Resources
             </button>
         );
     }
     return null;
 };
 
-const UpgradeButtonComponent = ({ data, cityId, resources, upgradeCost }) => {
+const TrainButtonComponent = ({ data, setSelectedClick }) => {
+    return (
+        <button
+            className="wide-button"
+            onClick={(event) => {
+                event.stopPropagation();
+                setSelectedClick([data.id, "Barracks"]);
+            }}
+        >
+            Train Troops
+        </button>
+    );
+};
+
+
+
+const UpgradeButtonComponent = ({data, cityId, resources, upgradeCost}) => {
 
     const upgradeBuildingHelper = async (cityId, buildingId) => {
         try {
@@ -69,14 +88,15 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         return params => <ResourceButtonComponent data={params.data} cityId={cityId} />;
     }, [cityId, collectResources]);
 
+    const [trainingMode, setTrainingMode] = useState(false);
+
 
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType" },
         { headerName: "Building Rank", field: "buildingRank" },
         {
-            headerName: "",
-            field: "id",
-            cellRenderer: resourceButtonRenderer,
+            headerName: "Function",
+            field: "type",
         },
     ], [cityId]);
 
@@ -99,29 +119,26 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                         setSelectedBuilding(event.data);
                         onRowMouseOver(event);
                     }}
-                    onCellClicked={(event) => { setSelectedClick(event.data.index); }}
                     onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
-                    onRowClicked={params => {
-                        if (selectedClick[0] === params.data.id && selectedClick[1] === params.data.type) {
-                            setSelectedClick([-1, ""]);
-                        } else {
-                            setSelectedClick([params.data.id, params.data.type]);
-                        }
-                    }}
                 />
             </div>
-            {selectedImage && selectedClick[0] === -1 &&
+            {!trainingMode && selectedImage && selectedClick[0] === -1 &&
             <div className="right-screen">
                     <div className="building_image">
                         <img src={selectedImage} alt="Building" className="selected-image"/>
                     </div>
-
+                {selectedBuilding && selectedBuilding.type==="Barracks" &&
+                    <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
+                }
+                {selectedBuilding && selectedBuilding.type === "productionBuilding" &&
+                    <ResourceButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap[selectedBuilding.id]} />
+                }
                 {selectedBuilding &&
                     <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap[selectedBuilding.id]} />
                 }
             </div>
-                }
+            }
         </>
     );
 };

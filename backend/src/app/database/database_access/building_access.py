@@ -41,9 +41,10 @@ class BuildingAccess:
         )
         await self.__session.execute(update_query)
 
+        # create building instance
         building_instance = BuildingInstance(city_id=city_id, building_type=building_type)
-
         self.__session.add(building_instance)
+
         await self.__session.flush()
 
         building_id = building_instance.id
@@ -241,14 +242,30 @@ class BuildingAccess:
         result = await self.__session.execute(current_amount_query)
         current_amount = result.scalar_one_or_none()
 
+        print("building_id :", building_id)
+        print("user_id :", user_id)
+        print("current_amount before update :", current_amount)
+
         # If there is a current amount, update HasResources with this amount
         if current_amount is not None:
+            print("current_amount:", current_amount)
+            print(current_amount)
             update_has_resources = (
                 update(HasResources)
                 .where(StoresResources.building_id == building_id, HasResources.owner_id == user_id)
                 .values(quantity=HasResources.quantity + current_amount)
             )
             await self.__session.execute(update_has_resources)
+        if current_amount is None:
+            print("current_amount:", current_amount)
+            new_resource = StoresResources(building_id=building_id, user_id=user_id, resource_amount=0)
+            await self.__session.add(new_resource)
+
+        current_amount_query = select(StoresResources.amount).where(StoresResources.building_id == building_id)
+        result = await self.__session.execute(current_amount_query)
+
+        current_amount = result.scalar_one_or_none()
+        print("current_amount after update :", current_amount)
 
         # Then, set the StoresResources amount to zero for the building
         reset_stores_resources = (

@@ -117,6 +117,10 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         cityId={cityId}
                         resources={resources}
                         upgradeCostMap={upgradeCostMap}
+                        onRowClicked={params => {
+                        if (selectedClick[0] === params.data.id)
+                        {setSelectedClick([-1, ""])}
+                        else{setSelectedClick([params.data.id, params.data.type])}}}
                     />}
                     {selectedTab === 'newBuildings' &&
                               <NewBuildingGrid

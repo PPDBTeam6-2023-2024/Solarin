@@ -1,9 +1,11 @@
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import {UserInfoContext} from "../Context/UserInfoContext";
 
 function ArmyMapEntry(props) {
 
     const [userInfo, setUserInfo] = useContext(UserInfoContext);
+
+    const [activeArmyViewer, setActiveArmyViewer] = useState(null);
 
     const is_owner = +(userInfo.id === props.army.owner);
     return (

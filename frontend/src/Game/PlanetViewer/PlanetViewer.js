@@ -12,7 +12,7 @@ import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
-import { toggleArmyDetails, toggleArmyViewer } from './Helper/ArmyViewerHelper';
+import {calculateArmyViewer } from './Helper/ArmyViewerHelper';
 import { fetchCities } from './Helper/CityHelper';
 
 import { IoMdClose } from "react-icons/io";
@@ -21,6 +21,7 @@ import army_example from "../Images/troop_images/Soldier.png"
 import ArmyMapEntry from "./ArmyMapEntry";
 import CityMapEntry from "./CityMapEntry";
 import {string} from "three/examples/jsm/nodes/shadernode/ShaderNode";
+import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
 
 function PlanetViewer(props) {
     const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
@@ -52,6 +53,10 @@ function PlanetViewer(props) {
     }, [props.planetId])
 
     const [cityImages,setCityImages] = useState([]);
+
+    const reloadCities = () => {
+        setCitiesLoaded(false)
+    }
 
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
@@ -269,19 +274,7 @@ function PlanetViewer(props) {
 
             {
                 activeArmyViewers.map(({id, owner, position, anchorEl, detailsOpen}) => (
-                    <Fragment key={`army-viewer-${id}`}>
-                        <Popper open={true} anchorEl={anchorEl} placement='left-start'>
-                        <Box className="bg-black rounded-3xl" >
-                        <List>
-                        {owner === userInfo.id && <ListItemButton onClick={() => toggleMoveMode(id)}>{isMoveMode(id) ? 'Cancel Move To' : 'Move To'}</ListItemButton>}
-                        <ListItemButton onClick={() => toggleArmyDetails(id, setActiveArmyViewers, activeArmyViewers)}>Details</ListItemButton>
-                        </List>
-                        </Box>
-                        </Popper>
-                        <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={id}/>
-                        </Popper>
-                    </Fragment>
+                    <ArmyManageView key={id} id={id} owner={owner} anchorEl={anchorEl} toggleMoveMode={toggleMoveMode} isMoveMode={isMoveMode} onCityCreated={reloadCities}/>
                 ))
             }
 

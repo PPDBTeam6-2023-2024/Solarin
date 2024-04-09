@@ -145,7 +145,6 @@ class ArmyAccess:
         get_entry_in_city = Select(Army).join(EnterCity, EnterCity.army_id == Army.id).where(Army.planet_id == planet_id)
         city_armies = await self.__session.execute(get_entry_in_city)
         city_armies = city_armies.all()
-
         return list(set(armies) - set(city_armies))
 
     async def get_army_time_delta(self, army_id: int, distance: float, developer_speed: int=None) -> timedelta:
@@ -197,7 +196,7 @@ class ArmyAccess:
         army.to_y = to_y
 
         distance = dist((army.x, army.y), (army.to_x, army.to_y))
-        delta = await self.get_army_time_delta(army_id, distance=distance)
+        delta = await self.get_army_time_delta(army_id, distance=distance, developer_speed=10)
 
         army.departure_time = current_time
         army.arrival_time = current_time + delta

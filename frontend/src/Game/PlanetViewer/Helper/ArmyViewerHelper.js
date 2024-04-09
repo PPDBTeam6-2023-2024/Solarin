@@ -1,6 +1,6 @@
 import army_example from "../../Images/troop_images/Soldier.png"
 
-export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
+export const calculateArmyViewer = async (e, army, setActiveArmyViewers) => {
     const overlayRect = e.target.getBoundingClientRect();
     const position = {
         x: overlayRect.left + window.scrollX,
@@ -16,17 +16,10 @@ export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
             // Remove viewer if already active
             return prev.filter(viewer => viewer.id !== army.id);
         } else {
-            return [...prev, {id: army.id, owner: army.owner, position, 
-                arrival_time: army.arrival_time, departure_time: army.departure_time, 
+            return [...prev, {id: army.id, owner: army.owner, position,
+                arrival_time: army.arrival_time, departure_time: army.departure_time,
                 to_position, anchorEl: e.target, detailsOpen: false, current_position: position}];
         }
     });
 };
-export const toggleArmyDetails = async (armyId, setActiveArmyViewers, activeArmyViewers) => {
-    setActiveArmyViewers(activeArmyViewers.map((elem, i) => {
-        if (elem.id == armyId) {
-            elem.detailsOpen = !elem.detailsOpen
-        }
-        return elem
-    }))
-}    
+

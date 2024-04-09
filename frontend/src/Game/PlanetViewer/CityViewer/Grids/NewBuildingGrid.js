@@ -29,7 +29,7 @@ const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, resources
 };
 
 
-const BuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedImage, cityId, updateBuildingsAndTypes, resources }) => {
+const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, resources }) => {
     const columns = useMemo(() => [
         { headerName: "Name", field: "name" },
         { headerName: "Building Type", field: "buildingType" },
@@ -61,7 +61,6 @@ const BuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedIma
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
                     onCellMouseOver={onRowMouseOver}
-                    onCellClicked={(event) => setSelectedClick(event.data.index)}
                     onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                 />

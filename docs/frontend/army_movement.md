@@ -2,6 +2,14 @@
 
 ## Overview
 Moving armies from point a to point b by selecting armies and clicking on the spot to move.
+When an army movement clicks on another army/ city, something will happen when they arrive
+This means the following: 
+
+- Army to Army (Own army): Merge the 2 armies on arrival
+- Army to Army (Enemy army): Army attacks other army on arrival
+- Army to City (Own city): Army enters the city on arrival
+- Army to City (Enemy city): Army attacks city on arrival
+
 ## Technologies used
 - ReactJS
 

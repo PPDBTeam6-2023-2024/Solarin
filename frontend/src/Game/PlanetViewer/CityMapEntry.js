@@ -11,7 +11,7 @@ function CityMapEntry(props) {
 
     if (props.decide_moving){
         if (!is_owner){
-            // Display the attack cursor, when hovering on an enemy army when in decide moving mode
+            // Display the attack cursor, when hovering on an enemy city when in decide moving mode
             cursor_style_class = 'CityMapEntryEnemy'
         }else{
             cursor_style_class = 'CityMapEntryEnter'

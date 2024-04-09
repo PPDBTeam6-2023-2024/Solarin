@@ -117,6 +117,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         cityId={cityId}
                         resources={resources}
                         upgradeCostMap={upgradeCostMap}
+                        setUpgradeCostMap={setUpgradeCostMap}
                         onRowClicked={params => {
                         if (selectedClick[0] === params.data.id)
                         {setSelectedClick([-1, ""])}

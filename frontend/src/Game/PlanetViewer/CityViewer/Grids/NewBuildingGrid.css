@@ -23,5 +23,41 @@
 }
 
 .build-button.disabled:hover {
-    background: linear-gradient(to top, #555, #888); /* Keep the same style on hover */
+    background: linear-gradient(to top, #555, #888);
+}
+
+.wide-button {
+    background: linear-gradient(to top, black, #d20000);
+    color: white;
+    cursor: pointer;
+    border-radius: 1vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10%;
+    width: 100%;
+    top: 5%;
+    /*transform: translateY(350%) translateX(-20%);*/
+}
+.wide-button.disabled {
+    background: linear-gradient(to top, #555, #888);
+    color: white;
+    border-radius: 1vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10%;
+    width: 100%;
+    top: 5%;
+    cursor: not-allowed;
+}
+.wide-button.disabled:hover {
+    background: linear-gradient(to top, #555, #888);
+    border-radius: 1vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10%;
+    width: 100%;
+    top: 5%;
 }

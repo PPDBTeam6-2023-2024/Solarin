@@ -4,20 +4,22 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import {
+    GetArmyInCity,
     getBuildings,
-    getImageForBuildingType,
     getNewBuildingTypes,
-    getResources, refreshResourceAmount
+    getResources, getUpgradeCost, refreshResourceAmount
 } from './BuildingManager';
 import {UserInfoContext} from "../../Context/UserInfoContext";
 import NewBuildingGrid from './Grids/NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
 import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
-import RenderGrid from "./Grids/CurrentBuildingGrid"
-import {AgGridReact} from "ag-grid-react";
+import CurrentBuildingGrid from "./Grids/CurrentBuildingGrid"
+import ArmyGrid from "./Grids/ArmyGrid";
+import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer/EntityViewer";
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [buildings, setBuildings] = useState([]);
+    const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
     const [resources, setResources] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -30,69 +32,51 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
     const [selectedTab, setSelectedTab] = useState('currentBuildings');
 
+    const [troops, setTroops] = useState([]); // State for troops
+
+
 
 
     useEffect(() => {
         if (cityId && buildings.length === 0) {
+            refreshResourceAmount(cityId) /*update resource viewer here*/
             getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
+            });
+            getUpgradeCost(cityId).then(buildings => {
+                  const costMap = buildings.reduce((acc, building) => {
+                    acc[building.id] = building;
+                    return acc;
+                  }, {});
+                  setUpgradeCostMap(costMap);
             });
             getNewBuildingTypes(cityId,0).then(newBuildingTypes => {
                 setNewBuildingTypes(newBuildingTypes)
             });
-            refreshResourceAmount(cityId) /*update resource viewer here*/
             getResources().then(availableResources => {
                 setResources(availableResources)
             })
+
+            GetArmyInCity(cityId).then(setTroops); // Fetch and set troops
+
         }
     }, [cityId, buildings]);
 
     const updateBuildingsAndTypes = () => {
-    getBuildings(cityId).then(setBuildings);
-    getNewBuildingTypes(cityId, 0).then(setNewBuildingTypes);
+        {/* Refresh buildings and types after building/upgrading */}
+        getBuildings(cityId).then(setBuildings);
+        getNewBuildingTypes(cityId, 0).then(setNewBuildingTypes);
     };
 
     const onRowMouseOver = event => {
-        setSelectedImage(getImageForBuildingType(event.data.buildingType));
+        if (selectedTab === 'Army'){
+            setSelectedImage(getImageForTroopType(event.data.troopType))
+        } else if(selectedTab === "newBuildings"){
+            setSelectedImage(getImageForBuildingType(event.data.name));
+        } else{
+            setSelectedImage(getImageForBuildingType(event.data.buildingType));
+        }
     };
-
-
-    const renderGrid = () => (
-        <>
-            <div className="ag-theme-alpine-dark buildings_grid">
-                <AgGridReact
-                    rowData={buildings.map((building, index) => ({
-                        buildingType: building.building_type,
-                        buildingRank: building.rank,
-                        resourceTimer: 'Unknown',
-                        image: getImageForBuildingType(building.building_type),
-                        index: index,
-                        id: building.id,
-                        type: building.type
-                    }))}
-                    domLayout='normal'
-                    suppressMovableColumns={true}
-                    suppressDragLeaveHidesColumns={true}
-                    onCellMouseOver={onRowMouseOver}
-                    onCellClicked={(event) => {setSelectedClick(event.data.index)}}
-                    onGridReady={params => params.api.sizeColumnsToFit()}
-                    onGridSizeChanged={params => params.api.sizeColumnsToFit()}
-                    onRowClicked={params => {
-                        if (selectedClick[0] === params.data.id)
-                        {setSelectedClick([-1, ""])}
-                        else{setSelectedClick([params.data.id, params.data.type])}}}
-                />
-            </div>
-
-            {selectedImage && selectedClick[0] === -1 &&
-                <div className="building_image">
-
-                     <img src={selectedImage} alt="Building" className="selected-image" />
-                </div>
-            }
-        </>
-    );
-
 
     useEffect(() => {
         const handleClickOutside = event => {
@@ -121,11 +105,10 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                     <div className="tabs">
                         <button onClick={() => setSelectedTab('currentBuildings')}>Current Buildings</button>
                         <button onClick={() => setSelectedTab('newBuildings')}>New Buildings</button>
-                        <button onClick={() => setSelectedTab('ArmyGrid')}>Army</button>
-                        <button onClick={() => setSelectedTab('plus')}>+</button>
+                        <button onClick={() => setSelectedTab('Army')}>Army</button>
                     </div>
 
-                    {selectedTab === 'currentBuildings' && <RenderGrid
+                    {selectedTab === 'currentBuildings' && <CurrentBuildingGrid
                         buildings={buildings}
                         onRowMouseOver={onRowMouseOver}
                         setSelectedClick={setSelectedClick}
@@ -133,8 +116,13 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         selectedImage={selectedImage}
                         cityId={cityId}
                         resources={resources}
+                        upgradeCostMap={upgradeCostMap}
+                        onRowClicked={params => {
+                        if (selectedClick[0] === params.data.id)
+                        {setSelectedClick([-1, ""])}
+                        else{setSelectedClick([params.data.id, params.data.type])}}}
                     />}
-                    {selectedTab === 'newBuildings' && (
+                    {selectedTab === 'newBuildings' &&
                               <NewBuildingGrid
                                 buildings={newBuildingTypes}
                                 onRowMouseOver={onRowMouseOver}
@@ -144,12 +132,24 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 updateBuildingsAndTypes={updateBuildingsAndTypes}
                                 resources={resources}
                               />
-                            )}
+                            }
 
-                    {selectedTab === 'plus' && <div>Additional content here</div>}
+                    {selectedTab === 'Army' && <ArmyGrid
+                        selectedClick={selectedClick}
+                        onRowMouseOver={onRowMouseOver}
+                        troops={troops}
+                        setSelectedClick={setSelectedClick}
+                        selectedImage={selectedImage}
+                                />
+                             }
 
                     {/*Displays a training menu*/}
-                    {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
+                    {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" &&
+                        <TrainingViewer key={selectedClick[0]}
+                                        building_id={selectedClick[0]}
+                                        onClose={() => { selectedClick[0] = -1; selectedClick[1] = null}}
+
+                        />}
 
                 </div>
             </WindowUI>

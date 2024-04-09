@@ -66,9 +66,13 @@ const BuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedIma
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                 />
             </div>
-            <div className="building_image">
-                {selectedImage && <img src={selectedImage} alt="Building" className="selected-image" />}
+            {selectedImage &&
+            <div className="right-screen">
+                <div className="building_image">
+                    <img src={selectedImage} alt="Building" className="selected-image" />
+                </div>
             </div>
+            }
         </>
     );
 };

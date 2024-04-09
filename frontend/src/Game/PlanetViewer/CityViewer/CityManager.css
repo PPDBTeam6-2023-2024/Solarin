@@ -94,3 +94,11 @@
     background: linear-gradient(to top, #d20000, black);
 }
 
+.right-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(10%) translateX(-12%);
+
+}
+

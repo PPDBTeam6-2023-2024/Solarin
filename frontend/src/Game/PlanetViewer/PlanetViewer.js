@@ -5,7 +5,7 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import getCities from './CityViewer/getCities';
 import CityManager from "./CityViewer/CityManager";
 
-import {PlanetListContext} from "./../Context/PlanetListContext"
+import {PlanetListContext} from "../Context/PlanetListContext"
 import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';

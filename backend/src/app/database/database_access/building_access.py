@@ -41,9 +41,10 @@ class BuildingAccess:
         )
         await self.__session.execute(update_query)
 
+        # create building instance
         building_instance = BuildingInstance(city_id=city_id, building_type=building_type)
-
         self.__session.add(building_instance)
+
         await self.__session.flush()
 
         building_id = building_instance.id
@@ -235,22 +236,25 @@ class BuildingAccess:
         return True
 
     async def collectResources(self, building_id: int, user_id: int):
+        # Retrieve all resource amounts from StoresResources for the building
+        current_amounts_query = select(StoresResources).where(StoresResources.building_id == building_id)
+        results = await self.__session.execute(current_amounts_query)
+        resources = results.scalars().all()
 
-        # First, retrieve the current resource amount from StoresResources for the building
-        current_amount_query = select(StoresResources.amount).where(StoresResources.building_id == building_id)
-        result = await self.__session.execute(current_amount_query)
-        current_amount = result.scalar_one_or_none()
+        # Iterate over each resource and update HasResources
+        for resource in resources:
 
-        # If there is a current amount, update HasResources with this amount
-        if current_amount is not None:
-            update_has_resources = (
-                update(HasResources)
-                .where(StoresResources.building_id == building_id, HasResources.owner_id == user_id)
-                .values(quantity=HasResources.quantity + current_amount)
-            )
-            await self.__session.execute(update_has_resources)
 
-        # Then, set the StoresResources amount to zero for the building
+            # Update HasResources with the current amount for each resource type
+            if resource.amount is not None:
+                update_has_resources = (
+                    update(HasResources)
+                    .where(HasResources.owner_id == user_id, HasResources.resource_type == resource.resource_type)
+                    .values(quantity=HasResources.quantity + resource.amount)
+                )
+                await self.__session.execute(update_has_resources)
+
+        # Then, set the StoresResources amount to zero for all entries of the building
         reset_stores_resources = (
             update(StoresResources)
             .where(StoresResources.building_id == building_id)
@@ -293,8 +297,8 @@ class BuildingAccess:
         current_resource_results = await self.__session.execute(current_resource_query)
         current_resources = current_resource_results.first()[0]
 
-        cost = await self.get_upgrade_cost(building_id)
-
+        cost = await self.get_upgrade_cost(building_id, user_id)
+        cost = cost[1]
         if (current_resources - cost) <= 0:
             raise ValueError("insufficient resources")
 
@@ -340,7 +344,7 @@ class BuildingAccess:
         can_upgrade = user_resources.quantity >= upgrade_cost
 
         # Return upgrade cost and whether the user can afford it
-        return upgrade_cost, cost_type, can_upgrade
+        return building_id, upgrade_cost, cost_type, can_upgrade
     async def get_city(self, building_id: int):
         """
         get the city corresponding to this building

@@ -282,13 +282,6 @@ class BuildingAccess:
         current_rank = building_instance.rank
         current_type = building_instance.building_type
 
-
-        # increase rank
-        rank_increase_query = update(BuildingInstance).\
-        where(BuildingInstance.id == building_id).\
-        values(rank=current_rank + 1)
-        rank_increase = await self.__session.execute(rank_increase_query)
-
         await self.__session.flush()
 
         # get creation cost
@@ -301,11 +294,18 @@ class BuildingAccess:
 
         cost = await self.get_upgrade_cost(building_id, user_id)
         cost = cost[1]
-        if (current_resources - cost) <= 0:
+
+        if (current_resources - cost) < 0:
             raise ValueError("insufficient resources")
 
+        # increase rank
+        rank_increase_query = update(BuildingInstance). \
+            where(BuildingInstance.id == building_id). \
+            values(rank=current_rank + 1)
+        rank_increase = await self.__session.execute(rank_increase_query)
+
         # decrease resources
-        decrease_resources = update(HasResources).where(HasResources.owner_id==user_id).values(quantity=current_resources-cost)
+        decrease_resources = update(HasResources).where(HasResources.owner_id==user_id, HasResources.resource_type==cost_type).values(quantity=current_resources-cost)
         await self.__session.execute(decrease_resources)
 
         await self.__session.commit()
@@ -342,7 +342,7 @@ class BuildingAccess:
         # Calculate upgrade cost
         upgrade_cost = PropertyUtility.getGUC(cost_amount, current_rank)
 
-        # Since the user has no resources, they can't afford the upgrade
+        # If the user does not have enough resources, they can't afford the upgrade
         can_upgrade = user_resources.quantity >= upgrade_cost
 
         # Return upgrade cost and whether the user can afford it

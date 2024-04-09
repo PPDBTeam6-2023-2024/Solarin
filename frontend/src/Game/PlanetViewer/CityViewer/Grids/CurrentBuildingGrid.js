@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect  } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
-    collectResources,
+    collectResources, getUpgradeCost,
     upgradeBuilding
 } from "../BuildingManager";
 import './NewBuildingGrid.css';
@@ -13,7 +13,7 @@ const ResourceButtonComponent = ({ data, cityId }) => {
 
     const collectResourcesHelper = async (cityId, buildingId) => {
         try {
-            const response = await collectResources(cityId, buildingId);
+            await collectResources(cityId, buildingId);
         } catch (error) {
             console.error("Failed to collect resources:", error);
         }
@@ -44,25 +44,38 @@ const TrainButtonComponent = ({ data, setSelectedClick }) => {
 
 
 
-const UpgradeButtonComponent = ({data, cityId, resources, upgradeCost}) => {
-
+const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost }) => {
     const upgradeBuildingHelper = async (cityId, buildingId) => {
         try {
             await upgradeBuilding(cityId, buildingId);
+            await getUpgradeCost(cityId).then(buildings => {
+                  const costMap = buildings.reduce((acc, building) => {
+                    acc[building.id] = building;
+                    return acc;
+                  }, {});
+                  setUpgradeCostMap(costMap);
+            });
         } catch (error) {
             console.error("Failed to upgrade building:", error);
         }
-        /*refresh ugradeCostMap*/
     };
 
+    // Check if upgrade cost data is available, and if not, show "..loading"
+    const costData = upgradeCost[data.id];
+    const isCostAvailable = costData && costData.cost != null && costData.cost_type != null;
 
-    // Set upgrade cost to loading while fetching/if undefined
-    const buttonText = upgradeCost[data.id] === null ? 'Loading...' : `Upgrade: ${upgradeCost[data.id].cost} ${upgradeCost[data.id].cost_type}`;
-    // Determine button style based upgrade cost
-    const buttonStyle = upgradeCost[data.id] && upgradeCost[data.id].can_upgrade ? "wide-button" : "wide-button disabled";
+    // Adjust buttonText based on availability of cost data
+    const buttonText = isCostAvailable
+        ? `Upgrade: ${costData.cost} ${costData.cost_type}`
+        : 'Loading...';
+
+    // Determine button style based on availability of upgrade cost
+    const buttonStyle = isCostAvailable && costData.can_upgrade
+        ? "wide-button"
+        : "wide-button disabled";
 
     return (
-        <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id)}>
+        <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id)} disabled={!isCostAvailable || !costData.can_upgrade}>
             {buttonText}
         </button>
     );
@@ -70,18 +83,9 @@ const UpgradeButtonComponent = ({data, cityId, resources, upgradeCost}) => {
 
 
 
-const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources, upgradeCostMap }) => {
+
+const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources, upgradeCostMap, setUpgradeCostMap }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
-
-    const upgradeButtonRenderer = useMemo(() => {
-        return params => <UpgradeButtonComponent data={params.data} cityId={cityId} resources={resources} />;
-    }, [cityId, resources]);
-
-    const resourceButtonRenderer = useMemo(() => {
-        return params => <ResourceButtonComponent data={params.data} cityId={cityId} />;
-    }, [cityId, collectResources]);
-
-    const [trainingMode, setTrainingMode] = useState(false);
 
 
     const columns = useMemo(() => [
@@ -116,7 +120,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                 />
             </div>
-            {!trainingMode && selectedImage && selectedClick[0] === -1 &&
+            {selectedImage && selectedClick[0] === -1 &&
             <div className="right-screen">
                     <div className="building_image">
                         <img src={selectedImage} alt="Building" className="selected-image"/>
@@ -128,7 +132,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     <ResourceButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap[selectedBuilding.id]} />
                 }
                 {selectedBuilding &&
-                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap} />
+                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap} setUpgradeCostMap={setUpgradeCostMap} />
                 }
             </div>
             }

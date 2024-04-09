@@ -142,6 +142,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 />
                              }
 
+
                     {/*Displays a training menu*/}
                     {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" &&
                         <TrainingViewer key={selectedClick[0]}

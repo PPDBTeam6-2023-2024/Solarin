@@ -67,20 +67,8 @@ function TrainingViewer({building_id, onClose}) {
             scroll_bar.current.scrollLeft += evt.deltaY;
         });
 
-        const handleClickOutside = (event) => {
-            if (scroll_bar.current && !scroll_bar.current.contains(event.target)) {
-                onClose();
-            }
-        };
 
-        // Add and remove the event listener
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-
-
-    }, [scroll_bar, onClose]);
+    }, [scroll_bar]);
 
 
     return (

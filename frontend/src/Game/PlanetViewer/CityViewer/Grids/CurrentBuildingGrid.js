@@ -13,35 +13,25 @@ const ResourceButtonComponent = ({ data, cityId }) => {
     const buttonStyle = "build-button";
 
     const collectResourcesHelper = async (cityId, buildingId) => {
+        console.log("collecting resources 1")
         try {
             await collectResources(cityId, buildingId);
-            console.log("Resources collected successfully.");
         } catch (error) {
             console.error("Failed to collect resources:", error);
         }
     };
 
-    getResources()
-
     if (data.type === "productionBuilding") {
         return (
-            <button className={buttonStyle} onClick={() => collectResourcesHelper(cityId, data.id)}>Collect resources</button>
+            <button className={buttonStyle} onClick={() => collectResourcesHelper(cityId, data.id)}>
+                Collect resources
+            </button>
         );
     }
     return null;
 };
 
-const UpgradeButtonComponent = ({ data, cityId, resources }) => {
-    const [upgradeCost, setUpgradeCost] = useState(null);
-
-    useEffect(() => {
-        const fetchUpgradeCost = async () => {
-            const cost = await getUpgradeCost(data.id);
-            setUpgradeCost(cost);
-        };
-
-        fetchUpgradeCost();
-    }, [data.id]);
+const UpgradeButtonComponent = ({ data, cityId, resources, upgradeCost }) => {
 
     const upgradeBuildingHelper = async (cityId, buildingId) => {
         try {
@@ -50,6 +40,7 @@ const UpgradeButtonComponent = ({ data, cityId, resources }) => {
         } catch (error) {
             console.error("Failed to upgrade building:", error);
         }
+        /*refresh ugradeCostMap*/
     };
 
 
@@ -59,7 +50,7 @@ const UpgradeButtonComponent = ({ data, cityId, resources }) => {
     const buttonStyle = upgradeCost && upgradeCost.can_upgrade ? "wide-button" : "wide-button disabled";
 
     return (
-        <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id)} disabled={!(upgradeCost && resources >= upgradeCost.cost)}>
+        <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id)}>
             {buttonText}
         </button>
     );
@@ -67,7 +58,7 @@ const UpgradeButtonComponent = ({ data, cityId, resources }) => {
 
 
 
-const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources }) => {
+const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources, upgradeCostMap }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
 
     const upgradeButtonRenderer = useMemo(() => {
@@ -76,7 +67,7 @@ const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick
 
     const resourceButtonRenderer = useMemo(() => {
         return params => <ResourceButtonComponent data={params.data} cityId={cityId} />;
-    }, [cityId]);
+    }, [cityId, collectResources]);
 
 
     const columns = useMemo(() => [
@@ -96,7 +87,6 @@ const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick
                     rowData={buildings.map((building, index) => ({
                         buildingType: building.building_type,
                         buildingRank: building.rank,
-                        image: getImageForBuildingType(building.building_type),
                         index: index,
                         id: building.id,
                         type: building.type
@@ -128,7 +118,7 @@ const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick
                     </div>
 
                 {selectedBuilding &&
-                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} />
+                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap[selectedBuilding.id]} />
                 }
             </div>
                 }
@@ -136,4 +126,4 @@ const RenderGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick
     );
 };
 
-export default RenderGrid;
+export default CurrentBuildingGrid;

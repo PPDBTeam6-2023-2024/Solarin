@@ -48,7 +48,7 @@ export const createBuilding = async (cityId,BuildingType) => {
 export const getResources = async () => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get('/logic/resources');
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
         if (response.status === 200) {
             return response.data;
         }
@@ -76,6 +76,7 @@ export const refreshResourceAmount = async (cityId) => {
 
 export const collectResources = async (cityId, buildingId) => {
     try {
+        console.log("collecting resources")
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/collect?city_id=${cityId}&building_id=${buildingId}`);
         if (response.status === 200) {
@@ -101,10 +102,12 @@ export const upgradeBuilding = async (cityId, buildingId) => {
 };
 
 
-export const getUpgradeCost = async (buildingId) => {
+export const getUpgradeCost = async (cityId) => {
     try {
+        console.log("city id: ")
+        console.log(cityId)
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_upgrade_cost?building_id=${buildingId}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_upgrade_cost?city_id=${cityId}`);
         if (response.status === 200) {
             return response.data;
         }

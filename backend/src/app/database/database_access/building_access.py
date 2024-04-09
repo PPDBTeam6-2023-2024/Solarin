@@ -293,8 +293,8 @@ class BuildingAccess:
         current_resource_results = await self.__session.execute(current_resource_query)
         current_resources = current_resource_results.first()[0]
 
-        cost = await self.get_upgrade_cost(building_id)
-
+        cost = await self.get_upgrade_cost(building_id, user_id)
+        cost = cost[1]
         if (current_resources - cost) <= 0:
             raise ValueError("insufficient resources")
 
@@ -340,7 +340,7 @@ class BuildingAccess:
         can_upgrade = user_resources.quantity >= upgrade_cost
 
         # Return upgrade cost and whether the user can afford it
-        return upgrade_cost, cost_type, can_upgrade
+        return building_id, upgrade_cost, cost_type, can_upgrade
     async def get_city(self, building_id: int):
         """
         get the city corresponding to this building

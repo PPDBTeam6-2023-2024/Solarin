@@ -7,18 +7,19 @@ import {
     GetArmyInCity,
     getBuildings,
     getNewBuildingTypes,
-    getResources, refreshResourceAmount
+    getResources, getUpgradeCost, refreshResourceAmount
 } from './BuildingManager';
 import {UserInfoContext} from "../../Context/UserInfoContext";
 import NewBuildingGrid from './Grids/NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
 import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
-import RenderGrid from "./Grids/CurrentBuildingGrid"
+import CurrentBuildingGrid from "./Grids/CurrentBuildingGrid"
 import ArmyGrid from "./Grids/ArmyGrid";
 import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer/EntityViewer";
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [buildings, setBuildings] = useState([]);
+    const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
     const [resources, setResources] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -40,6 +41,13 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         if (cityId && buildings.length === 0) {
             getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
+            });
+            getUpgradeCost(cityId).then(buildings => {
+                  const costMap = buildings.reduce((acc, building) => {
+                    acc[building.id] = building;
+                    return acc;
+                  }, {});
+                  setUpgradeCostMap(costMap);
             });
             getNewBuildingTypes(cityId,0).then(newBuildingTypes => {
                 setNewBuildingTypes(newBuildingTypes)
@@ -63,6 +71,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const onRowMouseOver = event => {
         if (selectedTab === 'Army'){
             setSelectedImage(getImageForTroopType(event.data.troopType))
+        } else if(selectedTab === "newBuildings"){
+            setSelectedImage(getImageForBuildingType(event.data.name));
         } else{
             setSelectedImage(getImageForBuildingType(event.data.buildingType));
         }
@@ -98,7 +108,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         <button onClick={() => setSelectedTab('Army')}>Army</button>
                     </div>
 
-                    {selectedTab === 'currentBuildings' && <RenderGrid
+                    {selectedTab === 'currentBuildings' && <CurrentBuildingGrid
                         buildings={buildings}
                         onRowMouseOver={onRowMouseOver}
                         setSelectedClick={setSelectedClick}
@@ -106,6 +116,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         selectedImage={selectedImage}
                         cityId={cityId}
                         resources={resources}
+                        upgradeCostMap={upgradeCostMap}
                     />}
                     {selectedTab === 'newBuildings' &&
                               <NewBuildingGrid

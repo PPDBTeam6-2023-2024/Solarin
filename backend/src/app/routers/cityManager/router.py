@@ -128,17 +128,23 @@ async def upgrade_building(
     return Confirmation(confirmed=confirmed)
 
 
-@router.get("/get_upgrade_cost", response_model=CostSchema)
+@router.get("/get_upgrade_cost", response_model=List[CostSchema])
 async def get_upgrade_cost(
         user_id: Annotated[int, Depends(get_my_id)],
-        building_id: int,
+        city_id: int,
         db=Depends(get_db)
 ):
     data_access = DataAccess(db)
-    cost = await data_access.BuildingAccess.get_upgrade_cost(building_id,user_id)
+    buildings = await get_buildings(city_id, db=db)
+    result = []
+
+    for building in buildings:
+        cost = await data_access.BuildingAccess.get_upgrade_cost(building.id,user_id)
+        result.append(CostSchema(id = cost[0],cost=cost[1], cost_type=cost[2], can_upgrade=cost[3]))
     if not cost:
         raise HTTPException(status_code=400, detail="Upgrade cost could not be retrieved.")
-    return CostSchema(cost=cost[0], cost_type=cost[1], can_upgrade=cost[2])
+
+    return result
 
 
 @router.post("/create_city")

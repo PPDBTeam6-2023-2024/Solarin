@@ -67,9 +67,11 @@ const BuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedIma
                 />
             </div>
             {selectedImage &&
+            <div className="right-screen">
                 <div className="building_image">
                     <img src={selectedImage} alt="Building" className="selected-image" />
                 </div>
+            </div>
             }
         </>
     );

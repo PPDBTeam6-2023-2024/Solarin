@@ -1,6 +1,6 @@
 import army_example from "../../Images/troop_images/Soldier.png"
 
-export const calculateArmyViewer = async (e, army, setActiveArmyViewers) => {
+export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
     const overlayRect = e.target.getBoundingClientRect();
     const position = {
         x: overlayRect.left + window.scrollX,
@@ -18,7 +18,7 @@ export const calculateArmyViewer = async (e, army, setActiveArmyViewers) => {
         } else {
             return [...prev, {id: army.id, owner: army.owner, position,
                 arrival_time: army.arrival_time, departure_time: army.departure_time,
-                to_position, anchorEl: e.target, detailsOpen: false, current_position: position}];
+                to_position, anchorEl: e.target}];
         }
     });
 };

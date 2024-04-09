@@ -12,7 +12,7 @@ import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
-import {calculateArmyViewer } from './Helper/ArmyViewerHelper';
+import {toggleArmyViewer } from './Helper/ArmyViewerHelper';
 import { fetchCities } from './Helper/CityHelper';
 
 import { IoMdClose } from "react-icons/io";
@@ -273,7 +273,11 @@ function PlanetViewer(props) {
          </WindowUI>
 
             {
-                activeArmyViewers.map(({id, owner, position, anchorEl, detailsOpen}) => (
+                /*
+                This ArmyManageView is not a child component of the Army entry, because this is a rela UI component
+                That should be a part of the map itself
+                * */
+                activeArmyViewers.map(({id, owner, position, anchorEl}) => (
                     <ArmyManageView key={id} id={id} owner={owner} anchorEl={anchorEl} toggleMoveMode={toggleMoveMode} isMoveMode={isMoveMode} onCityCreated={reloadCities}/>
                 ))
             }

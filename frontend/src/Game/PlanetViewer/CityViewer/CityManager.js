@@ -34,9 +34,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
     const [troops, setTroops] = useState([]); // State for troops
 
-
-
-
     useEffect(() => {
         if (cityId && buildings.length === 0) {
             refreshResourceAmount(cityId) /*update resource viewer here*/
@@ -98,6 +95,10 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, [onClose, initialClick]);
+
+    console.log(selectedClick);
+
+
     return (
         <div className="darken_background">
             <WindowUI>

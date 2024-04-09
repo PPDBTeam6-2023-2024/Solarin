@@ -7,7 +7,7 @@ from sqlalchemy.orm import declarative_base, relationship, declared_attr
 from sqlalchemy import event
 from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
-from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema
+from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema, BuildingTypeSchema
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from ...routers.buildingManagement.schemas import TrainingQueueEntry, TimestampDone
 from datetime import timedelta
@@ -209,7 +209,7 @@ class BuildingInstance(Base):
             city_id=self.city_id,
             building_type=self.building_type,
             rank=self.rank,
-            type=type_category
+            type=type_category,
         )
 
         return b
@@ -232,6 +232,19 @@ class BuildingType(Base):
     __mapper_args__ = {
         'polymorphic_on': type
     }
+    def to_schema(self, resource_cost_type: str, resource_cost_amount: str) -> BuildingTypeSchema:
+        rank = self.required_rank
+        if rank is None:
+            rank = 0
+        b_type_schema = BuildingTypeSchema(
+            name = self.name,
+            type = self.type,
+            required_rank=rank,
+            resource_cost_type = resource_cost_type,
+            resource_cost_amount = resource_cost_amount
+
+        )
+        return b_type_schema
 
     """
     This relation is NOT joined, in comparison to its corresponding relation, because we don't always 
@@ -318,6 +331,15 @@ class ProducesResources(Base):
     max_capacity = Column(Integer, nullable=False)
 
     production_building = relationship("ProductionBuildingType", back_populates="producing_resources", lazy='select')
+
+class StoresResources(Base):
+    """
+    Stores the resources produced in a production building instance
+    """
+    __tablename__ = 'storesResources'
+    building_id = Column(Integer, ForeignKey('buildingInstance.id', deferrable=True, initially='DEFERRED'), primary_key=True)
+    resource_type = Column(String, ForeignKey('resourceType.name', deferrable=True, initially='DEFERRED'))
+    amount = Column(Integer, nullable=False, default=0)
 
 
 class ResourceType(Base):

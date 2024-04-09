@@ -1,17 +1,25 @@
 // CityManager.js
 import React, { useState, useEffect, useMemo, useContext} from 'react';
-import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
-import { getBuildings, getImageForBuildingType } from './BuildingManager';
+import {
+    getBuildings,
+    getImageForBuildingType,
+    getNewBuildingTypes,
+    getResources, refreshResourceAmount
+} from './BuildingManager';
 import {UserInfoContext} from "../../Context/UserInfoContext";
-import NewBuildingGrid from './NewBuildingGrid';
+import NewBuildingGrid from './Grids/NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
 import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
+import RenderGrid from "./Grids/CurrentBuildingGrid"
+import {AgGridReact} from "ag-grid-react";
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [buildings, setBuildings] = useState([]);
+    const [newBuildingTypes, setNewBuildingTypes] = useState([]);
+    const [resources, setResources] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
 
     const [userInfo, setUserInfo] = useContext(UserInfoContext)
@@ -23,19 +31,26 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const [selectedTab, setSelectedTab] = useState('currentBuildings');
 
 
-    const columns = useMemo(() => [
-        { headerName: "Building Type", field: "buildingType" },
-        { headerName: "Building Rank", field: "buildingRank" },
-        { headerName: "Resource Timer", field: "resourceTimer" }
-    ]);
 
     useEffect(() => {
         if (cityId && buildings.length === 0) {
             getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
             });
+            getNewBuildingTypes(cityId,0).then(newBuildingTypes => {
+                setNewBuildingTypes(newBuildingTypes)
+            });
+            refreshResourceAmount(cityId) /*update resource viewer here*/
+            getResources().then(availableResources => {
+                setResources(availableResources)
+            })
         }
     }, [cityId, buildings]);
+
+    const updateBuildingsAndTypes = () => {
+    getBuildings(cityId).then(setBuildings);
+    getNewBuildingTypes(cityId, 0).then(setNewBuildingTypes);
+    };
 
     const onRowMouseOver = event => {
         setSelectedImage(getImageForBuildingType(event.data.buildingType));
@@ -55,7 +70,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         id: building.id,
                         type: building.type
                     }))}
-                    columnDefs={columns}
                     domLayout='normal'
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
@@ -107,16 +121,28 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                     <div className="tabs">
                         <button onClick={() => setSelectedTab('currentBuildings')}>Current Buildings</button>
                         <button onClick={() => setSelectedTab('newBuildings')}>New Buildings</button>
+                        <button onClick={() => setSelectedTab('ArmyGrid')}>Army</button>
                         <button onClick={() => setSelectedTab('plus')}>+</button>
                     </div>
 
-                    {selectedTab === 'currentBuildings' && renderGrid()}
+                    {selectedTab === 'currentBuildings' && <RenderGrid
+                        buildings={buildings}
+                        onRowMouseOver={onRowMouseOver}
+                        setSelectedClick={setSelectedClick}
+                        selectedClick={selectedClick}
+                        selectedImage={selectedImage}
+                        cityId={cityId}
+                        resources={resources}
+                    />}
                     {selectedTab === 'newBuildings' && (
                               <NewBuildingGrid
-                                buildings={buildings}
+                                buildings={newBuildingTypes}
                                 onRowMouseOver={onRowMouseOver}
                                 setSelectedClick={setSelectedClick}
                                 selectedImage={selectedImage}
+                                cityId={cityId}
+                                updateBuildingsAndTypes={updateBuildingsAndTypes}
+                                resources={resources}
                               />
                             )}
 

@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from fastapi.responses import JSONResponse
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
-from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, CityLocationSchema
+from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, CityLocationSchema, BuildingTypeSchema, Confirmation, CostSchema
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 
@@ -53,6 +53,92 @@ async def get_cities(
     cities_schemas = [city[0].to_city_schema() for city in cities]
     # Return the list of BuildingInstanceSchema instances
     return cities_schemas
+
+@router.get("/new_building_types", response_model=List[BuildingTypeSchema])
+async def get_new_building_types(
+        city_id: int,
+        city_rank: int,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db = Depends(get_db)
+):
+    data_access = DataAccess(db)
+    # dictionary with new building types, creation cost and whether the owner has sufficient funds
+    type_dict_list = await data_access.BuildingAccess.getAvailableBuildingTypes(city_id,city_rank, user_id)
+
+    building_type_schema = []
+
+    for row in type_dict_list:
+        required_rank = row["required_rank"]
+        if required_rank is None:
+            required_rank = 0
+        building_type_schema.append(BuildingTypeSchema(name = row['name'], type = row['type'], required_rank = required_rank,
+                           cost_type = row['cost_type'], cost_amount = row['cost_amount'], can_build = row['can_build']))
+
+
+
+    return building_type_schema
+
+@router.post("/create_new_building")
+async def create_building(
+        city_id: int,
+        building_type: str,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db = Depends(get_db)
+):
+    data_access = DataAccess(db)
+    building_id = await data_access.BuildingAccess.createBuilding(city_id, building_type, user_id)
+
+
+    if not building_id:
+        raise HTTPException(status_code=400, detail="Building could not be created.")
+
+@router.get("/update", response_model=Confirmation)
+async def update_resources(
+        city_id: int,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+    confirmed = await data_access.BuildingAccess.IncreaseResourceStocks(city_id)
+    if not confirmed:
+        raise HTTPException(status_code=400, detail="Resources could not be updated created.")
+    return Confirmation(confirmed=confirmed)
+
+@router.get("/collect", response_model=Confirmation)
+async def collect_resource(
+        user_id: Annotated[int, Depends(get_my_id)],
+        building_id: int,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+    confirmed = await data_access.BuildingAccess.collectResources(building_id, user_id)
+    if not confirmed:
+        raise HTTPException(status_code=400, detail="Resources could not be updated or created.")
+    return Confirmation(confirmed=confirmed)
+
+@router.get("/upgrade_building", response_model=Confirmation)
+async def upgrade_building(
+        user_id: Annotated[int, Depends(get_my_id)],
+        building_id: int,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+    confirmed = await data_access.BuildingAccess.upgradeBuilding(building_id, user_id)
+    if not confirmed:
+        raise HTTPException(status_code=400, detail="Building could not be upgraded.")
+    return Confirmation(confirmed=confirmed)
+
+
+@router.get("/get_upgrade_cost", response_model=CostSchema)
+async def get_upgrade_cost(
+        user_id: Annotated[int, Depends(get_my_id)],
+        building_id: int,
+        db=Depends(get_db)
+):
+    data_access = DataAccess(db)
+    cost = await data_access.BuildingAccess.get_upgrade_cost(building_id,user_id)
+    if not cost:
+        raise HTTPException(status_code=400, detail="Upgrade cost could not be retrieved.")
+    return CostSchema(cost=cost[0], cost_type=cost[1], can_upgrade=cost[2])
 
 
 @router.post("/create_city")

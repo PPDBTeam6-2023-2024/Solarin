@@ -125,13 +125,13 @@ async def fill_db():
         """
         Create some actual buildings instances inside cities
         """
-        await da.BuildingAccess.createBuilding(c_id, "The mines of moria")
-        b_id = await da.BuildingAccess.createBuilding(c_id, "Kamino training complex")
-        await da.BuildingAccess.createBuilding(c_id, "Solarin mansion")
+        await da.BuildingAccess.createBuilding(c_id, "The mines of moria", 1)
+        b_id = await da.BuildingAccess.createBuilding(c_id, "Kamino training complex",1)
+        await da.BuildingAccess.createBuilding(c_id, "Solarin mansion",1)
 
-        await da.BuildingAccess.createBuilding(c_id2, "The mines of moria")
-        b_id2 = await da.BuildingAccess.createBuilding(c_id2, "Kamino training complex")
-        await da.BuildingAccess.createBuilding(c_id2, "Solarin mansion")
+        await da.BuildingAccess.createBuilding(c_id2, "The mines of moria",2)
+        b_id2 = await da.BuildingAccess.createBuilding(c_id2, "Kamino training complex",2)
+        await da.BuildingAccess.createBuilding(c_id2, "Solarin mansion",2)
 
         """
         create some types of troops
@@ -146,8 +146,8 @@ async def fill_db():
                                                 BattleStats(attack=30, defense=30, city_attack=30, city_defense=20,
                                                             recovery=5, speed=0.9))
 
-        await da.DeveloperAccess.setTroopTypeCost("tank", [("Vibranium", 20), ("Energon", 2)])
-        await da.DeveloperAccess.setTroopTypeCost("soldier", [("Vibranium", 5)])
+        await da.DeveloperAccess.setTroopTypeCost("tank", [("SOL", 20)])
+        await da.DeveloperAccess.setTroopTypeCost("soldier", [("SOL", 5)])
 
         """
         add some troops to an army

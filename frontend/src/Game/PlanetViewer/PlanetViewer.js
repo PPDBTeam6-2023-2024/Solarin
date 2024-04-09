@@ -12,7 +12,7 @@ import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
-import {toggleArmyViewer } from './Helper/ArmyViewerHelper';
+import {toggleArmyViewer, closeArmyViewer } from './Helper/ArmyViewerHelper';
 import { fetchCities } from './Helper/CityHelper';
 
 import { IoMdClose } from "react-icons/io";
@@ -162,6 +162,19 @@ function PlanetViewer(props) {
         }
     }, [socket])
 
+
+    /*
+    Close the ArmyViewers for armies that are not visible anymore
+    When armies are not visualized anymore (When entering a city, being killed, ...)
+    We want to make sure the Army viewer will be closed.
+    */
+    useEffect(() => {
+        let removed = activeArmyViewers.filter(army => !armyImages.some(new_army => new_army.id === army.id))
+        removed.forEach((r, index) => {closeArmyViewer(r, setActiveArmyViewers)});
+
+    }, [armyImages.map(army => army.id).join(";").toString()]);
+
+
     useEffect(() => {
         if(!socket) return
         socket.onmessage = async(event) => {
@@ -169,7 +182,8 @@ function PlanetViewer(props) {
             switch(response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
-                    setArmyImages(armies)
+                    setArmyImages(armies);
+
                     break
                 case "change_direction":
                     const newArmies = handleChangeDirection(response.data)

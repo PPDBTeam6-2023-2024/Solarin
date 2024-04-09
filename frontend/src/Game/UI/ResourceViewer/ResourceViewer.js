@@ -1,7 +1,9 @@
 import resourcesJson from "./resources.json"
 import { useMemo } from "react";
 import Tooltip from '@mui/material/Tooltip';
+import { IoMdClose } from "react-icons/io";
 import WindowUI from "../WindowUI/WindowUI";
+import { useState } from "react";
 const getResourceStats = (resources, resourcesInfo) => {
     const elements = []
     for (let resource in resources){
@@ -30,18 +32,18 @@ const getResourceStats = (resources, resourcesInfo) => {
 function ResourceViewer(props) {
     const {title, resources, draggable, className} = props
     const resourcesInfo = useMemo(() => resourcesJson)
-    const content = 
-    <div className={className}>
+    const [hideButton, setHideButton] = useState(false)
+    return (
+        <WindowUI draggable={draggable} hideState={hideButton} windowName="Resource Viewer">
+            <div className={className}>
         <div className="bg-gray-800 p-3 border-2 border-white">
+            <IoMdClose onClick={() => setHideButton(!hideButton)}/>
             {title && <><h1>{title}</h1><hr className="my-2"/></>}
             <div className="flex justify-center items-center text-center">
             {getResourceStats(resources, resourcesInfo)}
             </div>
         </div>
     </div>
-    return (
-        <WindowUI draggable={draggable}>
-            {content}
         </WindowUI>
     )
 }

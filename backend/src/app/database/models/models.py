@@ -478,6 +478,7 @@ class Army(Base):
             "id": self.id,
             "departure_time": self.departure_time.isoformat(),
             "arrival_time": self.arrival_time.isoformat(),
+            "owner": self.user_id,
             "x": self.x,
             "y": self.y,
             "to_x": self.to_x,
@@ -592,7 +593,7 @@ class AttackCity(OnArrive):
 
 class EnterCity(OnArrive):
     """
-    Stores which city we might attack when our army arrives at its position
+    Stores which city we might enter when our army arrives at its position
     """
     __tablename__ = 'enterCity'
 
@@ -608,7 +609,7 @@ class EnterCity(OnArrive):
 
 class MergeArmies(OnArrive):
     """
-    Stores which city we might attack when our army arrives at its position
+    Stores which army we merge with when we arrive
     """
     __tablename__ = 'mergeArmies'
 

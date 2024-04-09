@@ -4,11 +4,9 @@ import { TreeView, TreeItem } from '@mui/x-tree-view';
 import WindowUI from '../WindowUI/WindowUI';
 import {Button} from "@mui/material";
 
-function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
+function ArmyViewer({armyId, onCityCreated}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
-    const [showInputFields, setShowInputFields] = useState(false);
-    const [coordinates, setCoordinates] = useState({x: '', y: ''});
 
     useEffect(() => {
         const fetchTroops = async () => {
@@ -22,13 +20,8 @@ function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
                 console.error("Failed to fetch troops", error);
             }
         };
-        fetchTroops();
+        fetchTroops(); 
     }, [armyId]);
-
-    const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        setCoordinates(prev => ({...prev, [name]: value}));
-    };
 
     const createCity = async () => {
         try {
@@ -44,21 +37,6 @@ function ArmyViewer({armyId, onUpdatePosition, onCityCreated}) {
             onCityCreated()
         } catch (error) {
             console.error("Failed creating city", error);
-        }
-    };
-
-    const submitCoordinates = async () => {
-        const {x, y} = coordinates;
-        try {
-            const newX = parseFloat(x);
-            const newY = parseFloat(y);
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/army/armies/${armyId}/update-coordinates`, { x: newX, y: newY });
-            console.log("Army moved successfully");
-            onUpdatePosition(armyId, newX, newY); // Use the callback to update the position in the PlanetViewer
-            setShowInputFields(false);
-            setCoordinates({x: '', y: ''});
-        } catch (error) {
-            console.error("Failed to move army", error);
         }
     };
 

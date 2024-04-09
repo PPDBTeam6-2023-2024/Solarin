@@ -38,6 +38,7 @@ An overview of the current DataAccess categories:
 | TrainingAccess  | methods that manage training units         | This Access method will only take care of training units                                                                                             |
 | UserAccess      | methods that manage User accounts          | 
 | RankingAccess   | methods that manage ranking information    | User rankings will be done with regards to the amount of Solarium a player has/produces                                                              |
+| ResourceAccess  | methods that manage resources of users     |                                                                                                                                                      |
 
 ## Issues
 The entire database (tables and sequences) need to be present.

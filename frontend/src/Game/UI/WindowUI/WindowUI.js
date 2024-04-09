@@ -1,10 +1,25 @@
 import Moveable from 'react-moveable'
-import { useRef, cloneElement, Children} from 'react'
+import { useRef, cloneElement, Children, useEffect, useId, useState} from 'react'
+import { useDispatch, useSelector} from 'react-redux'
+import { addWindow, removeWindow } from '../../../redux/slices/hiddenWindowsSlice'
 
 
-const WindowUI = ({draggable=true, scalable=true, resizable=false, children}) => {
+const WindowUI = ({draggable=true, scalable=true, resizable=false, hideState, windowName=null, children}) => {
     const childrenRef = useRef([])
-    return (
+
+    const dispatch = useDispatch()
+    const hiddenWindows = useSelector((state) => state.hiddenWindows.windows)
+
+    const id = useId()
+
+    const window = windowName || id
+
+    useEffect(() => {
+        if(hideState) dispatch(addWindow(window))
+        else dispatch(removeWindow(window))
+    }, [hideState])
+
+    return ( hiddenWindows.indexOf(window) === -1 &&
         <>
         {Children.map(children, (child, index) =>
         cloneElement(child, {

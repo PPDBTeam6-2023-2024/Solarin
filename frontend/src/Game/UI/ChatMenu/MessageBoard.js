@@ -16,7 +16,7 @@ function MessageBoard(props) {
     const [messageList, setMessageList] = useState([]);
 
 
-    const scroll_bar = React.useRef(null);
+    const scroll_bar = useRef(null);
 
     /**
     * makes sure that UseEffect for connecting to the websocket is not called twice
@@ -38,7 +38,7 @@ function MessageBoard(props) {
 
         let loaded = false;
 
-        socket.onmessage = function (event) {
+        socket.onmessage = (event) => {
             let data = JSON.parse(event.data)
             if (data.type === "paging"){
 

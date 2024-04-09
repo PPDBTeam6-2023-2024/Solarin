@@ -1,7 +1,6 @@
 // BuildingManager.js
 import axios from "axios";
 import Records from "./../../UI/buildingImages.json"
-import buildingJSON from "../../UI/buildingImages.json";
 
 export const getBuildings = async (cityId) => {
     try {

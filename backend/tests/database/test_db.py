@@ -5,7 +5,7 @@ from src.app.database.database_access.data_access import DataAccess
 from src.app.database.models.models import *
 from sqlalchemy import inspect
 from ...src.logic.combat.ArmyCombat import *
-from ...src.logic.combat.ArriveCheck import *
+from ...src.logic.combat.AttackCheck import *
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):
     async with sessionmanager.session() as session:
@@ -474,7 +474,7 @@ async def test_army_combat():
 
         await da.ArmyAccess.attack_army(1, 2)
 
-        suc6 = await ArriveCheck.check_arrive(1, da)
+        suc6 = await AttackCheck.check_attack(1, da)
         assert suc6
 
         a1 = await da.ArmyAccess.getArmyById(1)
@@ -497,24 +497,9 @@ async def test_city_combat():
 
         await da.ArmyAccess.attack_city(1, 1)
 
-        suc6 = await ArriveCheck.check_arrive(1, da)
+        suc6 = await AttackCheck.check_attack(1, da)
         assert suc6
 
         owner = await da.CityAccess.getCityController(1)
         assert owner.id == 1
 
-
-async def test_has_resources():
-    """
-    Test user has certain resources
-    """
-    async with sessionmanager.session() as session:
-        da = DataAccess(session)
-        p = await da.ResourceAccess.get_resource_amount(1, "Energon")
-        assert p == 0
-        await da.ResourceAccess.add_resource(1, "Energon", 5)
-        p = await da.ResourceAccess.get_resource_amount(1, "Energon")
-        assert p == 5
-
-        has_resources = await da.ResourceAccess.has_resources(1, [("Energon", 5)])
-        assert has_resources

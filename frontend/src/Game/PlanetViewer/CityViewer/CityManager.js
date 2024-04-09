@@ -39,6 +39,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
     useEffect(() => {
         if (cityId && buildings.length === 0) {
+            refreshResourceAmount(cityId) /*update resource viewer here*/
             getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
             });
@@ -52,7 +53,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
             getNewBuildingTypes(cityId,0).then(newBuildingTypes => {
                 setNewBuildingTypes(newBuildingTypes)
             });
-            refreshResourceAmount(cityId) /*update resource viewer here*/
             getResources().then(availableResources => {
                 setResources(availableResources)
             })
@@ -144,7 +144,12 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                              }
 
                     {/*Displays a training menu*/}
-                    {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
+                    {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" &&
+                        <TrainingViewer key={selectedClick[0]}
+                                        building_id={selectedClick[0]}
+                                        onClose={() => { selectedClick[0] = -1; selectedClick[1] = null}}
+
+                        />}
 
                 </div>
             </WindowUI>

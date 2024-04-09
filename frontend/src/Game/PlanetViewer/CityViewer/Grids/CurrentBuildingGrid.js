@@ -1,11 +1,8 @@
 import React, { useMemo, useState, useEffect  } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
-    getImageForBuildingType,
     collectResources,
-    upgradeBuilding,
-    getUpgradeCost,
-    getResources
+    upgradeBuilding
 } from "../BuildingManager";
 import './NewBuildingGrid.css';
 import TrainingViewer from "../../../UI/TrainingUnits/TrainingViewer";

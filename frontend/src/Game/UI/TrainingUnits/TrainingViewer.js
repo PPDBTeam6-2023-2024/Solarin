@@ -67,9 +67,9 @@ function TrainingViewer({building_id, onClose}) {
             scroll_bar.current.scrollLeft += evt.deltaY;
         });
 
-
+        /* Calls onClose() when user clicks outside TrainingViewScreen */
         const handleClickOutside = (event) => {
-            if ((scroll_bar.current && !scroll_bar.current.contains(event.target)) && !event.target.closest('.TrainingOptionList')) {
+            if (!event.target.closest('.TrainingViewScreen')) {
                 onClose();
             }
         };

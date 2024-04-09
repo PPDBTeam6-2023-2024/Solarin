@@ -34,6 +34,8 @@ async def test_attack_army(client):
         user_2 = await data_access.UserAccess.createUser("a", "a", "a")
         army2_id = await data_access.ArmyAccess.createArmy(user_2, planet_id, 0, 0)
 
+        army3_id = await data_access.ArmyAccess.createArmy(user_id, planet_id, 0, 0)
+
         await session.commit()
 
     data = {
@@ -77,7 +79,7 @@ async def test_attack_army(client):
 
         websocket.send_json({
             "type": "change_direction",
-            "army_id": army_id,
+            "army_id": army3_id,
             "to_x": 0.000001,
             "to_y": 0,
             "on_arrive": True,

@@ -171,14 +171,13 @@ class ArmyAccess:
         """
         Change the go to position of an army
         """
-
         stmt = (
-            select(Army)
-            .where(Army.user_id == user_id)
-            .where(Army.id == army_id)
+            select(Army).where(Army.id == army_id)
         )
+
         result = await self.__session.execute(stmt)
         army: Optional[Army] = result.scalar_one_or_none()
+        assert army.user_id == user_id
 
         x_diff = army.to_x - army.x
         y_diff = army.to_y - army.y

@@ -96,7 +96,6 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
             field: "type",
         },
     ], [cityId]);
-
     return (
         <>
             <div className="ag-theme-alpine-dark buildings_grid">

@@ -271,7 +271,6 @@ function PlanetViewer(props) {
             toggleMoveMode(armyId)
         })
     }
-    console.log("cow",selectedCityId );
     return (
         <>
         <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">

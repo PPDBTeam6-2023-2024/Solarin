@@ -15,11 +15,8 @@ const ResourceButtonComponent = ({ data, cityId }) => {
     const buttonStyle = "wide-button";
 
     const collectResourcesHelper = async (cityId, buildingId) => {
-        console.log("Attempting to collect resources from building ID:", buildingId);
         try {
             const response = await collectResources(cityId, buildingId);
-            console.log("Resources collected successfully:", response);
-            // Optionally, you can do something with the response here, like updating the state or UI
         } catch (error) {
             console.error("Failed to collect resources:", error);
         }
@@ -55,7 +52,6 @@ const UpgradeButtonComponent = ({data, cityId, resources, upgradeCost}) => {
     const upgradeBuildingHelper = async (cityId, buildingId) => {
         try {
             await upgradeBuilding(cityId, buildingId);
-            console.log("Building upgraded successfully.");
         } catch (error) {
             console.error("Failed to upgrade building:", error);
         }

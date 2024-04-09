@@ -129,7 +129,6 @@ function PlanetViewer(props) {
               maxWidth: '10%',
               maxHeight: '10%',
               zIndex: 15,
-              cursor: 'pointer',
               transition: "all ease-linear",
             },
             }
@@ -320,13 +319,21 @@ function PlanetViewer(props) {
                     {/*Display planet on the map*/}
                      <PlanetSVG planetId={props.planetId}/>
 
+                    {/*
+                    decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly
+                    moving selected, just states whether the army is planning to move
+                    */}
                     {armyImages.map((army, index) => (
-                        <ArmyMapEntry key={index} army={army} onClick={(e) => {if (armiesMoveMode.length === 0){toggleArmyViewer(e, army, setActiveArmyViewers);}}}/>
+                        <ArmyMapEntry key={index} army={army} onClick={(e) => {if (armiesMoveMode.length === 0){toggleArmyViewer(e, army, setActiveArmyViewers);}}}
+                         decide_moving={armiesMoveMode.length > 0} moving_Selected={isMoveMode(army.id)}/>
                     ))}
 
+
                     {/*Display cities on the map*/}
+                    {/*decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly*/}
                     {showCities && cityImages.map((city, index) => (
-                        <CityMapEntry key={index} city={city} onClick={()=>{if (armiesMoveMode.length === 0){city.onClick();}}}/>
+                        <CityMapEntry key={index} city={city} onClick={()=>{if (armiesMoveMode.length === 0){city.onClick();}}}
+                        decide_moving={armiesMoveMode.length > 0}/>
                     ))}
                 </div>
 

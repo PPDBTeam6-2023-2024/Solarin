@@ -67,8 +67,9 @@ function TrainingViewer({building_id, onClose}) {
             scroll_bar.current.scrollLeft += evt.deltaY;
         });
 
+
         const handleClickOutside = (event) => {
-            if (scroll_bar.current && !scroll_bar.current.contains(event.target)) {
+            if ((scroll_bar.current && !scroll_bar.current.contains(event.target)) && !event.target.closest('.TrainingOptionList')) {
                 onClose();
             }
         };
@@ -80,7 +81,7 @@ function TrainingViewer({building_id, onClose}) {
         };
 
 
-    }, [scroll_bar, onClose]);
+    }, [scroll_bar]);
 
 
     return (

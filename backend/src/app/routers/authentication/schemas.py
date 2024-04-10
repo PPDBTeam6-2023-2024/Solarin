@@ -16,7 +16,6 @@ class MessageToken(BaseModel):
     sender_id: int
     message_board: int
     body: str
-    parent_message_id: int = None
 
 
 class BattleStats(BaseModel):

@@ -72,8 +72,7 @@ async def fill_db():
                 m_token2 = MessageToken(
                     sender_id=t_index + 1,
                     message_board=mb,
-                    body="test reply",
-                    parent_message_id=mid
+                    body="test reply"
                 )
 
                 await da.MessageAccess.createMessage(m_token2)

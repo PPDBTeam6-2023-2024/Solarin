@@ -49,6 +49,8 @@ class HasResources(Base):
 class Alliance(Base):
     """
     Store the alliances
+    name: name of the alliance
+    message_board: message board associated with the alliance, used to store, which chat is dedicated for this alliance
     """
     __tablename__ = 'alliance'
     name = Column(String, primary_key=True)
@@ -58,27 +60,36 @@ class Alliance(Base):
 class Message(Base):
     """
     Store the messages
+    mid: unique id for the message
+    sender_id: id of the user who send the message
+    message_board: the message board (chat) the message is send in
+    create_date_time: the timestamp the message was created
+    body: the content of the message
     """
     __tablename__ = 'message'
 
     mid = Column(Integer, Sequence('message_mid_seq'), primary_key=True)
     sender_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     message_board = Column(Integer, ForeignKey("messageBoard.bid"), nullable=False)
-    create_date_time = Column(TIMESTAMP, nullable=False, default=func.now())
-    parent_message_id = Column(Integer, ForeignKey("message.mid", deferrable=True, initially='DEFERRED'))
+    create_date_time = Column(TIMESTAMP, nullable=False, default=datetime.utcnow())
     body = Column(TEXT, nullable=False)
 
     @classmethod
     def fromMessageToken(cls, message_token: MessageToken) -> "Message":
+        """
+        This class loads a MessageToken, to create a Message object
+        """
         return cls(
             sender_id=message_token.sender_id,
             message_board=message_token.message_board,
-            body=message_token.body,
-            parent_message_id=message_token.parent_message_id
+            body=message_token.body
 
         )
 
     def toMessageOut(self, sender_name):
+        """
+        Convert the Message object to a MessageOut (scheme)
+        """
         return MessageOut(sender_name=sender_name,
                           created_at=self.create_date_time.strftime("/%d/%m/%Y %H:%M:%S"),
                           body=self.body)
@@ -89,6 +100,9 @@ class MessageBoard(Base):
     Each message corresponds to a message board
     This table makes it possible to request sequences
     of messages from an alliance or between players.
+
+    bid: is the message board unique id, to identify this message board
+    chat_name: is a name associated with this chat
     """
     __tablename__ = 'messageBoard'
     bid = Column(Integer, Sequence('messageBoard_bid_seq'), primary_key=True)
@@ -98,6 +112,11 @@ class MessageBoard(Base):
 class FriendsOf(Base):
     """
     Store which users are friends with each other
+    when 2 users are friends with each other only 1 entry will be stored
+
+    user1_id: id of the first user
+    user2_id: id of the second user
+    message_board: the message board (chat) that is used for these 2 players to send direct messages to each other.
     """
     __tablename__ = 'friendsOf'
     user1_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
@@ -108,6 +127,9 @@ class FriendsOf(Base):
 class SpaceRegion(Base):
     """
     Stores the regions in space
+
+    id: unique id of the space region
+    name: name of the region is space
     """
     __tablename__ = 'spaceRegion'
     id = Column(Integer, Sequence('spaceRegion_id_seq'), primary_key=True)
@@ -119,13 +141,19 @@ class SpaceRegion(Base):
 class Planet(Base):
     """
     Stores the planets in the game
+
+    id: unique id to identify the planet
+    name: name of the planet
+    planet_type: the type of the planet
+    space_region_id: the id of the space region the planet belongs to
+    created_at: when the planet is created
     """
     __tablename__ = 'planet'
     id = Column(Integer, Sequence('planet_id_seq'), primary_key=True)
     name = Column(TEXT, nullable=False)
     planet_type = Column(TEXT, ForeignKey("planetType.type"), nullable=False)
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
-    created_at = Column(DateTime(), nullable=True, default=datetime.utcnow)
+    created_at = Column(DateTime(), nullable=True, default=datetime.utcnow())
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
     armies = relationship("Army", back_populates="planet", lazy="select")
@@ -136,6 +164,8 @@ class PlanetType(Base):
     """
     Stores which types of planets are in the game
     (each planet has a type)
+    type: the name of the type
+    description: an extra description about the planet type
     """
     __tablename__ = 'planetType'
     type = Column(TEXT, primary_key=True)
@@ -145,6 +175,11 @@ class PlanetType(Base):
 class PlanetRegion(Base):
     """
     Stores the region corresponding to a planet
+    id: id of the region
+    planet_id: id of the planet the region is a part of
+    x, y: position indicating a point on the planet.
+    using voronoi we can generate regions while only storing 1 point.
+    To check which region something belongs too, we just check the closest point
     """
     __tablename__ = 'planetRegion'
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
@@ -160,6 +195,8 @@ class PlanetRegion(Base):
 class PlanetRegionType(Base):
     """
     Store all the types a region can be
+    region_type: name of the type of the region
+    description: an extra description about the region type
     """
     __tablename__ = 'planetRegionType'
     region_type = Column(String, primary_key=True)
@@ -168,8 +205,14 @@ class PlanetRegionType(Base):
 
 class City(Base):
     """
-    Stores information about a city that is in a region on a planet
-    x and y represent the planetary coordinates of the city
+    Stores information about a city that is in a region on a planet.
+
+    id: unique id to identify the city
+    region_id: the id of the region in which the city is located
+    controlled_by: id of the user who is currently the owner of the city
+    rank: the rank (=level) of a city
+
+    x, y: represent the planetary coordinates of the city.
     """
     __tablename__ = 'city'
 
@@ -184,6 +227,10 @@ class City(Base):
     region = relationship("PlanetRegion", back_populates="cities", lazy='joined')
 
     def to_city_schema(self):
+        """
+        Convert the City object to a CitySchema (scheme)
+
+        """
         return CitySchema(id=self.id,
                           region_id=self.region_id,
                           controlled_by=self.controlled_by,
@@ -198,7 +245,12 @@ class City(Base):
 class BuildingInstance(Base):
     """
     Stores which buildings a city has
+    id: unique id to identify the building
+    city_id: id of city that has this building
+    building_type: type of building this instance has (ProductionBuilding, Barracks,...)
+    rank: rank (=level) of this building
     """
+
     __tablename__ = "buildingInstance"
     id = Column(Integer, Sequence('buildingInstance_id_seq'), primary_key=True, index=True)
     city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), nullable=False)
@@ -207,11 +259,15 @@ class BuildingInstance(Base):
     rank = Column(Integer, nullable=False, default=1)
 
     """
-    This relation is joined, because when we ask for an instance we will often also be interested in the type its attributes
+    This relation is joined, because when we ask for an instance we will often also be interested in the type 
+    its attributes
     """
     type = relationship("BuildingType", back_populates="instances", lazy='joined')
 
     def to_schema(self, type_category) -> BuildingInstanceSchema:
+        """
+        Convert the buildinginstance Object to a scheme
+        """
         b = BuildingInstanceSchema(
             id=self.id,
             city_id=self.city_id,
@@ -231,6 +287,9 @@ class BuildingInstance(Base):
 class BuildingType(Base):
     """
     Stores the types of buildings that can exist (This table is the parent of an ISA/polymorphic relation)
+
+    name: is the name of this buildingType
+    type: Column entry to indicate which child it has a polymorphic relationship with (Barracks, ...)
     """
     __tablename__ = 'buildingType'
     name = Column(String, Sequence("buildingType_name_seq"), primary_key=True)
@@ -240,16 +299,20 @@ class BuildingType(Base):
     __mapper_args__ = {
         'polymorphic_on': type
     }
+
     def to_schema(self, resource_cost_type: str, resource_cost_amount: str) -> BuildingTypeSchema:
+        """
+        Convert this buildingType object into a scheme
+        """
         rank = self.required_rank
         if rank is None:
             rank = 0
         b_type_schema = BuildingTypeSchema(
-            name = self.name,
-            type = self.type,
+            name=self.name,
+            type=self.type,
             required_rank=rank,
-            resource_cost_type = resource_cost_type,
-            resource_cost_amount = resource_cost_amount
+            resource_cost_type=resource_cost_type,
+            resource_cost_amount=resource_cost_amount
 
         )
         return b_type_schema
@@ -264,6 +327,8 @@ class BuildingType(Base):
 class BarracksType(BuildingType):
     """
     Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)
+    name: name of the BarrackType building.
+    Every row in this table indicates a building that can be used as a barrack
     """
     __tablename__ = 'barracksType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)

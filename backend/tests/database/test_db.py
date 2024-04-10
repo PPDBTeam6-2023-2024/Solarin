@@ -371,14 +371,14 @@ async def test_training():
         """
         check troops other rank are the same
         """
-        assert army_troops[0][0].size == 30
-        assert army_troops[0][0].rank == 2
+        assert army_troops[0].size == 30
+        assert army_troops[0].rank == 2
 
         """
         check 11 troops are added
         """
-        assert army_troops[1][0].size == 10+11
-        assert army_troops[1][0].rank == 3
+        assert army_troops[1].size == 10+11
+        assert army_troops[1].rank == 3
 
 
 async def test_troop_rank():

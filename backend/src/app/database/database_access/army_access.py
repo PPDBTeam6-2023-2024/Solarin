@@ -10,6 +10,7 @@ class ArmyAccess:
     """
     This class will manage the sql access for data related to information of armies
     """
+
     def __init__(self, session: AsyncSession):
         self.__session = session
 
@@ -51,8 +52,8 @@ class ArmyAccess:
         """
         run a query to find the table giving the relation between troops and armies
         """
-        get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==army_id,
-                                                 ArmyConsistsOf.troop_type==troop_type,
+        get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id,
+                                                 ArmyConsistsOf.troop_type == troop_type,
                                                  ArmyConsistsOf.rank == rank)
 
         results = await self.__session.execute(get_entry)
@@ -83,39 +84,81 @@ class ArmyAccess:
         """
         await self.__session.flush()
 
-    async def get_troops(self, armyid: int):
-        getentry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==armyid)
-        troops = await self.__session.execute(getentry)
-        return troops.all()
+    async def get_troops(self, army_id: int):
+        """
+        Get the troops that are part of the army
+
+        :param: army_id: id of the army whose troops we want to retrieve
+        return: list of ArmyConsistsOf objects
+        """
+        get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id)
+        troops = await self.__session.execute(get_entry)
+        return troops.scalars().all()
 
     async def get_army_by_id(self, army_id: int):
-        getentry = Select(Army).where(Army.id==army_id)
-        result = await self.__session.execute(getentry)
+        """
+        Get the army object corresponding to the army_id
+
+        :param: army_id: id of the army we want to retrieve
+        return: Army Object
+        """
+        get_entry = Select(Army).where(Army.id == army_id)
+        result = await self.__session.execute(get_entry)
         army = result.scalars().first()
         return army
 
-    async def get_user_armies(self, userid: int):
-        getentry = Select(Army).where(Army.user_id==userid)
-        armies = await self.__session.execute(getentry)
+    async def get_user_armies(self, user_id: int):
+        """
+        Retrieve all armies belonging to a specific user
+
+        :param: user_id: id of the user whose armies we want to retrieve
+        return: List of Army Objects
+        """
+        get_entry = Select(Army).where(Army.user_id == user_id)
+        armies = await self.__session.execute(get_entry)
         await self.__session.flush()
-        armies = armies.all()
+        armies = armies.scalars().all()
         return armies
 
     async def get_armies_on_planet(self, planet_id: int) -> list[Army]:
         """
         Get armies on a planet, but make sure not do give the armies that are inside a city
 
+        :param: planet_id: id of the planet whose armies we want to retrieve
+        return: List of Army Objects
         """
-        getentry = Select(Army)
-        armies = await self.__session.execute(getentry)
-        armies = armies.all()
 
-        get_entry_in_city = Select(Army).join(ArmyInCity, ArmyInCity.army_id == Army.id).where(Army.planet_id == planet_id)
+        """
+        Get all the armies on the planet
+        """
+        get_entry = Select(Army).where(Army.planet_id == planet_id)
+        armies = await self.__session.execute(get_entry)
+        armies = armies.scalars().all()
+
+        """
+        Get all the armies on the planet, that are in a city
+        """
+        get_entry_in_city = Select(Army).join(ArmyInCity, ArmyInCity.army_id == Army.id).where(
+            Army.planet_id == planet_id)
         city_armies = await self.__session.execute(get_entry_in_city)
-        city_armies = city_armies.all()
+        city_armies = city_armies.scalars().all()
+
+        """
+        Return the armies that are on the planet, but not inside a city
+        """
         return list(set(armies) - set(city_armies))
 
-    async def get_army_time_delta(self, army_id: int, distance: float, developer_speed: int=None) -> timedelta:
+    async def get_army_time_delta(self, army_id: int, distance: float, developer_speed: int = None) -> timedelta:
+        """
+        Calculate how long an army needs to travel a certain distance
+
+        :param: army_id: id of the army whose time we want to calculate
+        :param: distance:the distance we need to travel
+        :param: developer_speed: an optional speed, making it possible for developers to manually set the time needed
+
+        return: timedelta containing the time needed t0 travel the provided distance
+        """
+
         """
         Get the army stats to determine the speed of an army
         """
@@ -128,16 +171,20 @@ class ArmyAccess:
         An army with a speed of 250 will take 4 hours to cross the entire map
         """
 
-        map_cross_time = 1000/army_stats["speed"]*3600
+        map_cross_time = PropertyUtility.get_map_cross_time(army_stats["speed"])
 
+        """
+        let the developer speed override the calculated speed
+        """
         if developer_speed is not None:
             map_cross_time = developer_speed
 
-        return timedelta(seconds=map_cross_time*distance)
+        return timedelta(seconds=map_cross_time * distance)
 
-    async def change_army_direction(self, user_id: int, army_id: int, to_x: float, to_y: float) -> tuple[bool, Optional[Army]]:
+    async def change_army_direction(self, user_id: int, army_id: int, to_x: float, to_y: float) -> tuple[
+        bool, Optional[Army]]:
         """
-        Change the go to position of an army
+        Change the position an army is going to
         """
         stmt = (
             select(Army).where(Army.id == army_id)
@@ -196,7 +243,8 @@ class ArmyAccess:
         param: target_id: the id of the army that will be attacked
         """
 
-        army_owner = Select(User).join(Army, Army.user_id == User.id).where((Army.id == attack_id) | (Army.id == target_id))
+        army_owner = Select(User).join(Army, Army.user_id == User.id).where(
+            (Army.id == attack_id) | (Army.id == target_id))
         results = await self.__session.execute(army_owner)
         results = results.all()
         if len(results) != 2:
@@ -274,7 +322,9 @@ class ArmyAccess:
         if army_stats is None:
             army_stats = {"attack": 0, "defense": 0, "city_defense": 0, "city_attack": 0}
 
-        get_troops = Select(ArmyConsistsOf.size, ArmyConsistsOf.rank, TroopType).join(TroopType, TroopType.type == ArmyConsistsOf.troop_type).where(ArmyConsistsOf.army_id == army_id)
+        get_troops = Select(ArmyConsistsOf.size, ArmyConsistsOf.rank, TroopType).join(TroopType,
+                                                                                      TroopType.type == ArmyConsistsOf.troop_type).where(
+            ArmyConsistsOf.army_id == army_id)
         results = await self.__session.execute(get_troops)
         army_troops = results.all()
 
@@ -286,7 +336,7 @@ class ArmyAccess:
         for troop_tup in army_troops:
             troop_size = troop_tup[0]
             troop_rank = troop_tup[1]
-            troop_stats = troop_tup[2].getStats(troop_rank,  troop_size)
+            troop_stats = troop_tup[2].getStats(troop_rank, troop_size)
 
             total_troop_amount += troop_size
 
@@ -302,7 +352,7 @@ class ArmyAccess:
         """
         Speed is expresses as a weighted average
         """
-        army_stats["speed"] = army_stats.get("speed", 100)/max(total_troop_amount, 1)
+        army_stats["speed"] = army_stats.get("speed", 100) / max(total_troop_amount, 1)
 
         return army_stats
 
@@ -384,7 +434,8 @@ class ArmyAccess:
         return: list of army_id's of attackers and their time of arrival
         """
 
-        get_attackers = Select(OnArrive.army_id, Army.arrival_time).join(Army, OnArrive.army_id == Army.id).where(Army.planet_id == planet_id)
+        get_attackers = Select(OnArrive.army_id, Army.arrival_time).join(Army, OnArrive.army_id == Army.id).where(
+            Army.planet_id == planet_id)
         results = await self.__session.execute(get_attackers)
         results = results.all()
         return results
@@ -427,7 +478,8 @@ class ArmyAccess:
         param: target_id: the id of the army that will be attacked
         """
 
-        army_owner = Select(User).join(Army, Army.user_id == User.id).where((Army.id == army_id) | (Army.id == target_id))
+        army_owner = Select(User).join(Army, Army.user_id == User.id).where(
+            (Army.id == army_id) | (Army.id == target_id))
         results = await self.__session.execute(army_owner)
         results = results.all()
         if len(results) != 2:

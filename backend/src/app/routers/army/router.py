@@ -21,10 +21,10 @@ async def get_armies(
 
     armies_schema = []
 
-    for armies in db_reply:
-        for army in armies:
-            temp = army.to_army_schema()
-            armies_schema.append(temp)
+    for army in db_reply:
+        temp = army.to_army_schema()
+        armies_schema.append(temp)
+
     return armies_schema
 
 
@@ -48,14 +48,12 @@ async def get_troops(armyid: int, db=Depends(get_db)):
 
     troops_schema = []
 
-    for troop_groups in db_reply:
-        for troops in troop_groups:
-            temp = troops.to_armyconsistsof_schema()
-            troops_schema.append(temp)
+    for troops in db_reply:
+        temp = troops.to_armyconsistsof_schema()
+        troops_schema.append(temp)
 
     army_stats = await data_access.ArmyAccess.get_army_stats(armyid)
     return {"troops": troops_schema, "stats": army_stats}
-
 
 
 @router.get("/armies_user")
@@ -70,7 +68,7 @@ async def armies_user(
 
     data_access = DataAccess(db)
     armies = await data_access.ArmyAccess.get_user_armies(user_id)
-    armies_schemas = [army[0].to_army_schema() for army in armies]
+    armies_schemas = [army.to_army_schema() for army in armies]
     return armies_schemas
 
 

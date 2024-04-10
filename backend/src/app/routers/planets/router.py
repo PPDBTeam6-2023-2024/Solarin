@@ -80,7 +80,7 @@ async def planet_socket(
                 armies = await data_access.ArmyAccess.get_armies_on_planet(planet_id=planet_id)
                 data = {
                     "request_type": data["type"],
-                    "data": [army[0].to_dict() for army in armies]
+                    "data": [army.to_dict() for army in armies]
                 }
                 await connection_pool.send_personal_message(websocket, data)
             elif data["type"] == "change_direction":

@@ -33,7 +33,7 @@ class ArmyCombat:
         Change the surviving amount of units
         """
         for army_troop in army_troops:
-            army_troop[0].size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio, army_troop[0].size)
+            army_troop.size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio, army_troop.size)
         await da.commit()
 
     @staticmethod
@@ -87,7 +87,7 @@ class ArmyCombat:
             Change the surviving amount of units
             """
             for army_troop in army_troops:
-                army_troop[0].size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio,
-                                                                            army_troop[0].size)
+                army_troop.size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio,
+                                                                            army_troop.size)
 
         await da.commit()

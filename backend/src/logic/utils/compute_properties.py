@@ -149,3 +149,12 @@ class PropertyUtility:
 
         survival: float = PropertyUtility.getTruncNormSample(min(pbr_ratio*(1 - 1/strength_ratio), 1.06), 0.1, (0, 1))
         return round(survival*number_of_units)
+
+    @staticmethod
+    def get_map_cross_time(army_speed):
+        """
+        Calculate the time (in seconds) needed to cross the entire planet map based on the provided army speed
+
+        """
+        map_cross_time = 1000 / army_speed * 3600
+        return map_cross_time

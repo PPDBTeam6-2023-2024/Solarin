@@ -48,7 +48,7 @@ class AllianceAccess:
         search_members = Select(User).where(User.alliance == alliance_name)
         results = await self.__session.execute(search_members)
 
-        return results.all()
+        return results.scalars().all()
 
     async def sendAllianceRequest(self, user_id: int, alliance_name: str):
         """
@@ -115,8 +115,7 @@ class AllianceAccess:
         alliance_requests = Select(User).join(AllianceRequest, AllianceRequest.user_id == User.id).\
             join(alliance_member, alliance_member.alliance == AllianceRequest.alliance_name).where(alliance_member.id == user_id)
         results = await self.__session.execute(alliance_requests)
-        results = results.all()
-        return results
+        return results.scalars().all()
 
     async def getAlliance(self, user_id: int):
         """

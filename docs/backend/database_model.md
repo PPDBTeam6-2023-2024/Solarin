@@ -6,7 +6,7 @@ Explanation of how our database model works and looks
 ## Technologies used
 - sqlalchemy (async)
 
-## Description
+## Tables
 In our database model we can consider 2 types of Tables:
 
 <details>
@@ -32,7 +32,7 @@ An overview of each the tables in the database:
 
 |      Table      | Type | Purpose                                                                                                                                                  |
 |:---------------:|:----:|:---------------------------------------------------------------------------------------------------------------------------------------------------------|
-|      User       | Data | Store data of a users account                                                                                                                            |
+|      User       | Data | Store data of a user their account                                                                                                                       |
 |    Alliance     | Data | Store the alliances                                                                                                                                      |
 |     Message     | Data | Store the messages                                                                                                                                       |
 |  MessageBoard   | Data | Each message corresponds to a message board<br/> This table makes it possible to request sequences <br/>of messages from an alliance or between players. |
@@ -55,6 +55,7 @@ An overview of each the tables in the database:
 |    PlanetType    | Lookup | Stores which types of planets are in the game <br/>(each planet has a type) |     
 |   PlanetRegion   |  Data  | Stores the region corresponding to a planet                                 |     
 | PlanetRegionType | Lookup | Store all the types a region can be                                         |     
+|  AssociatedWith  | Lookup | Stores which region types can exist on which planet types                   |     
 
 
 </p>
@@ -64,18 +65,18 @@ An overview of each the tables in the database:
 <summary><strong>Settlements</strong></summary>
 <p>
 
-|           Table            |  Type  | Purpose                                                                                                                   |
-|:--------------------------:|:------:|:--------------------------------------------------------------------------------------------------------------------------|
-|            City            |  Data  | Stores information about a city that is in a region on a planet                                                           |                                                                                                                                                  |     
-|      BuildingInstance      |  Data  | Stores which buildings a city has                                                                                         |     
-|        BuildingType        | Lookup | Stores the types of buildings that can exist (This table is the parent of an ISA/polymorphic relation)                    |   
-|        BarracksType        | Lookup | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)             |
-|          WallType          | Lookup | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                |   
-|         TowerType          | Lookup | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
-|         HouseType          | Lookup | Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
-| ProductionBuildingTypeType | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
-|     ProducesResources      | Lookup | Stores which resources a production building produces                                                                     |   
-|        CreationCost        | Lookup | Stores the cost to upgrade certain buildings                                                                              |
+|         Table          |  Type  | Purpose                                                                                                                   |
+|:----------------------:|:------:|:--------------------------------------------------------------------------------------------------------------------------|
+|          City          |  Data  | Stores information about a city that is in a region on a planet                                                           |                                                                                                                                                  |     
+|    BuildingInstance    |  Data  | Stores which buildings a city has                                                                                         |     
+|      BuildingType      | Lookup | Stores the types of buildings that can exist (This table is the parent of an ISA/polymorphic relation)                    |   
+|      BarracksType      | Lookup | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)             |
+|        WallType        | Lookup | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                |   
+|       TowerType        | Lookup | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
+|       HouseType        | Lookup | Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
+| ProductionBuildingType | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
+|   ProducesResources    | Lookup | Stores which resources a production building produces                                                                     |   
+|      CreationCost      | Lookup | Stores the cost to create/upgrade certain buildings                                                                       |
 
 
 </p>
@@ -85,20 +86,20 @@ An overview of each the tables in the database:
 <summary><strong>Armies</strong></summary>
 <p>
 
-|     Table      |  Type  | Purpose                                                                                                                                                              |
-|:--------------:|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TrainingQueue  |  Data  | One entry stores the training data of 1 Entry in a trainingQueue,<br/>The table keeps track of which units need to be trained and in which order                     |  
-|   TroopType    | Lookup | Types of troops that are in the game                                                                                                                                 |
-| TroopTypeCost  | Lookup | Stores which resources and how much of them it costs to train a unit                                                                                                 |
-|      Army      |  Data  | Stores data about an army                                                                                                                                            |
-| ArmyConsistsOf |  Data  | The relation indication which types of units are part of the army and in what quantities                                                                             |
-|   TroopRank    |  Data  | Stores the rank of the unit for a specific user (if no entry, the rank is 1)                                                                                         |
-| AttackOnArrive |  Data  | To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position (This table is the parent of an ISA/polymorphic relation) |
-|   AttackArmy   |  Data  | Stores which other army we might attack when our army arrives at its position  (This table is a child of an ISA/polymorphic relation with AttackArmy)                |
-|   AttackCity   |  Data  | Stores which city we might attack when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                   |
-|   EnterCity    |  Data  | Stores which city we might enter when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                    |
-|  MergeArmies   |  Data  | SStores which army we merge with when we arrive     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                           |
-|   ArmyInCity   |  Data  | Stores the armies that are present inside a city                                                                                                                     |
+|     Table      |  Type  | Purpose                                                                                                                                                                                                                 |
+|:--------------:|:------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TrainingQueue  |  Data  | One entry stores the training data of 1 Entry in a trainingQueue,<br/>The table keeps track of which units need to be trained and in which order                                                                        |  
+|   TroopType    | Lookup | Types of troops that are in the game                                                                                                                                                                                    |
+| TroopTypeCost  | Lookup | Stores which resources and how much of them it costs to train a unit                                                                                                                                                    |
+|      Army      |  Data  | Stores data about an army                                                                                                                                                                                               |
+| ArmyConsistsOf |  Data  | The relation indication which types of units are part of the army and in what quantities                                                                                                                                |
+|   TroopRank    |  Data  | Stores the rank of the unit for a specific user (if no entry, the rank is 1)                                                                                                                                            |
+| AttackOnArrive |  Data  | To handle actions when an army arrives in an IDLE manner we use this table to keep track of events that need to occur when an army arrives at its destination (This table is the parent of an ISA/polymorphic relation) |
+|   AttackArmy   |  Data  | Stores which other army we might attack when our army arrives at its position  (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                   |
+|   AttackCity   |  Data  | Stores which city we might attack when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                      |
+|   EnterCity    |  Data  | Stores which city we might enter when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                       |
+|  MergeArmies   |  Data  | Stores which army we merge with when we arrive     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                                               |
+|   ArmyInCity   |  Data  | Stores the armies that are present inside a city                                                                                                                                                                        |
 
 </p>
 </details>
@@ -107,10 +108,10 @@ An overview of each the tables in the database:
 <summary><strong>Resources</strong></summary>
 <p>
 
-|    Table     |  Type  | Purpose                                 |
-|:------------:|:------:|:----------------------------------------|
-| ResourceType | Lookup | Types of resources that are in the game |  
-| HasResources |  Data  | Store resources associated with a user  |
+|    Table     |  Type  | Purpose                                                                              |
+|:------------:|:------:|:-------------------------------------------------------------------------------------|
+| ResourceType | Lookup | Types of resources that are in the game                                              |  
+| HasResources |  Data  | Store resources associated with a user (stores how many of the resources a user has) |
 
 </p>
 </details>
@@ -118,13 +119,24 @@ An overview of each the tables in the database:
 <details>
 <summary><strong>Coordinate System</strong></summary>
 <p>
-The coordinate system used in our game is stored in the database as double precision (x,y) coordinate with values ranging from 0 to 1. Cities and planets have coordinates.
+The coordinate system used in our game is stored in the database as double precision (x,y) coordinate with values ranging from 0 to 1. 
+Cities, Armies and regions have coordinates to keep track of their location.
+</p>
+</details>
+
+
+
+
+<details>
+<summary><strong>Domains</strong></summary>
+<p>
+The following domains are used:
+
+|   Domain   | Purpose                                         |
+|:----------:|:------------------------------------------------|
+| Coordinate | Domain for coordinates that are in range [0, 1] |  
+
 </p>
 </details>
 
 These models are created in SQL Alchemy and are generated using alembic
-
-## Issues
-
-
-## Additional Information

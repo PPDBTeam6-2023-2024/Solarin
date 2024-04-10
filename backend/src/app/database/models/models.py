@@ -10,11 +10,12 @@ from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from ...routers.buildingManagement.schemas import TrainingQueueEntry
 from datetime import timedelta
 from ....logic.utils.compute_properties import *
+from .domains import Coordinate
 
 
 class User(Base):
     """
-    Store data of a users account
+    Store data of a user their account
 
     id: unique id to identify the user (uses a sequence to increase the id counter every time a user creates an account)
     email: the email of the user
@@ -185,8 +186,8 @@ class PlanetRegion(Base):
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
     planet_id = Column(Integer, ForeignKey("planet.id"))
     region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
-    x = Column(Float(precision=53), nullable=False)
-    y = Column(Float(precision=53), nullable=False)
+    x = Column(Coordinate, nullable=False)
+    y = Column(Coordinate, nullable=False)
 
     planet = relationship("Planet", back_populates="regions", lazy='joined')
     cities = relationship("City", back_populates="region", lazy='select')
@@ -219,8 +220,8 @@ class City(Base):
     region_id = Column(Integer, ForeignKey("planetRegion.id"))
     id = Column(Integer, Sequence("city_id_seq"), primary_key=True)
     controlled_by = Column(Integer, ForeignKey("user.id"), nullable=False)
-    x = Column(Float(precision=53), nullable=False)
-    y = Column(Float(precision=53), nullable=False)
+    x = Column(Coordinate, nullable=False)
+    y = Column(Coordinate, nullable=False)
 
     rank = Column(Integer, nullable=False, default=1)
 
@@ -341,6 +342,8 @@ class BarracksType(BuildingType):
 class WallType(BuildingType):
     """
     Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)
+    name: name of the WallType building.
+    Every row in this table indicates a building that can be used as a wall building
     """
     __tablename__ = 'wallType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
@@ -354,6 +357,8 @@ class WallType(BuildingType):
 class TowerType(BuildingType):
     """
     Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)
+    name: name of the TowerType building.
+    Every row in this table indicates a building that can be used as a tower building
     """
     __tablename__ = 'towerType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
@@ -367,6 +372,8 @@ class TowerType(BuildingType):
 class HouseType(BuildingType):
     """
     Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)
+    name: name of the HouseType building.
+    Every row in this table indicates a building that can be used as a house building
     """
     __tablename__ = 'houseType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
@@ -379,7 +386,12 @@ class HouseType(BuildingType):
 
 class ProductionBuildingType(BuildingType):
     """
-    Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType)
+    Stores which types of production buildings exist
+    (This table is a child of an ISA/polymorphic relation with BuildingType)
+
+    name: name of the ProductionBuildingType building.
+    Every row in this table indicates a building that can be used as a production building, that
+    produces certain resources
     """
     __tablename__ = 'productionBuildingType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
@@ -393,6 +405,15 @@ class ProductionBuildingType(BuildingType):
 class ProducesResources(Base):
     """
     Stores which resources a production building produces
+    Each productionBuildingType has specific resources it produces,
+    This table, will store these relations.
+
+    building_name: name of the productionBuildingType
+    resource_name: name of the resource we want to produce
+    base_production: the base production of this resource, this building produces (resource per hour)
+    max_capacity: max amount of this resource that can be stored inside this building without it being collected.
+    The resources produced by a productionBuilding can be buffered inside this building, till a certain capacity
+    This entry stores its max capacity
     """
     __tablename__ = 'producesResources'
     building_name = Column(String, ForeignKey("productionBuildingType.name", deferrable=True, initially='DEFERRED'),
@@ -405,9 +426,12 @@ class ProducesResources(Base):
 
     production_building = relationship("ProductionBuildingType", back_populates="producing_resources", lazy='select')
 
+
 class StoresResources(Base):
     """
     Stores the resources produced in a production building instance
+
+
     """
     __tablename__ = 'storesResources'
     building_id = Column(Integer, ForeignKey('buildingInstance.id', deferrable=True, initially='DEFERRED'), primary_key=True)
@@ -418,6 +442,7 @@ class StoresResources(Base):
 class ResourceType(Base):
     """
     Types of resources that are in the game
+    name: the name of the resource type
     """
     __tablename__ = 'resourceType'
     name = Column(String, primary_key=True)
@@ -427,6 +452,19 @@ class TrainingQueue(Base):
     """
     One entry stores the training data of 1 Entry in a trainingQueue,
     The table keeps track of which units need to be trained and in which order
+
+    id: an id to uniquely identify the TrainingQueue, within a buildingInstance
+    This table represents a Weak entity. The reason this id is not unique on an absolute level is the following:
+    After training a lot of units, the TrainingQueue will have added and removed a lot of entries. Resulting
+    In a high Id number, while all the lower numbers do not exist anymore. By having the id as a weak key,
+    We will be able to keep our Id relative low.
+
+    building_id: the id of the building (of type BarrackBuilding), that does the training (and has the training queue)
+    army_id: the id of the army we add our units to after they are trained
+    train_remaining: the remaining training_time, till all units of this Queue entry are trained.
+    troop_type: the type of troop we want to train
+    rank: the rank of the units we are training
+    troop_size: the amount of troops in this queue that still need to be trained
     """
     __tablename__ = 'trainingQueue'
     id = Column(Integer, primary_key=True)
@@ -439,7 +477,9 @@ class TrainingQueue(Base):
     training_size = Column(Integer)
 
     def toTrainingQueueEntry(self, unit_training_time):
-
+        """
+        Convert TrainingQueue Object to a scheme
+        """
         return TrainingQueueEntry(
             id=self.id,
             building_id=self.building_id,
@@ -455,6 +495,15 @@ class TrainingQueue(Base):
 class TroopType(Base):
     """
     Types of troops that are in the game
+    type: the name of the troop
+    training_time: time needed to train a single troop of this type
+    attack: attack points of this troop
+    defense: defense points of this troop
+    city_attack: attack points of this troop (for cities)
+    city_defense: defense points of this troop (for cities)
+    recovery: the recovery points of a unit (decides likeliness units survive combat)
+    speed: speed of a unit
+    required_rank: rank of a building needed to train this unit
     """
     __tablename__ = 'troopType'
     type = Column(TEXT, primary_key=True)
@@ -470,6 +519,9 @@ class TroopType(Base):
     @classmethod
     def withBattleStats(cls, type_name: str, training_time: timedelta, battle_stats: BattleStats,
                         required_rank: int) -> "TroopType":
+        """
+        Create a troop type based on the battle stats
+        """
         return cls(
             type=type_name,
             training_time=training_time.total_seconds(),
@@ -485,6 +537,7 @@ class TroopType(Base):
     def getStats(self, rank, amount=1):
         """
         Get the stats of this unit type based on the rank and the amount of this type
+        'PropertyUtility.getUnitStatsRanked', makes sure the stats depend on the rank of the unit in question
         """
         return {"attack": PropertyUtility.getUnitStatsRanked(self.attack, rank)*amount,
                 "defense": PropertyUtility.getUnitStatsRanked(self.defense, rank)*amount,
@@ -500,6 +553,10 @@ class TroopRank(Base):
     """
     Stores the rank of the unit for a specific user (if no entry, the rank is 1)
     (because storing an entry for users that do not get far in the game before stopping does not seem efficient)
+
+    troop_type: the type of the troop
+    user_id: the user it is associated with
+    rank: the current rank of this unit for this user
     """
     __tablename__ = 'troopRank'
     troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
@@ -510,6 +567,10 @@ class TroopRank(Base):
 class TroopTypeCost(Base):
     """
     Stores which resources and how much of them it costs to train a unit
+
+    troop_type: the type of the troop
+    resource_type: the type of resource it will cost
+    amount: the base amount of this resource training this unit will cost
     """
     __tablename__ = 'troopTypeCost'
     troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
@@ -521,32 +582,49 @@ class TroopTypeCost(Base):
 class Army(Base):
     """
     Stores data about an army
+
+    id: unique id of an army
+    user_id: id of the user who controls the army
+    planet_id: id of the planet the unit is currently on (can be 'null' in case an army is in space)
+
+    Army positions are always shown as 2 points, and a departure and arrival time.
+    Based on this information is possible to do a linear interpolation to determine
+    the current position of an army
+
+    x,y is the 'from_position'
+    to_x, to_y is the 'to_position'
+    departure_time, arrival_time are timestamps, indicating when the army changed its movement, and when it
+    would arrive on its desired location
     """
     __tablename__ = "army"
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     planet_id = Column(Integer, ForeignKey("planet.id"), nullable=True)
-    departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
-    arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
-    x = Column(Float(precision=53), nullable=False)
-    y = Column(Float(precision=53), nullable=False)
-    to_x = Column(Float(precision=53), nullable=False)
-    to_y = Column(Float(precision=53), nullable=False)
+    departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow())
+    arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow())
+    x = Column(Coordinate, nullable=False)
+    y = Column(Coordinate, nullable=False)
+    to_x = Column(Coordinate, nullable=False)
+    to_y = Column(Coordinate, nullable=False)
     last_update = Column(TIME)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
     planet = relationship("Planet", back_populates="armies", lazy='select')
 
-
     def to_army_schema(self):
+        """
+        Converts the army Object to a scheme
+        """
         return ArmySchema(id=self.id,
                           user_id=self.user_id,
                           planet_id=self.planet_id,
-                          last_update=str(self.last_update),
                           x=self.x,
                           y=self.y)
 
     def to_dict(self):
+        """
+        Retrieve the army information as a dictionary
+        """
         return {
             "id": self.id,
             "departure_time": self.departure_time.isoformat(),
@@ -562,6 +640,12 @@ class Army(Base):
 class ArmyConsistsOf(Base):
     """
     The relation indication which types of units are part of the army and in what quantities
+
+    army_id: the id of the army the troops belong to
+    troop_type: the type of troop that belongs to the army
+    rank: the rank of these units
+    size: the amount of this kind of troop that is in the army
+    (makes it store efficient in comparison to having an entry for each troop)
     """
     __tablename__ = "armyConsistsOf"
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
@@ -581,8 +665,12 @@ class ArmyConsistsOf(Base):
 
 class CreationCost(Base):
     """
-    Stores the cost to create certain buildings
+    Stores the cost to create/ upgrade certain buildings
     Lookup table to define creation prices
+
+    building_name: the name of the building type
+    cost_type: resource type of the cost
+    cost_amount: how much of the provided resource this would cost
     """
 
     __tablename__ = "CreationCost"
@@ -596,6 +684,9 @@ class CreationCost(Base):
 class FriendRequest(Base):
     """
     Stores which users have pending friend requests
+
+    from_user_id: user id of the sender of the friend request
+    to_user_id: user id of the receiver of the friend request
     """
     __tablename__ = "FriendRequest"
     from_user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
@@ -605,6 +696,9 @@ class FriendRequest(Base):
 class AllianceRequest(Base):
     """
     Stores which users asked to join a faction
+
+    user_id: id of the user who asks to join an alliance
+    alliance_name: name of the alliance the user wants to join
     """
     __tablename__ = "allianceRequest"
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
@@ -612,6 +706,11 @@ class AllianceRequest(Base):
 
 
 class AssociatedWith(Base):
+    """
+    Some region Types are associated with Certain Planet Types
+    A region type can only exist on the right type of planet
+    To store their relation we use this table
+    """
     __tablename__ = 'associatedWith'
     planet_type = Column(String, ForeignKey("planetType.type"), primary_key=True)
     region_type = Column(String, ForeignKey("planetRegionType.region_type"), primary_key=True)
@@ -619,7 +718,10 @@ class AssociatedWith(Base):
 
 class OnArrive(Base):
     """
-    To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position
+    To attack users IDLE, we will store when a user attacks another user/city, ... when he arrives at that position
+    (This table is a parent of an ISA/polymorphic relation)
+
+    army_id: the army that has the OnArrive event (on arrival of this army we will check the event)
     """
     __tablename__ = 'onArrive'
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
@@ -636,6 +738,10 @@ class OnArrive(Base):
 class AttackArmy(OnArrive):
     """
     Stores which other army we might attack when our army arrives at its position
+    (This table is a child of an ISA/polymorphic relation OnArrive)
+
+    army_id: the army that has the OnArrive event (on arrival of this army we will check the event)
+    target_id: the id of the army we will attack when we arrive
     """
     __tablename__ = 'attackArmy'
 
@@ -652,6 +758,10 @@ class AttackArmy(OnArrive):
 class AttackCity(OnArrive):
     """
     Stores which city we might attack when our army arrives at its position
+    (This table is a child of an ISA/polymorphic relation OnArrive)
+
+    army_id: the army that has the OnArrive event (on arrival of this army we will check the event)
+    target_id: the id of the city we will attack when we arrive
     """
     __tablename__ = 'attackCity'
 
@@ -667,6 +777,10 @@ class AttackCity(OnArrive):
 class EnterCity(OnArrive):
     """
     Stores which city we might enter when our army arrives at its position
+    (This table is a child of an ISA/polymorphic relation OnArrive)
+
+    army_id: the army that has the OnArrive event (on arrival of this army we will check the event)
+    target_id: the id of the city we will enter when we arrive
     """
     __tablename__ = 'enterCity'
 
@@ -683,6 +797,11 @@ class EnterCity(OnArrive):
 class MergeArmies(OnArrive):
     """
     Stores which army we merge with when we arrive
+
+    (This table is a child of an ISA/polymorphic relation OnArrive)
+
+    army_id: the army that has the OnArrive event (on arrival of this army we will check the event)
+    target_id: the id of the army we will merge with when we arrive.
     """
     __tablename__ = 'mergeArmies'
 
@@ -696,13 +815,17 @@ class MergeArmies(OnArrive):
     }
 
 
-
 class ArmyInCity(Base):
     """
     Stores the armies that are present inside a city
+
+    army_id: the id of an army that is inside a city
+    city_id: the id of the city we are in.
+    Only 1 army can be inside a city at the same time
     """
     __tablename__ = 'armyInCity'
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
-    city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), nullable=False)
+    city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), nullable=False,
+                     unique=True)

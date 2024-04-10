@@ -4,7 +4,8 @@ from math import dist
 from ..models import *
 from ..database import AsyncSession
 from .city_access import CityAccess
-
+from ..exceptions.permission_exception import PermissionException
+from ..exceptions.invalid_action_exception import InvalidActionException
 
 class ArmyAccess:
     """
@@ -181,10 +182,19 @@ class ArmyAccess:
 
         return timedelta(seconds=map_cross_time * distance)
 
-    async def change_army_direction(self, user_id: int, army_id: int, to_x: float, to_y: float) -> tuple[
-        bool, Optional[Army]]:
+    async def change_army_direction(self, user_id: int, army_id: int, to_x: float, to_y: float) -> \
+            tuple[bool, Optional[Army]]:
         """
-        Change the position an army is going to
+        Change the position an army is going to.
+        :param: user_id: id of the user who wants to change the army direction
+        :param: army_id: id of the army whose direction we want to change
+        :param: to_x, to_y: the position we want ti change to
+        return: Tuple[bool, Army], Bool indicates whether the army has changed direction, and the army is the object
+        itself
+        """
+
+        """
+        Retrieve the army object
         """
         stmt = (
             select(Army).where(Army.id == army_id)
@@ -192,26 +202,54 @@ class ArmyAccess:
 
         result = await self.__session.execute(stmt)
         army: Optional[Army] = result.scalar_one_or_none()
-        assert army.user_id == user_id
 
+        """
+        When the user is not the owner of the army, throw an exception
+        """
+        if army.user_id != user_id:
+            raise PermissionException(user_id, f"change the direction of army {army_id} owned by {army.user_id}")
+
+        """
+        Calculate the difference between the army to position and its start position
+        """
         x_diff = army.to_x - army.x
         y_diff = army.to_y - army.y
 
+        """
+        retrieve the current time
+        """
         current_time = datetime.utcnow()
 
         total_time_diff = (army.arrival_time - army.departure_time).total_seconds()
         current_time_diff = (min(current_time, army.arrival_time) - army.departure_time).total_seconds()
 
+        """
+        change the army position to its current position by using linear interpolation
+        
+        Our army goes from A to B, over time
+        current_time_diff / total_time_diff will give how much of the path is already passed
+        By changing the army position (x, y) accordingly, we have the current position as army position (x, y)
+        """
         if total_time_diff != 0:
             army.x += x_diff * (current_time_diff / total_time_diff)
             army.y += y_diff * (current_time_diff / total_time_diff)
 
+        """
+        change the to position to the new position
+        """
         army.to_x = to_x
         army.to_y = to_y
 
+        """
+        Calculate the distance between the current position and the nwe position, and use it
+        to calculate how long the army will need to move to this position (delta)
+        """
         distance = dist((army.x, army.y), (army.to_x, army.to_y))
         delta = await self.get_army_time_delta(army_id, distance=distance, developer_speed=10)
 
+        """
+        Change the departure time to now and the arrival time to the moment our army will arrive
+        """
         army.departure_time = current_time
         army.arrival_time = current_time + delta
 
@@ -219,18 +257,20 @@ class ArmyAccess:
         await self.__session.refresh(army)
 
         """
-        When an army was on route to attack someone, we will remove it when the army changes its position
+        When an army was on route to attack someone, we will remove it when the army changes its position,
+        because our army will not go to this target anymore
         """
         await self.cancel_attack(army_id)
 
         """
-        Attackers cancel to, because the attacked army is not at the target location anymore
+        Attackers cancel to, because the attacked army is not at the target location anymore,
+        So the attacking army cannot combat the other army on arrival anymore
         """
         get_attackers = Select(AttackArmy).where(AttackArmy.target_id == army_id)
         results = await self.__session.execute(get_attackers)
-        results = results.all()
+        results = results.scalars().all()
         for r in results:
-            await self.cancel_attack(r[0])
+            await self.cancel_attack(r)
 
         return True, army
 
@@ -243,23 +283,22 @@ class ArmyAccess:
         param: target_id: the id of the army that will be attacked
         """
 
-        army_owner = Select(User).join(Army, Army.user_id == User.id).where(
-            (Army.id == attack_id) | (Army.id == target_id))
-        results = await self.__session.execute(army_owner)
-        results = results.all()
-        if len(results) != 2:
-            raise Exception("One of the provided armies does not exist")
+        same_owner, same_alliance = await self.check_army_relation(attack_id, target_id)
         """
         Check a user doesn't attack himself
         """
-        if results[0][0].id == results[1][0].id:
-            raise Exception("You cannot attack your own army")
+        if same_owner:
+            raise InvalidActionException("You cannot attack your own army")
 
         """
         Check if users are not in the same alliance
         """
-        if results[0][0].alliance == results[1][0].alliance and results[0][0].alliance is not None:
-            raise Exception("You cannot attack your allies")
+        if same_alliance:
+            raise InvalidActionException("You cannot attack your allies")
+
+        """
+        add the attack event object to the database
+        """
         attack_object = AttackArmy(army_id=attack_id, target_id=target_id)
         self.__session.add(attack_object)
         await self.__session.flush()
@@ -525,3 +564,30 @@ class ArmyAccess:
 
         d = delete(ArmyInCity).where(ArmyInCity.army_id == army_id)
         await self.__session.execute(d)
+
+    async def check_army_relation(self, army_1: int, army_2: int) -> tuple[bool, bool]:
+        """
+        Determine the underlining relation between 2 armies
+
+        param: army_1: the id of the army that want to check the relation
+        param: army_2: the id of the army that want to check the relation
+        return: Tuple[boll, bool],
+        first bool indicates  whether the armies have the same owner,
+        the second whether they are in the same alliance
+        """
+
+        """
+        retrieve both users corresponding to the armies (being the owners of these armies)
+        """
+        army_owner = Select(User).join(Army, Army.user_id == User.id).where(
+            (Army.id == army_1) | (Army.id == army_2))
+        results = await self.__session.execute(army_owner)
+        results = results.scalars().all()
+
+        if len(results) != 2:
+            raise Exception("One of the provided armies does not exist")
+
+        same_owner = results[0].id == results[1].id
+        same_alliance = results[0].alliance == results[1].alliance and results[0].alliance is not None
+
+        return same_owner, same_alliance

@@ -2,7 +2,6 @@ import datetime
 import math
 from ..models import *
 from ..database import AsyncSession
-from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from ....logic.utils.compute_properties import *
 from typing import Tuple, List

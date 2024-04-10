@@ -62,11 +62,11 @@ const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost }
 
     // Check if upgrade cost data is available, and if not, show "..loading"
     const costData = upgradeCost[data.id];
-    const isCostAvailable = costData && costData.cost != null && costData.cost_type != null;
+    const isCostAvailable = costData && costData.costs.length > 0;
 
     // Adjust buttonText based on availability of cost data
     const buttonText = isCostAvailable
-        ? `Upgrade: ${costData.cost} ${costData.cost_type}`
+        ? `Upgrade: ${costData.costs.map((cost) => {return `${cost[1]} ${cost[0]}`} )}`
         : 'Loading...';
 
     // Determine button style based on availability of upgrade cost
@@ -129,7 +129,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
                 }
                 {selectedBuilding && selectedBuilding.type === "productionBuilding" &&
-                    <ResourceButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap[selectedBuilding.id]} />
+                    <ResourceButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} />
                 }
                 {selectedBuilding &&
                     <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap} setUpgradeCostMap={setUpgradeCostMap} />

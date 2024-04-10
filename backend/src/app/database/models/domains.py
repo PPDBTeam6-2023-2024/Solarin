@@ -53,7 +53,7 @@ class PositiveInteger(TypeDecorator):
     def process_bind_param(self, value, dialect):
         """
         SQL Alchemy has no native support for adding checks to Domains, so
-        we check manually if the value of a coordinate is between 0 and 1.
+        we check manually if the value of the Integer is greater or equal to 0
         """
         if value is not None and not (0 <= value):
             raise DomainException("PositiveInteger", "value is negative")

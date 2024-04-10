@@ -66,6 +66,11 @@ class BuildingInstance(Base):
     rank = Column(PositiveInteger, nullable=False, default=1)
 
     """
+    stores when the data about this building is last checked
+    """
+    last_checked = Column(TIMESTAMP, nullable=False, default=func.now())
+
+    """
     This relation is joined, because when we ask for an instance we will often also be interested in the type 
     its attributes
     """
@@ -84,11 +89,6 @@ class BuildingInstance(Base):
         )
 
         return b
-
-    """
-    stores when the data about this building is last checked
-    """
-    last_checked = Column(TIMESTAMP, nullable=True, default=func.now())
 
 
 class BuildingType(Base):

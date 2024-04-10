@@ -94,7 +94,7 @@ class TrainingAccess:
         developers should be allowed to change the time, that is why seconds can be provided
         """
         if seconds is None:
-            delta_time = await BuildingAccess(self.__session).getDeltaTime(building_id)
+            delta_time = await BuildingAccess(self.__session).get_delta_time(building_id)
             seconds = delta_time.total_seconds()
         for r in results:
             if seconds <= 0:

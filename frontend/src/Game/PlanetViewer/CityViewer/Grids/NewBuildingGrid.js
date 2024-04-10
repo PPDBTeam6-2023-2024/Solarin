@@ -47,7 +47,7 @@ const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, update
         name: building.name,
         buildingType: building.type,
         buildingRank: building.required_rank,
-        cost:  building.cost_amount + " "+ building.cost_type,
+        cost:  building.costs.map((cost, index) => {console.log("m", cost); return (cost.cost_amount+" "+cost.cost_type) }),
         can_build: building.can_build,
         id: building.id,
         index: index

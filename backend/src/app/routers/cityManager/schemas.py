@@ -40,14 +40,12 @@ class BuildingTypeSchema(ConfigClass):
     name: str
     type: str
     required_rank: int
-    cost_type: str
-    cost_amount: int
+    costs: list[dict]
     can_build: bool
 
 class CostSchema(ConfigClass):
     id: int
-    cost: int
-    cost_type: str
+    costs: list[tuple[str, int]]
     can_upgrade: bool
 
 class CityLocationSchema(BaseModel):

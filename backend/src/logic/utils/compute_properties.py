@@ -54,7 +54,7 @@ class PropertyUtility:
         Calculate the general upgrade cost, based on the base creation cost and the level
 
         """
-        return int(floor((creation_cost * level) / 2))
+        return int((creation_cost * (level+1)) / 2)
 
     @staticmethod
     def getGPR(modifier: float, base_rate: int, level: int) -> int:

@@ -121,16 +121,23 @@ async def fill_db():
         await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Vibranium", 1)])
         await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Energon", 2)])
 
+        await da.ResourceAccess.add_resource(1, "TF", 10000)
+        await da.ResourceAccess.add_resource(2, "TF", 10000)
+        await da.ResourceAccess.add_resource(1, "Vibranium", 10000)
+        await da.ResourceAccess.add_resource(2, "Vibranium", 10000)
+        await da.ResourceAccess.add_resource(1, "Energon", 10000)
+        await da.ResourceAccess.add_resource(2, "Energon", 10000)
+
         """
         Create some actual buildings instances inside cities
         """
-        await da.BuildingAccess.createBuilding(c_id, "The mines of moria", 1)
-        b_id = await da.BuildingAccess.createBuilding(c_id, "Kamino training complex",1)
-        await da.BuildingAccess.createBuilding(c_id, "Solarin mansion",1)
+        await da.BuildingAccess.create_building(1, c_id, "The mines of moria")
+        b_id = await da.BuildingAccess.create_building(1, c_id, "Kamino training complex")
+        await da.BuildingAccess.create_building(1, c_id, "Solarin mansion")
 
-        await da.BuildingAccess.createBuilding(c_id2, "The mines of moria",2)
-        b_id2 = await da.BuildingAccess.createBuilding(c_id2, "Kamino training complex",2)
-        await da.BuildingAccess.createBuilding(c_id2, "Solarin mansion",2)
+        await da.BuildingAccess.create_building(2, c_id2, "The mines of moria")
+        b_id2 = await da.BuildingAccess.create_building(2, c_id2, "Kamino training complex")
+        await da.BuildingAccess.create_building(2, c_id2, "Solarin mansion")
 
         """
         create some types of troops

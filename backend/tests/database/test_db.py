@@ -121,19 +121,27 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.setCreationCost("towerH", [("TF", 100)])
         await da.DeveloperAccess.setCreationCost("wallW", [("TF", 100)])
 
+
+        await da.ResourceAccess.add_resource(1, "TF", 10000)
+        await da.ResourceAccess.add_resource(2, "TF", 10000)
+        await da.ResourceAccess.add_resource(1, "Vibranium", 10000)
+        await da.ResourceAccess.add_resource(2, "Vibranium", 10000)
+        await da.ResourceAccess.add_resource(1, "Energon", 10000)
+        await da.ResourceAccess.add_resource(2, "Energon", 10000)
+
         """
         Create some actual buildings instances inside cities
         """
-        await da.BuildingAccess.createBuilding(c_id, "The mines of moria", 1)
-        b_id = await da.BuildingAccess.createBuilding(c_id, "Kamino training complex", 1)
-        await da.BuildingAccess.createBuilding(c_id, "Solarin mansion",1)
+        await da.BuildingAccess.create_building(2, c_id, "The mines of moria")
+        b_id = await da.BuildingAccess.create_building(2, c_id, "Kamino training complex")
+        await da.BuildingAccess.create_building(2, c_id, "Solarin mansion")
 
-        await da.BuildingAccess.createBuilding(c_id2, "The mines of moria",2)
-        b_id2 = await da.BuildingAccess.createBuilding(c_id2, "Kamino training complex",2)
-        await da.BuildingAccess.createBuilding(c_id2, "Solarin mansion",2)
+        await da.BuildingAccess.create_building(1, c_id2, "The mines of moria")
+        b_id2 = await da.BuildingAccess.create_building(1, c_id2, "Kamino training complex")
+        await da.BuildingAccess.create_building(1, c_id2, "Solarin mansion")
 
-        await da.BuildingAccess.createBuilding(c_id, "towerH",1)
-        await da.BuildingAccess.createBuilding(c_id, "wallW", 1)
+        await da.BuildingAccess.create_building(2, c_id, "towerH")
+        await da.BuildingAccess.create_building(2, c_id, "wallW")
 
         """
         create some types of troops
@@ -266,14 +274,14 @@ async def test_buildings():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
 
-        bt = await da.BuildingAccess.getBuildingTypes()
+        bt = await da.BuildingAccess.get_building_types()
         assert len(bt) == 5
-        assert (bt[0][0].name, bt[0][0].type) == ('The mines of moria', 'productionBuilding')
-        assert (bt[1][0].name, bt[1][0].type) == ('Kamino training complex', 'Barracks')
-        assert (bt[2][0].name, bt[2][0].type) == ('towerH', 'tower')
-        assert (bt[3][0].name, bt[3][0].type) == ('Solarin mansion', 'house')
+        assert (bt[0].name, bt[0].type) == ('The mines of moria', 'productionBuilding')
+        assert (bt[1].name, bt[1].type) == ('Kamino training complex', 'Barracks')
+        assert (bt[2].name, bt[2].type) == ('towerH', 'tower')
+        assert (bt[3].name, bt[3].type) == ('Solarin mansion', 'house')
 
-        cbt = await da.BuildingAccess.getCityBuildings(1)
+        cbt = await da.BuildingAccess.get_city_buildings(1)
         assert len(cbt) == 5
         assert (cbt[0][1].name, cbt[0][1].type) == ('The mines of moria', 'productionBuilding')
         assert (cbt[1][1].name, cbt[1][1].type) == ('Kamino training complex', 'Barracks')

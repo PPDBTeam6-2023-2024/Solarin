@@ -19,7 +19,7 @@ class CityChecker:
         """
         this function will do all checks
         """
-        buildings = await self.da.BuildingAccess.getCityBuildings(self.city_id)
+        buildings = await self.da.BuildingAccess.get_city_buildings(self.city_id)
 
         await self.check_training(buildings)
 

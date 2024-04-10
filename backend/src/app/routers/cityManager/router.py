@@ -17,7 +17,7 @@ async def get_buildings(
         db=Depends(get_db)
 ) -> List[BuildingInstanceSchema]:
     data_access = DataAccess(db)
-    buildings = await data_access.BuildingAccess.getCityBuildings(city_id)
+    buildings = await data_access.BuildingAccess.get_city_buildings(city_id)
 
     # Initialize an empty list to store the building schemas
     buildings_schemas = []
@@ -63,7 +63,7 @@ async def get_new_building_types(
 ):
     data_access = DataAccess(db)
     # dictionary with new building types, creation cost and whether the owner has sufficient funds
-    type_dict_list = await data_access.BuildingAccess.getAvailableBuildingTypes(city_id,city_rank, user_id)
+    type_dict_list = await data_access.BuildingAccess.get_available_building_types( user_id, city_id, city_rank)
 
     building_type_schema = []
 
@@ -72,7 +72,7 @@ async def get_new_building_types(
         if required_rank is None:
             required_rank = 0
         building_type_schema.append(BuildingTypeSchema(name = row['name'], type = row['type'], required_rank = required_rank,
-                           cost_type = row['cost_type'], cost_amount = row['cost_amount'], can_build = row['can_build']))
+                           costs = row['costs'], can_build = row['can_build']))
 
 
 
@@ -86,7 +86,7 @@ async def create_building(
         db = Depends(get_db)
 ):
     data_access = DataAccess(db)
-    building_id = await data_access.BuildingAccess.createBuilding(city_id, building_type, user_id)
+    building_id = await data_access.BuildingAccess.create_building(user_id, city_id, building_type)
 
 
     if not building_id:
@@ -98,7 +98,7 @@ async def update_resources(
         db=Depends(get_db)
 ):
     data_access = DataAccess(db)
-    confirmed = await data_access.BuildingAccess.IncreaseResourceStocks(city_id)
+    confirmed = await data_access.BuildingAccess.increase_resource_stocks(city_id)
     if not confirmed:
         raise HTTPException(status_code=400, detail="Resources could not be updated created.")
     return Confirmation(confirmed=confirmed)
@@ -110,7 +110,7 @@ async def collect_resource(
         db=Depends(get_db)
 ):
     data_access = DataAccess(db)
-    confirmed = await data_access.BuildingAccess.collectResources(building_id, user_id)
+    confirmed = await data_access.BuildingAccess.collect_resources(building_id, user_id)
     if not confirmed:
         raise HTTPException(status_code=400, detail="Resources could not be updated or created.")
     return Confirmation(confirmed=confirmed)
@@ -122,7 +122,7 @@ async def upgrade_building(
         db=Depends(get_db)
 ):
     data_access = DataAccess(db)
-    confirmed = await data_access.BuildingAccess.upgradeBuilding(building_id, user_id)
+    confirmed = await data_access.BuildingAccess.upgrade_building(building_id, user_id)
     if not confirmed:
         raise HTTPException(status_code=400, detail="Building could not be upgraded.")
     return Confirmation(confirmed=confirmed)
@@ -139,8 +139,8 @@ async def get_upgrade_cost(
     result = []
 
     for building in buildings:
-        cost = await data_access.BuildingAccess.get_upgrade_cost(building.id,user_id)
-        result.append(CostSchema(id = cost[0],cost=cost[1], cost_type=cost[2], can_upgrade=cost[3]))
+        cost = await data_access.BuildingAccess.get_upgrade_cost(user_id, building.id)
+        result.append(CostSchema(id=cost[0], costs=cost[1], can_upgrade=cost[2]))
     if not cost:
         raise HTTPException(status_code=400, detail="Upgrade cost could not be retrieved.")
 

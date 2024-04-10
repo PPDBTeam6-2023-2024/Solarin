@@ -423,7 +423,7 @@ async def test_attack_store():
         """
         We are not yet attacking anything
         """
-        going_to_attack = await da.ArmyAccess.will_attack(1)
+        going_to_attack = await da.ArmyAccess.will_on_arrive(1)
         assert going_to_attack is None
 
         """
@@ -431,17 +431,17 @@ async def test_attack_store():
         """
         await da.ArmyAccess.attack_army(1, 2)
 
-        going_to_attack = await da.ArmyAccess.will_attack(1)
+        going_to_attack = await da.ArmyAccess.will_on_arrive(1)
         assert going_to_attack.target_id == 2
 
-        going_to_attack = await da.ArmyAccess.will_attack(2)
+        going_to_attack = await da.ArmyAccess.will_on_arrive(2)
         assert going_to_attack is None
 
         """
         Cancel attack and check if properly removed
         """
         await da.ArmyAccess.cancel_attack(1)
-        going_to_attack = await da.ArmyAccess.will_attack(1)
+        going_to_attack = await da.ArmyAccess.will_on_arrive(1)
         assert going_to_attack is None
 
         """
@@ -449,14 +449,14 @@ async def test_attack_store():
         """
         await da.ArmyAccess.attack_city(1, 1)
 
-        going_to_attack = await da.ArmyAccess.will_attack(1)
+        going_to_attack = await da.ArmyAccess.will_on_arrive(1)
         assert going_to_attack.target_id == 1
 
         """
         Cancel attack and check if properly removed
         """
         await da.ArmyAccess.cancel_attack(1)
-        going_to_attack = await da.ArmyAccess.will_attack(1)
+        going_to_attack = await da.ArmyAccess.will_on_arrive(1)
         assert going_to_attack is None
 
         await da.ArmyAccess.get_army_stats(1)

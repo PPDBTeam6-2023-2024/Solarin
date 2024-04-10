@@ -1,6 +1,6 @@
 from sqlalchemy.orm import joinedload
 
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 from typing import Optional
 

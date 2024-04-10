@@ -1,4 +1,4 @@
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 from typing import List, Tuple
 from sqlalchemy import select, exists

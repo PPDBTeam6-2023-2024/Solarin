@@ -1,6 +1,6 @@
 import datetime
 
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 from sqlalchemy import select, not_, or_, join
 from ....logic.utils.compute_properties import *

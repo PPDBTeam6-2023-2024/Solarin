@@ -4,7 +4,7 @@ from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
-from ...database.models.models import *
+from ...database.models import *
 
 router = APIRouter(prefix="/unit", tags=["City"])
 

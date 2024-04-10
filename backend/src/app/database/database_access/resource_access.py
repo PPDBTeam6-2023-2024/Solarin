@@ -1,6 +1,6 @@
 import datetime
 import math
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 from .building_access import BuildingAccess
 from .army_access import ArmyAccess

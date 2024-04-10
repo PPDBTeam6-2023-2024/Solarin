@@ -1,6 +1,6 @@
 from sqlalchemy.orm import aliased
 
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 
 

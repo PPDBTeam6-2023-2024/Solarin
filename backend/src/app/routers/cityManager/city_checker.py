@@ -1,5 +1,7 @@
 from ...database.database_access.data_access import DataAccess
-from ...database.models.models import BuildingInstance, BarracksType
+from ...database.models import BuildingInstance, BarracksType
+
+
 class CityChecker:
     """
     This class is a checker so we can trigger the right city checks, and update the city information

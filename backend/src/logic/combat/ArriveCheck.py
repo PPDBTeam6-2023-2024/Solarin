@@ -1,5 +1,5 @@
 from ...app.database.database_access.data_access import DataAccess
-from ...app.database.models.models import AttackArmy, AttackCity, EnterCity, MergeArmies
+from ...app.database.models import AttackArmy, AttackCity, EnterCity, MergeArmies
 from .ArmyCombat import ArmyCombat
 from ...app.routers.cityManager.city_checker import CityChecker
 

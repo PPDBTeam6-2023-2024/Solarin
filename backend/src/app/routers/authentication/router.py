@@ -9,7 +9,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from .schemas import UserCreate, Token
 from ...database.database import get_db, AsyncSession
-from ...database.models.models import User
+from ...database.models import User
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 

@@ -5,7 +5,7 @@ import asyncio
 from src.app.database.database import *
 from src.app.database.database_access.data_access import DataAccess
 from src.app.routers.authentication.schemas import MessageToken
-from src.app.database.models.models import *
+from src.app.database.models import *
 from src.app.routers.spawn.planet_generation import generate_random_planet
 from src.app.config import APIConfig
 from confz import FileSource

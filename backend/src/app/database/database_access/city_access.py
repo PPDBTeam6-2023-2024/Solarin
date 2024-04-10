@@ -1,6 +1,6 @@
 import math
 
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 from .planet_access import PlanetAccess
 

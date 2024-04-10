@@ -2,9 +2,8 @@ import pytest
 
 from src.app.database.database import sessionmanager
 from src.app.database.database_access.data_access import DataAccess
-from src.app.database.models.models import *
+from src.app.database.models import *
 from sqlalchemy import inspect
-from ...src.logic.combat.ArmyCombat import *
 from ...src.logic.combat.AttackCheck import *
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):

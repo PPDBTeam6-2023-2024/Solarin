@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from math import dist
 
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 from .city_access import CityAccess
 

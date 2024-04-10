@@ -14,7 +14,7 @@ from .routers.unitManagement.router import router as unit_router
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
 from .create_tuples import *
-from .database.models.models import *
+from .database.models import *
 
 
 def init_app(config: APIConfig) -> FastAPI:

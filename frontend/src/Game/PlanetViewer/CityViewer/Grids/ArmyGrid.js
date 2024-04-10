@@ -4,10 +4,17 @@ import './NewBuildingGrid.css';
 import EntityViewer from "../../../UI/CityViewer/EntityViewer";
 const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage }) => {
     const columns = useMemo(() => [
-        { headerName: "Troop Type", field: "troopType" },
+        { headerName: "Troop Type", field: "troopType", autoHeight: true },
         { headerName: "Rank", field: "rank" },
-        { headerName: "Size", field: "size" },
+        { headerName: "Size", field: "size"},
     ], []);
+
+    const rowData = useMemo(() => troops.troops.map((troop, index) => ({
+        troopType: troop.troop_type,
+        rank: troop.rank,
+        size: troop.size,
+        id: troop.id
+    })), [troops]);
 
     const handleLeaveCity = () => {
             console.log("Leaving city..."); // Implement the logic for leaving the city
@@ -17,12 +24,7 @@ const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, sel
         <>
             <div className="ag-theme-alpine-dark buildings_grid">
                 <AgGridReact
-                    rowData={troops.troops.map((troop, index) => ({
-                        troopType: troop.troop_type,
-                        rank: troop.rank,
-                        size: troop.size,
-                        id: troop.id
-                    }))}
+                    rowData={rowData}
                     columnDefs={columns}
                     domLayout='normal'
                     suppressMovableColumns={true}

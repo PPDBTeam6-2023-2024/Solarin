@@ -41,11 +41,11 @@
     height: 27vw;
     overflow: scroll;
     /*background: transparent;  => add if nescessary*/
-    margin-top: 1vw;
+    margin-top: auto;
     margin-bottom: auto;
-    margin-left: 2%;
+    margin-left: auto;
     margin-right: auto;
-    border-radius: 1vw 0 0 1vw;
+    border-radius: 0.2vw 0 0 0.2vw;
 }
 
 

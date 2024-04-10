@@ -29,7 +29,7 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     username = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED'))
+    alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED', ondelete='SET NULL'))
     faction_name = Column(String)
 
 
@@ -42,8 +42,11 @@ class HasResources(Base):
     quantity: the amount of this resource that the user has
     """
     __tablename__ = "hasResources"
-    owner_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
-    resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
+    owner_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                      primary_key=True)
+
+    resource_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED',
+                                              ondelete="cascade"), primary_key=True)
     quantity = Column(Integer, nullable=False, default=0)
 
 
@@ -55,7 +58,8 @@ class Alliance(Base):
     """
     __tablename__ = 'alliance'
     name = Column(String, primary_key=True)
-    message_board = Column(Integer, ForeignKey("messageBoard.bid"), nullable=False)
+    message_board = Column(Integer, ForeignKey("messageBoard.bid", deferrable=True, initially='DEFERRED'),
+                           nullable=False)
 
 
 class Message(Base):
@@ -70,8 +74,10 @@ class Message(Base):
     __tablename__ = 'message'
 
     mid = Column(Integer, Sequence('message_mid_seq'), primary_key=True)
-    sender_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    message_board = Column(Integer, ForeignKey("messageBoard.bid"), nullable=False)
+    sender_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED',
+                                           ondelete="SET NULL"), nullable=False)
+    message_board = Column(Integer, ForeignKey("messageBoard.bid", deferrable=True, initially='DEFERRED',
+                                               ondelete="cascade"), nullable=False)
     create_date_time = Column(TIMESTAMP, nullable=False, default=datetime.utcnow())
     body = Column(TEXT, nullable=False)
 
@@ -120,8 +126,10 @@ class FriendsOf(Base):
     message_board: the message board (chat) that is used for these 2 players to send direct messages to each other.
     """
     __tablename__ = 'friendsOf'
-    user1_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
-    user2_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    user1_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED',
+                                          ondelete="cascade"), primary_key=True)
+    user2_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED',
+                                          ondelete="cascade"), primary_key=True)
     message_board = Column(Integer, ForeignKey("messageBoard.bid"), nullable=False)
 
 
@@ -152,8 +160,10 @@ class Planet(Base):
     __tablename__ = 'planet'
     id = Column(Integer, Sequence('planet_id_seq'), primary_key=True)
     name = Column(TEXT, nullable=False)
-    planet_type = Column(TEXT, ForeignKey("planetType.type"), nullable=False)
-    space_region_id = Column(Integer, ForeignKey("spaceRegion.id"), nullable=False)
+    planet_type = Column(TEXT, ForeignKey("planetType.type", deferrable=True, initially='DEFERRED'),
+                         nullable=False)
+    space_region_id = Column(Integer, ForeignKey("spaceRegion.id", deferrable=True, initially='DEFERRED'),
+                             nullable=False)
     created_at = Column(DateTime(), nullable=True, default=datetime.utcnow())
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
@@ -184,8 +194,10 @@ class PlanetRegion(Base):
     """
     __tablename__ = 'planetRegion'
     id = Column(Integer, Sequence('planetRegion_id_seq'), primary_key=True)
-    planet_id = Column(Integer, ForeignKey("planet.id"))
-    region_type = Column(TEXT, ForeignKey("planetRegionType.region_type"), nullable=False)
+    planet_id = Column(Integer, ForeignKey("planet.id", deferrable=True, initially='DEFERRED',
+                                           ondelete="cascade"))
+    region_type = Column(TEXT, ForeignKey("planetRegionType.region_type", deferrable=True, initially='DEFERRED'),
+                         nullable=False)
     x = Column(Coordinate, nullable=False)
     y = Column(Coordinate, nullable=False)
 
@@ -217,9 +229,9 @@ class City(Base):
     """
     __tablename__ = 'city'
 
-    region_id = Column(Integer, ForeignKey("planetRegion.id"))
+    region_id = Column(Integer, ForeignKey("planetRegion.id", deferrable=True, initially='DEFERRED'))
     id = Column(Integer, Sequence("city_id_seq"), primary_key=True)
-    controlled_by = Column(Integer, ForeignKey("user.id"), nullable=False)
+    controlled_by = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED'), nullable=False)
     x = Column(Coordinate, nullable=False)
     y = Column(Coordinate, nullable=False)
 
@@ -254,7 +266,8 @@ class BuildingInstance(Base):
 
     __tablename__ = "buildingInstance"
     id = Column(Integer, Sequence('buildingInstance_id_seq'), primary_key=True, index=True)
-    city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), nullable=False)
+    city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     nullable=False)
     building_type = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'),
                            nullable=False)
     rank = Column(Integer, nullable=False, default=1)
@@ -416,9 +429,11 @@ class ProducesResources(Base):
     This entry stores its max capacity
     """
     __tablename__ = 'producesResources'
-    building_name = Column(String, ForeignKey("productionBuildingType.name", deferrable=True, initially='DEFERRED'),
+    building_name = Column(String, ForeignKey("productionBuildingType.name", deferrable=True, initially='DEFERRED',
+                                              ondelete="cascade"),
                            primary_key=True)
-    resource_name = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'),
+    resource_name = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED',
+                                              ondelete="cascade"),
                            primary_key=True)
 
     base_production = Column(Integer, nullable=False)
@@ -434,8 +449,10 @@ class StoresResources(Base):
 
     """
     __tablename__ = 'storesResources'
-    building_id = Column(Integer, ForeignKey('buildingInstance.id', deferrable=True, initially='DEFERRED'), primary_key=True)
-    resource_type = Column(String, ForeignKey('resourceType.name', deferrable=True, initially='DEFERRED'), primary_key=True)
+    building_id = Column(Integer, ForeignKey('buildingInstance.id', deferrable=True, initially='DEFERRED'),
+                         primary_key=True)
+    resource_type = Column(String, ForeignKey('resourceType.name', deferrable=True, initially='DEFERRED'),
+                           primary_key=True)
     amount = Column(Integer, nullable=False, default=0)
 
 
@@ -468,11 +485,13 @@ class TrainingQueue(Base):
     """
     __tablename__ = 'trainingQueue'
     id = Column(Integer, primary_key=True)
-    building_id = Column(Integer, ForeignKey("buildingInstance.id", deferrable=True, initially='DEFERRED'),
+    building_id = Column(Integer, ForeignKey("buildingInstance.id", deferrable=True, initially='DEFERRED',
+                                             ondelete="cascade"),
                          primary_key=True)
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), nullable=False)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     nullable=False)
     train_remaining = Column(Integer)
-    troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'))
+    troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED', ondelete="cascade"))
     rank = Column(Integer)
     training_size = Column(Integer)
 
@@ -559,8 +578,10 @@ class TroopRank(Base):
     rank: the current rank of this unit for this user
     """
     __tablename__ = 'troopRank'
-    troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED'), primary_key=True)
+    troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                        primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
     rank = Column(Integer, default=1)
 
 
@@ -573,8 +594,10 @@ class TroopTypeCost(Base):
     amount: the base amount of this resource training this unit will cost
     """
     __tablename__ = 'troopTypeCost'
-    troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
-    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'),
+    troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                        primary_key=True)
+    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED',
+                                            ondelete="cascade"),
                            primary_key=True)
     amount = Column(Integer, nullable=False)
 
@@ -598,7 +621,8 @@ class Army(Base):
     """
     __tablename__ = "army"
     id = Column(Integer, Sequence('army_id_seq'), primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED',
+                                         ondelete="cascade"), nullable=False)
     planet_id = Column(Integer, ForeignKey("planet.id"), nullable=True)
     departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow())
     arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow())
@@ -648,7 +672,8 @@ class ArmyConsistsOf(Base):
     (makes it store efficient in comparison to having an entry for each troop)
     """
     __tablename__ = "armyConsistsOf"
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
     rank = Column(Integer, primary_key=True)
     size = Column(Integer, nullable=False)
@@ -689,8 +714,10 @@ class FriendRequest(Base):
     to_user_id: user id of the receiver of the friend request
     """
     __tablename__ = "FriendRequest"
-    from_user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
-    to_user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    from_user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                          primary_key=True)
+    to_user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                        primary_key=True)
 
 
 class AllianceRequest(Base):
@@ -701,8 +728,10 @@ class AllianceRequest(Base):
     alliance_name: name of the alliance the user wants to join
     """
     __tablename__ = "allianceRequest"
-    user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
-    alliance_name = Column(String, ForeignKey("alliance.name"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
+    alliance_name = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED',
+                                              ondelete="cascade"), nullable=False)
 
 
 class AssociatedWith(Base):
@@ -724,7 +753,8 @@ class OnArrive(Base):
     army_id: the army that has the OnArrive event (on arrival of this army we will check the event)
     """
     __tablename__ = 'onArrive'
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
 
     """
     TargetType indicates the difference between attacking an army and a city.
@@ -787,7 +817,8 @@ class EnterCity(OnArrive):
     army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
-    target_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
+    target_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                       primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'city enter'

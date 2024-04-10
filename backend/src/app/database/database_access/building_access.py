@@ -18,7 +18,7 @@ class BuildingAccess:
         cost_query_row = cost_query_results.all()
         if cost_query_row is None:
             raise ValueError(f"No creation cost found for building type {building_type}")
-        assert len(cost_query_row) > 0, "No creation cost found for building"
+        assert len(cost_query_row) > 0, "No creation cost found for building type " + building_type
         return cost_query_row[0]
 
     async def createBuilding(self, city_id: int, building_type: str, user_id: int):

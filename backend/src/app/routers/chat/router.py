@@ -175,12 +175,12 @@ async def create_alliance(
 
     alliance_name = data["alliance_name"]
 
-    alliance_exists = await data_access.AllianceAccess.allianceExists(alliance_name)
+    alliance_exists = await data_access.AllianceAccess.alliance_exists(alliance_name)
     if alliance_exists:
         return {"success": False, "message": "Alliance name already in use"}
 
-    await data_access.AllianceAccess.createAlliance(alliance_name)
-    await data_access.AllianceAccess.setAlliance(user_id, alliance_name)
+    await data_access.AllianceAccess.create_alliance(alliance_name)
+    await data_access.AllianceAccess.set_alliance(user_id, alliance_name)
     await data_access.commit()
     return {"success": True, "message": "Alliance is created"}
 
@@ -198,11 +198,11 @@ async def join_alliance(
     data_access = DataAccess(db)
     alliance_name = data["alliance_name"]
 
-    alliance_exists = await data_access.AllianceAccess.allianceExists(alliance_name)
+    alliance_exists = await data_access.AllianceAccess.alliance_exists(alliance_name)
     if not alliance_exists:
         return {"success": False, "message": "Alliance name already in use"}
 
-    await data_access.AllianceAccess.sendAllianceRequest(user_id, alliance_name)
+    await data_access.AllianceAccess.send_alliance_request(user_id, alliance_name)
     await data_access.commit()
     return {"success": False, "message": "Alliance join request has been send"}
 
@@ -218,7 +218,7 @@ async def alliance_requests(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.AllianceAccess.getAllianceRequests(user_id)
+    data = await data_access.AllianceAccess.get_alliance_requests(user_id)
 
     """
     transform data to web format
@@ -245,10 +245,10 @@ async def alliance_requests(
     data_access = DataAccess(db)
 
     if data["accepted"]:
-        alliance = await data_access.AllianceAccess.getAlliance(user_id)
-        await data_access.AllianceAccess.acceptAllianceRequest(data["user_id"], alliance)
+        alliance = await data_access.AllianceAccess.get_alliance(user_id)
+        await data_access.AllianceAccess.accept_alliance_request(data["user_id"], alliance)
     else:
-        await data_access.AllianceAccess.rejectAllianceRequest(data["user_id"])
+        await data_access.AllianceAccess.reject_alliance_request(data["user_id"])
     await data_access.commit()
 
     return ""
@@ -261,7 +261,7 @@ async def alliance_messageboard(
 ) -> int:
     data_access = DataAccess(db)
 
-    alliance = await data_access.AllianceAccess.getAlliance(user_id)
+    alliance = await data_access.AllianceAccess.get_alliance(user_id)
     message_board = await data_access.MessageAccess.getAllianceMessageBoard(alliance)
     return message_board
 

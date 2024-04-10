@@ -48,9 +48,9 @@ async def fill_db():
         Create clan and add the ClanOwner to the clan
         """
         for t_index in range(1, 51, 2):
-            await da.AllianceAccess.createAlliance(f"{t_index} his clan")
-            await da.AllianceAccess.setAlliance(t_index, f"{t_index} his clan")
-            await da.AllianceAccess.setAlliance(t_index + 1, f"{t_index} his clan")
+            await da.AllianceAccess.create_alliance(f"{t_index} his clan")
+            await da.AllianceAccess.set_alliance(t_index, f"{t_index} his clan")
+            await da.AllianceAccess.set_alliance(t_index + 1, f"{t_index} his clan")
 
         await da.commit()
 

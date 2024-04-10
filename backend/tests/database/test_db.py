@@ -45,9 +45,9 @@ async def insert_test_data(connection_test):
         Create clan and add the ClanOwner to the clan
         """
         for t_index in range(1, 51, 2):
-            await da.AllianceAccess.createAlliance(f"{t_index} his clan")
-            await da.AllianceAccess.setAlliance(t_index, f"{t_index} his clan")
-            await da.AllianceAccess.setAlliance(t_index + 1, f"{t_index} his clan")
+            await da.AllianceAccess.create_alliance(f"{t_index} his clan")
+            await da.AllianceAccess.set_alliance(t_index, f"{t_index} his clan")
+            await da.AllianceAccess.set_alliance(t_index + 1, f"{t_index} his clan")
 
         await da.commit()
 
@@ -231,7 +231,7 @@ async def test_alliance_members():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
         for t_index in range(1, 51, 2):
-            members = await da.AllianceAccess.getAllianceMembers(f"{t_index} his clan")
+            members = await da.AllianceAccess.get_alliance_members(f"{t_index} his clan")
             assert len(members) == 2
             for m in members:
                 assert m.email in (f"t{t_index-1}@gmail", f"t{t_index}@gmail")

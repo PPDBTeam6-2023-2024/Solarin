@@ -10,7 +10,7 @@ from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from ...routers.buildingManagement.schemas import TrainingQueueEntry
 from datetime import timedelta
 from ....logic.utils.compute_properties import *
-from .domains import Coordinate
+from .domains import Coordinate, PositiveInteger
 
 
 class User(Base):
@@ -47,7 +47,7 @@ class HasResources(Base):
 
     resource_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED',
                                               ondelete="cascade"), primary_key=True)
-    quantity = Column(Integer, nullable=False, default=0)
+    quantity = Column(PositiveInteger, nullable=False, default=0)
 
 
 class Alliance(Base):
@@ -235,7 +235,7 @@ class City(Base):
     x = Column(Coordinate, nullable=False)
     y = Column(Coordinate, nullable=False)
 
-    rank = Column(Integer, nullable=False, default=1)
+    rank = Column(PositiveInteger, nullable=False, default=1)
 
     region = relationship("PlanetRegion", back_populates="cities", lazy='joined')
 
@@ -270,7 +270,7 @@ class BuildingInstance(Base):
                      nullable=False)
     building_type = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'),
                            nullable=False)
-    rank = Column(Integer, nullable=False, default=1)
+    rank = Column(PositiveInteger, nullable=False, default=1)
 
     """
     This relation is joined, because when we ask for an instance we will often also be interested in the type 
@@ -436,8 +436,8 @@ class ProducesResources(Base):
                                               ondelete="cascade"),
                            primary_key=True)
 
-    base_production = Column(Integer, nullable=False)
-    max_capacity = Column(Integer, nullable=False)
+    base_production = Column(PositiveInteger, nullable=False)
+    max_capacity = Column(PositiveInteger, nullable=False)
 
     production_building = relationship("ProductionBuildingType", back_populates="producing_resources", lazy='select')
 
@@ -453,7 +453,7 @@ class StoresResources(Base):
                          primary_key=True)
     resource_type = Column(String, ForeignKey('resourceType.name', deferrable=True, initially='DEFERRED'),
                            primary_key=True)
-    amount = Column(Integer, nullable=False, default=0)
+    amount = Column(PositiveInteger, nullable=False, default=0)
 
 
 class ResourceType(Base):
@@ -490,10 +490,10 @@ class TrainingQueue(Base):
                          primary_key=True)
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      nullable=False)
-    train_remaining = Column(Integer)
+    train_remaining = Column(PositiveInteger, nullable=False)
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED', ondelete="cascade"))
-    rank = Column(Integer)
-    training_size = Column(Integer)
+    rank = Column(PositiveInteger, nullable=False)
+    training_size = Column(PositiveInteger, nullable=False)
 
     def toTrainingQueueEntry(self, unit_training_time):
         """
@@ -526,14 +526,14 @@ class TroopType(Base):
     """
     __tablename__ = 'troopType'
     type = Column(TEXT, primary_key=True)
-    training_time = Column(Integer, nullable=False)
+    training_time = Column(PositiveInteger, nullable=False)
     attack = Column(Integer, nullable=False)
     defense = Column(Integer, nullable=False)
     city_attack = Column(Integer, nullable=False)
     city_defense = Column(Integer, nullable=False)
     recovery = Column(Integer, nullable=False)
     speed = Column(Integer, nullable=False)
-    required_rank = Column(Integer)
+    required_rank = Column(PositiveInteger)
 
     @classmethod
     def withBattleStats(cls, type_name: str, training_time: timedelta, battle_stats: BattleStats,
@@ -582,7 +582,7 @@ class TroopRank(Base):
                         primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
-    rank = Column(Integer, default=1)
+    rank = Column(PositiveInteger, default=1)
 
 
 class TroopTypeCost(Base):
@@ -599,7 +599,7 @@ class TroopTypeCost(Base):
     resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED',
                                             ondelete="cascade"),
                            primary_key=True)
-    amount = Column(Integer, nullable=False)
+    amount = Column(PositiveInteger, nullable=False)
 
 
 class Army(Base):
@@ -630,7 +630,6 @@ class Army(Base):
     y = Column(Coordinate, nullable=False)
     to_x = Column(Coordinate, nullable=False)
     to_y = Column(Coordinate, nullable=False)
-    last_update = Column(TIME)
 
     consists_of = relationship("ArmyConsistsOf", back_populates="army", lazy='select')
     planet = relationship("Planet", back_populates="armies", lazy='select')
@@ -675,8 +674,8 @@ class ArmyConsistsOf(Base):
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED'), primary_key=True)
-    rank = Column(Integer, primary_key=True)
-    size = Column(Integer, nullable=False)
+    rank = Column(PositiveInteger, primary_key=True)
+    size = Column(PositiveInteger, nullable=False)
 
     army = relationship("Army", back_populates="consists_of", lazy='select')
     troop = relationship("TroopType", back_populates="in_consist_of", lazy='select')
@@ -703,7 +702,7 @@ class CreationCost(Base):
                            primary_key=True)
 
     cost_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    cost_amount = Column(Integer, nullable=False)
+    cost_amount = Column(PositiveInteger, nullable=False)
 
 
 class FriendRequest(Base):

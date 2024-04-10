@@ -118,7 +118,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                         setSelectedBuilding(event.data);
                         onRowMouseOver(event);
                     }}
-                    onGridReady={params => params.api.sizeColumnsToFit()}dit
+                    onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
 
                 />

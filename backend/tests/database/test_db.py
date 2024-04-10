@@ -115,11 +115,15 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.setCreationCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
         await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Vibranium", 1)])
         await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Energon", 2)])
+        await da.DeveloperAccess.setCreationCost("The mines of moria", [("Energon", 2)])
+
+        await da.DeveloperAccess.setCreationCost("towerH", [("Energon", 2)])
+        await da.DeveloperAccess.setCreationCost("wallW", [("Energon", 2)])
 
         """
         Create some actual buildings instances inside cities
         """
-        await da.BuildingAccess.createBuilding(c_id, "The mines of moria",1)
+        await da.BuildingAccess.createBuilding(c_id, "The mines of moria", 1)
         b_id = await da.BuildingAccess.createBuilding(c_id, "Kamino training complex", 1)
         await da.BuildingAccess.createBuilding(c_id, "Solarin mansion",1)
 
@@ -127,8 +131,8 @@ async def insert_test_data(connection_test):
         b_id2 = await da.BuildingAccess.createBuilding(c_id2, "Kamino training complex",2)
         await da.BuildingAccess.createBuilding(c_id2, "Solarin mansion",2)
 
-        await da.BuildingAccess.createBuilding(c_id, "towerH")
-        await da.BuildingAccess.createBuilding(c_id, "wallW")
+        await da.BuildingAccess.createBuilding(c_id, "towerH",1)
+        await da.BuildingAccess.createBuilding(c_id, "wallW", 1)
 
         """
         create some types of troops
@@ -190,7 +194,6 @@ async def test_check_messages():
             m2 = await da.MessageAccess.getMessagesAlliance(f"{t_index} his clan", 0, 1)
             assert len(m1) == 2
             assert len(m2) == 1
-            print(m1, m2)
             assert m1[0][0].body == "test reply"
             assert m1[1][0].body == "test"
             assert m2[0][0].body == "test reply"
@@ -230,7 +233,7 @@ async def test_alliance_members():
             members = await da.AllianceAccess.getAllianceMembers(f"{t_index} his clan")
             assert len(members) == 2
             for m in members:
-                assert m[0].email in (f"t{t_index-1}@gmail", f"t{t_index}@gmail")
+                assert m.email in (f"t{t_index-1}@gmail", f"t{t_index}@gmail")
 
 
 async def test_planet():

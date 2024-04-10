@@ -158,13 +158,14 @@ class DeveloperAccess:
         :return: nothing
         """
 
-        await self.__session.flush()
         old_up_cost = delete(CreationCost).where(CreationCost.building_name == building_name)
         await self.__session.execute(old_up_cost)
 
         for resource in resource_costs:
             upgrade = CreationCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
             self.__session.add(upgrade)
+
+        await self.__session.flush()
 
     async def createAssociatedWith(self, planet_type: str, region_type: str):
         self.__session.add(AssociatedWith(planet_type=planet_type, region_type=region_type))

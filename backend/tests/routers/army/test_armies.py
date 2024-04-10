@@ -33,8 +33,8 @@ async def test_get_armies(client):
             email="test@example.com"
         )
 
-        await data_access.ArmyAccess.createArmy(user_id, planet_id, 0.25, 0.25)
-        await data_access.ArmyAccess.createArmy(user_id, planet_id, 0.75, 0.75)
+        await data_access.ArmyAccess.create_army(user_id, planet_id, 0.25, 0.25)
+        await data_access.ArmyAccess.create_army(user_id, planet_id, 0.75, 0.75)
         await session.commit()
     response = client.get("/army/armies", params={"planet_id": 1})
     assert response.status_code == 200
@@ -67,7 +67,7 @@ async def test_get_troops(client):
             email="test@example.com"
         )
 
-        army_id = await data_access.ArmyAccess.createArmy(user_id, planet_id, 0.25, 0.25)
+        army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0.25, 0.25)
 
         battle_stats_soldier = BattleStats(
             attack=15,
@@ -101,8 +101,8 @@ async def test_get_troops(client):
             required_rank=3
         )
 
-        await data_access.ArmyAccess.addToArmy(army_id, "Soldier", 1, 20)
-        await data_access.ArmyAccess.addToArmy(army_id, "Brute", 2, 40)
+        await data_access.ArmyAccess.add_to_army(army_id, "Soldier", 1, 20)
+        await data_access.ArmyAccess.add_to_army(army_id, "Brute", 2, 40)
 
         await session.commit()
 

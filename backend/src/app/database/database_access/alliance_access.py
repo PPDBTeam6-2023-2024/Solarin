@@ -73,7 +73,8 @@ class AllianceAccess:
 
     async def accept_alliance_request(self, user_id: int, alliance_name: str):
         """
-        accept an alliance request
+        Accept an alliance request
+        The user who sent the request will be added to the alliance
         :param: user_id: id of the user
         :param: alliance_name: name of the alliance
         """
@@ -90,7 +91,7 @@ class AllianceAccess:
 
     async def __remove_alliance_request(self, user_id: int):
         """
-        remove the alliance entry of the given user
+        remove the alliance request entry of the given user
         :param: user_id: id of the user
         """
         dr = Delete(AllianceRequest).where(AllianceRequest.user_id == user_id)
@@ -112,19 +113,24 @@ class AllianceAccess:
     async def get_alliance_requests(self, user_id: int):
         """
         We want to retrieve all the users requests to join the alliance
-        :param: user_id: id of the user whose friend requests we want to retrieve
+
+        We receive the user_id of the user who is part of the alliance, who requests the alliance requests
+        to the alliance he/she is a part of.
+
+        :param: user_id: id of the user who is a part of the alliance whose requests we want to retrieve
         :return: list of users whose sent an alliance join request
         """
 
         alliance_member = aliased(User, name='alliance_member')
         alliance_requests = Select(User).join(AllianceRequest, AllianceRequest.user_id == User.id).\
-            join(alliance_member, alliance_member.alliance == AllianceRequest.alliance_name).where(alliance_member.id == user_id)
+            join(alliance_member, alliance_member.alliance == AllianceRequest.alliance_name).\
+            where(alliance_member.id == user_id)
         results = await self.__session.execute(alliance_requests)
         return results.scalars().all()
 
     async def get_alliance(self, user_id: int):
         """
-        et the alliance the user belongs to
+        Get the alliance the user belongs to
         :param: user_id: id of the user whose friend requests we want to retrieve
         :return: alliance name
         """
@@ -135,4 +141,3 @@ class AllianceAccess:
             return None
 
         return result
-

@@ -136,7 +136,7 @@ async def fill_db():
         create some types of troops
         """
 
-        a_id = await da.ArmyAccess.createArmy(user_id=1,planet_id=1,x=0.25, y=0.75)
+        a_id = await da.ArmyAccess.create_army(user_id=1, planet_id=1, x=0.25, y=0.75)
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))
@@ -151,9 +151,9 @@ async def fill_db():
         """
         add some troops to an army
         """
-        await da.ArmyAccess.addToArmy(a_id, "tank", 2, 20)
-        await da.ArmyAccess.addToArmy(a_id, "tank", 2, 10)
-        await da.ArmyAccess.addToArmy(a_id, "tank", 3, 10)
+        await da.ArmyAccess.add_to_army(a_id, "tank", 2, 20)
+        await da.ArmyAccess.add_to_army(a_id, "tank", 2, 10)
+        await da.ArmyAccess.add_to_army(a_id, "tank", 3, 10)
 
         """
         start training units

@@ -27,7 +27,7 @@ class ArmyCombat:
         """
         await da.ArmyAccess.remove_army(loser)
 
-        army_troops = await da.ArmyAccess.getTroops(winner)
+        army_troops = await da.ArmyAccess.get_troops(winner)
 
         """
         Change the surviving amount of units
@@ -81,7 +81,7 @@ class ArmyCombat:
         change the casualties
         """
         for l in loss_list:
-            army_troops = await da.ArmyAccess.getTroops(l)
+            army_troops = await da.ArmyAccess.get_troops(l)
 
             """
             Change the surviving amount of units

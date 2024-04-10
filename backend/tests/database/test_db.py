@@ -139,9 +139,9 @@ async def insert_test_data(connection_test):
         create some types of troops
         """
 
-        a_id = await da.ArmyAccess.createArmy(user_id=1, planet_id=p_id, x=0, y=0)
+        a_id = await da.ArmyAccess.create_army(user_id=1, planet_id=p_id, x=0, y=0)
 
-        a_id2 = await da.ArmyAccess.createArmy(user_id=3, planet_id=p_id, x=0, y=0)
+        a_id2 = await da.ArmyAccess.create_army(user_id=3, planet_id=p_id, x=0, y=0)
 
         await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
                                                 BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
@@ -157,11 +157,11 @@ async def insert_test_data(connection_test):
         """
         add some troops to an army
         """
-        await da.ArmyAccess.addToArmy(a_id, "tank", 2, 20)
-        await da.ArmyAccess.addToArmy(a_id, "tank", 2, 10)
-        await da.ArmyAccess.addToArmy(a_id, "tank", 3, 10)
+        await da.ArmyAccess.add_to_army(a_id, "tank", 2, 20)
+        await da.ArmyAccess.add_to_army(a_id, "tank", 2, 10)
+        await da.ArmyAccess.add_to_army(a_id, "tank", 3, 10)
 
-        await da.ArmyAccess.addToArmy(a_id2, "soldier", 3, 10)
+        await da.ArmyAccess.add_to_army(a_id2, "soldier", 3, 10)
 
         """
         start training units
@@ -365,7 +365,7 @@ async def test_training():
         assert after_queues[0][0].train_remaining == 122400
         assert after_queues[0][0].training_size == 9
 
-        army_troops = await da.ArmyAccess.getTroops(1)
+        army_troops = await da.ArmyAccess.get_troops(1)
         assert len(army_troops) == 2
 
         """
@@ -470,8 +470,8 @@ async def test_army_combat():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
 
-        a1 = await da.ArmyAccess.getArmyById(1)
-        a2 = await da.ArmyAccess.getArmyById(2)
+        a1 = await da.ArmyAccess.get_army_by_id(1)
+        a2 = await da.ArmyAccess.get_army_by_id(2)
 
         assert a1 is not None
         assert a2 is not None
@@ -481,8 +481,8 @@ async def test_army_combat():
         suc6 = await AttackCheck.check_attack(1, da)
         assert suc6
 
-        a1 = await da.ArmyAccess.getArmyById(1)
-        a2 = await da.ArmyAccess.getArmyById(2)
+        a1 = await da.ArmyAccess.get_army_by_id(1)
+        a2 = await da.ArmyAccess.get_army_by_id(2)
 
         assert a1 is None or a2 is None
 
@@ -507,8 +507,8 @@ async def test_city_combat():
         owner = await da.CityAccess.getCityController(1)
         assert owner.id == 1
 
-        army = await da.ArmyAccess.getArmyById(1)
-        troops = await da.ArmyAccess.getTroops(1)
+        army = await da.ArmyAccess.get_army_by_id(1)
+        troops = await da.ArmyAccess.get_troops(1)
 
         assert army is not None
         assert len(troops) > 0

@@ -82,7 +82,7 @@ async def get_buildings(
     """
 
     if len(armies) == 0:
-        army_id = await da.ArmyAccess.createArmy(user_id, city.region.planet_id, city.x, city.y)
+        army_id = await da.ArmyAccess.create_army(user_id, city.region.planet_id, city.x, city.y)
         await da.ArmyAccess.enter_city(city.id, army_id)
     else:
         army_id = armies[0]

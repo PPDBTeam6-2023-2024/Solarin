@@ -26,15 +26,15 @@ async def test_attack_army(client):
         await data_access.DeveloperAccess.createPlanetRegionType("test")
         await data_access.PlanetAccess.createPlanetRegion(planet_id, "test", 0, 0)
 
-        army_id = await data_access.ArmyAccess.createArmy(user_id, planet_id, 0, 0)
+        army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
 
         """
         Create second user
         """
         user_2 = await data_access.UserAccess.createUser("a", "a", "a")
-        army2_id = await data_access.ArmyAccess.createArmy(user_2, planet_id, 0, 0)
+        army2_id = await data_access.ArmyAccess.create_army(user_2, planet_id, 0, 0)
 
-        army3_id = await data_access.ArmyAccess.createArmy(user_id, planet_id, 0, 0)
+        army3_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
 
         await session.commit()
 

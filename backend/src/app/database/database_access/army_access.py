@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 from math import dist
 
@@ -14,11 +13,14 @@ class ArmyAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createArmy(self, user_id: int, planet_id: int, x: float, y: float):
+    async def create_army(self, user_id: int, planet_id: int, x: float, y: float):
         """
         Create a new army corresponding to a user_id
+        This army will spawn on the planet corresponding to the planet id
+        on position x, y
 
         :param: user_id: the id of the user who created the army
+        :param: planet_id: the id of the planet where the army will be
         :return: army_id: id of the army that was just generated
         """
         army = Army(
@@ -33,7 +35,7 @@ class ArmyAccess:
         await self.__session.flush()
         return army.id
 
-    async def addToArmy(self, army_id: int, troop_type: str, rank: int, amount: int):
+    async def add_to_army(self, army_id: int, troop_type: str, rank: int, amount: int):
         """
         Check if the ArmyConsistsOf does already contain an entry for (amry_id, trooptype, rank)
         If so: increase the amount by the given amount
@@ -47,14 +49,14 @@ class ArmyAccess:
         """
 
         """
-        run a query to find the table given the relation between troops and armies
+        run a query to find the table giving the relation between troops and armies
         """
         get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==army_id,
                                                  ArmyConsistsOf.troop_type==troop_type,
                                                  ArmyConsistsOf.rank == rank)
 
         results = await self.__session.execute(get_entry)
-        result = results.first()
+        result = results.scalar_one_or_none()
 
         """
         verify whether the entry (giving the specific relation) existed
@@ -73,7 +75,7 @@ class ArmyAccess:
             We will increase the amount of the entry with the provided amount
             """
 
-            result[0].size += amount
+            result.size += amount
 
         """
         Flush is necessary in case multiple adds to an army are done before a commit, because we might need
@@ -81,52 +83,18 @@ class ArmyAccess:
         """
         await self.__session.flush()
 
-    async def getArmies(self, planetid: int):
-        getentry = Select(Army).where(Army.planet_id==planetid)
-        armies = await self.__session.execute(getentry)
-        return armies
-
-    async def getArmiesOutside(self, userid: int, planetid: int):
-        """
-        The get armies method but without displaying armies that are inside a city.
-        """
-        getentry = Select(Army).where(Army.user_id==userid)
-        armies = await self.__session.execute(getentry)
-        armies = armies.all()
-
-        get_entry_in_city = Select(Army).join(EnterCity, EnterCity.army_id == Army.id).where(Army.planet_id==planetid)
-        city_armies = await self.__session.execute(get_entry_in_city)
-        city_armies = city_armies.all()
-
-        return list(set(armies)-set(city_armies))
-
-
-    async def getTroops(self, armyid: int):
+    async def get_troops(self, armyid: int):
         getentry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id==armyid)
         troops = await self.__session.execute(getentry)
         return troops.all()
 
-    async def getArmyById(self, army_id: int):
+    async def get_army_by_id(self, army_id: int):
         getentry = Select(Army).where(Army.id==army_id)
         result = await self.__session.execute(getentry)
         army = result.scalars().first()
         return army
 
-    async def updateArmyCoordinates(self, army_id: int, x, y):
-        getentry = Select(Army).where(Army.id==army_id)
-        result = await self.__session.execute(getentry)
-        army = result.scalars().first()
-
-        if army is None:
-            return False
-
-        army.x = x
-        army.y = y
-
-        await self.__session.commit()
-        return True
-
-    async def getUserArmies(self, userid: int):
+    async def get_user_armies(self, userid: int):
         getentry = Select(Army).where(Army.user_id==userid)
         armies = await self.__session.execute(getentry)
         await self.__session.flush()
@@ -443,7 +411,7 @@ class ArmyAccess:
         """
         for f in from_troops:
             ac: ArmyConsistsOf = f[0]
-            await self.addToArmy(army_id, ac.troop_type, ac.rank, ac.size)
+            await self.add_to_army(army_id, ac.troop_type, ac.rank, ac.size)
 
         """
         Remove original army
@@ -487,7 +455,7 @@ class ArmyAccess:
         Check a user doesn't attack himself
         """
         city_owner = await CityAccess(self.__session).getCityController(target_id)
-        army: Army = await ArmyAccess(self.__session).getArmyById(army_id)
+        army: Army = await ArmyAccess(self.__session).get_army_by_id(army_id)
 
         if army.user_id != city_owner.id:
             raise Exception("You enter someone else their city")

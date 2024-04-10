@@ -37,7 +37,7 @@ async def test_attack_army(client):
         await data_access.DeveloperAccess.createPlanetRegionType("test")
         await data_access.PlanetAccess.createPlanetRegion(planet_id, "test", 0, 0)
 
-        army_id = await data_access.ArmyAccess.createArmy(user_id, planet_id, 0, 0)
+        army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
 
         """
         Create city and set army inside city

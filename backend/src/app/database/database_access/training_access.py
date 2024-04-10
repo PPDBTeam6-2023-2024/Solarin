@@ -127,7 +127,7 @@ class TrainingAccess:
             handle the trained unit changes
             """
             army_access = ArmyAccess(self.__session)
-            await army_access.addToArmy(queue_entry.army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
+            await army_access.add_to_army(queue_entry.army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
             queue_entry.training_size -= troops_trained
             """
             when entry done, remove training queue entry

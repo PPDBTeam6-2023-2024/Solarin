@@ -24,8 +24,8 @@ async def test_get_armies(client):
         await data_access.DeveloperAccess.createPlanetType("arctic")
         planet_id = await data_access.PlanetAccess.createPlanet("test", "arctic", region_id)
 
-        await data_access.ArmyAccess.createArmy(user_id, planet_id, 0, 0)
-        await data_access.ArmyAccess.createArmy(user_id, planet_id, 0, 0)
+        await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
+        await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
         await session.commit()
 
     data = {
@@ -71,7 +71,7 @@ async def test_move_army(client):
         await data_access.DeveloperAccess.createPlanetType("arctic")
         planet_id = await data_access.PlanetAccess.createPlanet("test", "arctic", region_id)
 
-        army_id = await data_access.ArmyAccess.createArmy(user_id, planet_id, 0, 0)
+        army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
         await session.commit()
 
     data = {

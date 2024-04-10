@@ -95,6 +95,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
             headerName: "Function",
             field: "type",
         },
+
     ], [cityId]);
     return (
         <>
@@ -115,8 +116,9 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                         setSelectedBuilding(event.data);
                         onRowMouseOver(event);
                     }}
-                    onGridReady={params => params.api.sizeColumnsToFit()}
+                    onGridReady={params => params.api.sizeColumnsToFit()}dit
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
+
                 />
             </div>
             {selectedImage && selectedClick[0] === -1 &&

@@ -3,7 +3,7 @@
 .ag-theme-alpine-dark .ag-header-group-cell{
     /* Replace primaryColor and secondaryColor with actual colors or add classes dynamically */
     background: linear-gradient(to top, black, #d20000) !important;
-    font-size: 150%;
+    font-size: 1.2vw;
     color: #030303;
 }
 
@@ -41,11 +41,11 @@
     height: 27vw;
     overflow: scroll;
     /*background: transparent;  => add if nescessary*/
-    margin-top: 1vw;
+    margin-top: auto;
     margin-bottom: auto;
-    margin-left: 2%;
+    margin-left: auto;
     margin-right: auto;
-    border-radius: 1vw 0 0 1vw;
+    border-radius: 0.2vw 0 0 0.2vw;
 }
 
 

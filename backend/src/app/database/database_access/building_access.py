@@ -20,7 +20,7 @@ class BuildingAccess:
         cost_query_row = cost_query_results.all()
         if cost_query_row is None:
             raise ValueError(f"No creation cost found for building type {building_type}")
-        assert len(cost_query_row) > 0, "No creation cost found for building"
+        assert len(cost_query_row) > 0, "No creation cost found for building type " + building_type
         return cost_query_row[0]
 
     async def createBuilding(self, city_id: int, building_type: str, user_id: int):
@@ -180,6 +180,7 @@ class BuildingAccess:
             building_id = building_instance.id
             building_name = building_instance.building_type
             building_type = building_instance.type
+            building_rank = building_instance.rank
 
             if isinstance(building_type, ProductionBuildingType):
                 # Fetch all production details for the building
@@ -196,7 +197,7 @@ class BuildingAccess:
                     # Calculate the amount to increase based on the time delta and base production
                     time_delta = await self.getDeltaTime(building_id)
                     time_delta_as_minutes = int(time_delta.total_seconds() / 60)
-                    amount_to_increase = time_delta_as_minutes * base_production
+                    amount_to_increase = time_delta_as_minutes * PropertyUtility.getGPR(1.0,base_production,building_rank)
 
                     # Fetch the current amount of the resource for the building
                     current_amount_query = select(StoresResources.amount).where(

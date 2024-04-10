@@ -91,23 +91,22 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType" },
         { headerName: "Building Rank", field: "buildingRank" },
-        {
-            headerName: "Function",
-            field: "type",
-        },
+        {headerName: "Function", field: "type", autoHeight: true },
 
     ], [cityId]);
+    const rowData = useMemo(() => buildings.map((building, index) => ({
+        buildingType: building.building_type,
+        buildingRank: building.rank,
+        index: index,
+        id: building.id,
+        type: building.type
+    })), [buildings]);
+
     return (
         <>
             <div className="ag-theme-alpine-dark buildings_grid">
                 <AgGridReact
-                    rowData={buildings.map((building, index) => ({
-                        buildingType: building.building_type,
-                        buildingRank: building.rank,
-                        index: index,
-                        id: building.id,
-                        type: building.type
-                    }))}
+                    rowData={rowData}
                     columnDefs={columns}
                     domLayout='normal'
                     suppressMovableColumns={true}
@@ -116,7 +115,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                         setSelectedBuilding(event.data);
                         onRowMouseOver(event);
                     }}
-                    onGridReady={params => params.api.sizeColumnsToFit()}dit
+                    onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
 
                 />

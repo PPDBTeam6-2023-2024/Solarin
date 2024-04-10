@@ -9,7 +9,8 @@
     display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
-    height: 80%; /* Take full height of the cell */
+    height: 80%; /* Take % height of the cell */
+    transform: translateY(10%);
 }
 
 

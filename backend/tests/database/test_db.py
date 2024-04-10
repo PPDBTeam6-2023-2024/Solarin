@@ -20,9 +20,12 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.createResourceType("Vibranium")
         await da.DeveloperAccess.createResourceType("Energon")
         await da.DeveloperAccess.createResourceType("SOL")
+        await da.DeveloperAccess.createResourceType("TF")
+
         """
         Creates 50 users
         """
+
         for t_index in range(50):
             uuid = await da.UserAccess.createUser(f"username{t_index}", f"t{t_index}@gmail", f"hp{t_index}")
             assert uuid == t_index + 1
@@ -114,10 +117,10 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.setCreationCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
         await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Vibranium", 1)])
         await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Energon", 2)])
-        await da.DeveloperAccess.setCreationCost("The mines of moria", [("Energon", 2)])
 
-        await da.DeveloperAccess.setCreationCost("towerH", [("Energon", 2)])
-        await da.DeveloperAccess.setCreationCost("wallW", [("Energon", 2)])
+        await da.DeveloperAccess.setCreationCost("The mines of moria", [("TF", 100)])
+        await da.DeveloperAccess.setCreationCost("towerH", [("TF", 100)])
+        await da.DeveloperAccess.setCreationCost("wallW", [("TF", 100)])
 
         """
         Create some actual buildings instances inside cities

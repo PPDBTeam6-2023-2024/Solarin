@@ -5,7 +5,8 @@ import './NewBuildingGrid.css';
 import { createBuilding} from '../BuildingManager';
 
 const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, resources }) => {
-    const handleBuild = () => {
+    const handleBuild = (event) => {
+        event.stopPropagation();
         if (!data.can_build) {
             alert(`Not enough resources to build ${data.name}.`);
             return;
@@ -32,10 +33,9 @@ const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, resources
 const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, resources }) => {
     const columns = useMemo(() => [
         { headerName: "Name", field: "name" },
-        { headerName: "Building Type", field: "buildingType" },
-        { headerName: "Building Rank", field: "buildingRank" },
-        { headerName: "Cost Type", field: "costType" },
-        { headerName: "Amount", field: "costAmount" },
+        { headerName: "Type", field: "buildingType" , autoHeight: true},
+        { headerName: "Rank", field: "buildingRank" },
+        { headerName: "Cost", field: "cost" },
         {
             headerName: "Build",
             field: "id",
@@ -43,20 +43,21 @@ const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, update
         },
     ], [cityId]);
 
+    const rowData = useMemo(() => buildings.map((building, index) => ({
+        name: building.name,
+        buildingType: building.type,
+        buildingRank: building.required_rank,
+        cost:  building.cost_amount + " "+ building.cost_type,
+        can_build: building.can_build,
+        id: building.id,
+        index: index
+    })), [buildings]);
+
     return (
         <>
             <div className="ag-theme-alpine-dark buildings_grid">
                 <AgGridReact
-                    rowData={buildings.map((building, index) => ({
-                        name: building.name,
-                        buildingType: building.type,
-                        buildingRank: building.required_rank,
-                        costType: building.cost_type,
-                        costAmount: building.cost_amount,
-                        can_build: building.can_build,
-                        id: building.id,
-                        index: index
-                    }))}
+                    rowData={rowData}
                     columnDefs={columns}
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}

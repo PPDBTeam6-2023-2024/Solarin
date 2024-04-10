@@ -56,6 +56,14 @@ class ArriveCheck:
             """
             Enters the city when it arrives
             """
+
+            """
+            When army is already in city, don't add again
+            """
+            armies_in_city = await da.ArmyAccess.get_army_in_city(target.target_id)
+            if (army_id,) in armies_in_city:
+                return
+
             await da.ArmyAccess.enter_city(target.target_id, army_id)
 
         if isinstance(target, MergeArmies):
@@ -64,6 +72,7 @@ class ArriveCheck:
             """
             await da.ArmyAccess.merge_armies(target.target_id, army_id)
 
+        await da.ArmyAccess.cancel_attack(army_id)
         await da.commit()
 
         return True

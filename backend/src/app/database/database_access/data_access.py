@@ -11,6 +11,7 @@ from .army_access import ArmyAccess
 from .training_access import TrainingAccess
 from .ranking_access import RankingAccess
 from .resource_access import ResourceAccess
+import asyncio
 
 
 class DataAccess:

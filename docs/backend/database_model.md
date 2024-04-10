@@ -64,19 +64,18 @@ An overview of each the tables in the database:
 <summary><strong>Settlements</strong></summary>
 <p>
 
-|           Table            |  Type   | Purpose                                                                                                                                                  |
-|:--------------------------:|:-------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------|
-|            City            |  Data   | Stores information about a city that is in a region on a planet                                                                                          |                                                                                                                                                  |     
-|      BuildingInstance      |  Data   | Stores which buildings a city has                                                                                                                        |     
-|        BuildingType        | Lookup  | Stores the types of buildings that can exist (This table is the parent of an ISA/polymorphic relation)                                                   |   
-|        BarracksType        | Lookup  | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)                                            |
-|          WallType          | Lookup  | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                                               |   
-|         TowerType          | Lookup  | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)                                              |   
-|         HouseType          | Lookup  | Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)                                              |   
-| ProductionBuildingTypeType | Lookup  | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType)                                |   
-|     ProducesResources      | Lookup  | Stores which resources a production building produces                                                                                                    |   
-|        ResourceType        | Lookup  | Types of resources that are in the game                                                                                                                  |  
-|        UpgradeCost         | Lookup  | Stores the cost to upgrade certain buildings                                                                                                             |
+|           Table            |  Type  | Purpose                                                                                                                   |
+|:--------------------------:|:------:|:--------------------------------------------------------------------------------------------------------------------------|
+|            City            |  Data  | Stores information about a city that is in a region on a planet                                                           |                                                                                                                                                  |     
+|      BuildingInstance      |  Data  | Stores which buildings a city has                                                                                         |     
+|        BuildingType        | Lookup | Stores the types of buildings that can exist (This table is the parent of an ISA/polymorphic relation)                    |   
+|        BarracksType        | Lookup | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)             |
+|          WallType          | Lookup | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                |   
+|         TowerType          | Lookup | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
+|         HouseType          | Lookup | Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
+| ProductionBuildingTypeType | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
+|     ProducesResources      | Lookup | Stores which resources a production building produces                                                                     |   
+|        CreationCost        | Lookup | Stores the cost to upgrade certain buildings                                                                              |
 
 
 </p>
@@ -97,12 +96,21 @@ An overview of each the tables in the database:
 | AttackOnArrive |  Data  | To attack users IDLE, we will store when a user attacks another user/city when he arrives at that position (This table is the parent of an ISA/polymorphic relation) |
 |   AttackArmy   |  Data  | Stores which other army we might attack when our army arrives at its position  (This table is a child of an ISA/polymorphic relation with AttackArmy)                |
 |   AttackCity   |  Data  | Stores which city we might attack when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                   |
-<<<<<<< HEAD
-=======
 |   EnterCity    |  Data  | Stores which city we might enter when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                    |
 |  MergeArmies   |  Data  | SStores which army we merge with when we arrive     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                           |
->>>>>>> training_branch
 |   ArmyInCity   |  Data  | Stores the armies that are present inside a city                                                                                                                     |
+
+</p>
+</details>
+
+<details>
+<summary><strong>Resources</strong></summary>
+<p>
+
+|    Table     |  Type  | Purpose                                 |
+|:------------:|:------:|:----------------------------------------|
+| ResourceType | Lookup | Types of resources that are in the game |  
+| HasResources |  Data  | Store resources associated with a user  |
 
 </p>
 </details>

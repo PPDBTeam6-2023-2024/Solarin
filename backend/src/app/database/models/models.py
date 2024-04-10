@@ -1,36 +1,44 @@
-import sqlalchemy.orm.state
 from sqlalchemy import *
 from datetime import datetime
 
 from ..database import Base
-from sqlalchemy.orm import declarative_base, relationship, declared_attr
-from sqlalchemy import event
+from sqlalchemy.orm import relationship
 from ...routers.authentication.schemas import MessageToken, BattleStats
 from ...routers.chat.schemas import MessageOut
 from ...routers.cityManager.schemas import BuildingInstanceSchema, CitySchema, BuildingTypeSchema
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
-from ...routers.buildingManagement.schemas import TrainingQueueEntry, TimestampDone
+from ...routers.buildingManagement.schemas import TrainingQueueEntry
 from datetime import timedelta
 from ....logic.utils.compute_properties import *
-from sqlalchemy.orm.state import InstanceState
 
 
 class User(Base):
     """
     Store data of a users account
+
+    id: unique id to identify the user (uses a sequence to increase the id counter every time a user creates an account)
+    email: the email of the user
+    username: username of the user
+    hashed_password: the password of the user in hashed format
+    alliance: the alliance the user is in. (If the user is not in an alliance, this value is 'null')
+    faction_name: the name of the faction the user is leading (if 'null', no faction name is yet configured by the user)
     """
     __tablename__ = 'user'
     id = Column(Integer, Sequence('user_id_seq'), primary_key=True, index=True)
-    email = Column(String, unique=True)
-    username = Column(String, unique=True)
-    hashed_password = Column(String)
+    email = Column(String, unique=True, nullable=False)
+    username = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED'))
     faction_name = Column(String)
 
 
 class HasResources(Base):
     """
-    Store resources of a user
+    Store resources associated with a user
+
+    owner_id: the id of the user, that is associated with the resource
+    resource_type: resource that our user has
+    quantity: the amount of this resource that the user has
     """
     __tablename__ = "hasResources"
     owner_id = Column(Integer, ForeignKey("user.id"), primary_key=True)

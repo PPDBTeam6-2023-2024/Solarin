@@ -36,14 +36,14 @@
       {"product-name":  "POP", "base-rate":  15, "base-cap":  5000}
     ]},
     {"name":  "extractor", "creation-cost": 3000,"products":  [
-      {"product-name":  "minerals", "base-rate":  10, "base-cap":  1000},
-      {"product-name":  "oil", "base-rate":  10, "base-cap":  1000}
+      {"product-name":  "MI", "base-rate":  10, "base-cap":  1000},
+      {"product-name":  "OI", "base-rate":  10, "base-cap":  1000}
     ]},
         {"name":  "reactor", "creation-cost": 10000,"products":  [
-      {"product-name":  "uranium", "base-rate":  15, "base-cap":  250}
+      {"product-name":  "UR", "base-rate":  15, "base-cap":  250}
     ]}
   ],
-  "resources": ["TF", "RA", "SOL", "POP", "INF", "minerals", "uranium", "oil", "coal"],
+  "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],
   "units": [
     {"name":  "soldier", "spec": "land", "base-points":
     {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250}

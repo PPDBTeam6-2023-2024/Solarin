@@ -5,8 +5,7 @@
   },
   "TF": {
     "icon": "techforge.png",
-    "description": "Techforge: Used to create and upgrade buildings.",
-    "scale": 1.6
+    "description": "Techforge: Used to create and upgrade buildings."
   },
   "RA": {
     "icon": "rations.svg",
@@ -20,7 +19,7 @@
     "icon": "influence.svg",
     "description": "Influence: Used to make political decisions."
   },
-  "MIN": {
+  "MI": {
     "icon": "minerals.svg",
     "description": "Minerals: Used as a resource for various industrial processes."
   },

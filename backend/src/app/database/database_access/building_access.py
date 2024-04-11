@@ -20,16 +20,28 @@ class BuildingAccess:
 
     async def __get_building_cost(self, building_type: str, to_rank: int) -> list:
         """
-        get the creation
-        to_rank is the rank we want our building to upgrade to, to rank == 1 means creating the building
+        get the creation/Upgrade cost (to_rank 1 => creation cost)
+
+        :param: building_type: the type of building whose cost we want
+        :param: to_rank: the rank we want our building to upgrade to, to rank == 1 means creating the building
+        """
+
+        """
+        Retrieve the base costs
         """
         cost_query = select(CreationCost.cost_type, CreationCost.cost_amount).where(
             CreationCost.building_name == building_type)
         cost_query_results = await self.__session.execute(cost_query)
         cost_query_rows = cost_query_results.all()
 
+        """
+        Apply the cost changes based on the rank we want to upgrade to
+        """
         cost_query_rows = [(c[0], PropertyUtility.getGUC(c[1], to_rank)) for c in cost_query_rows]
 
+        """
+        Error in case we do not have an upgrade cost
+        """
         if len(cost_query_rows) == 0:
             raise NotFoundException(building_type, "creation Cost")
 
@@ -79,11 +91,8 @@ class BuildingAccess:
         building_instance = BuildingInstance(city_id=city_id, building_type=building_type)
         self.__session.add(building_instance)
 
-        await self.__session.flush()
-
         building_id = building_instance.id
-
-        await self.__session.commit()
+        await self.__session.flush()
 
         return building_id
 
@@ -95,7 +104,7 @@ class BuildingAccess:
         -name: the more specific type of building (mine, ...)
 
         :param: city_id: id of the city whose buildings we want
-        :return:
+        :return: list of tuples: BuildingInstance object, Building Type Object
         """
         get_buildings = Select(BuildingInstance, BuildingType).\
             join(BuildingInstance, BuildingInstance.building_type == BuildingType.name).\
@@ -176,7 +185,6 @@ class BuildingAccess:
         """
         for building_type in building_types:
             if building_type.required_rank is not None and building_type.required_rank > city_rank:
-
                 continue
 
             creation_cost = await self.__get_building_cost(building_type.name, 1)
@@ -191,19 +199,23 @@ class BuildingAccess:
     async def collect_resources(self, user_id: int, building_id: int):
         """
         Collect resources from a production building
+
+        :param: user_id: the id of the user who is collecting the resources
+        :param: building_id: id of the building whose resources we will collect
         """
 
         """
         Check if the user is also the owner of the provided city
         """
-        is_owner = await self.is_owner(building_id, user_id)
+        is_owner = await self.is_owner(user_id, building_id)
         if not is_owner:
             raise PermissionException(user_id, "cannot collect resources from a building from another user")
 
         """
         retrieve the resource production
         """
-        get_production = Select(ProducesResources).join(BuildingInstance, BuildingInstance.building_type == ProducesResources.building_name).\
+        get_production = Select(ProducesResources).\
+            join(BuildingInstance, BuildingInstance.building_type == ProducesResources.building_name).\
             where(BuildingInstance.id == building_id)
 
         production = await self.__session.execute(get_production)
@@ -239,7 +251,7 @@ class BuildingAccess:
         :param building_id: id of building we want to upgrade
         """
 
-        if not await self.is_owner(building_id, user_id):
+        if not await self.is_owner(user_id, building_id):
             raise PermissionException(user_id, "upgrading someone else their building is not allowed")
 
         """
@@ -294,7 +306,7 @@ class BuildingAccess:
         :return: Tuple: building id int, upgrade cost (list), can_build boolean
         """
 
-        if not self.is_owner(building_id, user_id):
+        if not self.is_owner(user_id, building_id):
             raise PermissionException(user_id, "retrieve the upgrade cost of someone their building")
 
         """
@@ -327,23 +339,29 @@ class BuildingAccess:
         :param building_id: id of building whose corresponding city we want
         """
 
-        gc = Select(City).join(BuildingInstance, BuildingInstance.city_id ==City.id).where(building_id == BuildingInstance.id)
+        gc = Select(City).\
+            join(BuildingInstance, BuildingInstance.city_id ==City.id).where(building_id == BuildingInstance.id)
         results = await self.__session.execute(gc)
         result = results.scalar_one()
         return result
 
-    async def is_owner(self, building_id: int, user_id: int):
+    async def is_owner(self, user_id: int, building_id: int):
         """
         Checks if the user is owner of this building
+
+        :param: user_id: id of the user we want to check whether he is the owner or not
+        :param: building_id: id of the building we want to check
+        return: bool indicating if the user is the owener or not
         """
 
-        get_building = Select(City.controlled_by).join(BuildingInstance, City.id == BuildingInstance.city_id).where(BuildingInstance.id == building_id)
+        get_building = Select(City.controlled_by).\
+            join(BuildingInstance, City.id == BuildingInstance.city_id).where(BuildingInstance.id == building_id)
         results = await self.__session.execute(get_building)
-        results = results.first()
+        results = results.scalar_one_or_none()
 
         if results is None:
             return False
-        if results[0] != user_id:
-            return False
-        return True
+
+        return results == user_id
+
 

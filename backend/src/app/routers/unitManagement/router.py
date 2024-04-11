@@ -49,7 +49,7 @@ async def get_buildings(
     """
     check if the user owns the building
     """
-    is_owner = await da.BuildingAccess.is_owner(building_id, user_id)
+    is_owner = await da.BuildingAccess.is_owner(user_id, building_id)
     if not is_owner:
         return {"queue": [], "success": False, "message": "Only the owner of this building can change its training queue"}
     cost_list = await da.TrainingAccess.get_troop_cost(user_id, troop_type)

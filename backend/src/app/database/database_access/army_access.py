@@ -435,7 +435,7 @@ class ArmyAccess:
             d = delete(OnArrive).where(OnArrive.army_id == r)
             await self.__session.execute(d)
 
-    async def get_army_in_city(self, city_id: int) -> int:
+    async def get_army_in_city(self, city_id: int, add_on_none=True) -> int:
         """
         Returns a list of army id's of armies that are inside a city
         param: city_id: the id of the city we want to check
@@ -446,7 +446,7 @@ class ArmyAccess:
         results = await self.__session.execute(armies_in_cities)
         result = results.scalar_one_or_none()
 
-        if result is None:
+        if result is None and add_on_none:
             """
             When no army is inside the city put a default army inside the city
             """

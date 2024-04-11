@@ -99,7 +99,9 @@ async def planet_socket(
                 """
                 Here we will check if some attack target message is added, If so we will set the attack target
                 """
-                if data.get("on_arrive", False) and data["target_id"] != army_id:
+                if data.get("on_arrive", False) and (data["target_id"] != army_id or
+                                                     data["target_type"] in ("attack_city", "enter")):
+
                     if data["target_type"] == "attack_city":
                         await data_access.ArmyAccess.attack_city(army_id, data["target_id"])
                     elif data["target_type"] == "attack_army":

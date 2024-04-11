@@ -20,7 +20,6 @@ function ArmyMapEntry(props) {
         }
     }
 
-
     return (
         <img key={props.index} src={props.army.src} alt="army" className={`${cursor_style_class} transition-all ease-linear`}
              style={{...props.army.style, left: `${props.army.curr_x * 100}%`, top: `${props.army.curr_y * 100}%`}}

@@ -344,10 +344,7 @@ function PlanetViewer(props) {
 
                 </div>
 
-
             </MapInteractionCSS>
-
-
 
         </SocketContext.Provider>
         </>

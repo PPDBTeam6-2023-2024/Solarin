@@ -60,11 +60,14 @@ class ArriveCheck:
             """
             When army is already in city, don't add again
             """
-            armies_in_city = await da.ArmyAccess.get_army_in_city(target.target_id)
-            if army_id == armies_in_city:
+            army_in_city = await da.ArmyAccess.get_army_in_city(target.target_id, False)
+            if army_id == army_in_city:
                 return
 
-            await da.ArmyAccess.enter_city(target.target_id, army_id)
+            if army_in_city is None:
+                await da.ArmyAccess.enter_city(target.target_id, army_id)
+            else:
+                await da.ArmyAccess.merge_armies(army_in_city, target.target_id)
 
         if isinstance(target, MergeArmies):
             """

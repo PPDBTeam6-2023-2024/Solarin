@@ -25,7 +25,6 @@ export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
 
 export const closeArmyViewer = (army, setActiveArmyViewers) => {
     setActiveArmyViewers(prev => {
-        console.log("heo", prev);
          const index = prev.findIndex(viewer => viewer.id === army.id);
         if (index >= 0) {
             // Remove viewer if already active

@@ -128,7 +128,7 @@ async def friend_requests(
     """
     output_list: List[Tuple[str, int]] = []
     for d in data:
-        output_list.append((d[0].username, d[0].id))
+        output_list.append((d.username, d.id))
     return output_list
 
 

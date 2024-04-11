@@ -7,4 +7,4 @@ class NotFoundException(DataAccessException):
     """
 
     def __init__(self, not_found_param: int | str, table_name: str):
-        super().__init__(f"{table_name} does not have an entry {not_found_param}")
+        super().__init__(f"{table_name} does not have an entry for {not_found_param}")

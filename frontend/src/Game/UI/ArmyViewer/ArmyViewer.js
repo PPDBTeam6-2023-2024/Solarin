@@ -31,9 +31,11 @@ function ArmyViewer({armyId, onCityCreated}) {
         let planet_id = armyData.planet_id
         const cityData = {
             x: armyData.x,
-            y: armyData.y
+            y: armyData.y,
+            planet_id: planet_id,
+            army_id: armyId
         };
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/create_city?planet_id=${planet_id}`, cityData);
+            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/create_city`, cityData);
             onCityCreated()
         } catch (error) {
             console.error("Failed creating city", error);

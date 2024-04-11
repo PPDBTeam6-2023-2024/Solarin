@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, Request
 from fastapi.responses import JSONResponse
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
-from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, CityLocationSchema, BuildingTypeSchema, Confirmation, CostSchema
+from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, CityLocationSchema, BuildingTypeSchema, Confirmation, CostSchema, CreateCitySchema
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 
@@ -140,13 +140,17 @@ async def get_upgrade_cost(
 @router.post("/create_city")
 async def create_city(
         user_id: Annotated[int, Depends(get_my_id)],
-        planet_id: int,
-        coordinates: CityLocationSchema,
+        create_city_scheme: CreateCitySchema,
         db=Depends(get_db)
 ):
     data_access = DataAccess(db)
-    city_id = None
-    city_id = await data_access.CityAccess.create_city(planet_id, user_id, coordinates.x, coordinates.y)
+
+    """
+    Create the new city
+    """
+    city_id = await data_access.CityAccess.create_city(create_city_scheme.planet_id, user_id,
+                                                       create_city_scheme.x, create_city_scheme.y)
+
     await data_access.commit()
     if city_id is not None:
         return JSONResponse(content={"message": "City was created successfully", "city_id": city_id},

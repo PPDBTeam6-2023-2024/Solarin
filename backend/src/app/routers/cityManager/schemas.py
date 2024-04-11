@@ -51,3 +51,10 @@ class CostSchema(ConfigClass):
 class CityLocationSchema(BaseModel):
     x: float
     y: float
+
+
+class CreateCitySchema(BaseModel):
+    x: float
+    y: float
+    planet_id: int
+    army_id: int

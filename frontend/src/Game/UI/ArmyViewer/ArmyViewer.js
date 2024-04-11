@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 import { TreeView, TreeItem } from '@mui/x-tree-view';
 import WindowUI from '../WindowUI/WindowUI';
 import {Button} from "@mui/material";
+import {PlanetIdContext} from "../../Context/PlanetIdContext";
 
 function ArmyViewer({armyId, onCityCreated}) {
     const [troops, setTroops] = useState([]);
@@ -25,14 +26,7 @@ function ArmyViewer({armyId, onCityCreated}) {
 
     const createCity = async () => {
         try {
-            // get the planetID and coordinates from the army using the armyID
-            const army = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/getarmy?army_id=${armyId}`)
-        const armyData = army.data;
-        let planet_id = armyData.planet_id
         const cityData = {
-            x: armyData.x,
-            y: armyData.y,
-            planet_id: planet_id,
             army_id: armyId
         };
             await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/create_city`, cityData);

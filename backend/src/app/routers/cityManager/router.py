@@ -148,8 +148,10 @@ async def create_city(
     """
     Create the new city
     """
-    city_id = await data_access.CityAccess.create_city(create_city_scheme.planet_id, user_id,
-                                                       create_city_scheme.x, create_city_scheme.y)
+
+    planet_id, x, y = await data_access.ArmyAccess.get_current_position(create_city_scheme.army_id)
+
+    city_id = await data_access.CityAccess.create_city(planet_id, user_id, x, y)
 
     await data_access.commit()
     if city_id is not None:

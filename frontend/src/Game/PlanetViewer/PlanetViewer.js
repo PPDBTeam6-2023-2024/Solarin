@@ -23,6 +23,7 @@ import CityMapEntry from "./CityMapEntry";
 import {string} from "three/examples/jsm/nodes/shadernode/ShaderNode";
 import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
 import {SocketContext} from "../Context/SocketContext";
+import {PlanetIdContext} from "../Context/PlanetIdContext";
 
 function PlanetViewer(props) {
     const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
@@ -276,6 +277,7 @@ function PlanetViewer(props) {
         <>
 
         {/*Make it possible to access the socket in the children without using props (because cleaner)*/}
+        <PlanetIdContext.Provider value={props.planetId}>
         <SocketContext.Provider value={[socket, setSocket]}>
 
         <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
@@ -347,6 +349,7 @@ function PlanetViewer(props) {
             </MapInteractionCSS>
 
         </SocketContext.Provider>
+        </PlanetIdContext.Provider>
         </>
     );
 }

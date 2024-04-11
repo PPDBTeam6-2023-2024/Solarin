@@ -624,3 +624,47 @@ class ArmyAccess:
         same_alliance = results[0].alliance == results[1].alliance and results[0].alliance is not None
 
         return same_owner, same_alliance
+
+    async def get_current_position(self, army_id: int):
+        """
+        Get the current position of an army
+        param: army_id: the id of the army whose current position we want
+        return: tuple planet_id, current x, current y
+        """
+
+        stmt = (
+            select(Army).where(Army.id == army_id)
+        )
+
+        result = await self.__session.execute(stmt)
+        army: Optional[Army] = result.scalar_one_or_none()
+
+        """
+       Calculate the difference between the army to position and its start position
+       """
+        x_diff = army.to_x - army.x
+        y_diff = army.to_y - army.y
+
+        """
+        retrieve the current time
+        """
+        current_time = datetime.utcnow()
+
+        total_time_diff = (army.arrival_time - army.departure_time).total_seconds()
+        current_time_diff = (min(current_time, army.arrival_time) - army.departure_time).total_seconds()
+
+        """
+        change the army position to its current position by using linear interpolation
+
+        Our army goes from A to B, over time
+        current_time_diff / total_time_diff will give how much of the path is already passed
+        By changing the army position (x, y) accordingly, we have the current position as army position (x, y)
+        """
+
+        curr_x = army.x
+        curr_y = army.y
+        if total_time_diff != 0:
+            curr_x = x_diff * (current_time_diff / total_time_diff) + curr_x
+            curr_y = y_diff * (current_time_diff / total_time_diff) + curr_y
+
+        return army.planet_id, curr_x, curr_y

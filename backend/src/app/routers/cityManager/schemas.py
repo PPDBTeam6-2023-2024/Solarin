@@ -54,7 +54,4 @@ class CityLocationSchema(BaseModel):
 
 
 class CreateCitySchema(BaseModel):
-    x: float
-    y: float
-    planet_id: int
     army_id: int

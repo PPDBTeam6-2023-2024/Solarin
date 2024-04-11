@@ -88,20 +88,9 @@ async def create_building(
     data_access = DataAccess(db)
     building_id = await data_access.BuildingAccess.create_building(user_id, city_id, building_type)
 
-
     if not building_id:
         raise HTTPException(status_code=400, detail="Building could not be created.")
 
-@router.get("/update", response_model=Confirmation)
-async def update_resources(
-        city_id: int,
-        db=Depends(get_db)
-):
-    data_access = DataAccess(db)
-    confirmed = await data_access.BuildingAccess.increase_resource_stocks(city_id)
-    if not confirmed:
-        raise HTTPException(status_code=400, detail="Resources could not be updated created.")
-    return Confirmation(confirmed=confirmed)
 
 @router.get("/collect", response_model=Confirmation)
 async def collect_resource(
@@ -110,7 +99,7 @@ async def collect_resource(
         db=Depends(get_db)
 ):
     data_access = DataAccess(db)
-    confirmed = await data_access.BuildingAccess.collect_resources(building_id, user_id)
+    confirmed = await data_access.BuildingAccess.collect_resources(user_id, building_id)
     if not confirmed:
         raise HTTPException(status_code=400, detail="Resources could not be updated or created.")
     return Confirmation(confirmed=confirmed)

@@ -36,7 +36,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
     useEffect(() => {
         if (cityId && buildings.length === 0) {
-            refreshResourceAmount(cityId) /*update resource viewer here*/
             getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
             });

@@ -235,20 +235,6 @@ class ProducesResources(Base):
     production_building = relationship("ProductionBuildingType", back_populates="producing_resources", lazy='select')
 
 
-class StoresResources(Base):
-    """
-    Stores the resources produced in a production building instance
-
-
-    """
-    __tablename__ = 'storesResources'
-    building_id = Column(Integer, ForeignKey('buildingInstance.id', deferrable=True, initially='DEFERRED'),
-                         primary_key=True)
-    resource_type = Column(String, ForeignKey('resourceType.name', deferrable=True, initially='DEFERRED'),
-                           primary_key=True)
-    amount = Column(PositiveInteger, nullable=False, default=0)
-
-
 class CreationCost(Base):
     """
     Stores the cost to create/ upgrade certain buildings

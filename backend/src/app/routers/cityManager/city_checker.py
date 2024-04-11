@@ -23,9 +23,6 @@ class CityChecker:
 
         await self.check_training(buildings)
 
-        for b in buildings:
-            await self.da.BuildingAccess.checked(b[0].id)
-
     async def check_training(self, buildings):
         """
         this function will check the training of units and its assignment to an army when they are trained
@@ -39,3 +36,4 @@ class CityChecker:
                 continue
 
             await self.da.TrainingAccess.check_queue(b[0].id)
+            await self.da.BuildingAccess.checked(b[0].id)

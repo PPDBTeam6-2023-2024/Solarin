@@ -40,9 +40,13 @@ class ResourceAccess:
         """
         s = Select(HasResources).where((user_id == HasResources.owner_id) & (HasResources.resource_type == resource_name))
         has_resources = await self.__session.execute(s)
-        has_resources = has_resources.first()
+        has_resources = has_resources.scalar_one_or_none()
 
-        has_resources[0].quantity += amount
+        if has_resources is None:
+            self.__session.add(HasResources(resource_type=resource_name, quantity=amount, owner_id=user_id))
+        else:
+            has_resources.quantity += amount
+
         await self.__session.flush()
 
     async def remove_resource(self, user_id: int, resource_name: str, amount: int):

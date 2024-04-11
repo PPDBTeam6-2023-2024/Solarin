@@ -188,101 +188,45 @@ class BuildingAccess:
 
         return buildings_data
 
-    async def increase_resource_stocks(self, city_id: int) -> bool:
+    async def collect_resources(self, user_id: int, building_id: int):
+        """
+        Collect resources from a production building
+        """
 
-        building_instances_query = select(BuildingInstance).where(
-            BuildingInstance.city_id == city_id)
-        building_instances_results = await self.__session.execute(building_instances_query)
+        """
+        Check if the user is also the owner of the provided city
+        """
+        is_owner = await self.is_owner(building_id, user_id)
+        if not is_owner:
+            raise PermissionException(user_id, "cannot collect resources from a building from another user")
 
-        for building_instance_row in building_instances_results:
-            building_instance: BuildingInstance = building_instance_row[0]
-            building_id = building_instance.id
-            building_name = building_instance.building_type
-            building_type = building_instance.type
-            building_rank = building_instance.rank
+        """
+        retrieve the resource production
+        """
+        get_production = Select(ProducesResources).join(BuildingInstance, BuildingInstance.building_type == ProducesResources.building_name).\
+            where(BuildingInstance.id == building_id)
 
-            if isinstance(building_type, ProductionBuildingType):
-                # Fetch all production details for the building
-                prod_details_query = select(ProducesResources).where(
-                    ProducesResources.building_name == building_name)
-                prod_details_result = await self.__session.execute(prod_details_query)
-                prod_details = prod_details_result.scalars().all()
+        production = await self.__session.execute(get_production)
+        production = production.scalars().all()
 
-                for prod_detail in prod_details:
-                    resource_name = prod_detail.resource_name
-                    base_production = prod_detail.base_production
-                    max_capacity = prod_detail.max_capacity
+        """
+        Add resources earned over time to user
+        """
+        delta = await self.get_delta_time(building_id)
 
-                    # Calculate the amount to increase based on the time delta and base production
-                    time_delta = await self.get_delta_time(building_id)
-                    time_delta_as_minutes = int(time_delta.total_seconds() / 60)
-                    amount_to_increase = time_delta_as_minutes * PropertyUtility.getGPR(1.0,base_production,building_rank)
+        hours = delta.total_seconds()/3600
 
-                    # Fetch the current amount of the resource for the building
-                    current_amount_query = select(StoresResources.amount).where(
-                        and_(StoresResources.building_id == building_id,
-                             StoresResources.resource_type == resource_name))
-                    current_amount_result = await self.__session.execute(current_amount_query)
-                    current_amount_row = current_amount_result.fetchone()
+        """
+        Add the resources to user taking into account the max capacity
+        """
+        ra = ResourceAccess(self.__session)
+        for p in production:
+            await ra.add_resource(user_id, p.resource_name, min(int(p.base_production*hours), p.max_capacity))
 
-                    if current_amount_row is None:
-                        # No entry found, assume current amount is 0 and create a new entry
-                        current_amount = 0
-                        new_resource_entry = StoresResources(building_id=building_id,
-                                                             resource_type=resource_name, amount=current_amount)
-                        self.__session.add(new_resource_entry)
-                        await self.__session.flush()
-                    else:
-                        # Entry found, use the current amount from the result
-                        current_amount = current_amount_row[0]
-
-                    new_amount = min(current_amount + amount_to_increase, max_capacity)
-
-                    # Update or create StoresResources entry with the new amount or the max capacity if exceeded
-                    if current_amount_row:
-                        update_query = (
-                            update(StoresResources)
-                            .where(and_(StoresResources.building_id == building_id,
-                                        StoresResources.resource_type == resource_name))
-                            .values(amount=new_amount)
-                        )
-                        await self.__session.execute(update_query)
-                    else:
-                        # Since we've already added the new entry, we just need to update its amount
-                        new_resource_entry.amount = new_amount
-
-                update_last_checked = update(BuildingInstance).where(BuildingInstance.id == building_id).values(last_checked = datetime.utcnow() )
-                await self.__session.execute(update_last_checked)
-
-        await self.__session.commit()
-        return True
-
-    async def collect_resources(self, building_id: int, user_id: int):
-        # Retrieve all resource amounts from StoresResources for the building
-        current_amounts_query = select(StoresResources).where(StoresResources.building_id == building_id)
-        results = await self.__session.execute(current_amounts_query)
-        resources = results.scalars().all()
-
-        # Iterate over each resource and update HasResources
-        for resource in resources:
-
-
-            # Update HasResources with the current amount for each resource type
-            if resource.amount is not None:
-                update_has_resources = (
-                    update(HasResources)
-                    .where(HasResources.owner_id == user_id, HasResources.resource_type == resource.resource_type)
-                    .values(quantity=HasResources.quantity + resource.amount)
-                )
-                await self.__session.execute(update_has_resources)
-
-        # Then, set the StoresResources amount to zero for all entries of the building
-        reset_stores_resources = (
-            update(StoresResources)
-            .where(StoresResources.building_id == building_id)
-            .values(amount=0)
-        )
-        await self.__session.execute(reset_stores_resources)
+        """
+        Check the building, indicating that the last checked timer needs to be set to now
+        """
+        await self.checked(building_id)
 
         await self.__session.commit()
 

@@ -58,20 +58,6 @@ export const getResources = async () => {
 };
 
 
-export const refreshResourceAmount = async (cityId) => {
-    try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/update?city_id=${cityId}`);
-        if (response.status === 200) {
-            return response.data;
-        }
-    } catch (error) {
-        console.error('Error refreshing resources:', error);
-        return null;
-    }
-};
-
-
 export const collectResources = async (cityId, buildingId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};

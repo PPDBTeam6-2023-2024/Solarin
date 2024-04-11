@@ -450,7 +450,7 @@ class ArmyAccess:
             """
             When no army is inside the city put a default army inside the city
             """
-            get_city = await Select(City).where(City.id == city_id)
+            get_city = Select(City).where(City.id == city_id)
             city = await self.__session.execute(get_city)
             city = city.scalar_one()
 

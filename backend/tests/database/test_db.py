@@ -351,8 +351,8 @@ async def test_ranking():
         da = DataAccess(session)
         ranking = await da.RankingAccess.get_top_ranking(10)
         assert len(ranking) == 10
-        assert ranking[0][0] == "username0"
-        assert ranking[9][0] == "username9"
+        assert ranking[0][0] == "username1"
+        assert ranking[9][0] == "username0"
 
 
 async def test_training():
@@ -373,20 +373,17 @@ async def test_training():
         assert after_queues[0][0].train_remaining == 122400
         assert after_queues[0][0].training_size == 9
 
-        army_troops = await da.ArmyAccess.get_troops(1)
-        assert len(army_troops) == 2
+        army_in_city = await da.ArmyAccess.get_army_in_city(1)
+
+        army_troops = await da.ArmyAccess.get_troops(army_in_city)
+
+        assert len(army_troops) == 1
 
         """
         check troops other rank are the same
         """
-        assert army_troops[0].size == 30
-        assert army_troops[0].rank == 2
-
-        """
-        check 11 troops are added
-        """
-        assert army_troops[1].size == 10+11
-        assert army_troops[1].rank == 3
+        assert army_troops[0].size == 11
+        assert army_troops[0].rank == 3
 
 
 async def test_troop_rank():

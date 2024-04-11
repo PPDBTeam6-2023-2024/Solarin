@@ -117,7 +117,6 @@ export const GetArmyInCity = async (cityId) => {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies_in_city?city_id=${cityId}`);
         if (response.status === 200) {
-            console.log(response.data);
             return response.data;
         }
     } catch (error) {

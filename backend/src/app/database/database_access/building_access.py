@@ -57,7 +57,7 @@ class BuildingAccess:
         """
         Retrieve the creation cost
         """
-        creation_cost = await self.__get_building_cost(building_type)
+        creation_cost = await self.__get_building_cost(building_type, 1)
 
         """
         Check if the user has enough resources to building this building
@@ -288,51 +288,74 @@ class BuildingAccess:
 
         return True
 
-    async def upgrade_building(self, building_id: int, user_id: int):
+    async def upgrade_building(self, user_id: int, building_id: int):
+        """
+        Upgrade a building
+        :param user_id: id of the user who wants to upgrade the building
+        :param building_id: id of building we want to upgrade
+        """
 
-        # get building instance
+        if not await self.is_owner(building_id, user_id):
+            raise PermissionException(user_id, "upgrading someone else their building is not allowed")
+
+        """
+        get building instance
+        """
         building_instance_query = select(BuildingInstance).where(
             BuildingInstance.id == building_id)
         building_instances_results = await self.__session.execute(building_instance_query)
 
-        building_instance = building_instances_results.first()[0]
+        building_instance = building_instances_results.scalar_one()
 
-        # get current rank
+        """
+        get current rank
+        """
         current_rank = building_instance.rank
         current_type = building_instance.building_type
 
         await self.__session.flush()
 
-        # get creation cost
-        creation_cost = await self.__get_building_cost(current_type)
-        cost_type = creation_cost[1]
+        """
+        get upgrade cost
+        """
+        upgrade_cost = await self.__get_building_cost(current_type, current_rank+1)
 
-        current_resource_query = select(HasResources.quantity).where(HasResources.resource_type == cost_type)
-        current_resource_results = await self.__session.execute(current_resource_query)
-        current_resources = current_resource_results.first()[0]
+        ra = ResourceAccess(self.__session)
+        can_upgrade = await ra.has_resources(user_id, upgrade_cost)
 
-        cost = await self.get_upgrade_cost(user_id, building_id)
-        cost = cost[1]
+        if not can_upgrade:
+            raise InvalidActionException("insufficient resources to upgrade this building")
 
-        if (current_resources - cost) < 0:
-            raise ValueError("insufficient resources")
+        """
+        Increase the building rank
+        """
+        building_instance.rank += 1
 
-        # increase rank
-        rank_increase_query = update(BuildingInstance). \
-            where(BuildingInstance.id == building_id). \
-            values(rank=current_rank + 1)
-        rank_increase = await self.__session.execute(rank_increase_query)
-
-        # decrease resources
-        decrease_resources = update(HasResources).where(HasResources.owner_id==user_id, HasResources.resource_type==cost_type).values(quantity=current_resources-cost)
-        await self.__session.execute(decrease_resources)
+        """
+        Remove the resources form the user their account
+        """
+        for u_type, u_amount in upgrade_cost:
+            await ra.remove_resource(user_id, u_type, u_amount)
 
         await self.__session.commit()
 
         return True
 
-    async def get_upgrade_cost(self, user_id: int, building_id: int):
-        # Get building rank and type
+    async def get_upgrade_cost(self, user_id: int, building_id: int) -> tuple[int, list[tuple[str, int]], bool]:
+        """
+        retrieve the building type its upgrade cost
+
+        :param user_id: id of the user who asks for the upgrade cost
+        :param building_id: id of building whose upgrade cost we want
+        :return: Tuple: building id int, upgrade cost (list), can_build boolean
+        """
+
+        if not self.is_owner(building_id, user_id):
+            raise PermissionException(user_id, "retrieve the upgrade cost of someone their building")
+
+        """
+        retrieve building type
+        """
         building_instance_query = select(BuildingInstance).where(BuildingInstance.id == building_id)
         building_instances_results = await self.__session.execute(building_instance_query)
         building_instance = building_instances_results.scalar_one()
@@ -340,24 +363,30 @@ class BuildingAccess:
         current_rank = building_instance.rank
         current_type = building_instance.building_type
 
-        # Get upgrade cost
+        """
+        Get upgrade cost
+        """
         upgrade_cost = await self.__get_building_cost(current_type, current_rank+1)
 
         ra = ResourceAccess(self.__session)
         can_upgrade = await ra.has_resources(user_id, upgrade_cost)
 
-        # Return upgrade cost and whether the user can afford it
+        """
+        Return building id, upgrade cost and whether the user can afford it
+        """
         return building_id, upgrade_cost, can_upgrade
 
     async def get_city(self, building_id: int):
         """
         get the city corresponding to this building
+
+        :param building_id: id of building whose corresponding city we want
         """
 
         gc = Select(City).join(BuildingInstance, BuildingInstance.city_id ==City.id).where(building_id == BuildingInstance.id)
         results = await self.__session.execute(gc)
-        result = results.first()
-        return result[0]
+        result = results.scalar_one()
+        return result
 
     async def is_owner(self, building_id: int, user_id: int):
         """

@@ -122,7 +122,7 @@ async def upgrade_building(
         db=Depends(get_db)
 ):
     data_access = DataAccess(db)
-    confirmed = await data_access.BuildingAccess.upgrade_building(building_id, user_id)
+    confirmed = await data_access.BuildingAccess.upgrade_building(user_id, building_id)
     if not confirmed:
         raise HTTPException(status_code=400, detail="Building could not be upgraded.")
     return Confirmation(confirmed=confirmed)

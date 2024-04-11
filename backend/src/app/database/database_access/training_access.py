@@ -14,7 +14,7 @@ class TrainingAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def trainType(self, army_id: int, building_id: int, troop_type: str, rank: int, amount: int):
+    async def train_type(self, army_id: int, building_id: int, troop_type: str, rank: int, amount: int):
         """
         Make a training queue for each training request, an entry in the training queue is 1 Entry in the
         queue for a barrack, each queue entry needs to be identified, and linked to barrack building.

@@ -12,13 +12,13 @@ class CityAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createCity(self, planet_id: int, founder_id: int, x: float, y: float):
+    async def create_city(self, planet_id: int, founder_id: int, x: float, y: float):
         """
         Creates a city like it was just founded
         :param: founder_id: id of the user who created the city
         :return: the id of the city
         """
-        regions = await PlanetAccess(self.__session).getRegions(planet_id)
+        regions = await PlanetAccess(self.__session).get_regions(planet_id)
 
         closest_region = regions[0]
         closest_distance = math.dist((closest_region.x,closest_region.y), (x,y))
@@ -35,7 +35,7 @@ class CityAccess:
         await self.__session.commit()
         return city_id
 
-    async def getCityController(self, city_id: int):
+    async def get_city_controller(self, city_id: int):
         """
         get the user who controls the city
         :param: city_id: id of the city
@@ -47,7 +47,7 @@ class CityAccess:
         results = await self.__session.execute(get_user)
         return results.first()[0]
 
-    async def getCitiesByController(self, user_id: int):
+    async def get_cities_by_controller(self, user_id: int):
         """
         get all the cities controlled by a certain user
         :param: city_id: id of the city

@@ -12,7 +12,7 @@ async def insert_users(connection_test):
     async with sessionmanager.session() as session:
         user_access = UserAccess(session)
         for i in range(1, 6):
-            await user_access.createUser(f"Test{i}", f"test{i}@test.test", f"test{i}")
+            await user_access.create_user(f"Test{i}", f"test{i}@test.test", f"test{i}")
         await session.commit()
 
 

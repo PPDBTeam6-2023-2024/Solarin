@@ -4,6 +4,7 @@ from ..models import *
 from ..database import AsyncSession
 from typing import Optional
 
+
 class PlanetAccess:
     """
     This class will manage the sql access for data related to information of planets
@@ -11,7 +12,7 @@ class PlanetAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createSpaceRegion(self, region_name: str):
+    async def create_space_region(self, region_name: str):
         """
         Creates space region and returns the id generated
 
@@ -24,7 +25,7 @@ class PlanetAccess:
         region_id = sp.id
         return region_id
 
-    async def createPlanet(self, planet_name: str, planet_type: str, space_region_id: int):
+    async def create_planet(self, planet_name: str, planet_type: str, space_region_id: int):
         """
         Creates a new planet
 
@@ -39,7 +40,7 @@ class PlanetAccess:
         planet_id = planet.id
         return planet_id
 
-    async def createPlanetRegion(self, planet_id: int, region_type: str, x: float, y: float):
+    async def create_planet_region(self, planet_id: int, region_type: str, x: float, y: float):
         """
         create a region on a planet
 
@@ -55,7 +56,7 @@ class PlanetAccess:
         region_id = region.id
         return region_id
 
-    async def getRegions(self, planet_id: int) -> list[PlanetRegion]:
+    async def get_regions(self, planet_id: int) -> list[PlanetRegion]:
         """
         Get all the regions belonging to the given planet
 
@@ -66,7 +67,7 @@ class PlanetAccess:
         results = await self.__session.execute(select_regions)
         return results.scalars().all()
 
-    async def getPlanetCities(self, planet_id: int):
+    async def get_planet_cities(self, planet_id: int):
         """
         Get all the cities that are on the given planet
 
@@ -80,7 +81,7 @@ class PlanetAccess:
         results = await self.__session.execute(select_cities)
         return results.all()
 
-    async def getRegionCities(self, region_id: int):
+    async def get_region_cities(self, region_id: int):
         """
         Get all the cities that are on the given region
 
@@ -92,7 +93,7 @@ class PlanetAccess:
         results = await self.__session.execute(select_cities)
         return results.all()
 
-    async def getAllPlanets(self):
+    async def get_all_planets(self):
         """
         get all the planets in a map
 
@@ -103,7 +104,7 @@ class PlanetAccess:
         results = results.all()
         return results
 
-    async def getPlanet(self, planet_id) -> Optional[Planet]:
+    async def get_planet(self, planet_id) -> Optional[Planet]:
         """
         get planet by id
         :return: a planet column if it exists, otherwise None

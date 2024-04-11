@@ -62,7 +62,7 @@ class BuildingAccess:
         """
         Check if the user is also the owner of the provided city
         """
-        city_owner = await ca.getCityController(city_id)
+        city_owner = await ca.get_city_controller(city_id)
         if city_owner.id != user_id:
             raise PermissionException(user_id, "add buildings to the city of other players")
 
@@ -91,8 +91,8 @@ class BuildingAccess:
         building_instance = BuildingInstance(city_id=city_id, building_type=building_type)
         self.__session.add(building_instance)
 
-        building_id = building_instance.id
         await self.__session.flush()
+        building_id = building_instance.id
 
         return building_id
 
@@ -172,7 +172,7 @@ class BuildingAccess:
         """
         Check if the user is also the owner of the provided city
         """
-        city_owner = await ca.getCityController(city_id)
+        city_owner = await ca.get_city_controller(city_id)
         if city_owner.id != user_id:
             raise PermissionException(user_id, "add buildings to the city of other players")
 

@@ -24,7 +24,7 @@ async def get_planets(
         db=Depends(get_db)
 ) -> List[Tuple[int, str]]:
     data_access = DataAccess(db)
-    planets = await data_access.PlanetAccess.getAllPlanets()
+    planets = await data_access.PlanetAccess.get_all_planets()
 
     return planets
 
@@ -129,7 +129,7 @@ async def get_planet_regions(
         db=Depends(get_db)
 ) -> Optional[list[Region]]:
     data_access = DataAccess(db)
-    planet = await data_access.PlanetAccess.getPlanet(planet_id)
+    planet = await data_access.PlanetAccess.get_planet(planet_id)
 
     if not planet:
         return []

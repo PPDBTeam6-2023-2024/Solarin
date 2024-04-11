@@ -20,16 +20,16 @@ async def test_get_armies(client):
         response = client.post("/auth/add_user", json=data)
         assert response.status_code == 200
 
-        await data_access.DeveloperAccess.createPlanetType("test_planet_type")
-        await data_access.DeveloperAccess.createPlanetRegionType("test_region_type")
-        await data_access.DeveloperAccess.createAssociatedWith("test_planet_type", "test_region_type")
+        await data_access.DeveloperAccess.create_planet_type("test_planet_type")
+        await data_access.DeveloperAccess.create_planet_region_type("test_region_type")
+        await data_access.DeveloperAccess.create_associated_with("test_planet_type", "test_region_type")
         await session.commit()
 
-        space_region_id = await data_access.PlanetAccess.createSpaceRegion("test_space_region")
-        region_id = await data_access.PlanetAccess.createSpaceRegion("test_region")
-        planet_id = await data_access.PlanetAccess.createPlanet("test_planet", "test_planet_type", space_region_id)
+        space_region_id = await data_access.PlanetAccess.create_space_region("test_space_region")
+        region_id = await data_access.PlanetAccess.create_space_region("test_region")
+        planet_id = await data_access.PlanetAccess.create_planet("test_planet", "test_planet_type", space_region_id)
 
-        user_id = await data_access.UserAccess.getUserIdEmail(
+        user_id = await data_access.UserAccess.get_user_id_email(
             email="test@example.com"
         )
 
@@ -52,18 +52,18 @@ async def test_get_troops(client):
         response = client.post("/auth/add_user", json=data)
         assert response.status_code == 200
 
-        await data_access.DeveloperAccess.createPlanetType("test_planet_type")
-        await data_access.DeveloperAccess.createPlanetRegionType("test_region_type")
-        await data_access.DeveloperAccess.createAssociatedWith("test_planet_type", "test_region_type")
+        await data_access.DeveloperAccess.create_planet_type("test_planet_type")
+        await data_access.DeveloperAccess.create_planet_region_type("test_region_type")
+        await data_access.DeveloperAccess.create_associated_with("test_planet_type", "test_region_type")
         await session.commit()
 
-        space_region_id = await data_access.PlanetAccess.createSpaceRegion("test_space_region")
-        region_id = await data_access.PlanetAccess.createSpaceRegion("test_region")
-        planet_id = await data_access.PlanetAccess.createPlanet("test_planet", "test_planet_type", space_region_id)
+        space_region_id = await data_access.PlanetAccess.create_space_region("test_space_region")
+        region_id = await data_access.PlanetAccess.create_space_region("test_region")
+        planet_id = await data_access.PlanetAccess.create_planet("test_planet", "test_planet_type", space_region_id)
 
 
 
-        user_id = await data_access.UserAccess.getUserIdEmail(
+        user_id = await data_access.UserAccess.get_user_id_email(
             email="test@example.com"
         )
 
@@ -87,14 +87,14 @@ async def test_get_troops(client):
             speed=5.0
         )
 
-        await data_access.DeveloperAccess.createToopType(
+        await data_access.DeveloperAccess.create_troop_type(
             type_name="Soldier",
             training_time=timedelta(hours=2),
             battle_stats=battle_stats_soldier,
             required_rank=2
         )
 
-        await data_access.DeveloperAccess.createToopType(
+        await data_access.DeveloperAccess.create_troop_type(
             type_name="Brute",
             training_time=timedelta(hours=8),
             battle_stats=battle_stats_brute,

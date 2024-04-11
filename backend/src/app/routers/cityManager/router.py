@@ -44,7 +44,7 @@ async def get_cities(
         db=Depends(get_db)
 ) -> List[CitySchema]:
     data_access = DataAccess(db)
-    cities = await data_access.PlanetAccess.getPlanetCities(planet_id)
+    cities = await data_access.PlanetAccess.get_planet_cities(planet_id)
 
     # Initialize an empty list to store the building schemas
     cities_schemas = []
@@ -145,7 +145,7 @@ async def create_city(
 ):
     data_access = DataAccess(db)
     city_id = None
-    city_id = await data_access.CityAccess.createCity(planet_id, user_id, coordinates.x, coordinates.y)
+    city_id = await data_access.CityAccess.create_city(planet_id, user_id, coordinates.x, coordinates.y)
     if city_id is not None:
         return JSONResponse(content={"message": "City was created successfully", "city_id": city_id},
                             status_code=200)
@@ -161,7 +161,7 @@ async def friend_requests(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.CityAccess.getCitiesByController(user_id)
+    data = await data_access.CityAccess.get_cities_by_controller(user_id)
 
     cities_schemas = [city[0].to_city_schema() for city in data]
 

@@ -11,7 +11,7 @@ class RankingAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def getTopRanking(self, limit: int):
+    async def get_top_ranking(self, limit: int):
         """
         get a list of the top players in the game ranking
         """

@@ -31,7 +31,7 @@ async def websocket_endpoint(
 
     """send the first 30 messages to the user"""
     data_access = DataAccess(db)
-    messages = await data_access.MessageAccess.getMessages(board_id, 0, 10)
+    messages = await data_access.MessageAccess.get_messages(board_id, 0, 10)
     output_list: List[MessageOut] = []
     for d in messages:
         output_list.append(d[0].toMessageOut(d[1]).model_dump())
@@ -49,14 +49,14 @@ async def websocket_endpoint(
                 """
                 store message in database
                 """
-                mid = await data_access.MessageAccess.createMessage(MessageToken(sender_id=user_id,
-                                                                     message_board=board_id,
-                                                                     body=data["body"]))
+                mid = await data_access.MessageAccess.create_message(MessageToken(sender_id=user_id,
+                                                                                  message_board=board_id,
+                                                                                  body=data["body"]))
 
                 """
                 obtain information about the just created message
                 """
-                message = await data_access.MessageAccess.getMessage(mid)
+                message = await data_access.MessageAccess.get_message(mid)
                 message = message[0].toMessageOut(message[1])
                 await data_access.commit()
                 await connection_pool.broadcast({"type": "new message", "message": [message.model_dump()]})
@@ -65,7 +65,7 @@ async def websocket_endpoint(
                 limit = data["limit"]
                 offset = data["offset"]
 
-                messages = await data_access.MessageAccess.getMessages(board_id, offset, limit)
+                messages = await data_access.MessageAccess.get_messages(board_id, offset, limit)
 
                 """
                 don't send empty paging answers
@@ -95,7 +95,7 @@ async def dm_overview(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.MessageAccess.getFriendMessageOverview(user_id)
+    data = await data_access.MessageAccess.get_friend_message_overview(user_id)
 
     """
     transform data to web format
@@ -120,7 +120,7 @@ async def friend_requests(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.UserAccess.getFriendRequests(user_id)
+    data = await data_access.UserAccess.get_friend_requests(user_id)
 
     """
     transform data to web format
@@ -262,7 +262,7 @@ async def alliance_messageboard(
     data_access = DataAccess(db)
 
     alliance = await data_access.AllianceAccess.get_alliance(user_id)
-    message_board = await data_access.MessageAccess.getAllianceMessageBoard(alliance)
+    message_board = await data_access.MessageAccess.get_alliance_message_board(alliance)
     return message_board
 
 @router.get("/ranking")
@@ -276,7 +276,7 @@ async def get_ranking(
     """
 
     data_access = DataAccess(db)
-    ranking = await data_access.RankingAccess.getTopRanking(30)
+    ranking = await data_access.RankingAccess.get_top_ranking(30)
     return ranking
 
 @router.websocket("/wss")

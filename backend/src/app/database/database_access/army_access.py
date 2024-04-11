@@ -316,7 +316,7 @@ class ArmyAccess:
         """
         Check a user doesn't attack himself
         """
-        city_owner = await CityAccess(self.__session).getCityController(target_id)
+        city_owner = await CityAccess(self.__session).get_city_controller(target_id)
         if attack_id == city_owner:
             raise InvalidActionException("You cannot attack your own army")
 
@@ -563,7 +563,7 @@ class ArmyAccess:
         """
         Check a user doesn't enter someone else their city
         """
-        city_owner = await CityAccess(self.__session).getCityController(target_id)
+        city_owner = await CityAccess(self.__session).get_city_controller(target_id)
         army: Army = await ArmyAccess(self.__session).get_army_by_id(army_id)
 
         if army.user_id != city_owner.id:

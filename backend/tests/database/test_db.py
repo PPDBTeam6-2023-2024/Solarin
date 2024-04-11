@@ -16,17 +16,17 @@ async def insert_test_data(connection_test):
         """
         add default resources
         """
-        await da.DeveloperAccess.createResourceType("Vibranium")
-        await da.DeveloperAccess.createResourceType("Energon")
-        await da.DeveloperAccess.createResourceType("SOL")
-        await da.DeveloperAccess.createResourceType("TF")
+        await da.DeveloperAccess.create_resource_type("Vibranium")
+        await da.DeveloperAccess.create_resource_type("Energon")
+        await da.DeveloperAccess.create_resource_type("SOL")
+        await da.DeveloperAccess.create_resource_type("TF")
 
         """
         Creates 50 users
         """
 
         for t_index in range(50):
-            uuid = await da.UserAccess.createUser(f"username{t_index}", f"t{t_index}@gmail", f"hp{t_index}")
+            uuid = await da.UserAccess.create_user(f"username{t_index}", f"t{t_index}@gmail", f"hp{t_index}")
             assert uuid == t_index + 1
 
         await da.commit()
@@ -39,7 +39,7 @@ async def insert_test_data(connection_test):
                 if t_index == t2_index:
                     continue
 
-                await da.UserAccess.addFriendship(t_index + 1, t2_index + 1)
+                await da.UserAccess.add_friendship(t_index + 1, t2_index + 1)
 
         """
         Create clan and add the ClanOwner to the clan
@@ -56,7 +56,7 @@ async def insert_test_data(connection_test):
         """
         for times in range(21):
             for t_index in range(1, 51, 2):
-                mb = await da.MessageAccess.getAllianceMessageBoard(f"{t_index} his clan")
+                mb = await da.MessageAccess.get_alliance_message_board(f"{t_index} his clan")
 
                 m_token = MessageToken(
                     sender_id=t_index,
@@ -64,7 +64,7 @@ async def insert_test_data(connection_test):
                     body="test"
                 )
 
-                mid = await da.MessageAccess.createMessage(m_token)
+                mid = await da.MessageAccess.create_message(m_token)
 
                 m_token2 = MessageToken(
                     sender_id=t_index + 1,
@@ -72,7 +72,7 @@ async def insert_test_data(connection_test):
                     body="test reply"
                 )
 
-                await da.MessageAccess.createMessage(m_token2)
+                await da.MessageAccess.create_message(m_token2)
 
         """
         send 5 DM's
@@ -82,44 +82,44 @@ async def insert_test_data(connection_test):
         user 9 to user 10
         """
         for t_index in range(1, 11, 2):
-            mb = await da.MessageAccess.getPlayerMessageBoard(t_index, t_index + 1)
+            mb = await da.MessageAccess.get_player_messageBoard(t_index, t_index + 1)
             m_token3 = MessageToken(
                 sender_id=t_index,
                 message_board=mb,
                 body="test2"
             )
 
-            await da.MessageAccess.createMessage(m_token3)
+            await da.MessageAccess.create_message(m_token3)
 
         """
         create some testing planets
         """
-        sr_id = await da.PlanetAccess.createSpaceRegion("the expansion region")
-        await da.DeveloperAccess.createPlanetType("Shadow planet", "planet where it is hard to see")
-        p_id = await da.PlanetAccess.createPlanet("Umbara", "Shadow planet", sr_id)
-        await da.DeveloperAccess.createPlanetRegionType("valley of death", "Ooh.. very scary")
-        r_id = await da.PlanetAccess.createPlanetRegion(p_id, "valley of death", 0, 0)
-        c_id = await da.CityAccess.createCity(r_id, 2, 0.2, 0.8)
-        c_id2 = await da.CityAccess.createCity(r_id, 1, 0.8, 0.2)
+        sr_id = await da.PlanetAccess.create_space_region("the expansion region")
+        await da.DeveloperAccess.create_planet_type("Shadow planet", "planet where it is hard to see")
+        p_id = await da.PlanetAccess.create_planet("Umbara", "Shadow planet", sr_id)
+        await da.DeveloperAccess.create_planet_region_type("valley of death", "Ooh.. very scary")
+        r_id = await da.PlanetAccess.create_planet_region(p_id, "valley of death", 0, 0)
+        c_id = await da.CityAccess.create_city(r_id, 2, 0.2, 0.8)
+        c_id2 = await da.CityAccess.create_city(r_id, 1, 0.8, 0.2)
 
         """
         Create some types of buildings and resources
         """
-        await da.DeveloperAccess.createProductionBuildingType("The mines of moria")
-        await da.DeveloperAccess.createBarracksType("Kamino training complex")
-        await da.DeveloperAccess.createTowerType("towerH", 50)
-        await da.DeveloperAccess.createHouseType("Solarin mansion", 50)
-        await da.DeveloperAccess.createWallType("wallW", 50)
+        await da.DeveloperAccess.create_production_building_type("The mines of moria")
+        await da.DeveloperAccess.create_barracks_type("Kamino training complex")
+        await da.DeveloperAccess.create_tower_type("towerH", 50)
+        await da.DeveloperAccess.create_house_type("Solarin mansion", 50)
+        await da.DeveloperAccess.create_wall_type("wallW", 50)
 
-        await da.DeveloperAccess.setProducesResources("The mines of moria", "Vibranium", 100, 2000)
+        await da.DeveloperAccess.set_produces_resources("The mines of moria", "Vibranium", 100, 2000)
 
-        await da.DeveloperAccess.setCreationCost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
-        await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Vibranium", 1)])
-        await da.DeveloperAccess.setCreationCost("Kamino training complex", [("Energon", 2)])
+        await da.DeveloperAccess.set_creation_cost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
+        await da.DeveloperAccess.set_creation_cost("Kamino training complex", [("Vibranium", 1)])
+        await da.DeveloperAccess.set_creation_cost("Kamino training complex", [("Energon", 2)])
 
-        await da.DeveloperAccess.setCreationCost("The mines of moria", [("TF", 100)])
-        await da.DeveloperAccess.setCreationCost("towerH", [("TF", 100)])
-        await da.DeveloperAccess.setCreationCost("wallW", [("TF", 100)])
+        await da.DeveloperAccess.set_creation_cost("The mines of moria", [("TF", 100)])
+        await da.DeveloperAccess.set_creation_cost("towerH", [("TF", 100)])
+        await da.DeveloperAccess.set_creation_cost("wallW", [("TF", 100)])
 
 
         await da.ResourceAccess.add_resource(1, "TF", 10000)
@@ -151,16 +151,16 @@ async def insert_test_data(connection_test):
 
         a_id2 = await da.ArmyAccess.create_army(user_id=3, planet_id=p_id, x=0, y=0)
 
-        await da.DeveloperAccess.createToopType("tank", timedelta(hours=4),
-                                                BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
+        await da.DeveloperAccess.create_troop_type("tank", timedelta(hours=4),
+                                                   BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
                                                             recovery=5, speed=0.4))
 
-        await da.DeveloperAccess.createToopType("soldier", timedelta(hours=4, minutes=5),
-                                                BattleStats(attack=30, defense=30, city_attack=30, city_defense=20,
+        await da.DeveloperAccess.create_troop_type("soldier", timedelta(hours=4, minutes=5),
+                                                   BattleStats(attack=30, defense=30, city_attack=30, city_defense=20,
                                                             recovery=5, speed=0.9))
 
-        await da.DeveloperAccess.setTroopTypeCost("tank", [("Vibranium", 20), ("Energon", 2)])
-        await da.DeveloperAccess.setTroopTypeCost("soldier", [("Vibranium", 5)])
+        await da.DeveloperAccess.set_troop_type_cost("tank", [("Vibranium", 20), ("Energon", 2)])
+        await da.DeveloperAccess.set_troop_type_cost("soldier", [("Vibranium", 5)])
 
         """
         add some troops to an army
@@ -174,10 +174,10 @@ async def insert_test_data(connection_test):
         """
         start training units
         """
-        await da.TrainingAccess.trainType(a_id, b_id, "tank", 3, 10)
-        await da.TrainingAccess.trainType(a_id, b_id, "tank", 3, 10)
-        await da.TrainingAccess.trainType(a_id, b_id2, "tank", 3, 10)
-        await da.TrainingAccess.trainType(a_id, b_id2, "tank", 3, 10)
+        await da.TrainingAccess.train_type(a_id, b_id, "tank", 3, 10)
+        await da.TrainingAccess.train_type(a_id, b_id, "tank", 3, 10)
+        await da.TrainingAccess.train_type(a_id, b_id2, "tank", 3, 10)
+        await da.TrainingAccess.train_type(a_id, b_id2, "tank", 3, 10)
 
         await da.commit()
 
@@ -195,12 +195,12 @@ async def test_check_messages():
         access and verify alliance messages
         """
         for i in range(100):
-            m1 = await da.MessageAccess.getMessagesAlliance(f"{1} his clan", 0, 20)
+            m1 = await da.MessageAccess.get_messages_alliance(f"{1} his clan", 0, 20)
             assert len(m1) == 20
 
         for t_index in range(1, 51, 2):
-            m1 = await da.MessageAccess.getMessagesAlliance(f"{t_index} his clan", 1, 2)
-            m2 = await da.MessageAccess.getMessagesAlliance(f"{t_index} his clan", 0, 1)
+            m1 = await da.MessageAccess.get_messages_alliance(f"{t_index} his clan", 1, 2)
+            m2 = await da.MessageAccess.get_messages_alliance(f"{t_index} his clan", 0, 1)
             assert len(m1) == 2
             assert len(m2) == 1
             assert m1[0][0].body == "test reply"
@@ -211,7 +211,7 @@ async def test_check_messages():
         access and verify DM messages
         """
         for t_index in range(1, 11, 2):
-            messages = await da.MessageAccess.getMessagesPlayer(t_index, t_index + 1, 0, 1)
+            messages = await da.MessageAccess.get_messages_player(t_index, t_index + 1, 0, 1)
 
             assert len(messages) == 1
             assert messages[0][0].body == "test2"
@@ -225,7 +225,7 @@ async def test_friendship_relations():
         da = DataAccess(session)
 
         for t_index in range(20):
-            friends = await da.UserAccess.getFriends(t_index+1)
+            friends = await da.UserAccess.get_friends(t_index + 1)
             assert len(friends) == 19
             for f in friends:
                 assert 0 < f[0] <= 20
@@ -252,11 +252,11 @@ async def test_planet():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
 
-        regions = await da.PlanetAccess.getRegions(1)
+        regions = await da.PlanetAccess.get_regions(1)
         assert len(regions) == 1
         assert regions[0].id == 1
 
-        cities = await da.PlanetAccess.getPlanetCities(1)
+        cities = await da.PlanetAccess.get_planet_cities(1)
         assert len(cities) == 2
         assert cities[0][0].id == 1
         assert cities[0][0].controlled_by == 2
@@ -295,7 +295,7 @@ async def test_buildings():
 async def test_DM_overview():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
-        r = await da.MessageAccess.getFriendMessageOverview(1)
+        r = await da.MessageAccess.get_friend_message_overview(1)
         assert len(r) == 1
         assert r[0][0] == "username1"
 
@@ -303,16 +303,16 @@ async def test_DM_overview():
 async def test_friend_requests():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
-        await da.UserAccess.sendFriendRequest(1, 40)
-        await da.UserAccess.sendFriendRequest(1, 41)
-        await da.UserAccess.sendFriendRequest(40, 41)
+        await da.UserAccess.send_friend_request(1, 40)
+        await da.UserAccess.send_friend_request(1, 41)
+        await da.UserAccess.send_friend_request(40, 41)
 
         await da.commit()
         with pytest.raises(Exception):
             """
             expected to throw exceptions
             """
-            await da.UserAccess.sendFriendRequest(1, 40)
+            await da.UserAccess.send_friend_request(1, 40)
 
         await da.rollback()
 
@@ -320,13 +320,13 @@ async def test_friend_requests():
             """
             expected to throw exceptions
             """
-            await da.UserAccess.sendFriendRequest(1, 2)
+            await da.UserAccess.send_friend_request(1, 2)
 
         await da.rollback()
 
-        await da.UserAccess.acceptFriendRequest(1, 40)
+        await da.UserAccess.accept_friend_request(1, 40)
 
-        friends = await da.UserAccess.getFriends(1)
+        friends = await da.UserAccess.get_friends(1)
 
         """
         verify that 40 is amongs friends
@@ -339,7 +339,7 @@ async def test_friend_requests():
 
         assert found_friend == True
 
-        r = await da.UserAccess.getFriendRequests(41)
+        r = await da.UserAccess.get_friend_requests(41)
         assert len(r) == 2
 
 
@@ -349,7 +349,7 @@ async def test_ranking():
     """
     async with sessionmanager.session() as session:
         da = DataAccess(session)
-        ranking = await da.RankingAccess.getTopRanking(10)
+        ranking = await da.RankingAccess.get_top_ranking(10)
         assert len(ranking) == 10
         assert ranking[0][0] == "username0"
         assert ranking[9][0] == "username9"
@@ -502,7 +502,7 @@ async def test_city_combat():
     async with sessionmanager.session() as session:
         da = DataAccess(session)
 
-        owner = await da.CityAccess.getCityController(1)
+        owner = await da.CityAccess.get_city_controller(1)
         assert owner.id == 2
 
         await da.ArmyAccess.enter_city(1, 2)
@@ -512,7 +512,7 @@ async def test_city_combat():
         suc6 = await AttackCheck.check_attack(1, da)
         assert suc6
 
-        owner = await da.CityAccess.getCityController(1)
+        owner = await da.CityAccess.get_city_controller(1)
         assert owner.id == 1
 
         army = await da.ArmyAccess.get_army_by_id(1)

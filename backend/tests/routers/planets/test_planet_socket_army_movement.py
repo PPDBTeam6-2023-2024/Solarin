@@ -16,13 +16,13 @@ async def test_get_armies(client):
     async with sessionmanager.session() as session:
         data_access = DataAccess(session)
 
-        user_id = await data_access.UserAccess.getUserIdEmail(
+        user_id = await data_access.UserAccess.get_user_id_email(
             email="insert@example.com"
         )
 
-        region_id = await data_access.PlanetAccess.createSpaceRegion("test")
-        await data_access.DeveloperAccess.createPlanetType("arctic")
-        planet_id = await data_access.PlanetAccess.createPlanet("test", "arctic", region_id)
+        region_id = await data_access.PlanetAccess.create_space_region("test")
+        await data_access.DeveloperAccess.create_planet_type("arctic")
+        planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", region_id)
 
         await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
         await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
@@ -63,13 +63,13 @@ async def test_move_army(client):
     async with sessionmanager.session() as session:
         data_access = DataAccess(session)
 
-        user_id = await data_access.UserAccess.getUserIdEmail(
+        user_id = await data_access.UserAccess.get_user_id_email(
             email="insert@example.com"
         )
 
-        region_id = await data_access.PlanetAccess.createSpaceRegion("test")
-        await data_access.DeveloperAccess.createPlanetType("arctic")
-        planet_id = await data_access.PlanetAccess.createPlanet("test", "arctic", region_id)
+        region_id = await data_access.PlanetAccess.create_space_region("test")
+        await data_access.DeveloperAccess.create_planet_type("arctic")
+        planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", region_id)
 
         army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
         await session.commit()

@@ -25,7 +25,7 @@ async def generate_random_planet(session: AsyncSession, space_region_id: int) ->
     random_planet_type_row = await planet_access.get_random_planet_type()
 
     planet_type = random_planet_type_row[0].type
-    planet_id = await planet_access.createPlanet(
+    planet_id = await planet_access.create_planet(
         planet_name=generate_planet_name(),
         planet_type=planet_type,
         space_region_id=space_region_id
@@ -38,7 +38,7 @@ async def generate_random_planet(session: AsyncSession, space_region_id: int) ->
 
     for region_type, coordinates in regions.items():
         for x,y in coordinates:
-            await planet_access.createPlanetRegion(
+            await planet_access.create_planet_region(
                 planet_id=planet_id,
                 region_type=region_type,
                 x=x,

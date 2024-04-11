@@ -1,20 +1,15 @@
-import datetime
+from fastapi.websockets import WebSocket, WebSocketDisconnect
 
 from fastapi import APIRouter, Depends
-from typing import Annotated, Tuple, List
-from fastapi.websockets import WebSocket, WebSocketDisconnect
-import asyncio
-from fastapi import APIRouter, Depends
 from typing import Annotated, Tuple, List, Optional
-from ....logic.combat.ArriveCheck import ArriveCheck
+
 from ..authentication.router import get_my_id
 from ...database.database import get_db
 from ...database.database_access.data_access import DataAccess
 from .connection_manager import ConnectionManager
 from .schemas import PlanetOut, Region
-
+from .planet_socket_actions import PlanetSocketActions
 router = APIRouter(prefix="/planet", tags=["Planet"])
-
 manager = ConnectionManager()
 
 
@@ -27,19 +22,6 @@ async def get_planets(
     planets = await data_access.PlanetAccess.get_all_planets()
 
     return planets
-
-
-async def check_army_combat(army: int, delay, da: DataAccess, connection_pool):
-    """
-    This function will wait some time before checking army combat
-    """
-    delay = max(0, delay)
-    await asyncio.sleep(delay+1)  # safety wait a 1 seconds
-    await ArriveCheck.check_arrive(army, da)
-    """
-    On reload frontend needs to reload its cities and armies on the map
-    """
-    await connection_pool.broadcast({"request_type": "reload"})
 
 
 @router.websocket("/ws/{planet_id}")
@@ -59,16 +41,11 @@ async def planet_socket(
     We will take pending attacks into account so we can directly update the data
     We only need to do this when a new connection is established
     """
+
+    planet_actions = PlanetSocketActions(user_id, planet_id, data_access, connection_pool, websocket)
+
     if new_conn:
-        """
-        put all old pending in a separate tasks
-        """
-
-        pending_attacks = await data_access.ArmyAccess.get_pending_attacks(planet_id)
-
-        for pending_attack in pending_attacks:
-            asyncio.create_task(check_army_combat(pending_attack[0], (pending_attack[1] - datetime.datetime.utcnow()).total_seconds(),
-                                                  data_access, connection_pool))
+        await planet_actions.load_on_arrive()
 
     """
     Start the websocket loop
@@ -77,63 +54,20 @@ async def planet_socket(
         while True:
             data = await websocket.receive_json()
 
-            if data["type"] == "get_armies":
-                armies = await data_access.ArmyAccess.get_armies_on_planet(planet_id=planet_id)
-                data = {
-                    "request_type": data["type"],
-                    "data": [army.to_dict() for army in armies]
-                }
-                await connection_pool.send_personal_message(websocket, data)
-            elif data["type"] == "change_direction":
-                army_id = data["army_id"]
-                to_x = data["to_x"]
-                to_y = data["to_y"]
+            data_type_map = {"get_armies": planet_actions.get_armies,
+                             "change_direction": planet_actions.change_directions,
+                             "leave_city": planet_actions.leave_city}
 
-                changed, army = await data_access.ArmyAccess.change_army_direction(
-                    user_id=user_id,
-                    army_id=army_id,
-                    to_x=to_x,
-                    to_y=to_y
-                )
-
-                """
-                Here we will check if some attack target message is added, If so we will set the attack target
-                """
-                if data.get("on_arrive", False) and (data["target_id"] != army_id or
-                                                     data["target_type"] in ("attack_city", "enter")):
-
-                    if data["target_type"] == "attack_city":
-                        await data_access.ArmyAccess.attack_city(army_id, data["target_id"])
-                    elif data["target_type"] == "attack_army":
-                        await data_access.ArmyAccess.attack_army(army_id, data["target_id"])
-                    elif data["target_type"] == "merge":
-                        await data_access.ArmyAccess.add_merge_armies(army_id, data["target_id"])
-                    elif data["target_type"] == "enter":
-                        await data_access.ArmyAccess.add_enter_city(army_id, data["target_id"])
-
-                    """
-                    When we add an attack we need to setup an async check
-                    """
-                    asyncio.create_task(check_army_combat(army_id, (army.arrival_time-datetime.datetime.utcnow()).total_seconds(),
-                                                          data_access, connection_pool))
-
-                if changed:
-                    await connection_pool.broadcast({
-                        "request_type": "change_direction",
-                        "data": army.to_dict()
-                    })
-
-            elif data["type"] == "leave_city":
-                army_id = data["army_id"]
-                # Fetch current coordinates and speed of the army
-                owner = await data_access.ArmyAccess.get_army_owner(army_id)
-                if owner.id == user_id:
-                    await data_access.ArmyAccess.leave_city(army_id)
-                    await data_access.commit()
-                    await connection_pool.broadcast({"request_type": "reload"})
+            """
+            Execute mapped planet socket action function
+            """
+            planet_action_func = data_type_map.get(data["type"])
+            if planet_action_func is not None:
+                await planet_action_func(data)
 
     except WebSocketDisconnect:
         connection_pool.disconnect(websocket)
+
 
 @router.get("/regions/{planet_id}")
 async def get_planet_regions(

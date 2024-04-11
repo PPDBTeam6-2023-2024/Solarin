@@ -14,7 +14,7 @@
   },
   "POP": {
     "icon": "population.svg",
-    "description": "Population: Number of people in a city. Taken into account when recruiting new units."
+    "description": "Population: Number of people currently owned."
   },
   "INF": {
     "icon": "influence.svg",
@@ -26,7 +26,7 @@
   },
   "UR": {
     "icon": "uranium.svg",
-    "description": "Uranium: Used for energy production and advanced technologies."
+    "description": "Uranium: Used for energy production and nuclear technologies."
   },
   "OI": {
     "icon": "oil.svg",

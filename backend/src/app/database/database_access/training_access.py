@@ -5,8 +5,6 @@ from ..database import AsyncSession
 from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from ....logic.utils.compute_properties import *
-from .army_access import ArmyAccess
-from .building_access import BuildingAccess
 
 
 class TrainingAccess:
@@ -49,11 +47,14 @@ class TrainingAccess:
             highest_nr = highest_nr[0]+1
 
         """
-        when the highest_nr == 0, it means the queue is empty, to make sure the remaining time is not affected (in case user leaves training menu open)
-        And so reduces its waiting time in advance, we will set the last_checked to current time if the queue was empty before
+        when the highest_nr == 0, it means the queue is empty, to make sure the remaining time is not 
+        affected (in case user leaves training menu open)
+        And so reduces its waiting time in advance, we will set the last_checked to current time 
+        if the queue was empty before
         """
         if highest_nr == 0:
-            u = update(BuildingInstance).values({"last_checked": datetime.now()}).where(BuildingInstance.id == building_id)
+            u = update(BuildingInstance).values({"last_checked": datetime.now()}).\
+                where(BuildingInstance.id == building_id)
             await self.__session.execute(u)
 
         """
@@ -108,13 +109,13 @@ class TrainingAccess:
             If multiple troops trained add only part to army when not fully done
             """
 
-            per_unit_training_time = r[1]
+            unit_training_time = r[1]
             queue_entry: TrainingQueue = r[0]
 
             """
             make sure we don't train more units than are in a queue => use min
             """
-            trained = queue_entry.training_size-math.ceil((queue_entry.train_remaining - seconds)/per_unit_training_time)
+            trained = queue_entry.training_size-math.ceil((queue_entry.train_remaining - seconds)/unit_training_time)
 
             troops_trained = min(trained, queue_entry.training_size)
             diff = queue_entry.train_remaining - seconds
@@ -235,7 +236,8 @@ class TrainingAccess:
             """
             alter row entry
             """
-            u = update(TroopRank).values({"rank": rank}).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
+            u = update(TroopRank).\
+                values({"rank": rank}).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
             await self.__session.execute(u)
 
         await self.__session.flush()

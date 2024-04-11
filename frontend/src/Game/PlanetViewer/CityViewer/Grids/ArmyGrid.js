@@ -27,8 +27,6 @@ const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, sel
                 };
 
             await socket.send(JSON.stringify(data_json));
-
-            console.log("Leaving city..."); // Implement the logic for leaving the city
         };
 
     return (

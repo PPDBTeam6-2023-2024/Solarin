@@ -1,0 +1,8 @@
+{
+  "attack":  {"icon": "attack.png"},
+  "defense":  {"icon": "defense.png"},
+  "city_attack":  {"icon": "city_attack.png"},
+  "city_defense":  {"icon": "city_defense.png"},
+  "speed": {"icon": "speed.png"},
+  "recovery": {"icon":  "recovery.png"}
+}

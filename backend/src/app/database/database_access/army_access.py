@@ -362,7 +362,8 @@ class ArmyAccess:
         Get the stats of an army
 
         param: army_id: the id of the army whose stats we want to retrieve
-        param: army_stats is an optional parm, In case we just want to append our stats to an already existing stats dict
+        param: army_stats is an optional parm, In case we just want to append our stats to an already existing stats
+        dict
         return: dict with the stats as keys and its stats as values
         """
 
@@ -370,7 +371,7 @@ class ArmyAccess:
         Default initialize some basic entries, just in case this army does not have any units.
         """
         if army_stats is None:
-            army_stats = {"attack": 0, "defense": 0, "city_defense": 0, "city_attack": 0}
+            army_stats = {"attack": 0, "defense": 0, "city_attack": 0, "city_defense": 0}
 
         """
         Retrieve the troops of the army, to calculate the army stats

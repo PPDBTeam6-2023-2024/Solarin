@@ -3,8 +3,8 @@ import axios from 'axios';
 import { TreeView, TreeItem } from '@mui/x-tree-view';
 import WindowUI from '../WindowUI/WindowUI';
 import {Button} from "@mui/material";
-import {PlanetIdContext} from "../../Context/PlanetIdContext";
 import ArmyViewTroopEntry from "./ArmyViewTroopEntry";
+import ArmyViewStatEntry from "./ArmyViewStatEntry";
 
 function ArmyViewer({armyId, onCityCreated}) {
     const [troops, setTroops] = useState([]);
@@ -16,6 +16,7 @@ function ArmyViewer({armyId, onCityCreated}) {
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops?armyid=${armyId}`);
                 if (response.status === 200) {
                     setTroops(response.data.troops);
+
                     setStats(response.data.stats);
                 }
             } catch (error) {
@@ -46,7 +47,10 @@ function ArmyViewer({armyId, onCityCreated}) {
 
     /*displays the stats*/
     let statsOutput = Object.entries(stats).map(([key, value], index) => (
-        <TreeItem key={index} nodeId={`${index}`} label={`${key}: ${value}`} />
+        <>
+            <ArmyViewStatEntry key={index} stat_name={key} stat_value={value}/>
+        </>
+
     ));
 
     let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);

@@ -26,7 +26,6 @@ class TrainingQueue(Base):
     We will be able to keep our Id relative low.
 
     building_id: the id of the building (of type BarrackBuilding), that does the training (and has the training queue)
-    army_id: the id of the army we add our units to after they are trained
     train_remaining: the remaining training_time, till all units of this Queue entry are trained.
     troop_type: the type of troop we want to train
     rank: the rank of the units we are training
@@ -37,8 +36,6 @@ class TrainingQueue(Base):
     building_id = Column(Integer, ForeignKey("buildingInstance.id", deferrable=True, initially='DEFERRED',
                                              ondelete="cascade"),
                          primary_key=True)
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="SET NULL"),
-                     nullable=True)
     train_remaining = Column(PositiveInteger, nullable=False)
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED', ondelete="cascade"))
     rank = Column(PositiveInteger, nullable=False)
@@ -51,7 +48,6 @@ class TrainingQueue(Base):
         return TrainingQueueEntry(
             id=self.id,
             building_id=self.building_id,
-            army_id=self.army_id,
             train_remaining=self.train_remaining,
             troop_type=self.troop_type,
             rank=self.rank,

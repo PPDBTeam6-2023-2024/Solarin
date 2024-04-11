@@ -5,6 +5,8 @@ from ..database import AsyncSession
 from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from ....logic.utils.compute_properties import *
+from .army_access import ArmyAccess
+from .building_access import BuildingAccess
 
 
 class TrainingAccess:
@@ -14,7 +16,7 @@ class TrainingAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def train_type(self, army_id: int, building_id: int, troop_type: str, rank: int, amount: int):
+    async def train_type(self, building_id: int, troop_type: str, rank: int, amount: int):
         """
         Make a training queue for each training request, an entry in the training queue is 1 Entry in the
         queue for a barrack, each queue entry needs to be identified, and linked to barrack building.
@@ -25,7 +27,6 @@ class TrainingAccess:
         next id is 1 higher than the highest id corresponding to the building.
         Concrete NextQueue Is = highest queue Id (correspond to the building id) + 1
 
-        :param: army_id: army we want to add the units to after they are trained
         :param: building_id: id of the building which will be some kind of barrack
         :param: troop_type: type of troop we are training
         :param: rank: the rank of the troop we want to train
@@ -60,7 +61,7 @@ class TrainingAccess:
         """
         training_time: int = await self.__getTrainingTime(troop_type)
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,
-                           training_size=amount, army_id=army_id, train_remaining=training_time*amount)
+                           training_size=amount, train_remaining=training_time*amount)
 
         self.__session.add(tq)
         await self.__session.flush()
@@ -127,7 +128,14 @@ class TrainingAccess:
             handle the trained unit changes
             """
             army_access = ArmyAccess(self.__session)
-            await army_access.add_to_army(queue_entry.army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
+
+            aa = ArmyAccess(self.__session)
+            ba = BuildingAccess(self.__session)
+
+            building_city = await ba.get_city(building_id)
+            army_id = await aa.get_army_in_city(building_city.id)
+
+            await army_access.add_to_army(army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
             queue_entry.training_size -= troops_trained
             """
             when entry done, remove training queue entry

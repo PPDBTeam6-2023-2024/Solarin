@@ -75,10 +75,9 @@ async def get_buildings(
     await da.commit()
 
     city = await da.BuildingAccess.get_city(building_id)
-    army_id = await da.ArmyAccess.get_army_in_city(city.id)
 
     rank = await da.TrainingAccess.get_troop_rank(user_id, troop_type)
-    await da.TrainingAccess.train_type(army_id, building_id, troop_type, rank, amount)
+    await da.TrainingAccess.train_type(building_id, troop_type, rank, amount)
     await da.commit()
 
     """

@@ -174,10 +174,11 @@ async def insert_test_data(connection_test):
         """
         start training units
         """
-        await da.TrainingAccess.train_type(a_id, b_id, "tank", 3, 10)
-        await da.TrainingAccess.train_type(a_id, b_id, "tank", 3, 10)
-        await da.TrainingAccess.train_type(a_id, b_id2, "tank", 3, 10)
-        await da.TrainingAccess.train_type(a_id, b_id2, "tank", 3, 10)
+
+        await da.TrainingAccess.train_type(b_id, "tank", 3, 10)
+        await da.TrainingAccess.train_type(b_id, "tank", 3, 10)
+        await da.TrainingAccess.train_type(b_id2, "tank", 3, 10)
+        await da.TrainingAccess.train_type(b_id2, "tank", 3, 10)
 
         await da.commit()
 

@@ -134,6 +134,9 @@ class TrainingAccess:
             ba = BuildingAccess(self.__session)
 
             building_city = await ba.get_city(building_id)
+
+            await self.__session.flush()
+
             army_id = await aa.get_army_in_city(building_city.id)
 
             await army_access.add_to_army(army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)

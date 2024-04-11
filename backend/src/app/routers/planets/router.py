@@ -76,6 +76,7 @@ async def planet_socket(
     try:
         while True:
             data = await websocket.receive_json()
+
             if data["type"] == "get_armies":
                 armies = await data_access.ArmyAccess.get_armies_on_planet(planet_id=planet_id)
                 data = {
@@ -119,6 +120,16 @@ async def planet_socket(
                         "request_type": "change_direction",
                         "data": army.to_dict()
                     })
+
+            elif data["type"] == "leave_city":
+                army_id = data["army_id"]
+                # Fetch current coordinates and speed of the army
+                owner = await data_access.ArmyAccess.get_army_owner(army_id)
+                if owner.id == user_id:
+                    await data_access.ArmyAccess.leave_city(army_id)
+                    await data_access.commit()
+                    await connection_pool.broadcast({"request_type": "reload"})
+
     except WebSocketDisconnect:
         connection_pool.disconnect(websocket)
 

@@ -22,6 +22,7 @@ import ArmyMapEntry from "./ArmyMapEntry";
 import CityMapEntry from "./CityMapEntry";
 import {string} from "three/examples/jsm/nodes/shadernode/ShaderNode";
 import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
+import {SocketContext} from "../Context/SocketContext";
 
 function PlanetViewer(props) {
     const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
@@ -273,6 +274,10 @@ function PlanetViewer(props) {
     }
     return (
         <>
+
+        {/*Make it possible to access the socket in the children without using props (because cleaner)*/}
+        <SocketContext.Provider value={[socket, setSocket]}>
+
         <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
             <div className='bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl'>
             <IoMdClose className="top-0 text-sm ml-1 absolute mt-1 left-0" onClick={() => setHidePlanetSwitcherWindow(!hidePlanetSwitcherWindow)}/>
@@ -318,6 +323,14 @@ function PlanetViewer(props) {
                     {/*Display planet on the map*/}
                      <PlanetSVG planetId={props.planetId}/>
 
+                    {/*Display cities on the map*/}
+                    {/*decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly*/}
+                    {showCities && cityImages.map((city, index) => (
+                        <CityMapEntry key={index} city={city} onClick={()=>{if (armiesMoveMode.length === 0){city.onClick();}}}
+                        decide_moving={armiesMoveMode.length > 0}/>
+                    ))}
+
+
                     {/*
                     decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly
                     moving selected, just states whether the army is planning to move
@@ -328,12 +341,7 @@ function PlanetViewer(props) {
                     ))}
 
 
-                    {/*Display cities on the map*/}
-                    {/*decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly*/}
-                    {showCities && cityImages.map((city, index) => (
-                        <CityMapEntry key={index} city={city} onClick={()=>{if (armiesMoveMode.length === 0){city.onClick();}}}
-                        decide_moving={armiesMoveMode.length > 0}/>
-                    ))}
+
                 </div>
 
 
@@ -341,6 +349,7 @@ function PlanetViewer(props) {
 
 
 
+        </SocketContext.Provider>
         </>
     );
 }

@@ -1,7 +1,8 @@
-import React, { useMemo } from "react";
+import React, {useContext, useMemo} from "react";
 import { AgGridReact } from "ag-grid-react";
 import './NewBuildingGrid.css';
 import EntityViewer from "../../../UI/CityViewer/EntityViewer";
+import {SocketContext} from "../../../Context/SocketContext";
 const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage }) => {
     const columns = useMemo(() => [
         { headerName: "Troop Type", field: "troopType", autoHeight: true },
@@ -16,7 +17,17 @@ const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, sel
         id: troop.id
     })), [troops]);
 
-    const handleLeaveCity = () => {
+    const [socket, setSocket] = useContext(SocketContext);
+
+    const handleLeaveCity = async () => {
+
+            const data_json  = {
+                        type: "leave_city",
+                        army_id: troops.army_id
+                };
+
+            await socket.send(JSON.stringify(data_json));
+
             console.log("Leaving city..."); // Implement the logic for leaving the city
         };
 

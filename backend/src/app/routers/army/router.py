@@ -99,4 +99,6 @@ async def get_armies_in_city(
     data_access = DataAccess(db)
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
 
-    return await get_troops(army_id, db)
+    troops = await get_troops(army_id, db)
+    troops.update({"army_id": army_id})
+    return troops

@@ -306,7 +306,7 @@ class BuildingAccess:
         :return: Tuple: building id int, upgrade cost (list), can_build boolean
         """
 
-        if not self.is_owner(user_id, building_id):
+        if not await self.is_owner(user_id, building_id):
             raise PermissionException(user_id, "retrieve the upgrade cost of someone their building")
 
         """

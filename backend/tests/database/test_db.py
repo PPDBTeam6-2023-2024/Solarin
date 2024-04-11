@@ -203,9 +203,9 @@ async def test_check_messages():
             m2 = await da.MessageAccess.get_messages_alliance(f"{t_index} his clan", 0, 1)
             assert len(m1) == 2
             assert len(m2) == 1
-            assert m1[0][0].body == "test reply"
-            assert m1[1][0].body == "test"
-            assert m2[0][0].body == "test reply"
+            assert m1[0].body == "test reply"
+            assert m1[1].body == "test"
+            assert m2[0].body == "test reply"
 
         """
         access and verify DM messages
@@ -214,7 +214,7 @@ async def test_check_messages():
             messages = await da.MessageAccess.get_messages_player(t_index, t_index + 1, 0, 1)
 
             assert len(messages) == 1
-            assert messages[0][0].body == "test2"
+            assert messages[0].body == "test2"
 
 
 async def test_friendship_relations():
@@ -258,13 +258,12 @@ async def test_planet():
 
         cities = await da.PlanetAccess.get_planet_cities(1)
         assert len(cities) == 2
-        assert cities[0][0].id == 1
-        assert cities[0][0].controlled_by == 2
-        assert cities[0][0].x == 0.2
-        assert cities[0][0].y == 0.8
-        assert cities[1][0].x == 0.8
-        assert cities[1][0].y == 0.2
-
+        assert cities[0].id == 1
+        assert cities[0].controlled_by == 2
+        assert cities[0].x == 0.2
+        assert cities[0].y == 0.8
+        assert cities[1].x == 0.8
+        assert cities[1].y == 0.2
 
 
 async def test_buildings():

@@ -41,12 +41,15 @@ class MessageAccess:
 
         f_sym = get_friends_query_sym(user1_id)
 
+        """
+        Retrieve the messages
+        """
         search_messages = Select(Message).\
             where(f_sym.select().c.user_id == user2_id, f_sym.select().c.message_board == Message.message_board).\
             order_by(desc(Message.mid)).offset(offset).limit(amount)
 
         results = await self.__session.execute(search_messages)
-        results = results.all()
+        results = results.scalars().all()
 
         """
         query is sorted from newest till oldest, so we still need to put it in chronological order
@@ -79,7 +82,7 @@ class MessageAccess:
         """
         query is sorted from newest till oldest, so we still need to put it in chronological order
         """
-        results = results.unique().all()
+        results = results.scalars().all()
         results = list(reversed(results))
         return results
 
@@ -93,7 +96,7 @@ class MessageAccess:
         search_message_board = Select(Alliance.message_board).where(Alliance.name == alliance_name)
         results = await self.__session.execute(search_message_board)
 
-        return results.first()[0]
+        return results.scalar_one()
 
     async def get_player_messageBoard(self, user1_id: int, user2_id: int):
         """
@@ -126,15 +129,23 @@ class MessageAccess:
         """
         get most recent message create time sent by each friend
         """
-        most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).select_from(sym_friends)).join(Message, Message.message_board == sym_friends.c.message_board).group_by(sym_friends.c)
+        most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).
+                               select_from(sym_friends)).join(Message,
+                                                              Message.message_board == sym_friends.c.message_board).\
+            group_by(sym_friends.c)
 
         """
         get the tuple (friend_username, Message, message_sender_username)
         """
         message_sender = aliased(User, name='message_sender')
 
+        """
+        Message overview will do use the message board of the friendship relation
+        to determine the messages that are send
+        """
         message_overview = (select(User.username, Message, message_sender.username).select_from(most_recent_message))\
-            .join(Message, (Message.message_board == most_recent_message.c.message_board)).where(most_recent_message.c.max == Message.create_date_time)\
+            .join(Message, (Message.message_board == most_recent_message.c.message_board)).\
+            where(most_recent_message.c.max == Message.create_date_time)\
             .order_by(desc(Message.create_date_time)).join(User, User.id == most_recent_message.c.user_id)\
             .join(message_sender, message_sender.id == Message.sender_id)
 

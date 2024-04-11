@@ -37,8 +37,8 @@ class TrainingQueue(Base):
     building_id = Column(Integer, ForeignKey("buildingInstance.id", deferrable=True, initially='DEFERRED',
                                              ondelete="cascade"),
                          primary_key=True)
-    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
-                     nullable=False)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="SET NULL"),
+                     nullable=True)
     train_remaining = Column(PositiveInteger, nullable=False)
     troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED', ondelete="cascade"))
     rank = Column(PositiveInteger, nullable=False)

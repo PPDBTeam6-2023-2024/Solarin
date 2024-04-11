@@ -50,7 +50,7 @@ async def get_cities(
     cities_schemas = []
 
     # Iterate through each building, creating a BuildingInstanceSchema for each one
-    cities_schemas = [city[0].to_city_schema() for city in cities]
+    cities_schemas = [city.to_city_schema() for city in cities]
     # Return the list of BuildingInstanceSchema instances
     return cities_schemas
 
@@ -87,6 +87,7 @@ async def create_building(
 ):
     data_access = DataAccess(db)
     building_id = await data_access.BuildingAccess.create_building(user_id, city_id, building_type)
+    await data_access.commit()
 
     if not building_id:
         raise HTTPException(status_code=400, detail="Building could not be created.")
@@ -146,6 +147,7 @@ async def create_city(
     data_access = DataAccess(db)
     city_id = None
     city_id = await data_access.CityAccess.create_city(planet_id, user_id, coordinates.x, coordinates.y)
+    await data_access.commit()
     if city_id is not None:
         return JSONResponse(content={"message": "City was created successfully", "city_id": city_id},
                             status_code=200)
@@ -163,6 +165,6 @@ async def friend_requests(
     data_access = DataAccess(db)
     data = await data_access.CityAccess.get_cities_by_controller(user_id)
 
-    cities_schemas = [city[0].to_city_schema() for city in data]
+    cities_schemas = [city.to_city_schema() for city in data]
 
     return cities_schemas

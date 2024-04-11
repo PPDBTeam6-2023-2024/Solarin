@@ -102,7 +102,8 @@ class DeveloperAccess:
         r = ResourceType(name=type_name)
         self.__session.add(r)
 
-    async def set_produces_resources(self, building_name: str, resource_name: str, base_production: int, max_capacity: int):
+    async def set_produces_resources(self, building_name: str, resource_name: str, base_production: int,
+                                     max_capacity: int):
         """
         Creates the link between a productionBuildingType and the Resource type it produces
 
@@ -110,7 +111,8 @@ class DeveloperAccess:
         :param: resource_name: name of resource that will be produced
         :return: nothing
         """
-        pr = ProducesResources(building_name=building_name, resource_name=resource_name, base_production=base_production, max_capacity=max_capacity)
+        pr = ProducesResources(building_name=building_name, resource_name=resource_name,
+                               base_production=base_production, max_capacity=max_capacity)
         self.__session.add(pr)
 
     async def create_troop_type(self, type_name: str, training_time: timedelta, battle_stats: BattleStats,
@@ -138,10 +140,16 @@ class DeveloperAccess:
         :return: nothing
         """
 
+        """
+        Delete the costs that were set before
+        """
         await self.__session.flush()
         old_cost = delete(TroopTypeCost).where(TroopTypeCost.troop_type == troop_name)
         await self.__session.execute(old_cost)
 
+        """
+        Set the new costs
+        """
         for resource in resource_costs:
             troop_type_cost = TroopTypeCost(troop_type=troop_name, resource_type=resource[0], amount=resource[1])
             self.__session.add(troop_type_cost)
@@ -158,9 +166,15 @@ class DeveloperAccess:
         :return: nothing
         """
 
+        """
+        Delete the costs that were set before
+        """
         old_up_cost = delete(CreationCost).where(CreationCost.building_name == building_name)
         await self.__session.execute(old_up_cost)
 
+        """
+        Set the new costs
+        """
         for resource in resource_costs:
             upgrade = CreationCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
             self.__session.add(upgrade)
@@ -168,5 +182,12 @@ class DeveloperAccess:
         await self.__session.flush()
 
     async def create_associated_with(self, planet_type: str, region_type: str):
+        """
+        Store which region types are associated with which planet
+
+        :param: planet_type: type of the planet of the association
+        :param: region_type: type of the region of the association
+        """
+
         self.__session.add(AssociatedWith(planet_type=planet_type, region_type=region_type))
         await self.__session.flush()

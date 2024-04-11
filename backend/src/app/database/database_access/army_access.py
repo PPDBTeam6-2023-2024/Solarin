@@ -435,7 +435,7 @@ class ArmyAccess:
             d = delete(OnArrive).where(OnArrive.army_id == r)
             await self.__session.execute(d)
 
-    async def get_army_in_city(self, city_id: int):
+    async def get_army_in_city(self, city_id: int) -> int:
         """
         Returns a list of army id's of armies that are inside a city
         param: city_id: the id of the city we want to check
@@ -444,9 +444,21 @@ class ArmyAccess:
 
         armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
         results = await self.__session.execute(armies_in_cities)
-        results = results.scalars().all()
+        result = results.scalar_one_or_none()
 
-        return results
+        if result is None:
+            """
+            When no army is inside the city put a default army inside the city
+            """
+            get_city = await Select(City).where(City.id == city_id)
+            city = await self.__session.execute(get_city)
+            city = city.scalar_one()
+
+            army_id = await self.create_army(city.controlled_by, city.region.planet_id, city.x, city.y)
+            await self.enter_city(city.id, army_id)
+            result = army_id
+
+        return result
 
     async def enter_city(self, city_id: int, army_id: int):
         """

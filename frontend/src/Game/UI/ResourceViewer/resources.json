@@ -5,8 +5,7 @@
   },
   "TF": {
     "icon": "techforge.png",
-    "description": "Techforge: Used to create and upgrade buildings.",
-    "scale": 1.6
+    "description": "Techforge: Used to create and upgrade buildings."
   },
   "RA": {
     "icon": "rations.svg",
@@ -14,19 +13,19 @@
   },
   "POP": {
     "icon": "population.svg",
-    "description": "Population: Number of people in a city. Taken into account when recruiting new units."
+    "description": "Population: Number of people currently owned."
   },
   "INF": {
     "icon": "influence.svg",
     "description": "Influence: Used to make political decisions."
   },
-  "MIN": {
+  "MI": {
     "icon": "minerals.svg",
     "description": "Minerals: Used as a resource for various industrial processes."
   },
   "UR": {
     "icon": "uranium.svg",
-    "description": "Uranium: Used for energy production and advanced technologies."
+    "description": "Uranium: Used for energy production and nuclear technologies."
   },
   "OI": {
     "icon": "oil.svg",

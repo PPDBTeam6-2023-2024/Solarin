@@ -109,7 +109,7 @@ class ArmyAccess:
         army = result.scalars().first()
         return army
 
-    async def get_user_armies(self, user_id: int):
+    async def get_user_armies(self, user_id: int) -> list[Army]:
         """
         Retrieve all armies belonging to a specific user
 

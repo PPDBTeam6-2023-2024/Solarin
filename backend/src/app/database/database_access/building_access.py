@@ -156,7 +156,7 @@ class BuildingAccess:
     async def get_available_building_types(self, user_id: int, city_id: int, city_rank: int):
         """
         Get all building types that are being able to be build, based on the upgrade cost and the
-        required rank
+        required rank. Make sure only buildings not yet inside the city are available
 
         and check if the user has enough resources.
 
@@ -178,6 +178,29 @@ class BuildingAccess:
 
         building_types = await self.get_building_types()
 
+        """
+        get the building types of the buildings that are inside the city
+        """
+        get_city_building_type = Select(BuildingType.name).\
+            join(BuildingInstance, BuildingType.name == BuildingInstance.building_type).\
+            where(BuildingInstance.city_id == city_id)
+
+        city_buildings = await self.__session.execute(get_city_building_type)
+        city_buildings = city_buildings.scalars().all()
+
+        """
+        Calculate all the building types not yet inside the city
+        """
+        new_building_types = []
+        for b in building_types:
+            if b.name not in city_buildings:
+                new_building_types.append(b)
+
+        building_types = new_building_types
+
+        """
+        Obtain the costs of the building types the user is able to create
+        """
         buildings_data = []
 
         """

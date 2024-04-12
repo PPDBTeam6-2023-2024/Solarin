@@ -76,41 +76,41 @@ function PlanetViewer(props) {
     const [planetList, setPlanetList] = useContext(PlanetListContext)
     const [planetListIndex, setPlanetListIndex] = props.planetListIndex;
 
-    const is_connected = useRef(false);
+    const isWebSocketConnected = useRef(false);
     const [socket, setSocket] = useState(null)
 
     useEffect(() => {
-        if (is_connected.current) return
+        if (isWebSocketConnected.current) return
 
-        is_connected.current = true;
+        isWebSocketConnected.current = true;
 
-        const web_socket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/planet/ws/${props.planetId}`, `${localStorage.getItem('access-token')}`);
-        setSocket(web_socket);
-        web_socket.onopen = () => {
-            web_socket.send(
+        const webSocket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/planet/ws/${props.planetId}`, `${localStorage.getItem('access-token')}`);
+        setSocket(webSocket);
+        webSocket.onopen = () => {
+            webSocket.send(
                 JSON.stringify(
                     {
                         type: "get_armies",
                     }))
         }
     }, []);
-    const lerp = ({source_position, target_position, arrival_time, departure_time}) => {
-        var d = new Date()
-        d.setHours(d.getHours() - 2)
-        const elapsedTime = d - departure_time
-        const totalTime = arrival_time - departure_time
+    const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
+        var date = new Date()
+        date.setHours(date.getHours() - 2)
+        const elapsedTime = date - departureTime
+        const totalTime = arrivalTime - departureTime
         const percentComplete = (elapsedTime < totalTime) ? elapsedTime / totalTime : 1;
-        const currentX = source_position.x + (target_position.x - source_position.x) * percentComplete
-        const currentY = source_position.y + (target_position.y - source_position.y) * percentComplete
+        const currentX = sourcePosition.x + (targetPosition.x - sourcePosition.x) * percentComplete
+        const currentY = sourcePosition.y + (targetPosition.y - sourcePosition.y) * percentComplete
         return {x: currentX, y: currentY}
     }
     const handleGetArmies = (data) => {
         return data.map(army => {
-            const arrival_time = new Date(army.arrival_time).getTime()
-            const departure_time = new Date(army.departure_time).getTime()
-            const current_pos = lerp({
-                source_position: {x: army.x, y: army.y}, target_position: {x: army.to_x, y: army.to_y},
-                arrival_time: arrival_time, departure_time: departure_time
+            const arrivalTime = new Date(army.arrival_time).getTime()
+            const departureTime = new Date(army.departure_time).getTime()
+            const currentPos = lerp({
+                sourcePosition: {x: army.x, y: army.y}, targetPosition: {x: army.to_x, y: army.to_y},
+                arrivalTime: arrivalTime, departureTime: departureTime
             })
             return {
                 id: army.id,
@@ -119,13 +119,13 @@ function PlanetViewer(props) {
                 to_x: army.to_x,
                 to_y: army.to_y,
                 owner: army.owner,
-                arrival_time: arrival_time,
-                departure_time: departure_time,
+                arrivalTime: arrivalTime,
+                departureTime: departureTime,
                 src: army_example,
                 style: {
                     position: 'absolute',
-                    left: `${current_pos.x * 100}%`,
-                    top: `${current_pos.y * 100}%`,
+                    left: `${currentPos.x * 100}%`,
+                    top: `${currentPos.y * 100}%`,
                     transform: 'translate(-50%, -50%)',
                     maxWidth: '10%',
                     maxHeight: '10%',
@@ -139,13 +139,13 @@ function PlanetViewer(props) {
     useEffect(() => {
         const interval = setInterval(async () => {
             setArmyImages(armyImages.map((elem) => {
-                const current_position = lerp({
-                    source_position: {x: elem.x, y: elem.y},
-                    target_position: {x: elem.to_x, y: elem.to_y},
-                    arrival_time: elem.arrival_time,
-                    departure_time: elem.departure_time
+                const currentPosition = lerp({
+                    sourcePosition: {x: elem.x, y: elem.y},
+                    targetPosition: {x: elem.to_x, y: elem.to_y},
+                    arrivalTime: elem.arrival_time,
+                    departureTime: elem.departure_time
                 })
-                return {...elem, curr_x: current_position.x, curr_y: current_position.y}
+                return {...elem, curr_x: currentPosition.x, curr_y: currentPosition.y}
             }))
         }, 100);
         return () => {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import army_example from "../Images/troop_images/Soldier.png"
 
-const getArmies = async (planetId) => {
+const GetArmies = async (planetId) => {
     try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies_outside?planet_id=${planetId}`);
         if (response.status === 200 && Array.isArray(response.data)) {
@@ -31,4 +31,4 @@ const getArmies = async (planetId) => {
     }
 };
 
-export default getArmies
+export default GetArmies

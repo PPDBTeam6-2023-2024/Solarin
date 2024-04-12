@@ -7,7 +7,7 @@ import sandyrocks from '../Images/region_types/sandyrocks.jpeg'
 import darkrocks from '../Images/region_types/darkrocks.jpeg'
 
 
-function getImagePath(regionType) {
+function GetImagePath(regionType) {
     const imagePaths = {
         type1: rocks,
         "valley of death": sandyrocks,
@@ -53,7 +53,7 @@ function PlanetSVG(props) {
     const renderClippedImages = () => {
         return data.map((d, i) => {
             const regionPath = voronoi.renderCell(i);
-            const imagePath = getImagePath(d.region_type);
+            const imagePath = GetImagePath(d.region_type);
             return (
                 <g key={`group-${i}`}>
                     <clipPath id={`clip-${i}`}>

@@ -1,7 +1,7 @@
 # Galaxy Viewer
 
 ## Overview
-Currently only a 3D view of an example planet that you can rotate around. 
+Shows (currently only a single) a 3D planet which you can rotate around but also double click on to go to its planet viewer.
 
 ## Technologies used
 - ReactJS

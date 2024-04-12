@@ -39,7 +39,13 @@ export const Resources = () => {
                             <Tooltip key={resource} title={getResourceField(resource[0], "description", "")}>
                             <div className="mr-3 bg-gradient-to-r from-gray-600 to-gray-700 p-1 max-h-9 shrink-0 relative">
                             <p>{resource[1]}
-                            <img className="inline ml-2 max-w-7 max-h-7 w-auto" src={(`/images/resources/${getResourceField(resource[0], "icon", "")}`)} alt={resource[0]} draggable={false}/>
+                            { getResourceField(resource[0], "icon", null) &&
+                            <img className="inline ml-2 max-w-7 max-h-7 w-auto h-auto" src={(`/images/resources/${getResourceField(resource[0], "icon", "")}`)} alt={resource[0]} draggable={false}/>
+                            }
+                            {
+                                getResourceField(resource[0], "icon", null) === null && 
+                                resource[0]
+                            }
                             </p>
                             </div>
                             </Tooltip>)}

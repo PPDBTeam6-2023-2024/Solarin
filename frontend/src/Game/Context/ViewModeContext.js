@@ -6,7 +6,6 @@ const View = {
     PlanetView: "PLanetView",
     CityView: "CityView",
     ProfileView: "ProfileView"
-
 }
 
 const ViewModeContext = React.createContext();

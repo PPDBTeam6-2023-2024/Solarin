@@ -35,7 +35,7 @@ async def spawn_user(
     
     armies = await data_access.ArmyAccess.get_user_armies(user_id)
 
-    if len(armies) == 1:
+    if len(armies) > 0:
         return {
             "planet_id": armies[0].planet_id
         }
@@ -51,7 +51,7 @@ async def spawn_user(
 
     await data_access.ArmyAccess.create_army(user_id, planet_id, random.uniform(0, 1), random.uniform(0, 1))
     await db.commit()
-    
+
     return {
         "planet_id": planet_id
     }

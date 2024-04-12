@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import './TrainingOptionEntry.css'
 
 function TrainingOptionEntry(props) {
@@ -8,7 +8,7 @@ function TrainingOptionEntry(props) {
     * */
 
     let style_att = {};
-    if (props.select){
+    if (props.select) {
         style_att = {"transform": "scale(110%)", "backgroundColor": "gold"}
     }
 

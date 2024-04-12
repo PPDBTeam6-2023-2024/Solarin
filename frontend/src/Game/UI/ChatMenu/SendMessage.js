@@ -1,6 +1,6 @@
 import React, {useState} from "react";
-import {Button} from "@mui/material";
 import './SendMessage.css'
+
 function SendMessage(props) {
     /**
      * making it possible for a user to send new messages
@@ -15,9 +15,9 @@ function SendMessage(props) {
         props.socket.send(
             JSON.stringify(
                 {
-                        type: "new message",
-                        body: `${pendingMessage}`
-                      })
+                    type: "new message",
+                    body: `${pendingMessage}`
+                })
         )
         setPendingMessage("")
     }
@@ -25,10 +25,12 @@ function SendMessage(props) {
     return (
         <div className="SendMessageTab">
                   <textarea name="message_body" value={pendingMessage}
-                    onChange={(event) => {setPendingMessage(event.target.value)}}
-                    className="bg-gray-900" required/>
+                            onChange={(event) => {
+                                setPendingMessage(event.target.value)
+                            }}
+                            className="bg-gray-900" required/>
 
-                  <button onClick={sendMessage}>Send</button>
+            <button onClick={sendMessage}>Send</button>
         </div>
 
     )

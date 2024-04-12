@@ -9,8 +9,8 @@ import HiddenWindowsViewer from "./HiddenWIndowsViewer/HIddenWIndowsViewer";
 
 const getColorString = (r, g, b, a) => {
     /**
-    * Convert rgba to its corresponding hex
-    * */
+     * Convert rgba to its corresponding hex
+     * */
     return `#${r.toString(16)}${g.toString(16)}${b.toString(16)}${a.toString(16)}`;
 
 }
@@ -23,18 +23,22 @@ function UI() {
     const [primaryColor, setPrimaryColor] = useState("#ce1c75")
     const [secondaryColor, setSecondaryColor] = useState("#d57d11")
     const [tertiaryColor, setTertiaryColor] = useState("#e1b812")
-    return(
+    return (
 
         <div className="UI" style={
-            {'--primaryColor': primaryColor,
-            '--secundaryColor': secondaryColor,
-            "--tertiaryColor": tertiaryColor}}>
+            {
+                '--primaryColor': primaryColor,
+                '--secundaryColor': secondaryColor,
+                "--tertiaryColor": tertiaryColor
+            }}>
 
             {/*load hidden windows viewer */}
-            <HiddenWindowsViewer />
-                
+            <HiddenWindowsViewer/>
+
             {/*load resource viewer*/}
-            <ResourceViewer className="fixed z-20 bottom-0 right-0" title="Resources" resources={{"SOL" : {"collected": 150, "producing": 10}, "TF": {"collected": 50}}} draggable={true}/>
+            <ResourceViewer className="fixed z-20 bottom-0 right-0" title="Resources"
+                            resources={{"SOL": {"collected": 150, "producing": 10}, "TF": {"collected": 50}}}
+                            draggable={true}/>
 
             {/*Load the side menu */}
             <SideMenu/>

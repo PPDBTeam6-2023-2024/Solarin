@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import {configureStore} from '@reduxjs/toolkit'
 import hiddenWindowsReducer from './slices/hiddenWindowsSlice'
 
 export default configureStore({

@@ -1,7 +1,7 @@
 /**
 enforces that all the UI components will be put at the front by default
 */
-.UI{
+.UI {
     /**
     To easily support customizable colors we store a '--primaryColor' and '--sencundaryColor'
     so we only need to modify these
@@ -12,6 +12,6 @@ enforces that all the UI components will be put at the front by default
     background-image: linear-gradient(5deg, var(--primaryColor), var(--secundaryColor));
 }
 
-.UI *{
+.UI * {
     z-index: 20;
 }

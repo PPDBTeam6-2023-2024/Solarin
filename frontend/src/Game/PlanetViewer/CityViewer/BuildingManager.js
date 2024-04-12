@@ -1,4 +1,3 @@
-// BuildingManager.js
 import axios from "axios";
 import barracks from "../../Images/building_images/Barracks.png";
 import mine from "../../Images/building_images/Mine.png";

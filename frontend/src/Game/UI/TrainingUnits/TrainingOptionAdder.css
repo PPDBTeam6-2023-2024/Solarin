@@ -1,4 +1,4 @@
-.TrainingOptionAdderWidget{
+.TrainingOptionAdderWidget {
     display: inline-block;
     vertical-align: top;
     width: 51%;
@@ -8,7 +8,7 @@
     border-radius: 0 0 3vw 0;
 }
 
-.TroopAmountSlider{
+.TroopAmountSlider {
     -webkit-appearance: none;
     background-color: #332f2f;
     width: 90%;
@@ -18,31 +18,31 @@
 }
 
 /*Support most browsers*/
-.TroopAmountSlider::-webkit-slider-thumb{
-  -webkit-appearance: none;
-  width: 3vw;
-  height: 3vw;
-  background-color: gold;
-  border-radius: 20%;
+.TroopAmountSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 3vw;
+    height: 3vw;
+    background-color: gold;
+    border-radius: 20%;
 }
 
 /*supports firefox*/
 .TroopAmountSlider::-moz-range-thumb {
-  width: 3vw;
-  height: 3vw;
-  background-color: gold;
-  border-radius: 20%;
+    width: 3vw;
+    height: 3vw;
+    background-color: gold;
+    border-radius: 20%;
 }
 
-.TrainButton{
+.TrainButton {
     padding: 0.5vw;
     font-size: 2.8vw;
     border-radius: 1vw 1vw 1vw 1vw;
     transform: scale(70%);
-    border:0.2vw solid gold;
+    border: 0.2vw solid gold;
 }
 
-.TrainButton:hover{
+.TrainButton:hover {
     --scaleIndex: 95%;
     transform: scale(var(--scaleIndex));
     z-index: 21;

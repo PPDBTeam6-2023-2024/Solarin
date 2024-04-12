@@ -1,6 +1,6 @@
-.MessageBody{
+.MessageBody {
     /*center message*/
-    border:0.2vw solid var(--tertiaryColor);
+    border: 0.2vw solid var(--tertiaryColor);
     border-radius: 0.5vw;
     padding-left: 3%;
     font-size: 150%;
@@ -9,7 +9,7 @@
 
 }
 
-.MessageSender{
+.MessageSender {
     /*center message*/
     font-size: 70%;
     color: var(--tertiaryColor);

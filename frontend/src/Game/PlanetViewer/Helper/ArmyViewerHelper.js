@@ -1,5 +1,3 @@
-import army_example from "../../Images/troop_images/Soldier.png"
-
 export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
     const overlayRect = e.target.getBoundingClientRect();
     const position = {
@@ -16,9 +14,11 @@ export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
             // Remove viewer if already active
             return prev.filter(viewer => viewer.id !== army.id);
         } else {
-            return [...prev, {id: army.id, owner: army.owner, position, 
-                arrival_time: army.arrival_time, departure_time: army.departure_time, 
-                to_position, anchorEl: e.target, detailsOpen: false, current_position: position}];
+            return [...prev, {
+                id: army.id, owner: army.owner, position,
+                arrival_time: army.arrival_time, departure_time: army.departure_time,
+                to_position, anchorEl: e.target, detailsOpen: false, current_position: position
+            }];
         }
     });
 };

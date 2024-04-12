@@ -1,20 +1,17 @@
-// CityManager.js
-import React, { useState, useEffect, useMemo, useContext} from 'react';
-import { AgGridReact } from 'ag-grid-react';
+import React, {useState, useEffect, useMemo, useContext} from 'react';
+import {AgGridReact} from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
-import { getBuildings, getImageForBuildingType } from './BuildingManager';
+import {getBuildings, getImageForBuildingType} from './BuildingManager';
 import {UserInfoContext} from "../../Context/UserInfoContext";
 import NewBuildingGrid from './NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
 import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
 
-const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
+const CityManager = ({cityId, primaryColor, secondaryColor, onClose}) => {
     const [buildings, setBuildings] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
-
-    const [userInfo, setUserInfo] = useContext(UserInfoContext)
 
     /* stores selected building*/
     const [selectedClick, setSelectedClick] = useState([-1, ""]);
@@ -24,9 +21,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
 
     const columns = useMemo(() => [
-        { headerName: "Building Type", field: "buildingType" },
-        { headerName: "Building Rank", field: "buildingRank" },
-        { headerName: "Resource Timer", field: "resourceTimer" }
+        {headerName: "Building Type", field: "buildingType"},
+        {headerName: "Building Rank", field: "buildingRank"},
+        {headerName: "Resource Timer", field: "resourceTimer"}
     ]);
 
     useEffect(() => {
@@ -60,20 +57,25 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
                     onCellMouseOver={onRowMouseOver}
-                    onCellClicked={(event) => {setSelectedClick(event.data.index)}}
+                    onCellClicked={(event) => {
+                        setSelectedClick(event.data.index)
+                    }}
                     onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                     onRowClicked={params => {
-                        if (selectedClick[0] === params.data.id)
-                        {setSelectedClick([-1, ""])}
-                        else{setSelectedClick([params.data.id, params.data.type])}}}
+                        if (selectedClick[0] === params.data.id) {
+                            setSelectedClick([-1, ""])
+                        } else {
+                            setSelectedClick([params.data.id, params.data.type])
+                        }
+                    }}
                 />
             </div>
 
             {selectedImage && selectedClick[0] === -1 &&
                 <div className="building_image">
 
-                     <img src={selectedImage} alt="Building" className="selected-image" />
+                    <img src={selectedImage} alt="Building" className="selected-image"/>
                 </div>
             }
         </>
@@ -82,7 +84,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
     useEffect(() => {
         const handleClickOutside = event => {
-            const { target } = event;
+            const {target} = event;
             const agGridElement = document.querySelector('.building_view');
             const selectedImageElement = document.querySelector('.selected-image');
 
@@ -112,18 +114,19 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
                     {selectedTab === 'currentBuildings' && renderGrid()}
                     {selectedTab === 'newBuildings' && (
-                              <NewBuildingGrid
-                                buildings={buildings}
-                                onRowMouseOver={onRowMouseOver}
-                                setSelectedClick={setSelectedClick}
-                                selectedImage={selectedImage}
-                              />
-                            )}
+                        <NewBuildingGrid
+                            buildings={buildings}
+                            onRowMouseOver={onRowMouseOver}
+                            setSelectedClick={setSelectedClick}
+                            selectedImage={selectedImage}
+                        />
+                    )}
 
                     {selectedTab === 'plus' && <div>Additional content here</div>}
 
                     {/*Displays a training menu*/}
-                    {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" && <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
+                    {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" &&
+                        <TrainingViewer key={selectedClick[0]} building_id={selectedClick[0]}/>}
 
                 </div>
             </WindowUI>

@@ -338,7 +338,7 @@ function PlanetViewer(props) {
                     moving selected, just states whether the army is planning to move
                     */}
                     {armyImages.map((army, index) => (
-                        <ArmyMapEntry key={index} army={army} onClick={(e) => {if (armiesMoveMode.length === 0){toggleArmyViewer(e, army, setActiveArmyViewers);}}}
+                        <ArmyMapEntry key={army.id} army={army} onClick={(e) => {if (armiesMoveMode.length === 0){toggleArmyViewer(e, army, setActiveArmyViewers);}}}
                          decide_moving={armiesMoveMode.length > 0} moving_Selected={isMoveMode(army.id)}/>
                     ))}
 

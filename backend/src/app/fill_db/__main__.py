@@ -2,6 +2,7 @@ from confz import FileSource
 import asyncio
 import json
 from sqlalchemy.ext.asyncio import AsyncSession
+import os
 
 from ..config import APIConfig
 from ..database.database import sessionmanager
@@ -37,7 +38,7 @@ async def create_space_regions(data: list[dict], session: AsyncSession):
 
 async def create_user(data: dict, session: AsyncSession):
     data_access = DataAccess(session=session)
-    user_id = await data_access.UserAccess.create_user(data["userinfo"]["username"], data["userinfo"]["email"], pwd_context.hash(["userinfo"]["password"]))
+    user_id = await data_access.UserAccess.create_user(data["userinfo"]["username"], data["userinfo"]["email"], pwd_context.hash(data["userinfo"]["password"]))
     # add resources
     for name, amount in data["resources"].items():
         await data_access.ResourceAccess.add_resource(user_id, name, amount)
@@ -50,7 +51,7 @@ async def create_user(data: dict, session: AsyncSession):
     for city in data["cities"]:
         city_id = await data_access.CityAccess.create_city(city["planet nr"], user_id, city["x"], city["y"])
         for building in city["buildings"]:
-            await data_access.BuildingAccess.create_building(user_id, city_id, building)
+            await data_access.BuildingAccess.create_building(user_id, city_id, building, True)
     await session.flush()
 
 async def create_users(data: list[dict], session: AsyncSession):
@@ -64,14 +65,15 @@ async def create_alliances(data: list[dict], session: AsyncSession):
     for alliance in data:
         await data_access.AllianceAccess.create_alliance(alliance["name"])
         forward_dict = {}
-        for user in alliance["users"]:
+        for user in alliance["members"]:
             user_id = await data_access.UserAccess.get_user_id_username(user)
             forward_dict[user] = user_id
             await data_access.AllianceAccess.set_alliance(user_id, alliance["name"])
+        await session.flush()
         message_board = await data_access.MessageAccess.get_alliance_message_board(alliance["name"])
         for chat in alliance["chats"]:
-            sender_id = forward_dict["sender name"]
-            await data_access.MessageAccess.create_message(MessageToken(sender_id, message_board, chat["body"]))
+            sender_id = forward_dict[chat["sender name"]]
+            await data_access.MessageAccess.create_message(MessageToken(sender_id=sender_id, message_board=message_board, body=chat["body"]))
     await session.flush()
 
 async def create_friendships(data: list[dict], session: AsyncSession):
@@ -81,13 +83,14 @@ async def create_friendships(data: list[dict], session: AsyncSession):
             friendship["user1"]: await data_access.UserAccess.get_user_id_username(friendship["user1"]),
             friendship["user2"]: await data_access.UserAccess.get_user_id_username(friendship["user2"])
         }
-        await data_access.UserAccess.add_friendship(forward_dict["user1"], forward_dict["user2"])
+        await data_access.UserAccess.add_friendship(forward_dict[friendship["user1"]], forward_dict[friendship["user2"]])
         message_board = await data_access.MessageAccess.get_player_messageBoard(forward_dict[friendship["user1"]], forward_dict[friendship["user2"]])
         for chat in friendship["chats"]:
             sender_id = forward_dict[chat["sender name"]]
-            await data_access.MessageAccess.create_message(MessageToken(sender_id, message_board, chat["body"]))
+            await data_access.MessageAccess.create_message(MessageToken(sender_id=sender_id, message_board=message_board, body=chat["body"]))
 
 
 if __name__ == '__main__':
-    data = json.loads(open("./data.json"))
+    file = open(f"{os.path.dirname(os.path.abspath(__file__))}/data.json").read()
+    data = json.loads(file)
     asyncio.run(fill_db(data))

@@ -47,12 +47,13 @@ class BuildingAccess:
 
         return list(cost_query_rows)
 
-    async def create_building(self, user_id: int, city_id: int, building_type: str):
+    async def create_building(self, user_id: int, city_id: int, building_type: str, force: bool = False):
         """
         Create a new instance of building corresponding to a city
         :param: user_id: the id of the user who controls the city
         :param: city_id: the id of the city we want to add a building to
         :param: building_type: the type of building we want to add
+        :param: force: if you enforce to build it even if the user does not have enough resources
         :return: the id of the building we just created
         """
 
@@ -76,14 +77,15 @@ class BuildingAccess:
         """
         has_enough_resources: bool = await ra.has_resources(user_id, creation_cost)
 
-        if not has_enough_resources:
+        if not has_enough_resources and not force:
             raise InvalidActionException("The user does not have enough resources to build this building")
 
         """
         Remove the resources from the user his/hers account
         """
-        for cost_type, cost_amount in creation_cost:
-            await ra.remove_resource(user_id, cost_type, cost_amount)
+        if not force:
+            for cost_type, cost_amount in creation_cost:
+                await ra.remove_resource(user_id, cost_type, cost_amount)
 
         """
         Create the building instance

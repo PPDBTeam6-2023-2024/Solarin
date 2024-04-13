@@ -13,6 +13,7 @@ function ArmyViewer({armyId, onCityCreated}) {
     useEffect(() => {
         const fetchTroops = async () => {
             try {
+
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops/${armyId}`);
                 if (response.status === 200) {
                     setTroops(response.data.troops);

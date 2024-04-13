@@ -155,7 +155,7 @@ class BuildingAccess:
 
         await self.__session.flush()
 
-    async def get_available_building_types(self, user_id: int, city_id: int, city_rank: int):
+    async def get_available_building_types(self, user_id: int, city_id: int):
         """
         Get all building types that are being able to be build, based on the upgrade cost and the
         required rank. Make sure only buildings not yet inside the city are available
@@ -163,7 +163,6 @@ class BuildingAccess:
         and check if the user has enough resources.
 
         :param city_id: ID of the city
-        :param city_rank: Rank of the city
         :param user_id: ID of the user
         :return: List of available building types for the city along with a boolean indicating if the user can build it
         """
@@ -208,6 +207,8 @@ class BuildingAccess:
         """
         For each building Type request the resource costs needed
         """
+        city_rank = await ca.get_city_rank(city_id)
+
         for building_type in building_types:
             if building_type.required_rank is not None and building_type.required_rank > city_rank:
                 continue

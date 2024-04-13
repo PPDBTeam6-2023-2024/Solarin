@@ -5,7 +5,7 @@ import {getCityImage} from "./getCityImage";
 const getCities = async (planetId) => {
   try {
     axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/cities?planet_id=${planetId}`);
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/cities/${planetId}`);
     if (response.status === 200 && Array.isArray(response.data)) {
       return response.data.map(city => ({
         id: city.id,

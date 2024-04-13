@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response, ORJSONResponse
 from typing import List, Annotated
 
 from ...database.database import get_db
@@ -49,8 +49,9 @@ async def get_troops(
     """
     Restrict army access to the user who is the owner of this army
     """
+
     army_owner = await data_access.ArmyAccess.get_army_owner(army_id)
-    if army_owner != user_id:
+    if army_owner.id != user_id:
         return JSONResponse(content={"message": "You do not have the permission to view this army their information"},
                             status_code=401)
 
@@ -63,6 +64,7 @@ async def get_troops(
         troops_schema.append(temp)
 
     army_stats = await data_access.ArmyAccess.get_army_stats(army_id)
+
     return {"troops": troops_schema, "stats": army_stats}
 
 
@@ -95,5 +97,9 @@ async def get_armies_in_city(
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
 
     troops = await get_troops(user_id, army_id, db)
+
+    """
+    Add the army_id, because this is useful information, for army actions
+    """
     troops.update({"army_id": army_id})
     return troops

@@ -4,7 +4,7 @@ from typing import Annotated, Tuple, List
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 from ...database.models import *
-
+from ..cityManager.schemas import Confirmation
 router = APIRouter(prefix="/building", tags=["City"])
 
 
@@ -27,6 +27,9 @@ async def get_training_queue(
     if not is_owner:
         return []
 
+    """
+    Check the current state of the queue, (check if troops are done training)
+    """
     await da.TrainingAccess.check_queue(building_id)
     await da.BuildingAccess.checked(building_id)
     await da.commit()
@@ -40,3 +43,52 @@ async def get_training_queue(
     output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
     return output
 
+
+@router.post("/create_new_building")
+async def create_building(
+        city_id: int,
+        building_type: str,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db=Depends(get_db)
+):
+    """
+    this endpoint will create a new building
+    """
+    data_access = DataAccess(db)
+    building_id = await data_access.BuildingAccess.create_building(user_id, city_id, building_type)
+    await data_access.commit()
+
+    if not building_id:
+        raise HTTPException(status_code=400, detail="Building could not be created.")
+
+
+@router.post("/collect/{building_id}", response_model=Confirmation)
+async def collect_resource(
+        user_id: Annotated[int, Depends(get_my_id)],
+        building_id: int,
+        db=Depends(get_db)
+):
+    """
+    Collect resources from specific building
+    """
+    data_access = DataAccess(db)
+    confirmed = await data_access.BuildingAccess.collect_resources(user_id, building_id)
+    if not confirmed:
+        raise HTTPException(status_code=400, detail="Resources could not be updated or created.")
+    return Confirmation(confirmed=confirmed)
+
+
+@router.post("/upgrade_building/{building_id}", response_model=Confirmation)
+async def upgrade_building(
+        user_id: Annotated[int, Depends(get_my_id)],
+        building_id: int,
+        db=Depends(get_db)
+):
+    """
+    Upgrade a specific building
+    """
+    data_access = DataAccess(db)
+    confirmed = await data_access.BuildingAccess.upgrade_building(user_id, building_id)
+    if not confirmed:
+        raise HTTPException(status_code=400, detail="Building could not be upgraded.")
+    return Confirmation(confirmed=confirmed)

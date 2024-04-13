@@ -438,9 +438,12 @@ class ArmyAccess:
 
     async def get_army_in_city(self, city_id: int, add_on_none=True) -> int:
         """
-        Returns a list of army id's of armies that are inside a city
+        Returns an army id of an army that is inside a city
         param: city_id: the id of the city we want to check
-        return: List of Army id's
+        return: Army id
+
+        When no army is inside the city we will use the add_on_none optional
+        to create an empty army
         """
 
         armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)

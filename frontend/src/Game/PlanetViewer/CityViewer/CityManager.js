@@ -46,7 +46,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                   }, {});
                   setUpgradeCostMap(costMap);
             });
-            getNewBuildingTypes(cityId,0).then(newBuildingTypes => {
+            getNewBuildingTypes(cityId).then(newBuildingTypes => {
                 setNewBuildingTypes(newBuildingTypes)
             });
             getResources().then(availableResources => {
@@ -61,7 +61,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
     const updateBuildingsAndTypes = () => {
         {/* Refresh buildings and types after building/upgrading */}
         getBuildings(cityId).then(setBuildings);
-        getNewBuildingTypes(cityId, 0).then(setNewBuildingTypes);
+        getNewBuildingTypes(cityId).then(setNewBuildingTypes);
         getUpgradeCost(cityId).then(buildings => {
                   const costMap = buildings.reduce((acc, building) => {
                     acc[building.id] = building;

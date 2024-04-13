@@ -31,8 +31,8 @@ logger.debug("That's it, beautiful and simple logging!")
 
 ```
 
-## Issues
-Make sure the path parameter pointing to the directoy in which the logs need to persist exist!
+## To Verify
+Make sure the path parameter pointing to the directroy in which the logs need to persist exist!
 
 ## Additional Information
 

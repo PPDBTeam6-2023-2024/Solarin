@@ -261,6 +261,9 @@ async def alliance_messageboard(
         db: AsyncSession = Depends(get_db)
 
 ) -> int:
+    """
+    Get the alliance messageboard, of the alliance the user is a part of
+    """
     data_access = DataAccess(db)
 
     alliance = await data_access.AllianceAccess.get_alliance(user_id)

@@ -30,6 +30,5 @@ You can load a config from many different source types:
 - CLArgSource (command line arguments)
 - DataSource (constant config data)
 
-## Issues
 
 ## Additional Information

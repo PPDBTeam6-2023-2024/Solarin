@@ -56,8 +56,13 @@ class PlanetSocketActions:
         """
         Here we will check if some attack target message is added, If so we will set the attack target
         """
-        if data.get("on_arrive", False) and (data["target_id"] != army_id or
-                                             data["target_type"] in ("attack_city", "enter")):
+
+        """
+        Check that an army is not planning to attack/merge with itself
+        """
+        army_not_target_self = (data["target_id"] != army_id or data["target_type"] in ("attack_city", "enter"))
+
+        if data.get("on_arrive", False) and army_not_target_self:
             """
             This dict translated a key to a function (function ptr), which can be used
             """

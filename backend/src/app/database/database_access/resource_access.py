@@ -3,7 +3,7 @@ import math
 from ..models import *
 from ..database import AsyncSession
 from .army_access import ArmyAccess
-from ....logic.utils.compute_properties import *
+from ....logic.formula.compute_properties import *
 from typing import Tuple, List
 
 

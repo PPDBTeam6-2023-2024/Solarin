@@ -40,7 +40,7 @@ An overview of the current DataAccess categories:
 | RankingAccess   | methods that manage ranking information    | User rankings will be done with regards to the amount of Solarium a player has/produces                                                              |
 | ResourceAccess  | methods that manage resources of users     |                                                                                                                                                      |
 
-## Issues
+## To Verify
 The entire database (tables and sequences) need to be present.
 
 ## Exception Handling
@@ -48,10 +48,14 @@ Not all the actions using these data access methods are allowed. For example use
 enemy armies. We handle this by throwing appropriate exceptions. To give this error handling structure, we
 use custom exceptions.
 
-| Exception           | Purpose                                                                                                                                              | example                                   |
-|:--------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
-| DataAccessException | This is the base class for all the exceptions related to data access (all entries in this table will be a derived class of this DataAccessException) |
-| PermissionException | This exceptions is thrown when the user has not the rights to execute this data access method using its provided parameters                          | modifying other users their cities/armies | |
+| Exception              | Purpose                                                                                                                                              | example                                                        |
+|:-----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| DataAccessException    | This is the base class for all the exceptions related to data access (all entries in this table will be a derived class of this DataAccessException) |
+| PermissionException    | This exceptions is thrown when the user has not the rights to execute this data access method using its provided parameters                          | modifying other users their cities/armies                      |
+| DomainException        | This exceptions is thrown when an equivalent of the postgresSQL domain check fails                                                                   | Positive intger < 0                                            |
+| InvalidActionException | This exceptions is thrown when a user does an action that is not allowed given the parameters and/or the data of the database                        | Send a friend request to someone who is already your friend    |
+| NotFoundException      | This exceptions is thrown when a required entry is not found inside the database                                                                     | update the status of building id -1 (but id -1 does not exist) |
+
 
 
 ## Additional Information

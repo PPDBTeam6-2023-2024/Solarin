@@ -7,6 +7,10 @@ from typing import Tuple
 
 
 class PropertyUtility:
+    """
+    This function will do game mechanic calculations
+    """
+
     rate = 5
     base_point_bounds: tuple[int, int] = (0, 499)
     # BORM = battle outcome random modifier
@@ -15,20 +19,28 @@ class PropertyUtility:
 
     @staticmethod
     def verifyBasePoint(base_point: int):
+        """
+        Check that the values are inside a certain range
+        """
         assert base_point >= PropertyUtility.base_point_bounds[0] and base_point <= PropertyUtility.base_point_bounds[1]
 
     @staticmethod
     def verifyBasePoints(base_points: list[int]):
+        """
+        Check that all values are in range
+        """
         for base_point in base_points:
             PropertyUtility.verifyBasePoint(base_point)
 
     @staticmethod
     def getGPC(base_price: int, base_points: list[int]) -> int:
+        """
+        generate the production cost, based on the points
+        """
         PropertyUtility.verifyBasePoints(base_points)
         return base_price * int(floor(
             mean(base_points) /
-            mean(PropertyUtility.base_point_bounds)) ** PropertyUtility.rate
-                                )
+            mean(PropertyUtility.base_point_bounds)) ** PropertyUtility.rate)
 
     @staticmethod
     def getUnitTrainCost(base_price: int, level: int) -> int:
@@ -62,18 +74,6 @@ class PropertyUtility:
         General production rate, decides how fast resources are produced
         """
         return int(floor(modifier * base_rate * (level ** 2)))
-
-    @staticmethod
-    def getUnitStrength(current_points: list[int], unit_rank: int) -> float:
-        """
-        Units have a lot of modifiers, the mean of these modifiers will be taken to calculate
-        the strength of the amry
-        """
-        return (unit_rank*mean(current_points))/(mean(PropertyUtility.base_point_bounds))
-
-    @staticmethod
-    def getUnitCityStrength(non_city_points: list[int], city_points: list[int], unit_rank: int) -> float:
-        return (unit_rank*(0.5*mean(non_city_points)+mean(city_points))) / mean(PropertyUtility.base_point_bounds)
 
     @staticmethod
     def getArmyStrength(army_stats: dict[str, int], city_weight) -> float:
@@ -134,6 +134,9 @@ class PropertyUtility:
 
     @staticmethod
     def getCityBattleOutcome(army_1_stats: dict[str, int], army_2_stats: dict[str, int]) -> Tuple[int, float, float]:
+        """
+        calculate the battle outcome, but keeps into account that the city stats, have a higher weight
+        """
         return PropertyUtility.getBattleOutcome(army_1_stats, army_2_stats, 0.7)
 
     @staticmethod

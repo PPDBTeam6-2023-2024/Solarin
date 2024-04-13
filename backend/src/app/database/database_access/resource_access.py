@@ -92,3 +92,32 @@ class ResourceAccess:
             has_resources = 0
 
         return has_resources
+
+    async def get_resources(self, user_id: int):
+        """
+        Get all the resources of a specific user
+
+        :param: user_id: id of the user whose resources we want
+        return: dict, with resource names as keys and resource amount as values
+        """
+
+        """
+        Retrieve the resources of the user
+        """
+        user_resources = await self.__session.execute(select(HasResources).where(HasResources.owner_id == user_id))
+        resources = await self.__session.execute(select(ResourceType))
+        result: dict[str, int] = {}
+
+        """
+        Put resources inside a dictionary
+        """
+        for user_resource in user_resources.scalars().all():
+            result[user_resource.resource_type] = user_resource.quantity
+
+        """
+        All the resources that do not have an entry, will receive value 0
+        """
+        for resource in resources.scalars().all():
+            result[resource.name] = 0 if not result.get(resource.name, False) else result[resource.name]
+
+        return result

@@ -18,6 +18,9 @@ async def get_planets(
         user_id: Annotated[int, Depends(get_my_id)],
         db=Depends(get_db)
 ) -> List[Tuple[int, str]]:
+    """
+    Retrieve all the existing planets
+    """
     data_access = DataAccess(db)
     planets = await data_access.PlanetAccess.get_all_planets()
 

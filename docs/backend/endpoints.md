@@ -49,10 +49,11 @@ Our Endpoints are structured into multiple routers:
 <details>
 <summary><strong>Logic: '/logic'</strong></summary>
 <p>
+general logic information needed
 
-| Endpoint | Method | Purpose                                                                                                                                                  |
-|:--------:|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------|
-|   User   |  Data  | Store data of a user their account                                                                                                                       |
+| Endpoint  | Method | Purpose                                      |
+|:---------:|:------:|:---------------------------------------------|
+| resources |  GET   | Get the current resources of a specific user |
 
 </p>
 </details>
@@ -77,9 +78,11 @@ Our Endpoints are structured into multiple routers:
 <summary><strong>Planets: '/planet'</strong></summary>
 <p>
 
-| Endpoint | Method | Purpose                                                                                                                                                  |
-|:--------:|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------|
-|   User   |  Data  | Store data of a user their account                                                                                                                       |
+| Endpoint |  Method   | Purpose                                                                      |
+|:--------:|:---------:|:-----------------------------------------------------------------------------|
+| planets  |    GET    | Get all existing planets                                                     |
+|    ws    | WEBSOCKET | Websocket to handle (potential) real time planet events (like army movement) |
+| regions  |    GET    | Retrieve all regions that are a part of a planet                             |
 
 </p>
 </details>
@@ -129,9 +132,9 @@ This router will handle the communication about Armies and their actions
 <summary><strong>Spawn: '/spawn'</strong></summary>
 <p>
 
-| Endpoint | Method | Purpose                                                                                                                                                  |
-|:--------:|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------|
-|   User   |  Data  | Store data of a user their account                                                                                                                       |
+| Endpoint | Method | Purpose                                                                    |
+|:--------:|:------:|:---------------------------------------------------------------------------|
+|          |  GET   | Give information, on what the user needs to see when he/she opens the game |
 
 </p>
 </details>

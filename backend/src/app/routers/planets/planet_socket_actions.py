@@ -125,3 +125,20 @@ class PlanetSocketActions:
             asyncio.create_task(
                 self.check_army_combat(pending_on_arrive[0],
                                        (pending_on_arrive[1] - datetime.datetime.utcnow()).total_seconds()))
+
+    async def create_city(self, data: json):
+        """
+        Create a new city on the position of the army
+        """
+        army_id = data["army_id"]
+
+        """
+        Create the new city
+        """
+
+        planet_id, x, y = await self.data_access.ArmyAccess.get_current_position(army_id)
+
+        city_id = await self.data_access.CityAccess.create_city(planet_id, self.user_id, x, y)
+
+        await self.data_access.commit()
+        await self.connection_pool.broadcast({"request_type": "reload"})

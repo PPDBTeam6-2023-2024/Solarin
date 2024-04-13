@@ -5,10 +5,12 @@ import WindowUI from '../WindowUI/WindowUI';
 import {Button} from "@mui/material";
 import ArmyViewTroopEntry from "./ArmyViewTroopEntry";
 import ArmyViewStatEntry from "./ArmyViewStatEntry";
+import {SocketContext} from "../../Context/SocketContext";
 
 function ArmyViewer({armyId, onCityCreated, is_owner}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
+    const [socket, setSocket] = useContext(SocketContext);
 
     useEffect(() => {
         const fetchTroops = async () => {
@@ -28,15 +30,14 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
     }, [armyId]);
 
     const createCity = async () => {
-        try {
-        const cityData = {
-            army_id: armyId
-        };
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/create_city`, cityData);
-            onCityCreated()
-        } catch (error) {
-            console.error("Failed creating city", error);
-        }
+        /*Send a websocket message to create a city*/
+        const data_json  = {
+                        type: "create_city",
+                        army_id: armyId
+                };
+
+        await socket.send(JSON.stringify(data_json));
+
     };
 
     let troopsOutput = troops.map((troop, index) => (

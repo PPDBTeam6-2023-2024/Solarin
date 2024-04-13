@@ -68,7 +68,6 @@ general logic information needed
 |       cities        |  GET   | Get all cities on a specific planet                                           |
 | new_building_types  |  GET   | Retrieve types of buildings that we can build (We cannot build a type double) |
 |  get_upgrade_cost   |  GET   | Get the upgrade costs of the buildings inside a city                          |
-|     create_city     |  POST  | Create a new city                                                             |
 |     cities_user     |  GET   | Get all the cities owned by a specific user                                   |
 
 </p>

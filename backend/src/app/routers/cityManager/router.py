@@ -117,28 +117,6 @@ async def get_upgrade_cost(
     return result
 
 
-@router.post("/create_city")
-async def create_city(
-        user_id: Annotated[int, Depends(get_my_id)],
-        create_city_scheme: CreateCitySchema,
-        db=Depends(get_db)
-):
-    data_access = DataAccess(db)
-
-    """
-    Create the new city
-    """
-
-    planet_id, x, y = await data_access.ArmyAccess.get_current_position(create_city_scheme.army_id)
-
-    city_id = await data_access.CityAccess.create_city(planet_id, user_id, x, y)
-
-    await data_access.commit()
-    if city_id is not None:
-        return JSONResponse(content={"message": "City was created successfully", "city_id": city_id},
-                            status_code=200)
-
-
 @router.get("/cities_user")
 async def friend_requests(
         user_id: Annotated[int, Depends(get_my_id)],

@@ -59,7 +59,8 @@ async def planet_socket(
 
             data_type_map = {"get_armies": planet_actions.get_armies,
                              "change_direction": planet_actions.change_directions,
-                             "leave_city": planet_actions.leave_city}
+                             "leave_city": planet_actions.leave_city,
+                             "create_city": planet_actions.create_city}
 
             """
             Execute mapped planet socket action function

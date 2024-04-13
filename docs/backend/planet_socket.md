@@ -31,6 +31,10 @@
       - Response: 
         - `request_type`: type of the request, this will be `change_direction`
         - `data`: the updated **army**
+    - `leave_city`: Let an army leave the city
+      - `army id`: id of army
+    - `create_city`: Let an army create a city
+      - `army id`: id of army
 - The connection is managed by the `ConnectionPool` class from `manager.py`, which ensures efficient handling of multiple clients and broadcasting updates to all connected clients.
 - Upon disconnection (`WebSocketDisconnect`), the connection is properly closed and removed from the connection pool.
 - Army response json: 

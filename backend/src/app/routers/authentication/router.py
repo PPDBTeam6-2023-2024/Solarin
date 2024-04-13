@@ -49,14 +49,11 @@ async def authenticate_user(session: AsyncSession, username: str, password: str)
     """
     Verify the user its login (check send password and stored password match) with username
     """
-
-    data_access = DataAccess(session)
-
-    try:
-        user = await data_access.UserAccess.get_user_id_username(username)
-    except NotFoundException:
+    user = await session.execute(select(User).where(User.username == username))
+    user = user.first()
+    if not user:
         return None
-
+    user = user[0]
     if not pwd_context.verify(password, user.hashed_password):
         return None
     return user

@@ -16,6 +16,11 @@ async def get_armies(
         planet_id: int,
         db=Depends(get_db)
 ) -> List[ArmySchema]:
+    """
+    Endpoint to retrieve army information
+    This endpoint is used for proper testing of the backend, and can be used to retrieve the armies if needed
+    """
+
     data_access = DataAccess(db)
     db_reply = await data_access.ArmyAccess.get_armies_on_planet(planet_id)
 
@@ -28,21 +33,12 @@ async def get_armies(
     return armies_schema
 
 
-@router.get("/getarmy", response_model=ArmySchema)
-async def get_army(
-        army_id: int,
-        db=Depends(get_db)
-) -> ArmySchema:
-    data_access = DataAccess(db)
-    db_reply = await data_access.ArmyAccess.get_army_by_id(army_id)
-
-    army = db_reply.to_army_schema()
-
-    return army
-
-
 @router.get("/troops")
 async def get_troops(armyid: int, db=Depends(get_db)):
+    """
+    Retrieve the troops that are part of the army
+    We will also retrieve the stats of the army itself, so we can display that.
+    """
     data_access = DataAccess(db)
     db_reply = await data_access.ArmyAccess.get_troops(armyid)
 
@@ -63,7 +59,7 @@ async def armies_user(
 
 ):
     """
-    send a list of all armies owned by a user
+    send a list of all armies owned by the provided user
     """
 
     data_access = DataAccess(db)

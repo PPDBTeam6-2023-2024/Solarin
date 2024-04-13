@@ -18,5 +18,5 @@ async def get_resources(user_id: Annotated[int, Depends(get_my_id)], db=Depends(
 
     for resource in resources.scalars().all():
         result[resource.name] = 0 if not result.get(resource.name, False) else result[resource.name]
-
+    print("results", result)
     return result

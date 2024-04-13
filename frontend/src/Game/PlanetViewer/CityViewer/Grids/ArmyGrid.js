@@ -1,7 +1,6 @@
 import React, {useContext, useMemo} from "react";
 import { AgGridReact } from "ag-grid-react";
 import './NewBuildingGrid.css';
-import EntityViewer from "../../../UI/CityViewer/EntityViewer";
 import {SocketContext} from "../../../Context/SocketContext";
 const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage }) => {
     const columns = useMemo(() => [
@@ -53,15 +52,19 @@ const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, sel
                     }}
                 />
             </div>
-            <div className="right-screen">
+            <div style={{"width": "27%"}} className="right-screen">
                 {selectedImage &&
                     <div className="building_image">
                         <img src={selectedImage} alt="Troops" className="selected-image"/>
                     </div>
                 }
-                <button className="wide-button" onClick={handleLeaveCity}>
+
+                {rowData.length > 0 &&
+                    <button className="wide-button" onClick={handleLeaveCity}>
                     Leave City
-                </button>
+                    </button>
+                }
+
             </div>
         </>
     );

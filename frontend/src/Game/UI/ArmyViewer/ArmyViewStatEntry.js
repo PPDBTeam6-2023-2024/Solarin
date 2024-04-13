@@ -14,8 +14,8 @@ function ArmyViewStatEntry(props) {
                 </Tooltip>
             </div>
 
-            <div style={{"width": "65%", "display": "inline-block", "textAlign": "right"}}>
-                {Math.round(props.stat_value)}
+            <div style={{"width": "65%", "display": "inline-block", "textAlign": "right", "fontSize": "150%"}}>
+                {props.stat_value >= 0 ? Math.round(props.stat_value): "?"}
             </div>
         </div>
     );

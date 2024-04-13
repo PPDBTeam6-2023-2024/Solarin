@@ -23,7 +23,7 @@ function ArmyManageView({id, owner, anchorEl, toggleMoveMode, isMoveMode, onCity
             </Box>
             </Popper>
             <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                <ArmyViewer armyId={id} onCityCreated={onCityCreated}/>
+                <ArmyViewer armyId={id} is_owner={owner === userInfo.id} onCityCreated={onCityCreated}/>
             </Popper>
         </Fragment>
     );

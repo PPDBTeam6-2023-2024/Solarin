@@ -6,7 +6,7 @@ import {Button} from "@mui/material";
 import ArmyViewTroopEntry from "./ArmyViewTroopEntry";
 import ArmyViewStatEntry from "./ArmyViewStatEntry";
 
-function ArmyViewer({armyId, onCityCreated}) {
+function ArmyViewer({armyId, onCityCreated, is_owner}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
 
@@ -61,14 +61,20 @@ function ArmyViewer({armyId, onCityCreated}) {
             <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto' }}>
                 <TreeView aria-label="file system navigator">
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
-                    <Button variant="contained" onClick={createCity} sx={{margin: "10px"}}>
+
+                    {/*Only display the create city button when the user is the owner of that army*/}
+                    {is_owner &&
+                        <Button variant="contained" onClick={createCity} sx={{margin: "10px"}}>
                         Create City
-                    </Button>
+                        </Button>
+                    }
+
                     <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`stats-${armyId}`} label={`Stats`}>
                         {statsOutput}
                     </TreeItem>
 
-                    <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`total-${armyId}`} label={`${totalCount} Units`}>
+                    <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`total-${armyId}`}
+                              label={`${totalCount >= 0 ? totalCount : "?"} Units`}>
                         {troopsOutput}
                     </TreeItem>
                 </TreeView>

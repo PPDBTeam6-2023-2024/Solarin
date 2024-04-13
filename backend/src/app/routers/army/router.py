@@ -46,15 +46,6 @@ async def get_troops(
 
     data_access = DataAccess(db)
 
-    """
-    Restrict army access to the user who is the owner of this army
-    """
-
-    army_owner = await data_access.ArmyAccess.get_army_owner(army_id)
-    if army_owner.id != user_id:
-        return JSONResponse(content={"message": "You do not have the permission to view this army their information"},
-                            status_code=401)
-
     db_reply = await data_access.ArmyAccess.get_troops(army_id)
 
     troops_schema = []
@@ -64,6 +55,22 @@ async def get_troops(
         troops_schema.append(temp)
 
     army_stats = await data_access.ArmyAccess.get_army_stats(army_id)
+
+    """
+    When accessing the troops of another army, we will make sure that the stats are unknown.
+    We will also make sure that the army amounts are unknown
+    """
+    army_owner = await data_access.ArmyAccess.get_army_owner(army_id)
+    if army_owner.id != user_id:
+        """
+        The values we send will be -1, frontend will replace it by a question mark
+        """
+        for k, v in army_stats.items():
+            army_stats[k] = -1
+
+        for i, t in enumerate(troops_schema):
+            t.size = -1
+            troops_schema[i] = t
 
     return {"troops": troops_schema, "stats": army_stats}
 

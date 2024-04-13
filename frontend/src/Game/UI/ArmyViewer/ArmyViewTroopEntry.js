@@ -21,7 +21,7 @@ function ArmyViewTroopEntry(props) {
                 </div>
 
                 <div>
-                    <span style={{"color": "gold"}}> {props.troop_size} </span> units
+                    <span style={{"color": "gold"}}> {props.troop_size >= 0 ? props.troop_size: "?"} </span> units
                 </div>
 
 

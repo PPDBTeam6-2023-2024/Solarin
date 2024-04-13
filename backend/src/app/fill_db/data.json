@@ -8,9 +8,9 @@
     "users": [
         {
             "userinfo": {
-                "username": "admin2",
-                "email": "admin2@example.com",
-                "password": "admin2"
+                "username": "admin1",
+                "email": "admin1@example.com",
+                "password": "admin1"
             },
             "resources": {
                 "TF": 0,
@@ -75,9 +75,9 @@
         },
         {
             "userinfo": {
-                "username": "admin1",
-                "email": "admin1@example.com",
-                "password": "admin1"
+                "username": "admin2",
+                "email": "admin2@example.com",
+                "password": "admin2"
             },
             "resources": {
                 "TF": 0,

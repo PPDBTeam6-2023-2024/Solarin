@@ -2,15 +2,12 @@ import json
 from src.app.database.database_access.developer_access import *
 from src.logic.utils.compute_properties import *
 import os
-from src.app.database.database import sessionmanager
 
 
 class CreateTuples:
-
-    async def create_all_tuples(self):
-        async with sessionmanager.session() as session:
-            self.__session: AsyncSession = session
-            self.__dev = DeveloperAccess(session)
+    async def create_all_tuples(self, session):
+        self.__session: AsyncSession = session
+        self.__dev = DeveloperAccess(session)
         types_file = open(f"{os.path.dirname(os.path.abspath(__file__))}/types.json").read()
         types = json.loads(types_file)
         await self.create_resource_types(types["resources"])

@@ -9,6 +9,7 @@ from ..database.database_access.data_access import DataAccess
 from ..routers.spawn.planet_generation import generate_random_planet
 from ..routers.authentication.router import pwd_context
 from ..database.database_access.message_access import MessageToken
+from .create_tuples import CreateTuples
 
 
 async def fill_db(data: dict):
@@ -16,6 +17,7 @@ async def fill_db(data: dict):
     sessionmanager.init(config.db.get_connection_string().get_secret_value())
 
     async with sessionmanager.session() as session:
+        await CreateTuples().create_all_tuples(session)
         await create_space_regions(data["space regions"], session)
         await create_users(data["users"], session)
         await create_alliances(data["alliances"], session)

@@ -14,7 +14,7 @@ router = APIRouter(prefix="/army", tags=["Army"])
 @router.get("/armies", response_model=List[ArmySchema])
 async def get_armies(
         planet_id: int,
-        db=Depends(get_db)
+        db: AsyncSession = Depends(get_db)
 ) -> List[ArmySchema]:
     """
     Endpoint to retrieve army information
@@ -33,14 +33,28 @@ async def get_armies(
     return armies_schema
 
 
-@router.get("/troops")
-async def get_troops(armyid: int, db=Depends(get_db)):
+@router.get("/troops/{army_id}")
+async def get_troops(
+        user_id: Annotated[int, Depends(get_my_id)],
+        army_id: int,
+        db: AsyncSession = Depends(get_db)
+):
     """
     Retrieve the troops that are part of the army
     We will also retrieve the stats of the army itself, so we can display that.
     """
+
     data_access = DataAccess(db)
-    db_reply = await data_access.ArmyAccess.get_troops(armyid)
+
+    """
+    Restrict army access to the user who is the owner of this army
+    """
+    army_owner = await data_access.ArmyAccess.get_army_owner(army_id)
+    if army_owner != user_id:
+        return JSONResponse(content={"message": "You do not have the permission to view this army their information"},
+                            status_code=401)
+
+    db_reply = await data_access.ArmyAccess.get_troops(army_id)
 
     troops_schema = []
 
@@ -48,7 +62,7 @@ async def get_troops(armyid: int, db=Depends(get_db)):
         temp = troops.to_armyconsistsof_schema()
         troops_schema.append(temp)
 
-    army_stats = await data_access.ArmyAccess.get_army_stats(armyid)
+    army_stats = await data_access.ArmyAccess.get_army_stats(army_id)
     return {"troops": troops_schema, "stats": army_stats}
 
 
@@ -68,24 +82,9 @@ async def armies_user(
     return armies_schemas
 
 
-@router.post("/leave_city/{army_id}")
-async def update_army_coordinates(
-        userid: Annotated[int, Depends(get_my_id)],
-        army_id: int,
-        db=Depends(get_db)
-):
-    data_access = DataAccess(db)
-
-    # Fetch current coordinates and speed of the army
-    owner = await data_access.ArmyAccess.get_army_owner(army_id)
-    if owner.id != userid:
-        return {"success": False, "message": "user is not the owner of this army"}
-
-    await data_access.ArmyAccess.leave_city(army_id)
-    return {"success": True, "message": "User has left the city"}
-
-@router.get("/armies_in_city/")
+@router.get("/army_in_city/")
 async def get_armies_in_city(
+        user_id: Annotated[int, Depends(get_my_id)],
         city_id: int,
         db: AsyncSession = Depends(get_db)
 ):
@@ -95,6 +94,6 @@ async def get_armies_in_city(
     data_access = DataAccess(db)
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
 
-    troops = await get_troops(army_id, db)
+    troops = await get_troops(user_id, army_id, db)
     troops.update({"army_id": army_id})
     return troops

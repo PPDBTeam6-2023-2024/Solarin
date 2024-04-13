@@ -106,6 +106,6 @@ async def test_get_troops(client):
 
         await session.commit()
 
-    response = client.get("/army/troops", params={"armyid": army_id})
-    assert response.status_code == 200
+    response = client.get(f"/army/troops{army_id}")
+    assert response.status_code == 401
 

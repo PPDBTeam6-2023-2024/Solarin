@@ -1,8 +1,9 @@
-import pytest
+
 from sqlalchemy.orm import Session
+import pytest
 
 from src.app.database.database_access.army_access import ArmyAccess
-from src.app.models import Army
+from src.app.database.models import Army
 
 @pytest.fixture
 def army_access(session: Session):
@@ -65,7 +66,7 @@ def test_delete_army(army_access: ArmyAccess, session: Session):
     db_army = session.query(Army).filter_by(name="Test Army").first()
 
     # Assert that the army was successfully deleted
-    assert db_army is Noneimport pytest
+    assert db_army is None
 from sqlalchemy import select
 
 from src.app.database.database_access.army_access import ArmyAccess

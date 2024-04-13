@@ -10,6 +10,13 @@
     {"type-name": "alpine", "description": "A region with many mountains."},
     {"type-name": "plain", "description": "A flat region with a few trees."}
   ],
+  "associations": [
+    {"planet-type": "arctic", "region-type": "arctic"},
+    {"planet-type": "arctic", "region-type": "plain"},
+    {"planet-type": "desert", "region-type": "desert"},
+    {"planet-type": "desert", "region-type": "plain"},
+    {"planet-type": "tropical", "region-type": "plain"}
+  ],
   "barracks":[
     {"name":  "barracks", "creation-cost": 550, "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}]},
     {"name":  "space-dock", "creation-cost": 1250, "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}]}

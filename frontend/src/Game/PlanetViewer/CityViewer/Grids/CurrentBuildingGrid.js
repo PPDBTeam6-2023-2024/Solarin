@@ -1,5 +1,5 @@
-import React, {useMemo, useState} from "react";
-import {AgGridReact} from "ag-grid-react";
+import React, { useMemo, useState, useEffect  } from "react";
+import { AgGridReact } from "ag-grid-react";
 import {
     collectResources, getUpgradeCost,
     upgradeBuilding
@@ -7,12 +7,13 @@ import {
 import './NewBuildingGrid.css';
 
 
-const ResourceButtonComponent = ({data, cityId}) => {
+const ResourceButtonComponent = ({ data, cityId, refreshResources }) => {
     const buttonStyle = "wide-button";
 
     const collectResourcesHelper = async (cityId, buildingId) => {
         try {
             await collectResources(cityId, buildingId);
+            refreshResources();
         } catch (error) {
             console.error("Failed to collect resources:", error);
         }
@@ -42,17 +43,21 @@ const TrainButtonComponent = ({data, setSelectedClick}) => {
 };
 
 
-const UpgradeButtonComponent = ({data, cityId, setUpgradeCostMap, upgradeCost}) => {
+
+const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost, refreshResources }) => {
     const upgradeBuildingHelper = async (cityId, buildingId) => {
         try {
-            await upgradeBuilding(cityId, buildingId);
-            await getUpgradeCost(cityId).then(buildings => {
-                const costMap = buildings.reduce((acc, building) => {
+            const upgrade_succesful= await upgradeBuilding(cityId, buildingId);
+            if (upgrade_succesful.confirmed === true) {
+                await getUpgradeCost(cityId).then(buildings => {
+                  const costMap = buildings.reduce((acc, building) => {
                     acc[building.id] = building;
                     return acc;
-                }, {});
-                setUpgradeCostMap(costMap);
+                  }, {});
+                  setUpgradeCostMap(costMap);
+                  refreshResources();
             });
+            }
         } catch (error) {
             console.error("Failed to upgrade building:", error);
         }
@@ -83,17 +88,9 @@ const UpgradeButtonComponent = ({data, cityId, setUpgradeCostMap, upgradeCost}) 
 };
 
 
-const CurrentBuildingGrid = ({
-                                 buildings,
-                                 onRowMouseOver,
-                                 setSelectedClick,
-                                 selectedClick,
-                                 selectedImage,
-                                 cityId,
-                                 resources,
-                                 upgradeCostMap,
-                                 setUpgradeCostMap
-                             }) => {
+
+
+const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources, upgradeCostMap, setUpgradeCostMap, refreshResources }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
 
 
@@ -134,17 +131,16 @@ const CurrentBuildingGrid = ({
                     <div className="building_image">
                         <img src={selectedImage} alt="Building" className="selected-image"/>
                     </div>
-                    {selectedBuilding && selectedBuilding.type === "Barracks" &&
-                        <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
-                    }
-                    {selectedBuilding && selectedBuilding.type === "productionBuilding" &&
-                        <ResourceButtonComponent data={selectedBuilding} cityId={cityId} resources={resources}/>
-                    }
-                    {selectedBuilding &&
-                        <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources}
-                                                upgradeCost={upgradeCostMap} setUpgradeCostMap={setUpgradeCostMap}/>
-                    }
-                </div>
+                {selectedBuilding && selectedBuilding.type==="Barracks" &&
+                    <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
+                }
+                {selectedBuilding && selectedBuilding.type === "productionBuilding" &&
+                    <ResourceButtonComponent data={selectedBuilding} cityId={cityId}  refreshResources={refreshResources}/>
+                }
+                {selectedBuilding &&
+                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} upgradeCost={upgradeCostMap} setUpgradeCostMap={setUpgradeCostMap} refreshResources={refreshResources} />
+                }
+            </div>
             }
         </>
     );

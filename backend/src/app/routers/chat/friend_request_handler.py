@@ -60,8 +60,8 @@ class FriendRequestHandler(RequestHandler):
         :return: tuple(bool, str): -> (success, message)
         """
 
-        to_user_id = await self.data_access.UserAccess.getUserIdUsername(self.data["username"])
-        await self.data_access.UserAccess.sendFriendRequest(user_id, to_user_id)
+        to_user_id = await self.data_access.UserAccess.get_user_id_username(self.data["username"])
+        await self.data_access.UserAccess.send_friend_request(user_id, to_user_id)
         await self.data_access.commit()
 
         return True, "Friend request has been send"
@@ -77,20 +77,20 @@ class FriendRequestHandler(RequestHandler):
             """
             in case the friend request will be accepted
             """
-            await self.data_access.UserAccess.acceptFriendRequest(self.data["friend_id"], user_id)
+            await self.data_access.UserAccess.accept_friend_request(self.data["friend_id"], user_id)
 
             """
             send a default message indicating the friend request ahs been accepted
             """
-            message_board = await self.data_access.MessageAccess.getPlayerMessageBoard(user_id, self.data["friend_id"])
+            message_board = await self.data_access.MessageAccess.get_player_messageBoard(user_id, self.data["friend_id"])
 
-            await self.data_access.MessageAccess.createMessage(MessageToken(sender_id=user_id, message_board=message_board,
-                                                                       body="Friend request has been accepted"))
+            await self.data_access.MessageAccess.create_message(MessageToken(sender_id=user_id, message_board=message_board,
+                                                                             body="Friend request has been accepted"))
         else:
             """
             in case the friend request will not be accepted
             """
-            await self.data_access.UserAccess.rejectFriendRequest(self.data["friend_id"], user_id)
+            await self.data_access.UserAccess.reject_friend_request(self.data["friend_id"], user_id)
 
         await self.data_access.commit()
 

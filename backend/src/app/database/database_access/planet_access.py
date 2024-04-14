@@ -1,8 +1,9 @@
 from sqlalchemy.orm import joinedload
-
-from ..models.models import *
+import math
+from ..models import *
 from ..database import AsyncSession
 from typing import Optional
+
 
 class PlanetAccess:
     """
@@ -11,7 +12,7 @@ class PlanetAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createSpaceRegion(self, region_name: str):
+    async def create_space_region(self, region_name: str):
         """
         Creates space region and returns the id generated
 
@@ -24,7 +25,7 @@ class PlanetAccess:
         region_id = sp.id
         return region_id
 
-    async def createPlanet(self, planet_name: str, planet_type: str, space_region_id: int):
+    async def create_planet(self, planet_name: str, planet_type: str, space_region_id: int):
         """
         Creates a new planet
 
@@ -39,7 +40,7 @@ class PlanetAccess:
         planet_id = planet.id
         return planet_id
 
-    async def createPlanetRegion(self, planet_id: int, region_type: str, x: float, y: float):
+    async def create_planet_region(self, planet_id: int, region_type: str, x: float, y: float):
         """
         create a region on a planet
 
@@ -55,7 +56,7 @@ class PlanetAccess:
         region_id = region.id
         return region_id
 
-    async def getRegions(self, planet_id: int) -> list[PlanetRegion]:
+    async def get_regions(self, planet_id: int) -> list[PlanetRegion]:
         """
         Get all the regions belonging to the given planet
 
@@ -64,9 +65,9 @@ class PlanetAccess:
         """
         select_regions = Select(PlanetRegion).where(PlanetRegion.planet_id == planet_id)
         results = await self.__session.execute(select_regions)
-        return results.scalars().all()
+        return list(results.scalars().all())
 
-    async def getPlanetCities(self, planet_id: int):
+    async def get_planet_cities(self, planet_id: int) -> list[City]:
         """
         Get all the cities that are on the given planet
 
@@ -78,9 +79,9 @@ class PlanetAccess:
         ).where(PlanetRegion.planet_id == planet_id)
 
         results = await self.__session.execute(select_cities)
-        return results.all()
+        return list(results.scalars().all())
 
-    async def getRegionCities(self, region_id: int):
+    async def get_region_cities(self, region_id: int) -> list[City]:
         """
         Get all the cities that are on the given region
 
@@ -90,9 +91,9 @@ class PlanetAccess:
 
         select_cities = Select(City).where(City.region_id == region_id)
         results = await self.__session.execute(select_cities)
-        return results.all()
+        return list(results.scalars().all())
 
-    async def getAllPlanets(self):
+    async def get_all_planets(self):
         """
         get all the planets in a map
 
@@ -103,9 +104,10 @@ class PlanetAccess:
         results = results.all()
         return results
 
-    async def getPlanet(self, planet_id) -> Optional[Planet]:
+    async def get_planet(self, planet_id) -> Optional[Planet]:
         """
         get planet by id
+        :param: planet_id: the id of the planet we want to retrieve
         :return: a planet column if it exists, otherwise None
         """
         stmt = (
@@ -128,7 +130,7 @@ class PlanetAccess:
             .filter(AssociatedWith.planet_type == planet_type)
         )
         results = await self.__session.execute(stmt)
-        return results.all()
+        return results.scalars().all()
 
     async def get_random_planet_type(self):
         """
@@ -142,7 +144,7 @@ class PlanetAccess:
             .limit(1)
         )
         results = await self.__session.execute(stmt)
-        return results.first()
+        return results.scalar_one()
 
     async def get_planets_of_user(self, user_id: int) -> list[Planet]:
         """
@@ -158,7 +160,7 @@ class PlanetAccess:
             .where(City.controlled_by == user_id)
         )
         results = await self.__session.execute(stmt)
-        return results.scalars().all()
+        return list(results.scalars().all())
 
     async def get_planets_between_times(self, start_time: datetime, end_time: datetime) -> list[Planet]:
         """
@@ -175,4 +177,28 @@ class PlanetAccess:
             .order_by(Planet.created_at.asc())
         )
         results = await self.__session.execute(stmt)
-        return results.scalars().all()
+        return list(results.scalars().all())
+
+    async def get_closest_region(self, planet_id: int, x: float, y: float):
+        """
+        Get the region closest to the provided position
+
+        :param: planet_id: id of the planet whose regions we want to check
+        :param: x, y: coordinates
+        :return: region that is the closest to the provided position
+        """
+
+        regions = await PlanetAccess(self.__session).get_regions(planet_id)
+
+        """
+        Calculate which region our city belongs too based on the closed distance
+        """
+        closest_region = regions[0]
+        closest_distance = math.dist((closest_region.x, closest_region.y), (x, y))
+        for region in regions[1:]:
+            distance = math.dist((region.x, region.y), (x, y))
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_region = region
+
+        return closest_region

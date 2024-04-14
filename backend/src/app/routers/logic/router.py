@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.sql.functions import coalesce
 from typing import Union, Annotated
 
-from src.app.database.models.models import HasResources, ResourceType
+from src.app.database.models import HasResources, ResourceType
 from src.app.routers.authentication.router import get_my_id, get_db
 
 router = APIRouter(prefix="/logic")

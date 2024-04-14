@@ -1,5 +1,7 @@
 from ...database.database_access.data_access import DataAccess
-from ...database.models.models import BuildingInstance, BarracksType
+from ...database.models import BuildingInstance, BarracksType
+
+
 class CityChecker:
     """
     This class is a checker so we can trigger the right city checks, and update the city information
@@ -17,12 +19,9 @@ class CityChecker:
         """
         this function will do all checks
         """
-        buildings = await self.da.BuildingAccess.getCityBuildings(self.city_id)
+        buildings = await self.da.BuildingAccess.get_city_buildings(self.city_id)
 
         await self.check_training(buildings)
-
-        for b in buildings:
-            await self.da.BuildingAccess.checked(b[0].id)
 
     async def check_training(self, buildings):
         """
@@ -37,3 +36,4 @@ class CityChecker:
                 continue
 
             await self.da.TrainingAccess.check_queue(b[0].id)
+            await self.da.BuildingAccess.checked(b[0].id)

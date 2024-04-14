@@ -14,7 +14,6 @@ class BuildingInstanceSchema(ConfigClass):
     rank: int
     type: str
 
-
 class CitySchema(ConfigClass):
     id: int
     region_id: int
@@ -26,6 +25,9 @@ class CitySchema(ConfigClass):
     planet_name: str
     planet_id: int
 
+class Confirmation(BaseModel):
+    confirmed: bool
+
 
 class PlanetRegion(ConfigClass):
     id: int
@@ -34,7 +36,22 @@ class PlanetRegion(ConfigClass):
     planet: str
     cities: str
 
+class BuildingTypeSchema(ConfigClass):
+    name: str
+    type: str
+    required_rank: int
+    costs: list[dict]
+    can_build: bool
+
+class CostSchema(ConfigClass):
+    id: int
+    costs: list[tuple[str, int]]
+    can_upgrade: bool
 
 class CityLocationSchema(BaseModel):
     x: float
     y: float
+
+
+class CreateCitySchema(BaseModel):
+    army_id: int

@@ -32,9 +32,6 @@ function UI() {
 
             {/*load hidden windows viewer */}
             <HiddenWindowsViewer />
-                
-            {/*load resource viewer*/}
-            <ResourceViewer className="fixed z-20 bottom-0 right-0" title="Resources" resources={{"SOL" : {"collected": 150, "producing": 10}, "TF": {"collected": 50}}} draggable={true}/>
 
             {/*Load the side menu */}
             <SideMenu/>

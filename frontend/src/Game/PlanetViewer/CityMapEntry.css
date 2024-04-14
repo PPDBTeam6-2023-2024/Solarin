@@ -1,0 +1,10 @@
+.CityMapEntryEnemy{
+    cursor: url("/public/images/cursors/attack_cursor.png") 1 1, auto;
+}
+.CityMapEntryEnter{
+    cursor: url("/public/images/cursors/enter_cursor.png") 1 1, auto;
+}
+
+.CityMapEntryPointer{
+    cursor: pointer;
+}

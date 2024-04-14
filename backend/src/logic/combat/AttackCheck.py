@@ -1,5 +1,5 @@
 from ...app.database.database_access.data_access import DataAccess
-from ...app.database.models.models import AttackArmy, AttackCity
+from ...app.database.models import AttackArmy, AttackCity
 from .ArmyCombat import ArmyCombat
 
 
@@ -24,7 +24,7 @@ class AttackCheck:
         Checks if an army is attacking something, and if so check if he arrived at his target location
         """
 
-        target = await da.ArmyAccess.will_attack(army_id)
+        target = await da.ArmyAccess.will_on_arrive(army_id)
 
         """
         When we attack nothing stop checking

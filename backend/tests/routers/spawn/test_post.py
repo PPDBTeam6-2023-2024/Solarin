@@ -9,10 +9,10 @@ from tests.conftest import client
 async def insert_test_data(client):
     async with sessionmanager.session() as session:
         data_access = DataAccess(session)
-        await data_access.DeveloperAccess.createPlanetType("test_planet_type")
-        await data_access.DeveloperAccess.createPlanetRegionType("test_planet_region")
-        await data_access.DeveloperAccess.createAssociatedWith("test_planet_type", "test_planet_region")
-        await data_access.PlanetAccess.createSpaceRegion("test_region")
+        await data_access.DeveloperAccess.create_planet_type("test_planet_type")
+        await data_access.DeveloperAccess.create_planet_region_type("test_planet_region")
+        await data_access.DeveloperAccess.create_associated_with("test_planet_type", "test_planet_region")
+        await data_access.PlanetAccess.create_space_region("test_region")
         await session.commit()
 
 async def test_1(client):
@@ -82,7 +82,7 @@ async def test_2(client):
 async def test_3(client):
     async with sessionmanager.session() as session:
         data_access = DataAccess(session)
-        planet_id = await data_access.PlanetAccess.createPlanet("test", "test_planet_type", 1)
+        planet_id = await data_access.PlanetAccess.create_planet("test", "test_planet_type", 1)
         await session.commit()
 
     data = {

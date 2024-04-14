@@ -23,7 +23,7 @@ Units training costs are calculated using the following formula: $base_value*gro
 This grow_rate can differ from the grow rate used for calculating the Unit Stats
 
 ## General Upgrade Cost (GUC)
-* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}}){2}\right\rfloor$ TF 
+* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1}){2}\right\rfloor$ TF 
 	* $\text{level}$ is the current (pre-upgrade) level of the building
 	* $\text{CC}$ is the creation cost of the building
 	* GUC and CC is given in Techforge (TF) currency by default

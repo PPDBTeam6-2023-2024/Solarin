@@ -5,19 +5,25 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import getCities from './CityViewer/getCities';
 import CityManager from "./CityViewer/CityManager";
 
-import {PlanetListContext} from "./../Context/PlanetListContext"
+import {PlanetListContext} from "../Context/PlanetListContext"
 import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
 import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
-import { toggleArmyDetails, toggleArmyViewer } from './Helper/ArmyViewerHelper';
+import {toggleArmyViewer, closeArmyViewer } from './Helper/ArmyViewerHelper';
 import { fetchCities } from './Helper/CityHelper';
 
 import { IoMdClose } from "react-icons/io";
 
 import army_example from "../Images/troop_images/Soldier.png"
+import ArmyMapEntry from "./ArmyMapEntry";
+import CityMapEntry from "./CityMapEntry";
+import {string} from "three/examples/jsm/nodes/shadernode/ShaderNode";
+import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
+import {SocketContext} from "../Context/SocketContext";
+import {PlanetIdContext} from "../Context/PlanetIdContext";
 
 function PlanetViewer(props) {
     const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
@@ -49,6 +55,10 @@ function PlanetViewer(props) {
     }, [props.planetId])
 
     const [cityImages,setCityImages] = useState([]);
+
+    const reloadCities = () => {
+        setCitiesLoaded(false)
+    }
 
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
@@ -85,6 +95,7 @@ function PlanetViewer(props) {
                         type: "get_armies",
                 }))
             }
+
      }, []);
      const lerp = ({source_position, target_position, arrival_time, departure_time}) => {
         var d  = new Date()
@@ -120,7 +131,6 @@ function PlanetViewer(props) {
               maxWidth: '10%',
               maxHeight: '10%',
               zIndex: 15,
-              cursor: 'pointer',
               transition: "all ease-linear",
             },
             }
@@ -153,6 +163,19 @@ function PlanetViewer(props) {
         }
     }, [socket])
 
+
+    /*
+    Close the ArmyViewers for armies that are not visible anymore
+    When armies are not visualized anymore (When entering a city, being killed, ...)
+    We want to make sure the Army viewer will be closed.
+    */
+    useEffect(() => {
+        let removed = activeArmyViewers.filter(army => !armyImages.some(new_army => new_army.id === army.id))
+        removed.forEach((r, index) => {closeArmyViewer(r, setActiveArmyViewers)});
+
+    }, [armyImages.map(army => army.id).join(";").toString()]);
+
+
     useEffect(() => {
         if(!socket) return
         socket.onmessage = async(event) => {
@@ -160,11 +183,26 @@ function PlanetViewer(props) {
             switch(response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
-                    setArmyImages(armies)
+                    setArmyImages(armies);
+
                     break
                 case "change_direction":
                     const newArmies = handleChangeDirection(response.data)
                     setArmyImages(newArmies)
+                    break
+                case "reload":
+                    /*
+                    This event just indicates that frontend needs to reload both armies and cities,
+                    to be consistent with the backend
+                    * */
+                    fetchCities({getCities:getCities, handleCityClick:handleCityClick, setCityImages:setCityImages, setCitiesLoaded:setCitiesLoaded});
+                    socket.send(
+                        JSON.stringify(
+                            {
+                                    type: "get_armies",
+                            })
+                    )
+
                     break
             }
         }
@@ -178,21 +216,70 @@ function PlanetViewer(props) {
         if (!isMoveMode(armyId)) setArmiesMoveMode(prev => [...prev, armyId])
         else setArmiesMoveMode(armiesMoveMode.filter((id) => armyId !== id))
     }
+
+    {/*For calculating the position we need to know the size of the map on the client, to calculate the position in range[0, 1]*/}
+    const screenSize = useRef();
+
     const mapOnClick = (e) => {
+
+        let action_json = {}
+
+        const image_type = e.target.getAttribute("image_type")
+        if (image_type !== null){
+            const clickedArmy = image_type === "army";
+            const clickedCity = image_type === "city";
+
+            const index = parseInt(e.target.getAttribute("index"));
+            const is_owner = Boolean(parseInt(e.target.getAttribute("is_owner")));
+
+            /*Decide which target action to do*/
+            let target = ""
+
+            if (clickedCity){
+                if (!is_owner){
+                    target = "attack_city"
+                }else{
+                    target = "enter"
+                }
+
+            }else if (clickedArmy){
+                if (!is_owner){
+                    target = "attack_army"
+                }else{
+                    target = "merge"
+                }
+            }
+
+            action_json = {
+                on_arrive: true,
+                target_type: target,
+                target_id: index
+
+            }
+        }
+
+        
         armiesMoveMode.forEach(async(armyId) => {
-            await socket.send(JSON.stringify(
-                {
+            const data_json  = {
                         type: "change_direction",
-                        to_x: e.pageX/e.target.getBoundingClientRect().width,
-                        to_y: e.pageY/e.target.getBoundingClientRect().height,
+                        to_x: e.pageX/screenSize.current?.clientWidth,
+                        to_y: e.pageY/screenSize.current?.clientHeight,
                         army_id: armyId
-                }))
+                };
+
+            const merged_data = Object.assign({}, data_json, action_json);
+
+            await socket.send(JSON.stringify(merged_data));
             toggleMoveMode(armyId)
         })
     }
-     
     return (
         <>
+
+        {/*Make it possible to access the socket in the children without using props (because cleaner)*/}
+        <PlanetIdContext.Provider value={props.planetId}>
+        <SocketContext.Provider value={[socket, setSocket]}>
+
         <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
             <div className='bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl'>
             <IoMdClose className="top-0 text-sm ml-1 absolute mt-1 left-0" onClick={() => setHidePlanetSwitcherWindow(!hidePlanetSwitcherWindow)}/>
@@ -205,20 +292,12 @@ function PlanetViewer(props) {
          </WindowUI>
 
             {
-                activeArmyViewers.map(({id, owner, position, anchorEl, detailsOpen}) => (
-                    <Fragment key={`army-viewer-${id}`}>
-                        <Popper open={true} anchorEl={anchorEl} placement='left-start'>
-                        <Box className="bg-black rounded-3xl" >
-                        <List>
-                        {owner === userInfo.id && <ListItemButton onClick={() => toggleMoveMode(id)}>{isMoveMode(id) ? 'Cancel Move To' : 'Move To'}</ListItemButton>}
-                        <ListItemButton onClick={() => toggleArmyDetails(id, setActiveArmyViewers, activeArmyViewers)}>Details</ListItemButton>
-                        </List>
-                        </Box>
-                        </Popper>
-                        <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={id}/>
-                        </Popper>
-                    </Fragment>
+                /*
+                This ArmyManageView is not a child component of the Army entry, because this is a rela UI component
+                That should be a part of the map itself
+                * */
+                activeArmyViewers.map(({id, owner, position, anchorEl}) => (
+                    <ArmyManageView key={id} id={id} owner={owner} anchorEl={anchorEl} toggleMoveMode={toggleMoveMode} isMoveMode={isMoveMode} onCityCreated={reloadCities}/>
                 ))
             }
 
@@ -226,7 +305,7 @@ function PlanetViewer(props) {
                 {/*Display cityManager over the map*/}
                 {selectedCityId && showCityManager && (
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                            <CityManager cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
+                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
                         </div>
                 )}
 
@@ -242,24 +321,35 @@ function PlanetViewer(props) {
                     yMax: 0,
                 }}
             >
-                
-                {/*Display planet on the map*/}
-                 <PlanetSVG planetId={props.planetId} onClick={mapOnClick}/>
+                <div ref={screenSize} style={{"width": "100%", "height": "100%"}} onClick={mapOnClick}>
+                    {/*Display planet on the map*/}
+                     <PlanetSVG planetId={props.planetId}/>
 
-                {armyImages.map((army, index) => (
-                    <img key={index} src={army.src} alt="army" className="transition-all ease-linear" style={{...army.style, left: `${army.curr_x * 100}%`, top: `${army.curr_y * 100}%`}} 
-                         onClick={(e) => toggleArmyViewer(e, army, setActiveArmyViewers)}/>
-                ))}
-
-                {/*Display cities on the map*/}
+                    {/*Display cities on the map*/}
+                    {/*decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly*/}
                     {showCities && cityImages.map((city, index) => (
-                      <img key={index} src={city.src} alt="city" style={city.style} onClick={city.onClick} />
+                        <CityMapEntry key={index} city={city} onClick={()=>{if (armiesMoveMode.length === 0){city.onClick();}}}
+                        decide_moving={armiesMoveMode.length > 0}/>
                     ))}
+
+
+                    {/*
+                    decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly
+                    moving selected, just states whether the army is planning to move
+                    */}
+                    {armyImages.map((army, index) => (
+                        <ArmyMapEntry key={index} army={army} onClick={(e) => {if (armiesMoveMode.length === 0){toggleArmyViewer(e, army, setActiveArmyViewers);}}}
+                         decide_moving={armiesMoveMode.length > 0} moving_Selected={isMoveMode(army.id)}/>
+                    ))}
+
+
+
+                </div>
 
             </MapInteractionCSS>
 
-
-
+        </SocketContext.Provider>
+        </PlanetIdContext.Provider>
         </>
     );
 }

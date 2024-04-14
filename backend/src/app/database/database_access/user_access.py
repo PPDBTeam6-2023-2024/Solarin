@@ -1,8 +1,10 @@
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
+from ..exceptions.not_found_exception import NotFoundException
+from ..exceptions.invalid_action_exception import InvalidActionException
 
 
-def getFriendsQuerySym(user_id: int):
+def get_friends_query_sym(user_id: int):
     """
     Function to get the SQL expression that access all retrieves all friends of the given user_id
     :param: user_id: user whose friends we want
@@ -24,7 +26,7 @@ class UserAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createUser(self, username: str, email: str, hashed_password: str):
+    async def create_user(self, username: str, email: str, hashed_password: str):
         """
         Create a new user in the database
         :param: username: username of the new user
@@ -41,11 +43,11 @@ class UserAccess:
         """
         make has resource entry
         """
-        await self.__setHasResourceEntries(user_id)
+        await self.__set_has_resource_entries(user_id)
 
         return user_id
 
-    async def getFactionName(self, user_id: str):
+    async def get_faction_name(self, user_id: str):
         """
         Get the faction corresponding to the given user id
 
@@ -55,29 +57,16 @@ class UserAccess:
 
         find_faction_query = select(User.faction_name).where(User.id == user_id)
         results = await self.__session.execute(find_faction_query)
-        results = results.first()
+        results = results.scalar_one_or_none()
 
         """
         exception in case the user_id is invalid
         """
         if results is None:
-            raise Exception("SQL UserAccess --> getFactionName: user_id is invalid")
-        return results[0]
-    async def getUsernameUserId(self, user_id: str):
-        """
-        Get the username corresponding to given user id
+            raise NotFoundException(user_id, "User faction name")
+        return results
 
-        :param: user_id: the user id
-        :return: the username
-        """
-        find_username = select(User.username).where(User.id == user_id)
-        results = await self.__session.execute(find_username)
-        results = results.first()
-        if results is None:
-            raise Exception("SQL UserAccess --> getUsernameUserId: no id corresponds to username")
-
-
-    async def getUserIdEmail(self, email: str):
+    async def get_user_id_email(self, email: str):
         """
         Get the User id corresponding to the given email
 
@@ -87,17 +76,17 @@ class UserAccess:
 
         find_uuid = select(User.id).where(User.email == email)
         results = await self.__session.execute(find_uuid)
-        results = results.first()
+        results = results.scalar_one_or_none()
 
         """
         exception in case the email has no corresponding account
         """
         if results is None:
-            raise Exception("SQL UserAccess --> getUserIdEmail: no id corresponds to the email")
+            raise NotFoundException(email, "User")
 
-        return results[0]
+        return results
 
-    async def getUserIdUsername(self, username: str):
+    async def get_user_id_username(self, username: str):
         """
         Get the User id corresponding to the given username
 
@@ -107,17 +96,17 @@ class UserAccess:
 
         find_uuid = select(User.id).where(User.username == username)
         results = await self.__session.execute(find_uuid)
-        results = results.first()
+        results = results.scalar_one_or_none()
 
         """
         exception in case the email has no corresponding account
         """
         if results is None:
-            raise Exception("SQL UserAccess --> getUserIdUsername: no id corresponds to the username")
+            raise NotFoundException(username, "User")
 
-        return results[0]
+        return results
 
-    async def getFriends(self, user_id: int):
+    async def get_friends(self, user_id: int):
         """
         returns the friends of the user_id
         This will be a symmetrical relation so if user 1 is friends with user 2,
@@ -127,13 +116,13 @@ class UserAccess:
         :return: all the user its friends and message board
         """
 
-        friends = getFriendsQuerySym(user_id)
+        friends = get_friends_query_sym(user_id)
         result = await self.__session.execute(friends)
 
         await self.__session.flush()
         return result.all()
 
-    async def addFriendship(self, user1_id: int, user2_id: int):
+    async def add_friendship(self, user1_id: int, user2_id: int):
         """
         Declare a friendship between 2 users
 
@@ -152,7 +141,7 @@ class UserAccess:
 
         await self.__session.flush()
 
-    async def sendFriendRequest(self, from_user: int, to_user: int):
+    async def send_friend_request(self, from_user: int, to_user: int):
         """
         store a new friend request
         :param: from_user: id of the user that sends the friend request
@@ -162,15 +151,15 @@ class UserAccess:
         """
         check if the users are already friends
         """
-        sym_friends = getFriendsQuerySym(from_user)
+        sym_friends = get_friends_query_sym(from_user)
         check_friends = sym_friends.select().where(sym_friends.c.user_id == to_user)
         results = await self.__session.execute(check_friends)
         results = results.first()
         if results is not None:
-            raise Exception("Users are already friends")
+            raise InvalidActionException("Users are already friends")
 
         if from_user == to_user:
-            raise Exception("I know you are lonely, but you cannot be friends with yourself")
+            raise InvalidActionException("I know you are lonely, but you cannot be friends with yourself")
 
         """
         if friend request is already send we return that information
@@ -180,32 +169,32 @@ class UserAccess:
 
         results = results.first()
         if results is not None:
-            raise Exception("Friend request has already been send")
+            raise InvalidActionException("Friend request has already been send")
 
         fq = FriendRequest(from_user_id= from_user, to_user_id=to_user)
         self.__session.add(fq)
 
         await self.__session.flush()
 
-    async def acceptFriendRequest(self, from_user: int, to_user: int):
+    async def accept_friend_request(self, from_user: int, to_user: int):
         """
         when a friend request is accepted, these users become friends
         :param: from_user: id of the user that sends the friend request
         :param: to_user: id of the user that receives
         """
 
-        await self.__removeFriendRequest(from_user, to_user)
-        await self.addFriendship(from_user, to_user)
+        await self.__remove_friend_request(from_user, to_user)
+        await self.add_friendship(from_user, to_user)
 
-    async def rejectFriendRequest(self, from_user: int, to_user: int):
+    async def reject_friend_request(self, from_user: int, to_user: int):
         """
         remove friend request
         :param: from_user: id of the user that sends the friend request
         :param: to_user: id of the user that receives
         """
-        await self.__removeFriendRequest(from_user, to_user)
+        await self.__remove_friend_request(from_user, to_user)
 
-    async def __removeFriendRequest(self, from_user: int, to_user: int):
+    async def __remove_friend_request(self, from_user: int, to_user: int):
         """
         remove friend request
         :param: from_user: id of the user that sends the friend request
@@ -217,23 +206,24 @@ class UserAccess:
 
         await self.__session.flush()
 
-    async def getFriendRequests(self, user_id: int):
+    async def get_friend_requests(self, user_id: int):
         """
         We want to retrieve all the friend requests of a user
         :param: user_id: id of the user whose friend requests we want to retrieve
         :return: list of users whose sended a friend request
         """
-        friend_requests = Select(User).join(FriendRequest, FriendRequest.from_user_id == User.id).where(FriendRequest.to_user_id == user_id)
+        friend_requests = Select(User).\
+            join(FriendRequest, FriendRequest.from_user_id == User.id).where(FriendRequest.to_user_id == user_id)
         results = await self.__session.execute(friend_requests)
-        results = results.all()
+        results = results.scalars().all()
         return results
 
-    async def __setHasResourceEntries(self, user_id: int):
+    async def __set_has_resource_entries(self, user_id: int):
         """
         make a table entry for each resource for the given user in hasResource
         """
         resources = await self.__session.execute(Select(ResourceType.name))
-        resources = resources.all()
+        resources = resources.scalars().all()
         for resource in resources:
-            self.__session.add(HasResources(owner_id=user_id, resource_type=resource[0]))
+            self.__session.add(HasResources(owner_id=user_id, resource_type=resource))
         await self.__session.flush()

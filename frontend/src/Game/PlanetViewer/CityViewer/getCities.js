@@ -20,8 +20,7 @@ const getCities = async (planetId) => {
           transform: 'translate(-50%, -50%)',
           maxWidth: '15%',
           maxHeight: '15%',
-          zIndex: 15,
-          cursor: 'pointer'
+          zIndex: 15
         },
         onClick: () => {
           console.log("handling click", city.id);

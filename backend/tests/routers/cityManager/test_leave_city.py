@@ -27,22 +27,22 @@ async def test_attack_army(client):
     async with sessionmanager.session() as session:
         data_access = DataAccess(session)
 
-        user_id = await data_access.UserAccess.getUserIdEmail(
+        user_id = await data_access.UserAccess.get_user_id_email(
             email="insert@example.com"
         )
 
-        sregion_id = await data_access.PlanetAccess.createSpaceRegion("test")
-        await data_access.DeveloperAccess.createPlanetType("arctic")
-        planet_id = await data_access.PlanetAccess.createPlanet("test", "arctic", sregion_id)
-        await data_access.DeveloperAccess.createPlanetRegionType("test")
-        await data_access.PlanetAccess.createPlanetRegion(planet_id, "test", 0, 0)
+        sregion_id = await data_access.PlanetAccess.create_space_region("test")
+        await data_access.DeveloperAccess.create_planet_type("arctic")
+        planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", sregion_id)
+        await data_access.DeveloperAccess.create_planet_region_type("test")
+        await data_access.PlanetAccess.create_planet_region(planet_id, "test", 0, 0)
 
-        army_id = await data_access.ArmyAccess.createArmy(user_id, planet_id, 0, 0)
+        army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
 
         """
         Create city and set army inside city
         """
-        c_id = await data_access.CityAccess.createCity(planet_id, user_id, 0, 0)
+        c_id = await data_access.CityAccess.create_city(planet_id, user_id, 0, 0)
         await data_access.ArmyAccess.enter_city(c_id, army_id)
 
         await session.commit()

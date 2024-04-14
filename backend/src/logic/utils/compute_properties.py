@@ -54,7 +54,7 @@ class PropertyUtility:
         Calculate the general upgrade cost, based on the base creation cost and the level
 
         """
-        return int(floor((creation_cost * level) / 2))
+        return int((creation_cost * (level+1)) / 2)
 
     @staticmethod
     def getGPR(modifier: float, base_rate: int, level: int) -> int:
@@ -101,7 +101,6 @@ class PropertyUtility:
         strength is mean*median, thinks makes a well bal
         """
         strength = mean(army_stats.values())
-
         return strength
 
     @staticmethod
@@ -148,5 +147,14 @@ class PropertyUtility:
         When You are better than the enemy those ratios will each be > 1
         """
 
-        survival: float = PropertyUtility.getTruncNormSample(min(pbr_ratio*(1 - 1/strength_ratio), 1), 0.1, (0, 1))
+        survival: float = PropertyUtility.getTruncNormSample(min(pbr_ratio*(1 - 1/strength_ratio), 1.06), 0.1, (0, 1))
         return round(survival*number_of_units)
+
+    @staticmethod
+    def get_map_cross_time(army_speed):
+        """
+        Calculate the time (in seconds) needed to cross the entire planet map based on the provided army speed
+
+        """
+        map_cross_time = 1000 / army_speed * 3600
+        return map_cross_time

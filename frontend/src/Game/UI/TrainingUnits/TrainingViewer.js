@@ -29,14 +29,14 @@ const addTrainingQueue = async(building_id, train_json) => {
     catch(e) {return []}
 }
 
-function TrainingViewer(props) {
+function TrainingViewer({building_id, onClose}) {
 
     const [trainingQueueList, setTrainingQueueList] = useState([])
     const scroll_bar = React.useRef(null);
     const [errorMessage, setErrorMessage] = useState("");
 
     async function addTrainingData(train_json) {
-        let data = await addTrainingQueue(props.building_id, train_json)
+        let data = await addTrainingQueue(building_id, train_json)
         setTrainingQueueList(data["queue"]);
         if (!data["success"]){
             setErrorMessage(data["message"]);
@@ -47,7 +47,7 @@ function TrainingViewer(props) {
 
     useEffect(() => {
         async function makeTrainingQueueOverview() {
-            let data = await getTrainingQueue(props.building_id)
+            let data = await getTrainingQueue(building_id)
             setTrainingQueueList(data);
         }
 
@@ -67,10 +67,21 @@ function TrainingViewer(props) {
             scroll_bar.current.scrollLeft += evt.deltaY;
         });
 
+        /* Calls onClose() when user clicks outside TrainingViewScreen */
+        const handleClickOutside = (event) => {
+            if (!event.target.closest('.TrainingViewScreen')) {
+                onClose();
+            }
+        };
+
+        // Add and remove the event listener
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+
 
     }, [scroll_bar]);
-
-
 
 
     return (
@@ -80,7 +91,7 @@ function TrainingViewer(props) {
                 {trainingQueueList.map((queue_entry, index) => <TrainingQueueEntry OnTrainedFunction={
                 async() => {
                     /*When a unit should be trained we recalibrate with the backend*/
-                    let data = await getTrainingQueue(props.building_id);
+                    let data = await getTrainingQueue(building_id);
                     setTrainingQueueList(data);
 
                     }

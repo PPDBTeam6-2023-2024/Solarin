@@ -3,6 +3,7 @@ import React, {useContext, useState} from "react";
 import {UserInfoContext} from "../../Context/UserInfoContext"
 import axios from "axios";
 import ProfileListEntry from "./ProfileListEntry";
+import PoliticsMenu from "./PoliticsMenu";
 
 function ProfileViewer(props) {
 
@@ -52,6 +53,11 @@ function ProfileViewer(props) {
                             getArmiesPositions();
                         }}>Armies
                         </div>
+                        <div className="profile_viewer_category_button" onClick={() => {
+                            setSelectedCategory("Politics");
+                            getArmiesPositions();
+                        }}>Politics
+                        </div>
                     </ul>
 
                 </div>
@@ -76,6 +82,12 @@ function ProfileViewer(props) {
                                                                         planet_id={c.planet_id}/>)}
                     </div>
                 }
+
+                {selectedCategory === "Politics" &&
+                    <div className="profile_viewer_list absolute"
+                         style={{"overflowY": "scroll", "width": "80%", "height": "80%", "scrollbarWidth:": "none"}}>
+                        <PoliticsMenu/>
+                    </div>}
 
             </div>
 

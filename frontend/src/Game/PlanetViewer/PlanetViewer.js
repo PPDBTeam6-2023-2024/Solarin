@@ -6,10 +6,8 @@ import GetCities from './CityViewer/GetCities';
 import CityManager from "./CityViewer/CityManager";
 
 import {PlanetListContext} from "../Context/PlanetListContext"
-import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
-import { Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
 import {toggleArmyViewer, closeArmyViewer} from './Helper/ArmyViewerHelper';
@@ -20,7 +18,6 @@ import {IoMdClose} from "react-icons/io";
 import army_example from "../Images/troop_images/Soldier.png"
 import ArmyMapEntry from "./ArmyMapEntry";
 import CityMapEntry from "./CityMapEntry";
-import {string} from "three/examples/jsm/nodes/shadernode/ShaderNode";
 import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
 import {SocketContext} from "../Context/SocketContext";
 import {PlanetIdContext} from "../Context/PlanetIdContext";
@@ -105,7 +102,7 @@ function PlanetViewer(props) {
 
     }, []);
     const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
-        var date = new Date()
+        let date = new Date()
         date.setHours(date.getHours() - 2)
         const elapsedTime = date - departureTime
         const totalTime = arrivalTime - departureTime
@@ -210,7 +207,7 @@ function PlanetViewer(props) {
                     This event just indicates that frontend needs to reload both armies and cities,
                     to be consistent with the backend
                     * */
-                    fetchCities({
+                    await fetchCities({
                         getCities: GetCities,
                         handleCityClick: handleCityClick,
                         setCityImages: setCityImages,
@@ -339,10 +336,12 @@ function PlanetViewer(props) {
                     }
 
 
-                {/*Display cityManager over the map*/}
-                {selectedCityId && showCityManager && (
-                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} cityContextMap={cityContextMap} setCityContextMap={setCityContextMap} />
+                    {/*Display cityManager over the map*/}
+                    {selectedCityId && showCityManager && (
+                        <div style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20}}>
+                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black"
+                                         secondaryColor="black" onClose={handleCloseCityManager}
+                                         cityContextMap={cityContextMap} setCityContextMap={setCityContextMap}/>
                         </div>
                     )}
 

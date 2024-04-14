@@ -8,7 +8,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import {setResources} from "../../../redux/slices/resourcesSlice";
 
 
-export const initializeResources = async(dispatch) => {
+export const initializeResources = async (dispatch) => {
     try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
         if (response.status === 200) {
@@ -25,9 +25,9 @@ export const Resources = () => {
     const dispatch = useDispatch()
     const resources = useSelector((state) => state.resources.resources)
 
-    const getResourceField = (resource, field, alt_value) => {
+    const getResourceField = (resource, field, altValue) => {
         if (resourcesInfo[resource] && resourcesInfo[resource][field]) return resourcesInfo[resource][field]
-        return alt_value
+        return altValue
     }
     useEffect(() => {
         initializeResources(dispatch)

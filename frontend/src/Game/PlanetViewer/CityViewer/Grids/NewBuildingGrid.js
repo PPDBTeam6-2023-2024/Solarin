@@ -1,10 +1,9 @@
-import React, { useMemo, useCallback } from 'react';
-import { AgGridReact } from 'ag-grid-react';
-import { getImageForBuildingType } from '../BuildingManager';
+import React, {useMemo} from 'react';
+import {AgGridReact} from 'ag-grid-react';
 import './NewBuildingGrid.css';
 import {createBuilding} from '../BuildingManager';
 
-const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, refreshResources }) => {
+const BuildButtonComponent = ({data, cityId, updateBuildingsAndTypes, refreshResources}) => {
     const handleBuild = (event) => {
         event.stopPropagation();
         if (!data.can_build) {
@@ -31,7 +30,14 @@ const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, refreshRe
 };
 
 
-const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, refreshResources }) => {
+const BuildingGrid = ({
+                          buildings,
+                          onRowMouseOver,
+                          selectedImage,
+                          cityId,
+                          updateBuildingsAndTypes,
+                          refreshResources
+                      }) => {
     const columns = useMemo(() => [
         {headerName: "Name", field: "name"},
         {headerName: "Type", field: "buildingType", autoHeight: true},
@@ -40,7 +46,9 @@ const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, update
         {
             headerName: "Build",
             field: "id",
-            cellRenderer: (params) => <BuildButtonComponent data={params.data} cityId={cityId} updateBuildingsAndTypes={updateBuildingsAndTypes} refreshResources={refreshResources} />
+            cellRenderer: (params) => <BuildButtonComponent data={params.data} cityId={cityId}
+                                                            updateBuildingsAndTypes={updateBuildingsAndTypes}
+                                                            refreshResources={refreshResources}/>
         },
     ], [cityId]);
 

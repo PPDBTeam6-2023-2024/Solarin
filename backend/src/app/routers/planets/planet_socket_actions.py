@@ -30,6 +30,8 @@ class PlanetSocketActions:
         -> Return the armies that are on the planet (at least those not inside a city)
         """
         armies = await self.data_access.ArmyAccess.get_armies_on_planet(planet_id=self.planet_id)
+
+        print(armies)
         data = {
             "request_type": data["type"],
             "data": [army.to_dict() for army in armies]

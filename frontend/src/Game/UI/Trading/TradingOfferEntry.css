@@ -1,0 +1,26 @@
+.TradingOfferEntry{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1vw;
+    width: 95%;
+    height: 7vw;
+    border: 0.1vw solid var(--tertiaryColor);
+    border-radius: 2vw 2vw 2vw 2vw;
+}
+
+.TradingOfferEntryResourceSide{
+    display: inline-block;
+    font-size: 0.8vw;
+    vertical-align: bottom;
+}
+
+.offer_button:hover{
+    transform: scale(110%);
+}
+
+.offer_button{
+    display: inline-block;
+    vertical-align: bottom;
+    border: 0.1vw solid var(--tertiaryColor);
+    border-radius: 20%;
+}

@@ -1,25 +1,25 @@
-#RequestEntryVisual{
+#RequestEntryVisual {
     display: flex;
     flex-direction: row;
 
     width: 100%;
     height: 5vw;
 
-    border-bottom:0.2vw solid var(--tertiaryColor);
+    border-bottom: 0.2vw solid var(--tertiaryColor);
     margin-left: auto;
     margin-right: auto;
 
 
 }
 
-#RequestEntryVisual:hover{
+#RequestEntryVisual:hover {
     --scaleIndex: 110%;
     transform: scale(var(--scaleIndex));
-    border-top:0.2vw solid var(--tertiaryColor);
+    border-top: 0.2vw solid var(--tertiaryColor);
     z-index: 21;
 }
 
-#RequestEntryVisual button{
+#RequestEntryVisual button {
 
     bottom: 0;
     padding: 0.5vw;
@@ -28,18 +28,18 @@
     transform: scale(70%);
 }
 
-#RequestEntryVisual button:hover{
+#RequestEntryVisual button:hover {
     --scaleIndex: 95%;
     transform: scale(var(--scaleIndex));
-    border-top:0.2vw solid var(--tertiaryColor);
+    border-top: 0.2vw solid var(--tertiaryColor);
     z-index: 21;
 
 }
 
-#RequestEntryVisual *{
+#RequestEntryVisual * {
     overflow: hidden;
     text-align: center;
-    justify-content:space-between;
-    align-items:center;
+    justify-content: space-between;
+    align-items: center;
 
 }

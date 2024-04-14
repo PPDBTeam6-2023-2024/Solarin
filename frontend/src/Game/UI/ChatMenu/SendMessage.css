@@ -1,14 +1,15 @@
-.SendMessageTab{
-    display : flex;
-    flex-direction : row;
+.SendMessageTab {
+    display: flex;
+    flex-direction: row;
 }
-.SendMessageTab textarea{
+
+.SendMessageTab textarea {
     height: 4.95vw;
     border-radius: 0 0 0 1.8vw;
     resize: none;
 }
 
-.SendMessageTab button{
+.SendMessageTab button {
     height: 4.95vw;
     border-radius: 0 0 0 1.8vw;
     font-size: 220%;
@@ -16,7 +17,7 @@
     margin-right: auto;
 }
 
-.SendMessageTab button:hover{
+.SendMessageTab button:hover {
     transform: scale(110%);
 
 }

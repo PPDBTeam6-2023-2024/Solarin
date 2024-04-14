@@ -1,4 +1,3 @@
-// BuildingManager.js
 import axios from "axios";
 import Records from "./../../UI/buildingImages.json"
 
@@ -30,7 +29,7 @@ export const getNewBuildingTypes = async (cityId) => {
     }
 };
 
-export const createBuilding = async (cityId,BuildingType) => {
+export const createBuilding = async (cityId, BuildingType) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/building/create_new_building?city_id=${cityId}&building_type=${BuildingType}`);
@@ -98,7 +97,7 @@ export const getUpgradeCost = async (cityId) => {
     }
 };
 
-export const GetArmyInCity = async (cityId) => {
+export const getArmyInCity = async (cityId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/army_in_city?city_id=${cityId}`);
@@ -110,7 +109,6 @@ export const GetArmyInCity = async (cityId) => {
         return null;
     }
 };
-
 
 
 export const getImageForBuildingType = (buildingType) => {

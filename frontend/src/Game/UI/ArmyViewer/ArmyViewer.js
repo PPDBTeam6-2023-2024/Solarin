@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
-import { TreeView, TreeItem } from '@mui/x-tree-view';
+import {TreeView, TreeItem} from '@mui/x-tree-view';
 import WindowUI from '../WindowUI/WindowUI';
 import {Button} from "@mui/material";
 import ArmyViewTroopEntry from "./ArmyViewTroopEntry";
@@ -26,7 +26,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
                 console.error("Failed to fetch troops", error);
             }
         };
-        fetchTroops(); 
+        fetchTroops();
     }, [armyId]);
 
     const createCity = async () => {

@@ -1,10 +1,10 @@
-import React, { useMemo, useCallback } from 'react';
-import { AgGridReact } from 'ag-grid-react';
-import { getImageForBuildingType } from '../BuildingManager';
+import React, {useMemo, useCallback} from 'react';
+import {AgGridReact} from 'ag-grid-react';
+import {getImageForBuildingType} from '../BuildingManager';
 import './NewBuildingGrid.css';
-import { createBuilding} from '../BuildingManager';
+import {createBuilding} from '../BuildingManager';
 
-const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, resources }) => {
+const BuildButtonComponent = ({data, cityId, updateBuildingsAndTypes}) => {
     const handleBuild = (event) => {
         event.stopPropagation();
         if (!data.can_build) {
@@ -30,16 +30,18 @@ const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, resources
 };
 
 
-const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, resources }) => {
+const BuildingGrid = ({buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, resources}) => {
     const columns = useMemo(() => [
-        { headerName: "Name", field: "name" },
-        { headerName: "Type", field: "buildingType" , autoHeight: true},
-        { headerName: "Rank", field: "buildingRank" },
-        { headerName: "Cost", field: "cost" },
+        {headerName: "Name", field: "name"},
+        {headerName: "Type", field: "buildingType", autoHeight: true},
+        {headerName: "Rank", field: "buildingRank"},
+        {headerName: "Cost", field: "cost"},
         {
             headerName: "Build",
             field: "id",
-            cellRenderer: (params) => <BuildButtonComponent data={params.data} cityId={cityId} updateBuildingsAndTypes={updateBuildingsAndTypes} resources={resources} />
+            cellRenderer: (params) => <BuildButtonComponent data={params.data} cityId={cityId}
+                                                            updateBuildingsAndTypes={updateBuildingsAndTypes}
+                                                            resources={resources}/>
         },
     ], [cityId]);
 
@@ -47,7 +49,9 @@ const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, update
         name: building.name,
         buildingType: building.type,
         buildingRank: building.required_rank,
-        cost:  building.costs.map((cost, index) => {return (cost.cost_amount+" "+cost.cost_type) }),
+        cost: building.costs.map((cost) => {
+            return (cost.cost_amount + " " + cost.cost_type)
+        }),
         can_build: building.can_build,
         id: building.id,
         index: index
@@ -67,11 +71,11 @@ const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, update
                 />
             </div>
             {selectedImage &&
-            <div className="right-screen">
-                <div className="building_image">
-                    <img src={selectedImage} alt="Building" className="selected-image" />
+                <div className="right-screen">
+                    <div className="building_image">
+                        <img src={selectedImage} alt="Building" className="selected-image"/>
+                    </div>
                 </div>
-            </div>
             }
         </>
     );

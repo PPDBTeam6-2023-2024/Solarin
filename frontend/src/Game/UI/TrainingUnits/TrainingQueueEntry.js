@@ -1,32 +1,28 @@
 import React, {useEffect, useState} from "react";
 import './TrainingViewer.css'
-import axios from "axios";
-import Message from "../ChatMenu/Message";
 import Troops from './../troops.json'
 import './TrainingQueueEntry.css'
 
 
 function TrainingQueueEntry(props) {
 
-    const remaining_timer = React.useRef(null);
+    const remainingTimer = React.useRef(null);
     useEffect(() => {
-        /*
-        * We make sure that their is a
-        * */
-        var d = props.queue_data.train_remaining
 
-        remaining_timer.current.innerText = `${Math.floor(d/3600)}H ${Math.floor((d % 3600)/60)}M ${d % 60}S`;
+        var d = props.queueData.train_remaining
 
-        if (props.index !== 0){
+        remainingTimer.current.innerText = `${Math.floor(d / 3600)}H ${Math.floor((d % 3600) / 60)}M ${d % 60}S`;
+
+        if (props.index !== 0) {
             return
         }
-        var time_till_troop_trained = (props.queue_data.troop_size-1)*props.queue_data.unit_training_time;
+        var timeTillTroopTrained = (props.queueData.troop_size - 1) * props.queueData.unit_training_time;
 
         var interval = setInterval(() => {
             d -= 1;
-            remaining_timer.current.innerText = `${Math.floor(d/3600)}H ${Math.floor((d % 3600)/60)}M ${d % 60}S`;
+            remainingTimer.current.innerText = `${Math.floor(d / 3600)}H ${Math.floor((d % 3600) / 60)}M ${d % 60}S`;
             /*Call the OnTrainedFunction when 1 unit is trained*/
-            if (d <= time_till_troop_trained){
+            if (d <= timeTillTroopTrained) {
                 props.OnTrainedFunction()
 
             }
@@ -41,39 +37,39 @@ function TrainingQueueEntry(props) {
     return (
         <div className="TrainingQueueEntry">
             <div className="TrainingQueueImageWrapper">
-                <img src={(`/images/troop_images/${Troops[props.queue_data.troop_type]["icon"]}`)} draggable={false}/>
+                <img src={(`/images/troop_images/${Troops[props.queueData.troop_type]["icon"]}`)} draggable={false}/>
             </div>
 
 
             {/*this div makes it possible to do horizontal scrolling among the units*/}
             <div className="TrainingQueueStats">
                 <div>
-                    <div  className="QueueLabel">
+                    <div className="QueueLabel">
                         Type:
                     </div>
-                 {props.queue_data.troop_type}
+                    {props.queueData.troop_type}
                 </div>
                 <div>
-                    <div  className="QueueLabel">
+                    <div className="QueueLabel">
                         Rank:
                     </div>
-                     {props.queue_data.rank}
+                    {props.queueData.rank}
                 </div>
 
                 <div>
-                    <div  className="QueueLabel">
+                    <div className="QueueLabel">
                         Training Size:
                     </div>
-                     {props.queue_data.troop_size}
+                    {props.queueData.troop_size}
                 </div>
 
                 <div>
-                    <div  className="QueueLabel">
+                    <div className="QueueLabel">
                         Remaining Time:
                     </div>
 
-                    {/*this dict its value will be dynamically display the remaining time*/}
-                    <div ref={remaining_timer}/>
+                    {/*the value of this dict will dynamically display the remaining time*/}
+                    <div ref={remainingTimer}/>
 
                 </div>
 

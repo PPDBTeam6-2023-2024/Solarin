@@ -25,4 +25,5 @@ function GalaxyViewer(props) {
     )
 
 }
+
 export default GalaxyViewer

@@ -1,9 +1,9 @@
-.ChatMenuWidget{
+.ChatMenuWidget {
 
     background-image: inherit;
     width: 30vw;
     height: 40vw;
-    border:0.5vw solid var(--tertiaryColor);
+    border: 0.5vw solid var(--tertiaryColor);
     border-radius: 2vw 2vw 2vw 2vw;
     bottom: 10.5vw;
     font-size: 1.4vw;
@@ -11,27 +11,27 @@
 }
 
 
-.ChatNavBar ul{
+.ChatNavBar ul {
     text-align: center;
-    justify-content:space-between;
-    align-items:center;
+    justify-content: space-between;
+    align-items: center;
     overflow: hidden;
 
-    border-bottom:0.3vw solid var(--tertiaryColor);
+    border-bottom: 0.3vw solid var(--tertiaryColor);
 }
 
-.ChatNavBar ul li{
+.ChatNavBar ul li {
     display: inline-block;
     margin: 0.3vw;
 
 }
 
-.ChatNavBar ul li:hover{
+.ChatNavBar ul li:hover {
     transform: scale(110%);
 
 }
 
 /* makes scrollbar invisible, because it is not really gameLike to have an ugly scrollbar*/
-::-webkit-scrollbar{
+::-webkit-scrollbar {
     display: none;
 }

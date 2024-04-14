@@ -1,7 +1,6 @@
-import React, {useEffect, useState, useContext} from "react";
+import React from "react";
 import "../Alliance/AllianceTab.css"
 import "../Requests/RequestButtons.css"
-import axios from "axios";
 import './RankingEntry.css'
 
 const RankingEntry = (props) => {

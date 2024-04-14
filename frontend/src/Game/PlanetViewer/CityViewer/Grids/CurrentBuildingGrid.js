@@ -1,11 +1,10 @@
-import React, {useMemo, useState, useEffect} from "react";
+import React, {useMemo, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import {
     collectResources, getUpgradeCost,
     upgradeBuilding
 } from "../BuildingManager";
 import './NewBuildingGrid.css';
-import TrainingViewer from "../../../UI/TrainingUnits/TrainingViewer";
 
 
 const ResourceButtonComponent = ({data, cityId}) => {

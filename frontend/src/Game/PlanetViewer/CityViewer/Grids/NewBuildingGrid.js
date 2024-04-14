@@ -1,6 +1,5 @@
-import React, {useMemo, useCallback} from 'react';
+import React, {useMemo} from 'react';
 import {AgGridReact} from 'ag-grid-react';
-import {getImageForBuildingType} from '../BuildingManager';
 import './NewBuildingGrid.css';
 import {createBuilding} from '../BuildingManager';
 

@@ -32,8 +32,8 @@ function PlanetViewer(props) {
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
 
-    {/*Get images of cities on map cities on the map*/
-    }
+    /*Get images of cities on map cities on the map*/
+
     const [selectedCityId, setSelectedCityId] = useState(null);
     const [showCities, setShowCities] = useState(true);
     const [citiesLoaded, setCitiesLoaded] = useState(false)
@@ -58,8 +58,8 @@ function PlanetViewer(props) {
         setCitiesLoaded(false)
     }
 
-    {/*Load cities from databank, and get images*/
-    }
+    /*Load cities from databank, and get images*/
+
     useEffect(() => {
         if (!citiesLoaded) {
             fetchCities({
@@ -71,8 +71,8 @@ function PlanetViewer(props) {
         }
     }, [handleCityClick, citiesLoaded]);
 
-    {/*handle closing of cityManager window*/
-    }
+    /*handle closing of cityManager window*/
+
     const [showCityManager, setShowCityManager] = useState(true);
     const handleCloseCityManager = () => {
         setShowCityManager(false);
@@ -101,7 +101,7 @@ function PlanetViewer(props) {
                     }))
         }
 
-    }, []);
+    });
     const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
         var date = new Date()
         date.setHours(date.getHours() - 2)
@@ -222,6 +222,8 @@ function PlanetViewer(props) {
                     )
 
                     break
+                default:
+                    break
             }
         }
     }, [socket, armyImages])
@@ -235,8 +237,8 @@ function PlanetViewer(props) {
         else setArmiesMoveMode(armiesMoveMode.filter((id) => armyId !== id))
     }
 
-    {/*For calculating the position we need to know the size of the map on the client, to calculate the position in range[0, 1]*/
-    }
+    /*For calculating the position we need to know the size of the map on the client, to calculate the position in range[0, 1]*/
+
     const screenSize = useRef();
 
     const mapOnClick = (e) => {

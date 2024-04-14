@@ -3,7 +3,6 @@ import './TrainingViewer.css'
 import axios from "axios";
 import TrainingQueueEntry from "./TrainingQueueEntry";
 import TrainingOptionBar from "./TrainingOptionBar";
-import {cos} from "three/examples/jsm/nodes/math/MathNode";
 
 const getTrainingQueue = async (building_id) => {
     try {
@@ -52,7 +51,7 @@ function TrainingViewer({buildingId, onClose}) {
         }
 
         makeTrainingQueueOverview()
-    }, [])
+    })
 
     /*
     * The effect below makes it possible to horizontally scroll

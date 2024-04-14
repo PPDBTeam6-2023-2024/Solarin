@@ -1,5 +1,5 @@
 import React, {useState, Fragment, useContext} from 'react';
-import {Box, Button, List, ListItemButton, Popper} from "@mui/material";
+import {Box, List, ListItemButton, Popper} from "@mui/material";
 import ArmyViewer from "./ArmyViewer";
 import {UserInfoContext} from "../../Context/UserInfoContext";
 

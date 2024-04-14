@@ -12,7 +12,9 @@ function ArmyViewTroopEntry(props) {
             <div style={{"width": "20%", height: "auto", "display": "inline-block"}}>
                 <Tooltip title={`${props.troop_type}`}>
                     <img src={(`/images/troop_images/${troopsJson[props.troop_type]["icon"]}`)} draggable={false}
-                         unselectable="on"/>
+                         unselectable="on"
+                         alt=""
+                    />
                 </Tooltip>
             </div>
 
@@ -34,7 +36,9 @@ function ArmyViewTroopEntry(props) {
             <div style={{"width": "20%", height: "auto", "display": "inline-block"}}>
                 <Tooltip title={`rank ${props.rank}`}>
                     <img src={(`/images/ranks/Rank${Math.min(props.rank, 11)}.png`)} draggable={false}
-                         unselectable="on"/>
+                         unselectable="on"
+                         alt=""
+                    />
                 </Tooltip>
             </div>
 

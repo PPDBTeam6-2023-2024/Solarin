@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
@@ -6,9 +6,8 @@ import {
     getArmyInCity,
     getBuildings,
     getNewBuildingTypes,
-    getResources, getUpgradeCost, refreshResourceAmount
+    getResources, getUpgradeCost
 } from './BuildingManager';
-import {UserInfoContext} from "../../Context/UserInfoContext";
 import NewBuildingGrid from './Grids/NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
 import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
@@ -56,8 +55,7 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose}) => {
     }, [cityId, buildings]);
 
     const updateBuildingsAndTypes = () => {
-        {/* Refresh buildings and types after building/upgrading */
-        }
+        /* Refresh buildings and types after building/upgrading */
         getBuildings(cityId).then(setBuildings);
         getNewBuildingTypes(cityId).then(setNewBuildingTypes);
         getUpgradeCost(cityId).then(buildings => {

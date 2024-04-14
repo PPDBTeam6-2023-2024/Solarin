@@ -9,7 +9,7 @@ function TrainingCostEntry(props) {
         <div className="TrainingCostEntry">
 
             <div style={{"height": "60%", "width": "60%", "margin": "auto"}}>
-                <img src={(`/images/resources/${resourcesJson[props.resource]["icon"]}`)} draggable={false}/>
+                <img src={(`/images/resources/${resourcesJson[props.resource]["icon"]}`)} draggable={false} alt={""}/>
             </div>
 
             <div style={{"fontSize": "150%", "justifyContent": "center", "alignItems": "center", "display": "flex"}}>

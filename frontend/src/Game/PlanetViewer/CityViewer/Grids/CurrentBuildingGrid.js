@@ -46,8 +46,8 @@ const TrainButtonComponent = ({data, setSelectedClick}) => {
 const UpgradeButtonComponent = ({data, cityId, setUpgradeCostMap, upgradeCost, refreshResources}) => {
     const upgradeBuildingHelper = async (cityId, buildingId) => {
         try {
-            const upgrade_succesful = await upgradeBuilding(cityId, buildingId);
-            if (upgrade_succesful.confirmed === true) {
+            const upgradeSuccessful = await upgradeBuilding(cityId, buildingId);
+            if (upgradeSuccessful.confirmed === true) {
                 await getUpgradeCost(cityId).then(buildings => {
                     const costMap = buildings.reduce((acc, building) => {
                         acc[building.id] = building;

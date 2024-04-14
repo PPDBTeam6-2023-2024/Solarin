@@ -1,13 +1,13 @@
 // CityManager.js
-import React, {useState, useEffect, useMemo, useContext, useCallback} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import {
-    GetArmyInCity,
+    getArmyInCity,
     getBuildings,
     getNewBuildingTypes,
-    getResources, getUpgradeCost, refreshResourceAmount
+    getUpgradeCost
 } from './BuildingManager';
 import NewBuildingGrid from './Grids/NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
@@ -15,12 +15,12 @@ import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
 import CurrentBuildingGrid from "./Grids/CurrentBuildingGrid"
 import ArmyGrid from "./Grids/ArmyGrid";
 import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer/EntityViewer";
-import { initializeResources } from "../../UI/ResourceViewer/ResourceViewer"
+import {initializeResources} from "../../UI/ResourceViewer/ResourceViewer"
 import {useDispatch} from 'react-redux'
 
 
-const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityContextMap, setCityContextMap}) => {
-     const dispatch = useDispatch();
+const CityManager = ({cityId, primaryColor, secondaryColor, onClose, cityContextMap, setCityContextMap}) => {
+    const dispatch = useDispatch();
     const [buildings, setBuildings] = useState([]);
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
@@ -51,7 +51,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
             getNewBuildingTypes(cityId).then(newBuildingTypes => {
                 setNewBuildingTypes(newBuildingTypes)
             });
-            GetArmyInCity(cityId).then(setTroops); // Fetch and set troops
+            getArmyInCity(cityId).then(setTroops); // Fetch and set troops
         } else {
             setBuildings(cityContextMap[cityId].buildings)
             setUpgradeCostMap(cityContextMap[cityId].upgradeCostMap)
@@ -62,24 +62,24 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
 
 
     const updateBuildingsAndTypes = () => {
-        {/* Refresh buildings and types after building/upgrading */}
+        /* Refresh buildings and types after building/upgrading */
         getBuildings(cityId).then(setBuildings);
         getNewBuildingTypes(cityId).then(setNewBuildingTypes);
         getUpgradeCost(cityId).then(buildings => {
-                  const costMap = buildings.reduce((acc, building) => {
-                    acc[building.id] = building;
-                    return acc;
-                  }, {});
-                  setUpgradeCostMap(costMap);
-            });
+            const costMap = buildings.reduce((acc, building) => {
+                acc[building.id] = building;
+                return acc;
+            }, {});
+            setUpgradeCostMap(costMap);
+        });
     };
 
     const onRowMouseOver = event => {
-        if (selectedTab === 'Army'){
+        if (selectedTab === 'Army') {
             setSelectedImage(getImageForTroopType(event.data.troopType))
-        } else if(selectedTab === "newBuildings"){
+        } else if (selectedTab === "newBuildings") {
             setSelectedImage(getImageForBuildingType(event.data.name));
-        } else{
+        } else {
             setSelectedImage(getImageForBuildingType(event.data.buildingType));
         }
     };
@@ -87,7 +87,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
     useEffect(() => {
         cityContextLoader()
         setInitialClick(false);
-    },[])
+    }, [])
 
     const cityContextSaver = useCallback(() => {
         setCityContextMap(prevMap => ({
@@ -99,11 +99,11 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
                 troops: troops
             }
         }));
-    }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId,setCityContextMap]);
+    }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId, setCityContextMap]);
 
     useEffect(() => {
         const handleClickOutside = event => {
-            const { target } = event;
+            const {target} = event;
             const agGridElement = document.querySelector('.building_view');
             const selectedImageElement = document.querySelector('.selected-image');
 
@@ -139,15 +139,15 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
                         refreshResources={() => initializeResources(dispatch)}
                     />}
                     {selectedTab === 'newBuildings' &&
-                              <NewBuildingGrid
-                                buildings={newBuildingTypes}
-                                onRowMouseOver={onRowMouseOver}
-                                selectedImage={selectedImage}
-                                cityId={cityId}
-                                updateBuildingsAndTypes={updateBuildingsAndTypes}
-                                refreshResources={() => initializeResources(dispatch)}
-                              />
-                            }
+                        <NewBuildingGrid
+                            buildings={newBuildingTypes}
+                            onRowMouseOver={onRowMouseOver}
+                            selectedImage={selectedImage}
+                            cityId={cityId}
+                            updateBuildingsAndTypes={updateBuildingsAndTypes}
+                            refreshResources={() => initializeResources(dispatch)}
+                        />
+                    }
 
                     {selectedTab === 'Army' && <ArmyGrid
                         selectedClick={selectedClick}
@@ -155,15 +155,18 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
                         troops={troops}
                         setSelectedClick={setSelectedClick}
                         selectedImage={selectedImage}
-                                />
-                             }
+                    />
+                    }
 
 
                     {/*Displays a training menu*/}
                     {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" &&
                         <TrainingViewer key={selectedClick[0]}
                                         building_id={selectedClick[0]}
-                                        onClose={() => { selectedClick[0] = -1; selectedClick[1] = null}}
+                                        onClose={() => {
+                                            selectedClick[0] = -1;
+                                            selectedClick[1] = null
+                                        }}
 
                         />}
 

@@ -1,6 +1,6 @@
 import {Chart, Radar} from 'react-chartjs-2';
 import { Chart as ChartJS, LineController, LineElement, PointElement, LinearScale, Title, RadialLinearScale, Filler } from 'chart.js';
-
+import PoliticsDecision from "./PoliticsDecision";
 ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title, RadialLinearScale, Filler);
 
 
@@ -94,6 +94,10 @@ function PoliticsMenu() {
                 </div>
 
             </div>
+
+            Decisions:
+
+            <PoliticsDecision/>
 
         </>
 

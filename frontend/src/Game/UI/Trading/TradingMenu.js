@@ -3,6 +3,7 @@ import "./TradingMenu.css"
 import WindowUI from "../WindowUI/WindowUI";
 
 import ResourceFilter from "./ResourceFilter";
+import {useSelector} from "react-redux";
 
 
 function TradingMenu(props) {
@@ -12,7 +13,7 @@ function TradingMenu(props) {
       <WindowUI>
           {/*Creates the div that contains the chat menu*/}
       <div className="TradingMenuWidget absolute left-0">
-            <ResourceFilter setSelectedFilter={setSelectedFilter}/>
+            <ResourceFilter filter={[selectedFilter, setSelectedFilter]}/>
             he
       </div>
       </WindowUI>

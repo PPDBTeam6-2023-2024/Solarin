@@ -57,8 +57,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
         }
 
-        /*This weird depency is very important because of the following reason: buildings is a
-        list and lists (objects) are never equal to each other, (because exists out of objects), that is why we make it depend
+        /*This weird dependency is very important because of the following reason: buildings is a
+        list and lists (objects) are never equal to each other, (because exists out of objects),
+        that is why we make it depend
         on the building id, rank combination, to make sure it only refreshes when needed*/
     }, [buildings.map(building => building.id+"/"+building.rank).join(";").toString()]);
 

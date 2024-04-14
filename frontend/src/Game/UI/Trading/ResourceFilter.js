@@ -1,14 +1,38 @@
-import React, {useState} from "react";
-import WindowUI from "../WindowUI/WindowUI";
-import FriendsTab from "../ChatMenu/Friends/FriendsTab";
-import AllianceTab from "../ChatMenu/Alliance/AllianceTab";
-import RankingTab from "../ChatMenu/Ranking/RankingTab";
-
+import React, {useEffect, useState} from "react";
+import {useSelector} from "react-redux";
+import Tooltip from "@mui/material/Tooltip";
+import resourcesJson from "../ResourceViewer/resources.json"
+import "./ResourceFilter.css"
 function ResourceFilter(props) {
+    const resources = useSelector((state) => state.resources.resources)
 
+    const [selectedFilter, setSelectedFilter] = props.filter;
+
+    /*Support filtering for trading*/
     return (
-      <div>
-          resource icons here
+      <div className="ResourceFilterTab">
+
+          {Object.entries(resources).map((resource, index) =>
+              <>
+
+                  {resourcesJson[resource[0]] !== undefined &&
+                      <>
+                          {selectedFilter === resource[0] ?
+                              <div className="ResourceFilterIcon" style={{"backgroundColor": "var(--tertiaryColor)"}}>
+                                  <img src={(`/images/resources/${resourcesJson[resource[0]]["icon"]}`)}
+                                       alt={resource[0]} draggable={false}/>
+                              </div>:
+                              <div className="ResourceFilterIcon">
+                                  <img src={(`/images/resources/${resourcesJson[resource[0]]["icon"]}`)}
+                                       alt={resource[0]} draggable={false} onClick={() =>{setSelectedFilter(resource[0]);}}/>
+                              </div>
+                          }
+                      </>
+                  }
+              </>
+
+          )}
+
       </div>
     )
 }

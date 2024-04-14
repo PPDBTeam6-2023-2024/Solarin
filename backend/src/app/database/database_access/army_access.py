@@ -532,7 +532,7 @@ class ArmyAccess:
         get_from_units = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == from_army_id)
         from_troops = await self.__session.execute(get_from_units)
         from_troops = from_troops.scalars().all()
-
+        print("q3")
         """
         Add the units to the army
         """
@@ -542,7 +542,10 @@ class ArmyAccess:
         """
         Remove original army
         """
+        print(from_army_id)
         await self.remove_army(from_army_id)
+        await self.__session.flush()
+        print("q4")
 
     async def add_merge_armies(self, army_id: int, target_id: int):
         """

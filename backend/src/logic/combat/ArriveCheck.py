@@ -67,7 +67,7 @@ class ArriveCheck:
             if army_in_city is None:
                 await da.ArmyAccess.enter_city(target.target_id, army_id)
             else:
-                await da.ArmyAccess.merge_armies(army_in_city, target.target_id)
+                await da.ArmyAccess.merge_armies(army_in_city, army_id)
 
         if isinstance(target, MergeArmies):
             """

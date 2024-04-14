@@ -268,7 +268,6 @@ function PlanetViewer(props) {
                     target = "merge"
                 }
             }
-
             action_json = {
                 on_arrive: true,
                 target_type: target,

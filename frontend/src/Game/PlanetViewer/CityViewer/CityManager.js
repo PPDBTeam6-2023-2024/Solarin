@@ -89,7 +89,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
         setInitialClick(false);
     },[])
 
-    const cityContextSaver = useCallback((cityId, buildings, upgradeCostMap, newBuildingTypes, troops) => {
+    const cityContextSaver = useCallback(() => {
         setCityContextMap(prevMap => ({
             ...prevMap,
             [cityId]: {
@@ -99,7 +99,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
                 troops: troops
             }
         }));
-    }, [setCityContextMap]);
+    }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId,setCityContextMap]);
 
     useEffect(() => {
         const handleClickOutside = event => {
@@ -108,14 +108,14 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
             const selectedImageElement = document.querySelector('.selected-image');
 
             if (!initialClick && !(agGridElement.contains(target) || (selectedImageElement && selectedImageElement.contains(target)))) {
-                cityContextSaver(cityId, buildings, upgradeCostMap, newBuildingTypes, troops);
                 onClose();
+                cityContextSaver()
             }
         };
 
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId, cityContextSaver, onClose]);
+    });
 
     return (
         <div className="darken_background">

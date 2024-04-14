@@ -115,7 +115,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
 
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    });
+    }, [initialClick]);
 
     return (
         <div className="darken_background">

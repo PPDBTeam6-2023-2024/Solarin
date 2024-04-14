@@ -60,7 +60,8 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
 
     return (
         <WindowUI>
-            <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto' }}>
+            <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto',
+                maxHeight: "60vh", "overflow": "scroll"}}>
                 <TreeView aria-label="file system navigator">
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
 

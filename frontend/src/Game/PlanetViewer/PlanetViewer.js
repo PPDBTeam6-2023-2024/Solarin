@@ -117,15 +117,15 @@ function PlanetViewer(props) {
             const arrivalTime = new Date(army.arrival_time).getTime()
             const departureTime = new Date(army.departure_time).getTime()
             const currentPos = lerp({
-                sourcePosition: {x: army.x, y: army.y}, targetPosition: {x: army.toX, y: army.toY},
+                sourcePosition: {x: army.x, y: army.y}, targetPosition: {x: army.to_x, y: army.to_y},
                 arrivalTime: arrivalTime, departureTime: departureTime
             })
             return {
                 id: army.id,
                 x: army.x,
                 y: army.y,
-                toX: army.toX,
-                toY: army.toY,
+                toX: army.to_x,
+                toY: army.to_y,
                 owner: army.owner,
                 arrivalTime: arrivalTime,
                 departureTime: departureTime,
@@ -292,7 +292,6 @@ function PlanetViewer(props) {
             toggleMoveMode(armyId)
         })
     }
-
     return (
         <>
 
@@ -373,9 +372,9 @@ function PlanetViewer(props) {
 
 
                             {/*
-                    decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly
-                    moving selected, just states whether the army is planning to move
-                    */}
+                            decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly
+                            moving selected, just states whether the army is planning to move
+                            */}
                             {armyImages.map((army, index) => (
                                 <ArmyMapEntry key={army.id} army={army} onClick={(e) => {
                                     if (armiesMoveMode.length === 0) {

@@ -141,9 +141,25 @@ class ArmyAccess:
         result = await self.__session.execute(stmt)
         return result.scalars().all()
 
-    async def get_army_time_delta(self, army_id: int, distance: float) -> timedelta:
-        # TODO: make speed army specific
-        return timedelta(seconds=10*distance)
+    async def get_army_time_delta(self, army_id: int, distance: float, developer_speed: int=None) -> timedelta:
+        """
+        Get the army stats to determine the speed of an army
+        """
+        army_stats = await self.get_army_stats(army_id)
+
+        """
+        Calculate the travel time needed using the following formula
+        
+        1000/speed  (speed in range 149-350) * 3600 (= 1 hour)
+        An army with a speed of 250 will take 4 hours to cross the entire map
+        """
+
+        map_cross_time = 1000/army_stats["speed"]*3600
+
+        if developer_speed is not None:
+            map_cross_time = developer_speed
+
+        return timedelta(seconds=map_cross_time*distance)
 
     async def change_army_direction(self, user_id: int, army_id: int, to_x: float, to_y: float) -> tuple[bool, Optional[Army]]:
         """
@@ -307,11 +323,13 @@ class ArmyAccess:
                 """
                 val = army_stats.get(stat_name, 0)
                 val += stat_value
+
                 army_stats[stat_name] = val
 
         """
         Speed is expresses as a weighted average
         """
+        army_stats["speed"] = army_stats.get("speed", 100)/max(total_troop_amount, 1)
 
         return army_stats
 

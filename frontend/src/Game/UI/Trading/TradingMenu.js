@@ -4,7 +4,7 @@ import WindowUI from "../WindowUI/WindowUI";
 
 import ResourceFilter from "./ResourceFilter";
 import {useSelector} from "react-redux";
-
+import TradingOfferEntry from "./TradingOfferEntry";
 
 function TradingMenu(props) {
     /*THIS MENU (and its components) IS PART OF A MOCK, AND IS NOT YET THE RESULTING REPRESENTATION*/
@@ -12,10 +12,10 @@ function TradingMenu(props) {
     return (
       <WindowUI>
           {/*Creates the div that contains the chat menu*/}
-      <div className="TradingMenuWidget absolute left-0">
-            <ResourceFilter filter={[selectedFilter, setSelectedFilter]}/>
-            he
-      </div>
+          <div className="TradingMenuWidget absolute left-0">
+                <ResourceFilter filter={[selectedFilter, setSelectedFilter]}/>
+                {[["SOL", 1], ["TF", 1], ["SOL", 3]].map((value, index) => (<TradingOfferEntry give_resource={value[0]} receive_resource={"UR"}/>))}
+          </div>
       </WindowUI>
     )
 }

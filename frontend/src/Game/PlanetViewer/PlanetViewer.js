@@ -296,7 +296,7 @@ function PlanetViewer(props) {
                 This ArmyManageView is not a child component of the Army entry, because this is a rela UI component
                 That should be a part of the map itself
                 * */
-                activeArmyViewers.map(({id, owner, position, anchorEl}) => (
+                activeArmyViewers.map(({id, owner, anchorEl}) => (
                     <ArmyManageView key={id} id={id} owner={owner} anchorEl={anchorEl} toggleMoveMode={toggleMoveMode} isMoveMode={isMoveMode} onCityCreated={reloadCities}/>
                 ))
             }

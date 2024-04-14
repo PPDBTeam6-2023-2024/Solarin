@@ -22,9 +22,9 @@ function ResourceFilter(props) {
                                   <img src={(`/images/resources/${resourcesJson[resource[0]]["icon"]}`)}
                                        alt={resource[0]} draggable={false}/>
                               </div>:
-                              <div className="ResourceFilterIcon">
+                              <div className="ResourceFilterIcon" onClick={() =>{setSelectedFilter(resource[0]);}}>
                                   <img src={(`/images/resources/${resourcesJson[resource[0]]["icon"]}`)}
-                                       alt={resource[0]} draggable={false} onClick={() =>{setSelectedFilter(resource[0]);}}/>
+                                       alt={resource[0]} draggable={false}/>
                               </div>
                           }
                       </>

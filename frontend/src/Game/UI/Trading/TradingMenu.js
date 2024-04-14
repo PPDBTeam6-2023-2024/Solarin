@@ -7,7 +7,7 @@ import {useSelector} from "react-redux";
 
 
 function TradingMenu(props) {
-
+    /*THIS MENU (and its components) IS PART OF A MOCK, AND IS NOT YET THE RESULTING REPRESENTATION*/
     const [selectedFilter, setSelectedFilter] = useState("");
     return (
       <WindowUI>

@@ -32,7 +32,7 @@ function TrainingQueueEntry(props) {
         return () => {
             clearInterval(interval);
         };
-    });
+    }, []);
 
     return (
         <div className="TrainingQueueEntry">

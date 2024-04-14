@@ -101,7 +101,7 @@ function PlanetViewer(props) {
                     }))
         }
 
-    });
+    }, []);
     const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
         var date = new Date()
         date.setHours(date.getHours() - 2)
@@ -124,8 +124,8 @@ function PlanetViewer(props) {
                 id: army.id,
                 x: army.x,
                 y: army.y,
-                toX: army.to_x,
-                toY: army.to_y,
+                to_x: army.to_x,
+                to_y: army.to_y,
                 owner: army.owner,
                 arrivalTime: arrivalTime,
                 departureTime: departureTime,
@@ -148,9 +148,9 @@ function PlanetViewer(props) {
             setArmyImages(armyImages.map((elem) => {
                 const currentPosition = lerp({
                     sourcePosition: {x: elem.x, y: elem.y},
-                    targetPosition: {x: elem.toX, y: elem.toY},
-                    arrivalTime: elem.arrivalTime,
-                    departureTime: elem.departureTime
+                    targetPosition: {x: elem.to_x, y: elem.to_y},
+                    arrivalTime: elem.arrival_time,
+                    departureTime: elem.departure_time
                 })
                 return {...elem, curr_x: currentPosition.x, curr_y: currentPosition.y}
             }))
@@ -245,26 +245,26 @@ function PlanetViewer(props) {
 
         let action_json = {}
 
-        const image_type = e.target.getAttribute("image_type")
-        if (image_type !== null) {
-            const clickedArmy = image_type === "army";
-            const clickedCity = image_type === "city";
+        const imageType = e.target.getAttribute("image_type")
+        if (imageType !== null) {
+            const clickedArmy = imageType === "army";
+            const clickedCity = imageType === "city";
 
             const index = parseInt(e.target.getAttribute("index"));
-            const is_owner = Boolean(parseInt(e.target.getAttribute("is_owner")));
+            const isOwner = Boolean(parseInt(e.target.getAttribute("is_owner")));
 
             /*Decide which target action to do*/
             let target = ""
 
             if (clickedCity) {
-                if (!is_owner) {
+                if (!isOwner) {
                     target = "attack_city"
                 } else {
                     target = "enter"
                 }
 
             } else if (clickedArmy) {
-                if (!is_owner) {
+                if (!isOwner) {
                     target = "attack_army"
                 } else {
                     target = "merge"

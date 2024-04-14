@@ -51,7 +51,7 @@ function TrainingViewer({buildingId, onClose}) {
         }
 
         makeTrainingQueueOverview()
-    })
+    }, [])
 
     /*
     * The effect below makes it possible to horizontally scroll

@@ -61,7 +61,7 @@ const Game = () => {
     useEffect(() => {
         authenticate()
         getAllPlanets()
-    })
+    }, [])
     return (<div className="h-screen bg-gray-900">
         <UserInfoContext.Provider value={[userInfo, setUserInfo]}>
             <ViewModeContext.Provider value={[viewMode, setViewMode]}>

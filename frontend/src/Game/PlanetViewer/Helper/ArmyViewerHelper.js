@@ -5,8 +5,8 @@ export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
         y: overlayRect.top + window.scrollY
     };
     const toPosition = {
-        x: army.toX + window.scrollX,
-        y: army.toY + window.scrollY
+        x: army.to_x + window.scrollX,
+        y: army.to_y + window.scrollY
     }
     setActiveArmyViewers(prev => {
         const index = prev.findIndex(viewer => viewer.id === army.id);

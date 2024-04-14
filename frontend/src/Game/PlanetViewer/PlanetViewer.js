@@ -2,25 +2,22 @@ import {MapInteractionCSS} from 'react-map-interaction';
 import {useState, useEffect, useContext, useRef, Fragment} from 'react';
 import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
 
-import getCities from './CityViewer/getCities';
+import GetCities from './CityViewer/GetCities';
 import CityManager from "./CityViewer/CityManager";
 
 import {PlanetListContext} from "../Context/PlanetListContext"
-import ArmyViewer from '../UI/ArmyViewer/ArmyViewer'
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
-import {Popper, Box, List, ListItemButton} from '@mui/material';
 import WindowUI from '../UI/WindowUI/WindowUI';
 
-import {toggleArmyViewer, closeArmyViewer } from './Helper/ArmyViewerHelper';
-import { fetchCities } from './Helper/CityHelper';
+import {toggleArmyViewer, closeArmyViewer} from './Helper/ArmyViewerHelper';
+import {fetchCities} from './Helper/CityHelper';
 
 import {IoMdClose} from "react-icons/io";
 
 import army_example from "../Images/troop_images/Soldier.png"
 import ArmyMapEntry from "./ArmyMapEntry";
 import CityMapEntry from "./CityMapEntry";
-import {string} from "three/examples/jsm/nodes/shadernode/ShaderNode";
 import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
 import {SocketContext} from "../Context/SocketContext";
 import {PlanetIdContext} from "../Context/PlanetIdContext";
@@ -35,7 +32,8 @@ function PlanetViewer(props) {
     const [armyImages, setArmyImages] = useState([]);
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
 
-    {/*Get images of cities on map cities on the map*/}
+    {/*Get images of cities on map cities on the map*/
+    }
     const [selectedCityId, setSelectedCityId] = useState(null);
     const [showCities, setShowCities] = useState(true);
     const [citiesLoaded, setCitiesLoaded] = useState(false)
@@ -60,11 +58,12 @@ function PlanetViewer(props) {
         setCitiesLoaded(false)
     }
 
-    {/*Load cities from databank, and get images*/}
+    {/*Load cities from databank, and get images*/
+    }
     useEffect(() => {
         if (!citiesLoaded) {
             fetchCities({
-                getCities: getCities,
+                getCities: GetCities,
                 handleCityClick: handleCityClick,
                 setCityImages: setCityImages,
                 setCitiesLoaded: setCitiesLoaded
@@ -72,7 +71,8 @@ function PlanetViewer(props) {
         }
     }, [handleCityClick, citiesLoaded]);
 
-    {/*handle closing of cityManager window*/}
+    {/*handle closing of cityManager window*/
+    }
     const [showCityManager, setShowCityManager] = useState(true);
     const handleCloseCityManager = () => {
         setShowCityManager(false);
@@ -98,70 +98,76 @@ function PlanetViewer(props) {
                 JSON.stringify(
                     {
                         type: "get_armies",
-                }))
-            }
+                    }))
+        }
 
-     }, []);
-     const lerp = ({source_position, target_position, arrival_time, departure_time}) => {
-        var d  = new Date()
-        d.setHours(d.getHours()-2)
-        const elapsedTime = d - departure_time
-        const totalTime = arrival_time - departure_time
+    }, []);
+    const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
+        var date = new Date()
+        date.setHours(date.getHours() - 2)
+        const elapsedTime = date - departureTime
+        const totalTime = arrivalTime - departureTime
         const percentComplete = (elapsedTime < totalTime) ? elapsedTime / totalTime : 1;
-        const currentX = source_position.x + (target_position.x - source_position.x) * percentComplete
-        const currentY = source_position.y + (target_position.y - source_position.y) * percentComplete
+        const currentX = sourcePosition.x + (targetPosition.x - sourcePosition.x) * percentComplete
+        const currentY = sourcePosition.y + (targetPosition.y - sourcePosition.y) * percentComplete
         return {x: currentX, y: currentY}
-     }
-     const handleGetArmies = (data) => {
+    }
+    const handleGetArmies = (data) => {
         return data.map(army => {
-            const arrival_time = new Date(army.arrival_time).getTime()
-            const departure_time = new Date(army.departure_time).getTime()
-            const current_pos = lerp({source_position: {x: army.x, y: army.y}, target_position: {x: army.to_x, y: army.to_y}, 
-                arrival_time: arrival_time, departure_time: departure_time})
+            const arrivalTime = new Date(army.arrival_time).getTime()
+            const departureTime = new Date(army.departure_time).getTime()
+            const currentPos = lerp({
+                sourcePosition: {x: army.x, y: army.y}, targetPosition: {x: army.toX, y: army.toY},
+                arrivalTime: arrivalTime, departureTime: departureTime
+            })
             return {
-            id: army.id,
-            x: army.x,
-            y: army.y,
-            to_x: army.to_x,
-            to_y: army.to_y,
-            owner: army.owner,
-            arrival_time: arrival_time,
-            departure_time: departure_time,
-            src: army_example,
-            style: {
-              position: 'absolute',
-              left: `${current_pos.x * 100}%`,
-              top: `${current_pos.y * 100}%`,
-              transform: 'translate(-50%, -50%)',
-              maxWidth: '10%',
-              maxHeight: '10%',
-              zIndex: 15,
-              transition: "all ease-linear",
-            },
+                id: army.id,
+                x: army.x,
+                y: army.y,
+                toX: army.toX,
+                toY: army.toY,
+                owner: army.owner,
+                arrivalTime: arrivalTime,
+                departureTime: departureTime,
+                src: army_example,
+                style: {
+                    position: 'absolute',
+                    left: `${currentPos.x * 100}%`,
+                    top: `${currentPos.y * 100}%`,
+                    transform: 'translate(-50%, -50%)',
+                    maxWidth: '10%',
+                    maxHeight: '10%',
+                    zIndex: 15,
+                    transition: "all ease-linear",
+                },
             }
-            });
-     }
-     useEffect(() => {
-        const interval = setInterval(async() => {
+        });
+    }
+    useEffect(() => {
+        const interval = setInterval(async () => {
             setArmyImages(armyImages.map((elem) => {
-            const current_position = lerp({source_position: {x: elem.x, y: elem.y}, 
-                target_position: {x: elem.to_x, y: elem.to_y}, arrival_time: elem.arrival_time, departure_time: elem.departure_time})
-            return {...elem, curr_x: current_position.x, curr_y: current_position.y}
+                const currentPosition = lerp({
+                    sourcePosition: {x: elem.x, y: elem.y},
+                    targetPosition: {x: elem.toX, y: elem.toY},
+                    arrivalTime: elem.arrivalTime,
+                    departureTime: elem.departureTime
+                })
+                return {...elem, curr_x: currentPosition.x, curr_y: currentPosition.y}
             }))
-          }, 100);
-          return () => {
+        }, 100);
+        return () => {
             clearInterval(interval)
-          }
-     })
-     const handleChangeDirection = (data) => {
+        }
+    })
+    const handleChangeDirection = (data) => {
         return armyImages.map((army) => {
-            if(army.id === data.id) {
+            if (army.id === data.id) {
                 return {...army, ...handleGetArmies([data])[0]}
             }
             return army
         })
-     }
-     useEffect(() => {
+    }
+    useEffect(() => {
         if (!socket) return
         return () => {
             socket.close()
@@ -176,16 +182,18 @@ function PlanetViewer(props) {
     */
     useEffect(() => {
         let removed = activeArmyViewers.filter(army => !armyImages.some(new_army => new_army.id === army.id))
-        removed.forEach((r, index) => {closeArmyViewer(r, setActiveArmyViewers)});
+        removed.forEach((r, index) => {
+            closeArmyViewer(r, setActiveArmyViewers)
+        });
 
     }, [armyImages.map(army => army.id).join(";").toString()]);
 
 
     useEffect(() => {
-        if(!socket) return
-        socket.onmessage = async(event) => {
+        if (!socket) return
+        socket.onmessage = async (event) => {
             let response = JSON.parse(event.data)
-            switch(response.request_type) {
+            switch (response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
                     setArmyImages(armies);
@@ -200,11 +208,16 @@ function PlanetViewer(props) {
                     This event just indicates that frontend needs to reload both armies and cities,
                     to be consistent with the backend
                     * */
-                    fetchCities({getCities:getCities, handleCityClick:handleCityClick, setCityImages:setCityImages, setCitiesLoaded:setCitiesLoaded});
+                    fetchCities({
+                        getCities: GetCities,
+                        handleCityClick: handleCityClick,
+                        setCityImages: setCityImages,
+                        setCitiesLoaded: setCitiesLoaded
+                    });
                     socket.send(
                         JSON.stringify(
                             {
-                                    type: "get_armies",
+                                type: "get_armies",
                             })
                     )
 
@@ -222,7 +235,8 @@ function PlanetViewer(props) {
         else setArmiesMoveMode(armiesMoveMode.filter((id) => armyId !== id))
     }
 
-    {/*For calculating the position we need to know the size of the map on the client, to calculate the position in range[0, 1]*/}
+    {/*For calculating the position we need to know the size of the map on the client, to calculate the position in range[0, 1]*/
+    }
     const screenSize = useRef();
 
     const mapOnClick = (e) => {
@@ -230,7 +244,7 @@ function PlanetViewer(props) {
         let action_json = {}
 
         const image_type = e.target.getAttribute("image_type")
-        if (image_type !== null){
+        if (image_type !== null) {
             const clickedArmy = image_type === "army";
             const clickedCity = image_type === "city";
 
@@ -240,17 +254,17 @@ function PlanetViewer(props) {
             /*Decide which target action to do*/
             let target = ""
 
-            if (clickedCity){
-                if (!is_owner){
+            if (clickedCity) {
+                if (!is_owner) {
                     target = "attack_city"
-                }else{
+                } else {
                     target = "enter"
                 }
 
-            }else if (clickedArmy){
-                if (!is_owner){
+            } else if (clickedArmy) {
+                if (!is_owner) {
                     target = "attack_army"
-                }else{
+                } else {
                     target = "merge"
                 }
             }
@@ -264,13 +278,13 @@ function PlanetViewer(props) {
         }
 
 
-        armiesMoveMode.forEach(async(armyId) => {
-            const data_json  = {
-                        type: "change_direction",
-                        to_x: e.pageX/screenSize.current?.clientWidth,
-                        to_y: e.pageY/screenSize.current?.clientHeight,
-                        army_id: armyId
-                };
+        armiesMoveMode.forEach(async (armyId) => {
+            const data_json = {
+                type: "change_direction",
+                toX: e.pageX / screenSize.current?.clientWidth,
+                toY: e.pageY / screenSize.current?.clientHeight,
+                army_id: armyId
+            };
 
             const merged_data = Object.assign({}, data_json, action_json);
 
@@ -282,80 +296,103 @@ function PlanetViewer(props) {
     return (
         <>
 
-        {/*Make it possible to access the socket in the children without using props (because cleaner)*/}
-        <PlanetIdContext.Provider value={props.planetId}>
-        <SocketContext.Provider value={[socket, setSocket]}>
+            {/*Make it possible to access the socket in the children without using props (because cleaner)*/}
+            <PlanetIdContext.Provider value={props.planetId}>
+                <SocketContext.Provider value={[socket, setSocket]}>
 
-        <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
-            <div className='bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl'>
-            <IoMdClose className="top-0 text-sm ml-1 absolute mt-1 left-0" onClick={() => setHidePlanetSwitcherWindow(!hidePlanetSwitcherWindow)}/>
-            <div className="justify-between items-center flex z-30">
-            <RiArrowLeftSLine className="transition ease-in-out hover:scale-150" onClick={() => {let new_id = planetListIndex-1; if (new_id < 0){new_id+= planetList.length;} setPlanetListIndex(new_id)}}/>
-            <h1>{props.planetName}</h1>
-            <RiArrowRightSLine className="transition ease-in-out hover:scale-150" onClick={() => {let new_id = planetListIndex+1; new_id = new_id % planetList.length; setPlanetListIndex(new_id)}}/>
-            </div>
-            </div>
-         </WindowUI>
-
-            {
-                /*
-                This ArmyManageView is not a child component of the Army entry, because this is a rela UI component
-                That should be a part of the map itself
-                * */
-                activeArmyViewers.map(({id, owner, anchorEl}) => (
-                    <ArmyManageView key={id} id={id} owner={owner} anchorEl={anchorEl} toggleMoveMode={toggleMoveMode} isMoveMode={isMoveMode} onCityCreated={reloadCities}/>
-                ))
-            }
-
-
-                {/*Display cityManager over the map*/}
-                {selectedCityId && showCityManager && (
-                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
+                    <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
+                        <div
+                            className='bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl'>
+                            <IoMdClose className="top-0 text-sm ml-1 absolute mt-1 left-0"
+                                       onClick={() => setHidePlanetSwitcherWindow(!hidePlanetSwitcherWindow)}/>
+                            <div className="justify-between items-center flex z-30">
+                                <RiArrowLeftSLine className="transition ease-in-out hover:scale-150" onClick={() => {
+                                    let new_id = planetListIndex - 1;
+                                    if (new_id < 0) {
+                                        new_id += planetList.length;
+                                    }
+                                    setPlanetListIndex(new_id)
+                                }}/>
+                                <h1>{props.planetName}</h1>
+                                <RiArrowRightSLine className="transition ease-in-out hover:scale-150" onClick={() => {
+                                    let new_id = planetListIndex + 1;
+                                    new_id = new_id % planetList.length;
+                                    setPlanetListIndex(new_id)
+                                }}/>
+                            </div>
                         </div>
-                )}
+                    </WindowUI>
 
-            <MapInteractionCSS
-                value={mapState}
-                onChange={(value) => setMapState(value)}
-                minScale={1}
-                maxScale={5}
-                translationBounds={{
-                    xMin: 1920 - mapState.scale * 1920,
-                    xMax: 0,
-                    yMin: 1080 - mapState.scale * 1080,
-                    yMax: 0,
-                }}
-            >
-                <div ref={screenSize} style={{"width": "100%", "height": "100%"}} onClick={mapOnClick}>
-                    {/*Display planet on the map*/}
-                     <PlanetSVG planetId={props.planetId}/>
-
-                    {/*Display cities on the map*/}
-                    {/*decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly*/}
-                    {showCities && cityImages.map((city, index) => (
-                        <CityMapEntry key={index} city={city} onClick={()=>{if (armiesMoveMode.length === 0){city.onClick();}}}
-                        decide_moving={armiesMoveMode.length > 0}/>
-                    ))}
+                    {
+                        /*
+                        This ArmyManageView is not a child component of the Army entry, because this is a rela UI component
+                        That should be a part of the map itself
+                        */
+                        activeArmyViewers.map(({id, owner, anchorEl}) => (
+                            <ArmyManageView key={id} id={id} owner={owner} anchorEl={anchorEl}
+                                            toggleMoveMode={toggleMoveMode} isMoveMode={isMoveMode}
+                                            onCityCreated={reloadCities}/>
+                        ))
+                    }
 
 
-                    {/*
+                    {/*Display cityManager over the map*/}
+                    {selectedCityId && showCityManager && (
+                        <div style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20}}>
+                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black"
+                                         secondaryColor="black" onClose={handleCloseCityManager}/>
+                        </div>
+                    )}
+
+                    <MapInteractionCSS
+                        value={mapState}
+                        onChange={(value) => setMapState(value)}
+                        minScale={1}
+                        maxScale={5}
+                        translationBounds={{
+                            xMin: 1920 - mapState.scale * 1920,
+                            xMax: 0,
+                            yMin: 1080 - mapState.scale * 1080,
+                            yMax: 0,
+                        }}
+                    >
+                        <div ref={screenSize} style={{"width": "100%", "height": "100%"}} onClick={mapOnClick}>
+                            {/*Display planet on the map*/}
+                            <PlanetSVG planetId={props.planetId}/>
+
+                            {/*Display cities on the map*/}
+                            {/*decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly*/}
+                            {showCities && cityImages.map((city, index) => (
+                                <CityMapEntry key={index} city={city} onClick={() => {
+                                    if (armiesMoveMode.length === 0) {
+                                        city.onClick();
+                                    }
+                                }}
+                                              decide_moving={armiesMoveMode.length > 0}/>
+                            ))}
+
+
+                            {/*
                     decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly
                     moving selected, just states whether the army is planning to move
                     */}
-                    {armyImages.map((army, index) => (
-                        <ArmyMapEntry key={army.id} army={army} onClick={(e) => {if (armiesMoveMode.length === 0){toggleArmyViewer(e, army, setActiveArmyViewers);}}}
-                         decide_moving={armiesMoveMode.length > 0} moving_Selected={isMoveMode(army.id)}/>
-                    ))}
+                            {armyImages.map((army, index) => (
+                                <ArmyMapEntry key={army.id} army={army} onClick={(e) => {
+                                    if (armiesMoveMode.length === 0) {
+                                        toggleArmyViewer(e, army, setActiveArmyViewers);
+                                    }
+                                }}
+                                              decide_moving={armiesMoveMode.length > 0}
+                                              moving_Selected={isMoveMode(army.id)}/>
+                            ))}
 
 
+                        </div>
 
-                </div>
+                    </MapInteractionCSS>
 
-            </MapInteractionCSS>
-
-        </SocketContext.Provider>
-        </PlanetIdContext.Provider>
+                </SocketContext.Provider>
+            </PlanetIdContext.Provider>
         </>
     );
 }

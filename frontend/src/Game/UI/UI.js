@@ -3,7 +3,6 @@ import SideMenu from "./SideMenu/SideMenu";
 import ProfileButton from "./MainUI/ProfileButton";
 import "./UI.css"
 import ChatIcon from "./ChatMenu/ChatIcon";
-import ResourceViewer from "./ResourceViewer/ResourceViewer";
 import HiddenWindowsViewer from "./HiddenWIndowsViewer/HIddenWIndowsViewer";
 //component that contains all the UI components
 
@@ -33,7 +32,7 @@ function UI() {
             }}>
 
             {/*load hidden windows viewer */}
-            <HiddenWindowsViewer />
+            <HiddenWindowsViewer/>
 
             {/*Load the side menu */}
             <SideMenu/>

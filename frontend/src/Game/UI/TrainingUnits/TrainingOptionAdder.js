@@ -34,7 +34,7 @@ function TrainingOptionAdder(props) {
     }, [props.type]);
 
     /*reference to the div that displays the resources needed for the upgrade*/
-    const resource_bar = React.useRef(null);
+    const resourceBar = React.useRef(null);
 
     /*slider related states*/
     const [unitAmount, setUnitAmount] = useState(1);
@@ -45,14 +45,14 @@ function TrainingOptionAdder(props) {
 
     /*Put value in scrollbar*/
     useEffect(() => {
-        slider_pos.current.style.left = (unitAmount * 78.5 / 100) + 5 + "%";
+        sliderPos.current.style.left = (unitAmount * 78.5 / 100) + 5 + "%";
     }, [unitAmount]);
 
     /*
     * We want our number to follow the scrollbar, To do this we will move our text corresponding to the value
     * */
-    const slider_ref = useRef(null);
-    const slider_pos = useRef(null);
+    const sliderRef = useRef(null);
+    const sliderPos = useRef(null);
 
     const trainJson = () => {
         return JSON.stringify({
@@ -63,7 +63,7 @@ function TrainingOptionAdder(props) {
 
     return (
         <div className="TrainingOptionAdderWidget">
-            <div ref={resource_bar} style={{
+            <div ref={resourceBar} style={{
                 "height": "40%",
                 "display": "flex",
                 "marginTop": "3%",
@@ -77,7 +77,7 @@ function TrainingOptionAdder(props) {
 
             <div style={{"position": "relative", "marginTop": "5%"}}>
                 {/*This makes sure that our number follows the scroll bar*/}
-                <span ref={slider_pos} style={{
+                <span ref={sliderPos} style={{
                     "position": "absolute",
                     "left": "5%",
                     "fontSize": "1.3vw",
@@ -85,7 +85,7 @@ function TrainingOptionAdder(props) {
                     "pointerEvents": "none"
                 }}>{unitAmount}</span>
 
-                <input ref={slider_ref} className="TroopAmountSlider" type="range" min="1" max="100" value={unitAmount}
+                <input ref={sliderRef} className="TroopAmountSlider" type="range" min="1" max="100" value={unitAmount}
                        onInput={onSliderChange}/>
 
             </div>

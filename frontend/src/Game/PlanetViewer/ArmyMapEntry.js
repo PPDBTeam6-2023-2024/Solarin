@@ -1,4 +1,4 @@
-import {useContext, useState} from "react";
+import {useContext} from "react";
 import {UserInfoContext} from "../Context/UserInfoContext";
 
 import "./ArmyMapEntry.css"

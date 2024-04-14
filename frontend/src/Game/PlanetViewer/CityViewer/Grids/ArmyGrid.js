@@ -1,12 +1,13 @@
 import React, {useContext, useMemo} from "react";
-import { AgGridReact } from "ag-grid-react";
+import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
-const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage }) => {
+
+const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage}) => {
     const columns = useMemo(() => [
-        { headerName: "Troop Type", field: "troopType", autoHeight: true },
-        { headerName: "Rank", field: "rank" },
-        { headerName: "Size", field: "size"},
+        {headerName: "Troop Type", field: "troopType", autoHeight: true},
+        {headerName: "Rank", field: "rank"},
+        {headerName: "Size", field: "size"},
     ], []);
 
     const rowData = useMemo(() => troops.troops.map((troop, index) => ({
@@ -20,13 +21,13 @@ const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, sel
 
     const handleLeaveCity = async () => {
 
-            const data_json  = {
-                        type: "leave_city",
-                        army_id: troops.army_id
-                };
-
-            await socket.send(JSON.stringify(data_json));
+        const data_json = {
+            type: "leave_city",
+            army_id: troops.army_id
         };
+
+        await socket.send(JSON.stringify(data_json));
+    };
 
     return (
         <>
@@ -61,7 +62,7 @@ const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, sel
 
                 {rowData.length > 0 &&
                     <button className="wide-button" onClick={handleLeaveCity}>
-                    Leave City
+                        Leave City
                     </button>
                 }
 

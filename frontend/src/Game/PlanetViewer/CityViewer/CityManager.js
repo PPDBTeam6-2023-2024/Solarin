@@ -1,10 +1,9 @@
-// CityManager.js
-import React, { useState, useEffect, useMemo, useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import {
-    GetArmyInCity,
+    getArmyInCity,
     getBuildings,
     getNewBuildingTypes,
     getResources, getUpgradeCost, refreshResourceAmount
@@ -24,8 +23,6 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose}) => {
     const [resources, setResources] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
 
-    const [userInfo, setUserInfo] = useContext(UserInfoContext)
-
     /* stores selected building*/
     const [selectedClick, setSelectedClick] = useState([-1, ""]);
     const [initialClick, setInitialClick] = useState(true);
@@ -40,11 +37,11 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose}) => {
                 setBuildings(buildings)
             });
             getUpgradeCost(cityId).then(buildings => {
-                  const costMap = buildings.reduce((acc, building) => {
+                const costMap = buildings.reduce((acc, building) => {
                     acc[building.id] = building;
                     return acc;
-                  }, {});
-                  setUpgradeCostMap(costMap);
+                }, {});
+                setUpgradeCostMap(costMap);
             });
             getNewBuildingTypes(cityId).then(newBuildingTypes => {
                 setNewBuildingTypes(newBuildingTypes)
@@ -53,30 +50,31 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose}) => {
                 setResources(availableResources)
             })
 
-            GetArmyInCity(cityId).then(setTroops); // Fetch and set troops
+            getArmyInCity(cityId).then(setTroops); // Fetch and set troops
 
         }
     }, [cityId, buildings]);
 
     const updateBuildingsAndTypes = () => {
-        {/* Refresh buildings and types after building/upgrading */}
+        {/* Refresh buildings and types after building/upgrading */
+        }
         getBuildings(cityId).then(setBuildings);
         getNewBuildingTypes(cityId).then(setNewBuildingTypes);
         getUpgradeCost(cityId).then(buildings => {
-                  const costMap = buildings.reduce((acc, building) => {
-                    acc[building.id] = building;
-                    return acc;
-                  }, {});
-                  setUpgradeCostMap(costMap);
-            });
+            const costMap = buildings.reduce((acc, building) => {
+                acc[building.id] = building;
+                return acc;
+            }, {});
+            setUpgradeCostMap(costMap);
+        });
     };
 
     const onRowMouseOver = event => {
-        if (selectedTab === 'Army'){
+        if (selectedTab === 'Army') {
             setSelectedImage(getImageForTroopType(event.data.troopType))
-        } else if(selectedTab === "newBuildings"){
+        } else if (selectedTab === "newBuildings") {
             setSelectedImage(getImageForBuildingType(event.data.name));
-        } else{
+        } else {
             setSelectedImage(getImageForBuildingType(event.data.buildingType));
         }
     };
@@ -124,15 +122,15 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose}) => {
                         setUpgradeCostMap={setUpgradeCostMap}
                     />}
                     {selectedTab === 'newBuildings' &&
-                              <NewBuildingGrid
-                                buildings={newBuildingTypes}
-                                onRowMouseOver={onRowMouseOver}
-                                selectedImage={selectedImage}
-                                cityId={cityId}
-                                updateBuildingsAndTypes={updateBuildingsAndTypes}
-                                resources={resources}
-                              />
-                            }
+                        <NewBuildingGrid
+                            buildings={newBuildingTypes}
+                            onRowMouseOver={onRowMouseOver}
+                            selectedImage={selectedImage}
+                            cityId={cityId}
+                            updateBuildingsAndTypes={updateBuildingsAndTypes}
+                            resources={resources}
+                        />
+                    }
 
                     {selectedTab === 'Army' && <ArmyGrid
                         selectedClick={selectedClick}
@@ -140,15 +138,18 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose}) => {
                         troops={troops}
                         setSelectedClick={setSelectedClick}
                         selectedImage={selectedImage}
-                                />
-                             }
+                    />
+                    }
 
 
                     {/*Displays a training menu*/}
                     {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" &&
                         <TrainingViewer key={selectedClick[0]}
-                                        building_id={selectedClick[0]}
-                                        onClose={() => { selectedClick[0] = -1; selectedClick[1] = null}}
+                                        buildingId={selectedClick[0]}
+                                        onClose={() => {
+                                            selectedClick[0] = -1;
+                                            selectedClick[1] = null
+                                        }}
 
                         />}
 

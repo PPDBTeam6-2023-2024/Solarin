@@ -1,5 +1,5 @@
 import Moveable from 'react-moveable'
-import {useRef, cloneElement, Children, useEffect, useId, useState} from 'react'
+import {useRef, cloneElement, Children, useEffect, useId} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {addWindow, removeWindow} from '../../../redux/slices/hiddenWindowsSlice'
 

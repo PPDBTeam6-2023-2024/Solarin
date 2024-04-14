@@ -7,13 +7,13 @@ function TrainingOptionEntry(props) {
     * This component will have the list of units we can train
     * */
 
-    let style_att = {};
+    let styleAtt = {};
     if (props.select) {
-        style_att = {"transform": "scale(110%)", "backgroundColor": "gold"}
+        styleAtt = {"transform": "scale(110%)", "backgroundColor": "gold"}
     }
 
     return (
-        <div className="TrainingOptionEntry" onClick={props.onSelect} style={style_att}>
+        <div className="TrainingOptionEntry" onClick={props.onSelect} style={styleAtt}>
             <img src={(`/images/troop_images/${props.image}`)} draggable={false} unselectable="on"/>
 
         </div>

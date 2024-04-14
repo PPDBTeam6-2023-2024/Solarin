@@ -2,7 +2,6 @@ import {useEffect, useState, Suspense} from "react"
 import axios from 'axios'
 import PlanetViewer from "./PlanetViewer/PlanetViewer"
 import GalaxyViewer from "./GalaxyViewer/GalaxyViewer"
-import SideMenu from "./UI/SideMenu/SideMenu"
 import UI from "./UI/UI"
 import {ViewModeContext, View} from "./Context/ViewModeContext"
 import ProfileViewer from "./UI/MainUI/ProfileViewer";
@@ -12,7 +11,6 @@ import {UserInfoContext} from "./Context/UserInfoContext"
 
 import planet_example from './Images/Planets/example.png'
 import {PlanetListContext} from "./Context/PlanetListContext"
-import {useEffectfulState} from "@react-three/drei/helpers/useEffectfulState";
 
 const Game = () => {
     const [isAuth, setIsAuth] = useState(false)
@@ -84,9 +82,9 @@ const Game = () => {
                             </>
                         }
 
-            {viewMode === View.GalaxyView &&
-            <GalaxyViewer mapImage={planet_example} setViewMode={setViewMode}/>
-            }
+                        {viewMode === View.GalaxyView &&
+                            <GalaxyViewer mapImage={planet_example} setViewMode={setViewMode}/>
+                        }
 
                         {viewMode === View.ProfileView &&
                             <ProfileViewer changePlanetByID={changePlanetId}/>

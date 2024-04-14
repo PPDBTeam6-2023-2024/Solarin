@@ -7,7 +7,7 @@ function AllianceRequestEntry(props) {
      * This component represent 1 request to join your faction
      * */
 
-    const SendRequestReply = async (user_id, accepted) => {
+    const sendRequestReply = async (user_id, accepted) => {
         /*
         * when we accept or reject an alliance join request we need to communicate that to the backend
         * */
@@ -35,11 +35,11 @@ function AllianceRequestEntry(props) {
     return (
         <>
             <RequestEntry text={`join request\n '${props.user}'`} onTrue={() => {
-                SendRequestReply(props.user_id, true);
+                sendRequestReply(props.user_id, true);
                 props.onEntryChose()
             }}
                           onFalse={() => {
-                              SendRequestReply(props.user_id, false);
+                              sendRequestReply(props.user_id, false);
                               props.onEntryChose()
                           }}/>
         </>

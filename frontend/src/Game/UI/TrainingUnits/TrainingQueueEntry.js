@@ -6,23 +6,23 @@ import './TrainingQueueEntry.css'
 
 function TrainingQueueEntry(props) {
 
-    const remaining_timer = React.useRef(null);
+    const remainingTimer = React.useRef(null);
     useEffect(() => {
 
-        var d = props.queue_data.train_remaining
+        var d = props.queueData.train_remaining
 
-        remaining_timer.current.innerText = `${Math.floor(d / 3600)}H ${Math.floor((d % 3600) / 60)}M ${d % 60}S`;
+        remainingTimer.current.innerText = `${Math.floor(d / 3600)}H ${Math.floor((d % 3600) / 60)}M ${d % 60}S`;
 
         if (props.index !== 0) {
             return
         }
-        var time_till_troop_trained = (props.queue_data.troop_size - 1) * props.queue_data.unit_training_time;
+        var timeTillTroopTrained = (props.queueData.troop_size - 1) * props.queueData.unit_training_time;
 
         var interval = setInterval(() => {
             d -= 1;
-            remaining_timer.current.innerText = `${Math.floor(d / 3600)}H ${Math.floor((d % 3600) / 60)}M ${d % 60}S`;
+            remainingTimer.current.innerText = `${Math.floor(d / 3600)}H ${Math.floor((d % 3600) / 60)}M ${d % 60}S`;
             /*Call the OnTrainedFunction when 1 unit is trained*/
-            if (d <= time_till_troop_trained) {
+            if (d <= timeTillTroopTrained) {
                 props.OnTrainedFunction()
 
             }
@@ -37,7 +37,7 @@ function TrainingQueueEntry(props) {
     return (
         <div className="TrainingQueueEntry">
             <div className="TrainingQueueImageWrapper">
-                <img src={(`/images/troop_images/${Troops[props.queue_data.troop_type]["icon"]}`)} draggable={false}/>
+                <img src={(`/images/troop_images/${Troops[props.queueData.troop_type]["icon"]}`)} draggable={false}/>
             </div>
 
 
@@ -47,20 +47,20 @@ function TrainingQueueEntry(props) {
                     <div className="QueueLabel">
                         Type:
                     </div>
-                    {props.queue_data.troop_type}
+                    {props.queueData.troop_type}
                 </div>
                 <div>
                     <div className="QueueLabel">
                         Rank:
                     </div>
-                    {props.queue_data.rank}
+                    {props.queueData.rank}
                 </div>
 
                 <div>
                     <div className="QueueLabel">
                         Training Size:
                     </div>
-                    {props.queue_data.troop_size}
+                    {props.queueData.troop_size}
                 </div>
 
                 <div>
@@ -69,7 +69,7 @@ function TrainingQueueEntry(props) {
                     </div>
 
                     {/*the value of this dict will dynamically display the remaining time*/}
-                    <div ref={remaining_timer}/>
+                    <div ref={remainingTimer}/>
 
                 </div>
 

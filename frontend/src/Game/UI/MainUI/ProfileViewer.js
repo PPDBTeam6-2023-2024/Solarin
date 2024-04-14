@@ -1,6 +1,5 @@
 import './ProfileViewer.css'
 import React, {useContext, useState} from "react";
-import {ViewModeContext} from "../../Context/ViewModeContext";
 import {UserInfoContext} from "../../Context/UserInfoContext"
 import axios from "axios";
 import ProfileListEntry from "./ProfileListEntry";

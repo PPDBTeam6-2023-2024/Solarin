@@ -7,7 +7,7 @@ function FriendRequestEntry(props) {
      * This component represent 1 friend request
      * */
 
-    const SendRequestReply = async (friend_id, accepted) => {
+    const sendRequestReply = async (friend_id, accepted) => {
         /*
         * communicate to the server whether we accepted or rejected this friend request
         * */
@@ -37,11 +37,11 @@ function FriendRequestEntry(props) {
         <>
 
             <RequestEntry text={`Friend request from\n ${props.user}`} onTrue={() => {
-                SendRequestReply(props.user_id, true);
+                sendRequestReply(props.user_id, true);
                 props.onEntryChose()
             }}
                           onFalse={() => {
-                              SendRequestReply(props.user_id, false);
+                              sendRequestReply(props.user_id, false);
                               props.onEntryChose()
                           }}/>
         </>

@@ -4,7 +4,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import {
-    GetArmyInCity,
+    getArmyInCity,
     getBuildings,
     getNewBuildingTypes,
     getResources, getUpgradeCost, refreshResourceAmount
@@ -51,7 +51,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
             getNewBuildingTypes(cityId).then(newBuildingTypes => {
                 setNewBuildingTypes(newBuildingTypes)
             });
-            GetArmyInCity(cityId).then(setTroops); // Fetch and set troops
+            getArmyInCity(cityId).then(setTroops); // Fetch and set troops
         } else {
             setBuildings(cityContextMap[cityId].buildings)
             setUpgradeCostMap(cityContextMap[cityId].upgradeCostMap)

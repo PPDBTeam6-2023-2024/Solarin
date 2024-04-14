@@ -2,7 +2,7 @@ import { MapInteractionCSS } from 'react-map-interaction';
 import {useState, useEffect, useContext, useRef, Fragment} from 'react';
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 
-import getCities from './CityViewer/getCities';
+import getCities from './CityViewer/GetCities';
 import CityManager from "./CityViewer/CityManager";
 
 import {PlanetListContext} from "../Context/PlanetListContext"

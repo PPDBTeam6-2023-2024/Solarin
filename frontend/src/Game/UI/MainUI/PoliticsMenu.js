@@ -54,7 +54,47 @@ function PoliticsMenu() {
             <div style={{"height": "30vw"}}>
                 <Radar data={data} options={options}/>
             </div>
-            he
+
+            {/*Demo stat*/}
+            <div style={{"width": "40%"}}>
+                <div style={{"whiteSpace": "nowrap", "display": "inline"}}>
+                    resource production: <span style={{"color": "green", "display": "inline"}}>+3%</span>
+                </div>
+
+            </div>
+
+            {/*Demo stat*/}
+            <div style={{"width": "40%"}}>
+                <div style={{"whiteSpace": "nowrap", "display": "inline"}}>
+                    upgrade speed: <span style={{"color": "green", "display": "inline"}}>+20%</span>
+                </div>
+
+            </div>
+
+            {/*Demo stat*/}
+            <div style={{"width": "40%"}}>
+                <div style={{"whiteSpace": "nowrap", "display": "inline"}}>
+                    Army Strength: <span style={{"color": "red", "display": "inline"}}>-10%</span>
+                </div>
+
+            </div>
+
+            {/*Demo stat*/}
+            <div style={{"width": "40%"}}>
+                <div style={{"whiteSpace": "nowrap", "display": "inline"}}>
+                    training time: <span style={{"color": "green", "display": "inline"}}>-10%</span>
+                </div>
+
+            </div>
+
+            {/*Demo stat*/}
+            <div style={{"width": "40%"}}>
+                <div style={{"whiteSpace": "nowrap", "display": "inline"}}>
+                    Army movement speed <span style={{"color": "red", "display": "inline"}}>-40%</span>
+                </div>
+
+            </div>
+
         </>
 
 

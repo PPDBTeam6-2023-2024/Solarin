@@ -31,7 +31,7 @@ const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, refreshRe
 };
 
 
-const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, resources, refreshResources }) => {
+const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, refreshResources }) => {
     const columns = useMemo(() => [
         { headerName: "Name", field: "name" },
         { headerName: "Type", field: "buildingType" , autoHeight: true},
@@ -40,7 +40,7 @@ const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, update
         {
             headerName: "Build",
             field: "id",
-            cellRenderer: (params) => <BuildButtonComponent data={params.data} cityId={cityId} updateBuildingsAndTypes={updateBuildingsAndTypes} resources={resources} refreshResources={refreshResources} />
+            cellRenderer: (params) => <BuildButtonComponent data={params.data} cityId={cityId} updateBuildingsAndTypes={updateBuildingsAndTypes} refreshResources={refreshResources} />
         },
     ], [cityId]);
 

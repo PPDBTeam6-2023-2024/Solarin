@@ -1,5 +1,5 @@
 // CityManager.js
-import React, { useState, useEffect, useMemo, useContext} from 'react';
+import React, {useState, useEffect, useMemo, useContext, useCallback} from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
@@ -9,7 +9,6 @@ import {
     getNewBuildingTypes,
     getResources, getUpgradeCost, refreshResourceAmount
 } from './BuildingManager';
-import {UserInfoContext} from "../../Context/UserInfoContext";
 import NewBuildingGrid from './Grids/NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
 import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
@@ -20,15 +19,14 @@ import { initializeResources } from "../../UI/ResourceViewer/ResourceViewer"
 import {useDispatch} from 'react-redux'
 
 
-const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
+const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityContextMap, setCityContextMap}) => {
      const dispatch = useDispatch();
     const [buildings, setBuildings] = useState([]);
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
-    const [resources, setResources] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [troops, setTroops] = useState([]); // State for troops
 
-    const [userInfo, setUserInfo] = useContext(UserInfoContext)
+    const [selectedImage, setSelectedImage] = useState(null);
 
     /* stores selected building*/
     const [selectedClick, setSelectedClick] = useState([-1, ""]);
@@ -36,31 +34,44 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
     const [selectedTab, setSelectedTab] = useState('currentBuildings');
 
-    const [troops, setTroops] = useState([]); // State for troops
 
-    useEffect(() => {
-        if (cityId && buildings.length === 0) {
+    const cityContextLoader = (() => {
+
+        if (!(cityId in cityContextMap)) {
             getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
             });
             getUpgradeCost(cityId).then(buildings => {
-                  const costMap = buildings.reduce((acc, building) => {
+                const costMap = buildings.reduce((acc, building) => {
                     acc[building.id] = building;
                     return acc;
-                  }, {});
-                  setUpgradeCostMap(costMap);
+                }, {});
+                setUpgradeCostMap(costMap);
             });
             getNewBuildingTypes(cityId).then(newBuildingTypes => {
                 setNewBuildingTypes(newBuildingTypes)
             });
-            getResources().then(availableResources => {
-                setResources(availableResources)
-            })
-
             GetArmyInCity(cityId).then(setTroops); // Fetch and set troops
-
+        } else {
+            setBuildings(cityContextMap[cityId].buildings)
+            setUpgradeCostMap(cityContextMap[cityId].upgradeCostMap)
+            setNewBuildingTypes(cityContextMap[cityId].newBuildingTypes)
+            setTroops(cityContextMap[cityId].troops)
         }
-    }, [cityId, buildings]);
+    })
+
+    const cityContextSaver = (cityId, buildings, upgradeCostMap, newBuildingTypes, troops) => {
+        setCityContextMap(prevMap => ({
+            ...prevMap,
+            [cityId]: {
+                buildings: buildings,
+                upgradeCostMap: upgradeCostMap,
+                newBuildingTypes: newBuildingTypes,
+                troops: troops
+            }
+        }));
+    };
+
 
     const updateBuildingsAndTypes = () => {
         {/* Refresh buildings and types after building/upgrading */}
@@ -96,15 +107,17 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
             }
 
             if (!initialClick) {
+                cityContextSaver(cityId, buildings, upgradeCostMap, newBuildingTypes, troops)
                 onClose();
             } else {
+                cityContextLoader()
                 setInitialClick(false);
             }
         };
 
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [onClose, initialClick]);
+    }, [initialClick, buildings, upgradeCostMap, newBuildingTypes, troops, cityId, cityContextSaver, cityContextLoader, onClose]);
 
     return (
         <div className="darken_background">
@@ -123,7 +136,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         selectedClick={selectedClick}
                         selectedImage={selectedImage}
                         cityId={cityId}
-                        resources={resources}
                         upgradeCostMap={upgradeCostMap}
                         setUpgradeCostMap={setUpgradeCostMap}
                         refreshResources={() => initializeResources(dispatch)}
@@ -135,7 +147,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 selectedImage={selectedImage}
                                 cityId={cityId}
                                 updateBuildingsAndTypes={updateBuildingsAndTypes}
-                                resources={resources}
                                 refreshResources={() => initializeResources(dispatch)}
                               />
                             }

@@ -48,7 +48,6 @@ const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost, 
     const upgradeBuildingHelper = async (cityId, buildingId) => {
         try {
             const upgrade_succesful= await upgradeBuilding(cityId, buildingId);
-            console.log("upgrade_succesful : ", upgrade_succesful)
             if (upgrade_succesful.confirmed === true) {
                 await getUpgradeCost(cityId).then(buildings => {
                   const costMap = buildings.reduce((acc, building) => {
@@ -133,10 +132,10 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
                 }
                 {selectedBuilding && selectedBuilding.type === "productionBuilding" &&
-                    <ResourceButtonComponent data={selectedBuilding} cityId={cityId} resources={resources}  refreshResources={refreshResources}/>
+                    <ResourceButtonComponent data={selectedBuilding} cityId={cityId}  refreshResources={refreshResources}/>
                 }
                 {selectedBuilding &&
-                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} resources={resources} upgradeCost={upgradeCostMap} setUpgradeCostMap={setUpgradeCostMap} refreshResources={refreshResources} />
+                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} upgradeCost={upgradeCostMap} setUpgradeCostMap={setUpgradeCostMap} refreshResources={refreshResources} />
                 }
             </div>
             }

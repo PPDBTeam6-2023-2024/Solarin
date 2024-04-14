@@ -9,6 +9,7 @@ import {setResources} from "../../../redux/slices/resourcesSlice";
 
 
 const initializeResources = async (dispatch) => {
+    /*Retrieve the resources from the backend*/
     try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
         if (response.status === 200) {
@@ -21,23 +22,26 @@ const initializeResources = async (dispatch) => {
 }
 
 export const Resources = () => {
+    /*Caches the JSon file*/
     const resourcesInfo = useMemo(() => resourcesJson)
     const dispatch = useDispatch()
     const resources = useSelector((state) => state.resources.resources)
 
+    /*Read a specific value from the json file*/
     const getResourceField = (resource, field, alt_value) => {
         if (resourcesInfo[resource] && resourcesInfo[resource][field]) return resourcesInfo[resource][field]
         return alt_value
     }
+
     useEffect(() => {
         initializeResources(dispatch)
     }, [])
     return (
         <>
-
+            {/*Display each resource*/}
             {Object.entries(resources).map((resource) =>
                 <Tooltip key={resource} title={getResourceField(resource[0], "description", "")}>
-                    <div className="mr-3 bg-gradient-to-r from-gray-600 to-gray-700 p-1 max-h-9 shrink-0 relative">
+                    <div className="mr-3 bg-gradient-to-r from-gray-600 to-gray-700 p-1 max-h-9 shrink-0 relative" style={{"padding": "0.3vw"}}>
                         <p>{resource[1]}
                             {getResourceField(resource[0], "icon", null) &&
                                 <img className="inline ml-2 max-w-7 max-h-7 w-auto h-auto"

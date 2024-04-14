@@ -4,7 +4,7 @@ from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
-from ...database.models.models import *
+from ...database.models import *
 
 router = APIRouter(prefix="/unit", tags=["City"])
 
@@ -49,9 +49,11 @@ async def get_buildings(
     """
     check if the user owns the building
     """
-    is_owner = await da.BuildingAccess.is_owner(building_id, user_id)
+    is_owner = await da.BuildingAccess.is_owner(user_id, building_id)
     if not is_owner:
-        return {"queue": [], "success": False, "message": "Only the owner of this building can change its training queue"}
+        return {"queue": [], "success": False, "message":
+                "Only the owner of this building can change its training queue"}
+
     cost_list = await da.TrainingAccess.get_troop_cost(user_id, troop_type)
     cost_list = [(c[0], c[1]*amount) for c in cost_list]
     has_resources = await da.ResourceAccess.has_resources(user_id, cost_list)
@@ -59,7 +61,8 @@ async def get_buildings(
         training_queue: List[TrainingQueue] = await da.TrainingAccess.get_queue(building_id)
 
         output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
-        return {"queue": output, "success": False, "message": "User does not have the right amount of the needed resources"}
+        return {"queue": output, "success": False, "message":
+                "User does not have the right amount of the needed resources"}
 
     """
     Remove the resources
@@ -74,25 +77,13 @@ async def get_buildings(
     await da.BuildingAccess.checked(building_id)
     await da.commit()
 
-    city = await da.BuildingAccess.get_city(building_id)
-    armies = await da.ArmyAccess.get_army_in_city(city.id)
-
-    """
-    When no armies inside the city, create a new army
-    """
-
-    if len(armies) == 0:
-        army_id = await da.ArmyAccess.createArmy(user_id, city.region.planet_id, city.x, city.y)
-        await da.ArmyAccess.enter_city(city.id, army_id)
-    else:
-        army_id = armies[0]
-
     rank = await da.TrainingAccess.get_troop_rank(user_id, troop_type)
-    await da.TrainingAccess.trainType(army_id, building_id, troop_type, rank, amount)
+    await da.TrainingAccess.train_type(building_id, troop_type, rank, amount)
     await da.commit()
 
     """
-    return all the training queue entries, combined with a status and message indicating if the training was successfully
+    return all the training queue entries, combined with a status and message indicating 
+    if the training was successfully
     """
     training_queue: List[TrainingQueue] = await da.TrainingAccess.get_queue(building_id)
 

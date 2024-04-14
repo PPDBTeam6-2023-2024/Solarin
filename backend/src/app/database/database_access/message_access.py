@@ -1,6 +1,6 @@
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
-from .user_access import getFriendsQuerySym
+from .user_access import get_friends_query_sym
 from sqlalchemy.orm import aliased
 
 
@@ -11,7 +11,7 @@ class MessageAccess:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
-    async def createMessage(self, message_token: MessageToken):
+    async def create_message(self, message_token: MessageToken):
         """
         Create a new message in the database
 
@@ -26,7 +26,7 @@ class MessageAccess:
         mid = message.mid
         return mid
 
-    async def getMessagesPlayer(self, user1_id: int, user2_id: int, offset: int, amount: int):
+    async def get_messages_player(self, user1_id: int, user2_id: int, offset: int, amount: int):
         """
         requests the messages exchanged between the 2 users
         We will make sure to ask the messages starting from newest till oldest with regards to which messages we take
@@ -39,14 +39,17 @@ class MessageAccess:
         :return: a list of messages with a max length of 'amount'
         """
 
-        f_sym = getFriendsQuerySym(user1_id)
+        f_sym = get_friends_query_sym(user1_id)
 
+        """
+        Retrieve the messages
+        """
         search_messages = Select(Message).\
             where(f_sym.select().c.user_id == user2_id, f_sym.select().c.message_board == Message.message_board).\
             order_by(desc(Message.mid)).offset(offset).limit(amount)
 
         results = await self.__session.execute(search_messages)
-        results = results.all()
+        results = results.scalars().all()
 
         """
         query is sorted from newest till oldest, so we still need to put it in chronological order
@@ -54,7 +57,7 @@ class MessageAccess:
         results = list(reversed(results))
         return results
 
-    async def getMessagesAlliance(self, alliance_name: str, offset: int, amount: int):
+    async def get_messages_alliance(self, alliance_name: str, offset: int, amount: int):
         """
         Ask for an amount of messages written by this clan
         We will make sure to ask the messages starting from newest till oldest
@@ -79,11 +82,11 @@ class MessageAccess:
         """
         query is sorted from newest till oldest, so we still need to put it in chronological order
         """
-        results = results.unique().all()
+        results = results.scalars().all()
         results = list(reversed(results))
         return results
 
-    async def getAllianceMessageBoard(self, alliance_name: str):
+    async def get_alliance_message_board(self, alliance_name: str):
         """
         Get the messageBoardId of an Alliance
 
@@ -93,9 +96,9 @@ class MessageAccess:
         search_message_board = Select(Alliance.message_board).where(Alliance.name == alliance_name)
         results = await self.__session.execute(search_message_board)
 
-        return results.first()[0]
+        return results.scalar_one()
 
-    async def getPlayerMessageBoard(self, user1_id: int, user2_id: int):
+    async def get_player_messageBoard(self, user1_id: int, user2_id: int):
         """
         Get the messageBoardId of an DM between 2 friends
 
@@ -103,14 +106,14 @@ class MessageAccess:
         :param: user2_id: id of user_2
         :return: id of the messageboard of the DM between the 2 users
         """
-        sym_friends = getFriendsQuerySym(user1_id)
+        sym_friends = get_friends_query_sym(user1_id)
 
         dm_mb = sym_friends.select().where(sym_friends.c.user_id == user2_id)
         results = await self.__session.execute(dm_mb)
         results = results.first()[1]
         return results
 
-    async def getFriendMessageOverview(self, user1_id: int):
+    async def get_friend_message_overview(self, user1_id: int):
         """
         Get an overview of friends with the most recently send message in the DM between the friend and the given user
         This can be used to easily display an overview of a player his DM's
@@ -119,22 +122,30 @@ class MessageAccess:
         :param: limit amount of friend message tuples we want
         :return: a list of tuples: (friends username, MessageBoard, Message)
         """
-        sym_friends = getFriendsQuerySym(user1_id)
+        sym_friends = get_friends_query_sym(user1_id)
 
         sym_friends = sym_friends.select()
 
         """
         get most recent message create time sent by each friend
         """
-        most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).select_from(sym_friends)).join(Message, Message.message_board == sym_friends.c.message_board).group_by(sym_friends.c)
+        most_recent_message = (select(sym_friends.c, func.max(Message.create_date_time).label("max")).
+                               select_from(sym_friends)).join(Message,
+                                                              Message.message_board == sym_friends.c.message_board).\
+            group_by(sym_friends.c)
 
         """
         get the tuple (friend_username, Message, message_sender_username)
         """
         message_sender = aliased(User, name='message_sender')
 
+        """
+        Message overview will do use the message board of the friendship relation
+        to determine the messages that are send
+        """
         message_overview = (select(User.username, Message, message_sender.username).select_from(most_recent_message))\
-            .join(Message, (Message.message_board == most_recent_message.c.message_board)).where(most_recent_message.c.max == Message.create_date_time)\
+            .join(Message, (Message.message_board == most_recent_message.c.message_board)).\
+            where(most_recent_message.c.max == Message.create_date_time)\
             .order_by(desc(Message.create_date_time)).join(User, User.id == most_recent_message.c.user_id)\
             .join(message_sender, message_sender.id == Message.sender_id)
 
@@ -143,7 +154,7 @@ class MessageAccess:
         results = results.unique().all()
         return results
 
-    async def getMessages(self, message_board: int, offset: int, limit: int):
+    async def get_messages(self, message_board: int, offset: int, limit: int):
         """
         get all messages from a specific message board
 
@@ -164,7 +175,7 @@ class MessageAccess:
         results = list(reversed(results))
         return results
 
-    async def getMessage(self, mid: int):
+    async def get_message(self, mid: int):
         """
         Get a specific message based on its message mid
         :param: mid: id of the message

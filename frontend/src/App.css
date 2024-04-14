@@ -1,15 +1,13 @@
 * {
-    color: white;
-    cursor: url("../public/generalImages/cursor.svg") 1 1, auto;
+  color: white;
+  cursor: url("../public/images/cursors/cursor.svg") 1 1, auto;
 }
-
-#tsparticles canvas {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+#tsparticles canvas{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }
-
 .moveable-control {
-    opacity: 0 !important;
+  opacity: 0!important;
 }

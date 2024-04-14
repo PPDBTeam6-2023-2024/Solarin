@@ -1,0 +1,169 @@
+{
+    "space regions": [
+        {
+            "name": "Region 1",
+            "planet count": 5
+        }
+    ],
+    "users": [
+        {
+            "userinfo": {
+                "username": "admin1",
+                "email": "admin1@example.com",
+                "password": "admin1"
+            },
+            "resources": {
+                "TF": 0,
+                "RA": 0,
+                "SOL": 0,
+                "POP": 0,
+                "INF": 0,
+                "MI": 0,
+                "UR": 0,
+                "OI": 0,
+                "CO": 0
+            },
+            "armies": [
+                {
+                    "x": 0.1,
+                    "y": 0.1,
+                    "planet nr": 1,
+                    "troops": [
+                        {
+                            "type": "soldier",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "tank",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "assassin",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "medic",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "fighter",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "bomber",
+                            "rank": 1,
+                            "amount": 0
+                        }
+                    ]
+                }
+            ],
+            "cities": [
+                {
+                    "x": 0.7,
+                    "y": 0.7,
+                    "planet nr": 1,
+                    "buildings": [
+                        "barracks"
+                    ]
+                }
+            ]
+        },
+        {
+            "userinfo": {
+                "username": "admin2",
+                "email": "admin2@example.com",
+                "password": "admin2"
+            },
+            "resources": {
+                "TF": 0,
+                "RA": 0,
+                "SOL": 0,
+                "POP": 0,
+                "INF": 0,
+                "MI": 0,
+                "UR": 0,
+                "OI": 0,
+                "CO": 0
+            },
+            "armies": [
+                {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "planet nr": 1,
+                    "troops": [
+                        {
+                            "type": "soldier",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "tank",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "assassin",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "medic",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "fighter",
+                            "rank": 1,
+                            "amount": 0
+                        },
+                        {
+                            "type": "bomber",
+                            "rank": 1,
+                            "amount": 0
+                        }
+                    ]
+                }
+            ],
+            "cities": [
+                {
+                    "x": 0.2,
+                    "y": 0.2,
+                    "planet nr": 1,
+                    "buildings": [
+                        "barracks"
+                    ]
+                }
+            ]
+        }
+    ],
+    "alliances": [
+        {
+            "name": "AdminAlliance",
+            "members": ["admin1", "admin2"],
+            "chats": [
+                {
+                    "sender name": "admin1",
+                    "body": "Hello World!"
+                }
+            ]
+        }
+    ],
+    "friendships": [
+        {
+            "user1": "admin1",
+            "user2": "admin2",
+            "chats": [
+                {
+                    "sender name": "admin1",
+                    "body": "Hello World!"
+                }
+            ]
+        }
+    ]
+}
+

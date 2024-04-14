@@ -3,7 +3,7 @@
 .ag-theme-alpine-dark .ag-header-group-cell {
     /* Replace primaryColor and secondaryColor with actual colors or add classes dynamically */
     background: linear-gradient(to top, black, #d20000) !important;
-    font-size: 150%;
+    font-size: 1.2vw;
     color: #030303;
 }
 
@@ -22,6 +22,8 @@
     display: flex;
     height: 100vh;
     width: 100vw;
+    justify-content: center;
+    align-items: center;
 }
 
 .selected-image {
@@ -38,12 +40,12 @@
     width: 50%;
     height: 27vw;
     overflow: scroll;
-    /*background: transparent;  => add if necessary*/
-    margin-top: 1vw;
+    /*background: transparent;  => add if nescessary*/
+    margin-top: auto;
     margin-bottom: auto;
-    margin-left: 2%;
+    margin-left: auto;
     margin-right: auto;
-    border-radius: 1vw 0 0 1vw;
+    border-radius: 0.2vw 0 0 0.2vw;
 }
 
 
@@ -90,5 +92,13 @@
 
 .tabs button:hover {
     background: linear-gradient(to top, #d20000, black);
+}
+
+.right-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(10%) translateX(-12%);
+
 }
 

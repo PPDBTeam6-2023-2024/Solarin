@@ -1,0 +1,42 @@
+{
+  "barracks": {
+    "icon": "Barracks.png"
+  },
+  "cloning-chamber": {
+    "icon": "Cloning-Chamber.png"
+  },
+  "extractor": {
+    "icon": "Extractor.png"
+  },
+  "farmpod": {
+    "icon": "Farmpod.png"
+  },
+  "generator": {
+    "icon": "Generator.png"
+  },
+  "nexus": {
+    "icon": "Nexus.png"
+  },
+  "space-dock": {
+      "icon": "Space-Docks.png"
+  },
+  "Reinforced Techno-Mesh": {
+      "icon": "Walls/RT.png"
+  },
+  "Solarinium Absorption Barrier": {
+      "icon": "Walls/SAB.png"
+  },
+  "Void-fuelled Nullification Wall": {
+      "icon": "Walls/UVW.png"
+  },
+  "Directed Antiprotonic Annihilation System": {
+      "icon": "Towers/DAAS.png"
+  },
+  "Plasmic Cannons": {
+      "icon": "Towers/Plasmic-Cannons.png"
+  },
+  "Sentry Tower": {
+      "icon": "Towers/Sentry-Tower.png"
+  }
+
+}

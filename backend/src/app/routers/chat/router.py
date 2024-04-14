@@ -31,13 +31,12 @@ async def websocket_endpoint(
 
     """send the first 30 messages to the user"""
     data_access = DataAccess(db)
-    messages = await data_access.MessageAccess.getMessages(board_id, 0, 10)
+    messages = await data_access.MessageAccess.get_messages(board_id, 0, 10)
     output_list: List[MessageOut] = []
     for d in messages:
         output_list.append(d[0].toMessageOut(d[1]).model_dump())
 
     await connection_pool.send_personal_message(websocket, {"type": "paging", "message": output_list})
-
 
     """
     start receiving new requests
@@ -49,14 +48,14 @@ async def websocket_endpoint(
                 """
                 store message in database
                 """
-                mid = await data_access.MessageAccess.createMessage(MessageToken(sender_id=user_id,
-                                                                     message_board=board_id,
-                                                                     body=data["body"]))
+                mid = await data_access.MessageAccess.create_message(MessageToken(sender_id=user_id,
+                                                                                  message_board=board_id,
+                                                                                  body=data["body"]))
 
                 """
                 obtain information about the just created message
                 """
-                message = await data_access.MessageAccess.getMessage(mid)
+                message = await data_access.MessageAccess.get_message(mid)
                 message = message[0].toMessageOut(message[1])
                 await data_access.commit()
                 await connection_pool.broadcast({"type": "new message", "message": [message.model_dump()]})
@@ -65,7 +64,7 @@ async def websocket_endpoint(
                 limit = data["limit"]
                 offset = data["offset"]
 
-                messages = await data_access.MessageAccess.getMessages(board_id, offset, limit)
+                messages = await data_access.MessageAccess.get_messages(board_id, offset, limit)
 
                 """
                 don't send empty paging answers
@@ -95,7 +94,7 @@ async def dm_overview(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.MessageAccess.getFriendMessageOverview(user_id)
+    data = await data_access.MessageAccess.get_friend_message_overview(user_id)
 
     """
     transform data to web format
@@ -120,7 +119,7 @@ async def friend_requests(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.UserAccess.getFriendRequests(user_id)
+    data = await data_access.UserAccess.get_friend_requests(user_id)
 
     """
     transform data to web format
@@ -128,7 +127,7 @@ async def friend_requests(
     """
     output_list: List[Tuple[str, int]] = []
     for d in data:
-        output_list.append((d[0].username, d[0].id))
+        output_list.append((d.username, d.id))
     return output_list
 
 
@@ -175,14 +174,15 @@ async def create_alliance(
 
     alliance_name = data["alliance_name"]
 
-    alliance_exists = await data_access.AllianceAccess.allianceExists(alliance_name)
+    alliance_exists = await data_access.AllianceAccess.alliance_exists(alliance_name)
     if alliance_exists:
         return {"success": False, "message": "Alliance name already in use"}
 
-    await data_access.AllianceAccess.createAlliance(alliance_name)
-    await data_access.AllianceAccess.setAlliance(user_id, alliance_name)
+    await data_access.AllianceAccess.create_alliance(alliance_name)
+    await data_access.AllianceAccess.set_alliance(user_id, alliance_name)
     await data_access.commit()
     return {"success": True, "message": "Alliance is created"}
+
 
 @router.post("/join_alliance")
 async def join_alliance(
@@ -198,11 +198,11 @@ async def join_alliance(
     data_access = DataAccess(db)
     alliance_name = data["alliance_name"]
 
-    alliance_exists = await data_access.AllianceAccess.allianceExists(alliance_name)
+    alliance_exists = await data_access.AllianceAccess.alliance_exists(alliance_name)
     if not alliance_exists:
         return {"success": False, "message": "Alliance name already in use"}
 
-    await data_access.AllianceAccess.sendAllianceRequest(user_id, alliance_name)
+    await data_access.AllianceAccess.send_alliance_request(user_id, alliance_name)
     await data_access.commit()
     return {"success": False, "message": "Alliance join request has been send"}
 
@@ -218,7 +218,7 @@ async def alliance_requests(
     """
 
     data_access = DataAccess(db)
-    data = await data_access.AllianceAccess.getAllianceRequests(user_id)
+    data = await data_access.AllianceAccess.get_alliance_requests(user_id)
 
     """
     transform data to web format
@@ -226,8 +226,9 @@ async def alliance_requests(
     """
     output_list: List[Tuple[str, int]] = []
     for d in data:
-        output_list.append((d[0].username, d[0].id))
+        output_list.append((d.username, d.id))
     return output_list
+
 
 @router.post("/alliance_requests")
 async def alliance_requests(
@@ -245,13 +246,14 @@ async def alliance_requests(
     data_access = DataAccess(db)
 
     if data["accepted"]:
-        alliance = await data_access.AllianceAccess.getAlliance(user_id)
-        await data_access.AllianceAccess.acceptAllianceRequest(data["user_id"], alliance)
+        alliance = await data_access.AllianceAccess.get_alliance(user_id)
+        await data_access.AllianceAccess.accept_alliance_request(data["user_id"], alliance)
     else:
-        await data_access.AllianceAccess.rejectAllianceRequest(data["user_id"])
+        await data_access.AllianceAccess.reject_alliance_request(data["user_id"])
     await data_access.commit()
 
     return ""
+
 
 @router.get("/alliance_messageboard")
 async def alliance_messageboard(
@@ -259,11 +261,15 @@ async def alliance_messageboard(
         db: AsyncSession = Depends(get_db)
 
 ) -> int:
+    """
+    Get the alliance messageboard, of the alliance the user is a part of
+    """
     data_access = DataAccess(db)
 
-    alliance = await data_access.AllianceAccess.getAlliance(user_id)
-    message_board = await data_access.MessageAccess.getAllianceMessageBoard(alliance)
+    alliance = await data_access.AllianceAccess.get_alliance(user_id)
+    message_board = await data_access.MessageAccess.get_alliance_message_board(alliance)
     return message_board
+
 
 @router.get("/ranking")
 async def get_ranking(
@@ -276,12 +282,5 @@ async def get_ranking(
     """
 
     data_access = DataAccess(db)
-    ranking = await data_access.RankingAccess.getTopRanking(30)
+    ranking = await data_access.RankingAccess.get_top_ranking(30)
     return ranking
-
-@router.websocket("/wss")
-async def websocket_test(
-        websocket: WebSocket
-):
-
-    await websocket.accept()

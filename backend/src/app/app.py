@@ -13,8 +13,7 @@ from .routers.buildingManagement.router import router as building_router
 from .routers.unitManagement.router import router as unit_router
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
-from .create_tuples import *
-from .database.models.models import *
+from .database.models import *
 
 
 def init_app(config: APIConfig) -> FastAPI:
@@ -43,12 +42,6 @@ def init_app(config: APIConfig) -> FastAPI:
 
     if config.db:
         sessionmanager.init(config.db.get_connection_string().get_secret_value())
-        sessionmanager.session()
-        @app.on_event("startup")
-        async def startup():
-            # create all types (planets, resources, troops, ...)
-            await CreateTuples().create_all_tuples()
-
 
         @app.on_event("shutdown")
         async def shutdown():

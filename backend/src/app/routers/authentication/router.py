@@ -9,8 +9,9 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from .schemas import UserCreate, Token
 from ...database.database import get_db, AsyncSession
-from ...database.models.models import User
-
+from ...database.models import User
+from ...database.database_access.data_access import DataAccess
+from ...database.exceptions.not_found_exception import NotFoundException
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
@@ -21,6 +22,9 @@ ALGORITHM = "HS256"
 
 @router.post("/add_user")
 async def add_user(user: UserCreate, db=Depends(get_db)):
+    """
+    Try making an account
+    """
     try:
         db_user = User(
             email=user.email,
@@ -42,6 +46,9 @@ async def add_user(user: UserCreate, db=Depends(get_db)):
 
 
 async def authenticate_user(session: AsyncSession, username: str, password: str) -> Union[User, None]:
+    """
+    Verify the user its login (check send password and stored password match) with username
+    """
     user = await session.execute(select(User).where(User.username == username))
     user = user.first()
     if not user:
@@ -53,13 +60,20 @@ async def authenticate_user(session: AsyncSession, username: str, password: str)
 
 
 def create_access_token(data: dict):
+    """
+    Create an access token, so the user can unique identify itself using the authentication token
+    """
     to_encode = data.copy()
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
 @router.post("/token")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=Depends(get_db)) -> Token:
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+                                 db=Depends(get_db)) -> Token:
+    """
+    Let a user login and send him a authentication token back
+    """
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -74,6 +88,9 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
 
 
 def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> int:
+    """
+    Get the user id based on the provided token
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -91,6 +108,9 @@ def get_my_id(token: Annotated[str, Depends(oauth2_scheme)]) -> int:
 
 @router.get("/validate")
 def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
+    """
+    Check if the token is valid
+    """
     success = True
     try:
         jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -102,6 +122,10 @@ def validate_token(token: Annotated[str, Depends(oauth2_scheme)]):
 
 @router.get("/me")
 async def me(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
+    """
+    Simple routing to retrieve user information based on the user id
+    """
+
     result = await db.execute(select(User).where(User.id == user_id))
     scalar = result.scalars().all()[0]
     return {"username": scalar.username, "id": scalar.id, "email": scalar.email, "alliance": scalar.alliance}

@@ -46,7 +46,7 @@
     This will be used for the long bar next and behind the profile button, and on this, the resources
     will be displayed
     */
-    width: 40vw;
+    width: auto;
     height: 5vw;
     z-index: 5;
     background-image: inherit;

@@ -20,9 +20,9 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from src.app.database.models.models import *
+from src.app.database.models import *
 from src.app.database.database import Base
-
+from src.app.database.models.domains import PositiveInteger, Coordinate
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

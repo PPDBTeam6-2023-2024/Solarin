@@ -5,6 +5,7 @@ import "./UI.css"
 import ChatIcon from "./ChatMenu/ChatIcon";
 import ResourceViewer from "./ResourceViewer/ResourceViewer";
 import HiddenWindowsViewer from "./HiddenWIndowsViewer/HIddenWIndowsViewer";
+import TradingIcon from "./Trading/TradingIcon";
 //component that contains all the UI components
 
 const getColorString = (r, g, b, a) => {
@@ -41,6 +42,10 @@ function UI() {
 
             {/*display chatIcon which can be clicked to open the chat menu*/}
             <ChatIcon/>
+
+            {/*display tradingIcon which can be clicked to open the trading menu*/}
+            <TradingIcon/>
+
 
         </div>
 

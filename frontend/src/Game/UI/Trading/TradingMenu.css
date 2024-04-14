@@ -1,0 +1,11 @@
+.TradingMenuWidget{
+
+    background-image: inherit;
+    width: 30vw;
+    height: 40vw;
+    border:0.5vw solid var(--tertiaryColor);
+    border-radius: 2vw 2vw 2vw 2vw;
+    bottom: 9vw;
+    font-size: 1.4vw;
+
+}

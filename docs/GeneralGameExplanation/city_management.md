@@ -25,3 +25,7 @@ When we select this tab the following will appear:
 This shows a list of buildings we can still build inside this city 
 (When build button is gray, we do not have enough resources to build this building).
 When we press the 'Build' button we will build the building.
+
+We also have an army tab, this will show all the troops that are present inside the city (grouped as 1 army):
+<br>![alt text](../images/army_in_city.png)
+When we press the Leave City button our army will leave the city.

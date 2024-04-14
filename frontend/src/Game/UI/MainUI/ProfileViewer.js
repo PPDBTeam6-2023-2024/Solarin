@@ -40,6 +40,7 @@ function ProfileViewer(props) {
             <div className="profile_viewer">
                 <h1>Username: {userInfo.username}</h1>
 
+                {/*list of buttons on the left: cities and armies*/}
                 <div style={{"width": "15%", "height": "100%", "marginLeft": "1vw"}}>
                     <ul>
                         <div className="profile_viewer_category_button" onClick={() => {

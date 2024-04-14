@@ -32,7 +32,7 @@ const FriendsTab = (props) => {
     const [dmIndex, setDmIndex] = useState(-1)
 
     //syntax is not great, but apparently the proper way to retrieve async information from a sync function
-    //This function reads the data from the RESTAPI request, and will use its data to amek  the DMOverview
+    //This function reads the data from the RESTAPI request, and will use its data to make  the DMOverview
 
 
     useEffect(() => {

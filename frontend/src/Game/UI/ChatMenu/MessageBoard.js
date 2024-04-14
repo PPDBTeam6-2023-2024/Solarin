@@ -12,7 +12,6 @@ function MessageBoard(props) {
     const [socket, setSocket] = useState(null);
     const [messageList, setMessageList] = useState([]);
 
-
     const scrollBar = useRef(null);
 
     /**

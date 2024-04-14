@@ -6,7 +6,7 @@ import rocks from '../Images/region_types/rocks.jpeg'
 import sandyrocks from '../Images/region_types/sandyrocks.jpeg'
 import darkrocks from '../Images/region_types/darkrocks.jpeg'
 
-
+// get the correct image for the given region
 function GetImagePath(regionType) {
     const imagePaths = {
         type1: rocks,
@@ -14,7 +14,7 @@ function GetImagePath(regionType) {
         "dark valley": darkrocks,
     };
 
-    return imagePaths[regionType] || rocks;
+    return imagePaths[regionType] || rocks; // default is rocks
 }
 
 function PlanetSVG(props) {

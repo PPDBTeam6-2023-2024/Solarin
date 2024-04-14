@@ -13,19 +13,19 @@ const CategoryTab = (props) => {
      * create the visuals for the categories of the chat
      * */
     const [selectedCategory, setSelectedCategory] = props.selected
-    let nav_bar_list = []
+    let navBarList = []
 
     /*
     * make a list of all the categories of the chat menu and give the selected menu a brighter color
     * */
-    const selected_hex = "#FFFFFF";
-    const not_selected_hex = "#868686";
+    const selectedHex = "#FFFFFF";
+    const notSelectedHex = "#868686";
 
     categories.forEach((elem) => {
-        nav_bar_list.push(
+        navBarList.push(
             <>
-                {selectedCategory === elem ? <li style={{"color": selected_hex}}>{elem}</li> :
-                    <li key={elem} style={{"color": not_selected_hex}}
+                {selectedCategory === elem ? <li style={{"color": selectedHex}}>{elem}</li> :
+                    <li key={elem} style={{"color": notSelectedHex}}
                         onClick={() => setSelectedCategory(elem)}>{elem}</li>
                 }
             </>
@@ -39,7 +39,7 @@ const CategoryTab = (props) => {
             <div className="ChatMenuWidgetBackground"></div>
             <nav className="ChatNavBar">
                 <ul>
-                    {nav_bar_list}
+                    {navBarList}
                 </ul>
             </nav>
         </>

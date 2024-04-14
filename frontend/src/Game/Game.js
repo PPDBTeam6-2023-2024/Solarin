@@ -42,9 +42,9 @@ const Game = () => {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets`)
             if (response.data.length > 0) setPlanetList(response.data)
-            else setPlanetListToDefault()
+            else await setPlanetListToDefault()
         } catch (error) {
-            setPlanetListToDefault()
+            await setPlanetListToDefault()
         }
     }
 

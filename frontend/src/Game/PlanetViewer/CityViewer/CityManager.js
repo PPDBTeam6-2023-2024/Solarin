@@ -1,4 +1,3 @@
-// CityManager.js
 import React, {useState, useEffect, useCallback} from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -34,7 +33,7 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose, cityContext
 
     const [selectedTab, setSelectedTab] = useState('currentBuildings');
 
-
+    // load city context (buildings, troops, etc.) either from API or from context map
     const cityContextLoader = (() => {
 
         if (!(cityId in cityContextMap)) {
@@ -89,6 +88,7 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose, cityContext
         setInitialClick(false);
     }, [])
 
+    // save city context to context map
     const cityContextSaver = useCallback(() => {
         setCityContextMap(prevMap => ({
             ...prevMap,
@@ -101,6 +101,7 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose, cityContext
         }));
     }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId, setCityContextMap]);
 
+    // close the city view when the user clicks outside of it
     useEffect(() => {
         const handleClickOutside = event => {
             const {target} = event;

@@ -5,6 +5,7 @@ import {FaSignOutAlt} from "react-icons/fa";
 import Settings from "../Settings/Settings";
 import {useNavigate} from "react-router-dom";
 
+// display the hamburger menu in the top right
 function SideMenu(props) {
     const [menuOpen, setMenuOpen] = useState(false)
     const [settingsOpen, setSettingsOpen] = useState(false)

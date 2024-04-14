@@ -40,6 +40,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
 
     };
 
+    // for every troop type in the army create a TroopEntry
     let troopsOutput = troops.map((troop, index) => (
         <>
             <ArmyViewTroopEntry key={index} troop_type={troop.troop_type} troop_size={troop.size} rank={troop.rank}/>

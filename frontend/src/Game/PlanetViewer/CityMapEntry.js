@@ -5,22 +5,22 @@ import "./CityMapEntry.css"
 function CityMapEntry(props) {
     const [userInfo, setUserInfo] = useContext(UserInfoContext);
 
-    const is_owner = +(userInfo.id === props.city.controlled_by);
+    const isOwner = +(userInfo.id === props.city.controlled_by);
 
-     let cursor_style_class = "CityMapEntryPointer";
+     let cursorStyleClass = "CityMapEntryPointer";
 
     if (props.decide_moving){
-        if (!is_owner){
+        if (!isOwner){
             // Display the attack cursor, when hovering on an enemy city when in decide moving mode
-            cursor_style_class = 'CityMapEntryEnemy'
+            cursorStyleClass = 'CityMapEntryEnemy'
         }else{
-            cursor_style_class = 'CityMapEntryEnter'
+            cursorStyleClass = 'CityMapEntryEnter'
         }
     }
 
 
     return (
-        <img className={`${cursor_style_class}`} key={props.index} src={props.city.src} alt="city" style={props.city.style} onClick={props.onClick} index={props.city.id} image_type={"city"} is_owner={is_owner}/>
+        <img className={`${cursorStyleClass}`} key={props.index} src={props.city.src} alt="city" style={props.city.style} onClick={props.onClick} index={props.city.id} image_type={"city"} is_owner={isOwner}/>
     )
 }
 export default CityMapEntry

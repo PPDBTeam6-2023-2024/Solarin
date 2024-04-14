@@ -101,6 +101,8 @@ function PlanetViewer(props) {
         }
 
     }, []);
+
+    // calculate position based on source- and target position and how much time has elapsed
     const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
         let date = new Date()
         date.setHours(date.getHours() - 2)

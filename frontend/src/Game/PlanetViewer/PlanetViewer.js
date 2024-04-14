@@ -281,8 +281,8 @@ function PlanetViewer(props) {
         armiesMoveMode.forEach(async (armyId) => {
             const data_json = {
                 type: "change_direction",
-                toX: e.pageX / screenSize.current?.clientWidth,
-                toY: e.pageY / screenSize.current?.clientHeight,
+                to_x: e.pageX / screenSize.current?.clientWidth,
+                to_y: e.pageY / screenSize.current?.clientHeight,
                 army_id: armyId
             };
 

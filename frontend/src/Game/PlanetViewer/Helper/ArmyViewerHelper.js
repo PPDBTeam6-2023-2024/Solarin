@@ -4,9 +4,9 @@ export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
         x: overlayRect.left + window.scrollX,
         y: overlayRect.top + window.scrollY
     };
-    const to_position = {
-        x: army.to_x + window.scrollX,
-        y: army.to_y + window.scrollY
+    const toPosition = {
+        x: army.toX + window.scrollX,
+        y: army.toY + window.scrollY
     }
     setActiveArmyViewers(prev => {
         const index = prev.findIndex(viewer => viewer.id === army.id);
@@ -16,8 +16,8 @@ export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
         } else {
             return [...prev, {
                 id: army.id, owner: army.owner, position,
-                arrivalTime: army.arrival_time, departureTime: army.departure_time,
-                to_position, anchorEl: e.target
+                arrivalTime: army.arrivalTime, departureTime: army.departureTime,
+                toPosition: toPosition, anchorEl: e.target
             }];
         }
     });

@@ -60,18 +60,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
         }
     })
 
-    const cityContextSaver = (cityId, buildings, upgradeCostMap, newBuildingTypes, troops) => {
-        setCityContextMap(prevMap => ({
-            ...prevMap,
-            [cityId]: {
-                buildings: buildings,
-                upgradeCostMap: upgradeCostMap,
-                newBuildingTypes: newBuildingTypes,
-                troops: troops
-            }
-        }));
-    };
-
 
     const updateBuildingsAndTypes = () => {
         {/* Refresh buildings and types after building/upgrading */}
@@ -97,27 +85,37 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
     };
 
     useEffect(() => {
+        cityContextLoader()
+        setInitialClick(false);
+    },[])
+
+    const cityContextSaver = useCallback((cityId, buildings, upgradeCostMap, newBuildingTypes, troops) => {
+        setCityContextMap(prevMap => ({
+            ...prevMap,
+            [cityId]: {
+                buildings: buildings,
+                upgradeCostMap: upgradeCostMap,
+                newBuildingTypes: newBuildingTypes,
+                troops: troops
+            }
+        }));
+    }, [setCityContextMap]);
+
+    useEffect(() => {
         const handleClickOutside = event => {
             const { target } = event;
             const agGridElement = document.querySelector('.building_view');
             const selectedImageElement = document.querySelector('.selected-image');
 
-            if (agGridElement.contains(target) || (selectedImageElement && selectedImageElement.contains(target))) {
-                return;
-            }
-
-            if (!initialClick) {
-                cityContextSaver(cityId, buildings, upgradeCostMap, newBuildingTypes, troops)
+            if (!initialClick && !(agGridElement.contains(target) || (selectedImageElement && selectedImageElement.contains(target)))) {
+                cityContextSaver(cityId, buildings, upgradeCostMap, newBuildingTypes, troops);
                 onClose();
-            } else {
-                cityContextLoader()
-                setInitialClick(false);
             }
         };
 
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [initialClick, buildings, upgradeCostMap, newBuildingTypes, troops, cityId, cityContextSaver, cityContextLoader, onClose]);
+    }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId, cityContextSaver, onClose]);
 
     return (
         <div className="darken_background">

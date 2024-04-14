@@ -8,7 +8,7 @@ import { useDispatch, useSelector} from 'react-redux'
 import { setResources } from "../../../redux/slices/resourcesSlice";
 
 
-const initializeResources = async(dispatch) => {
+export const initializeResources = async(dispatch) => {
     try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
         if (response.status === 200) {

@@ -4,7 +4,7 @@ import { getImageForBuildingType } from '../BuildingManager';
 import './NewBuildingGrid.css';
 import { createBuilding} from '../BuildingManager';
 
-const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, resources }) => {
+const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, refreshResources }) => {
     const handleBuild = (event) => {
         event.stopPropagation();
         if (!data.can_build) {
@@ -15,6 +15,7 @@ const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, resources
         createBuilding(cityId, data.name)
             .then(() => {
                 updateBuildingsAndTypes();
+                refreshResources()
             })
             .catch((error) => {
                 console.error('Error creating building:', error);
@@ -30,7 +31,7 @@ const BuildButtonComponent = ({ data, cityId, updateBuildingsAndTypes, resources
 };
 
 
-const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, resources }) => {
+const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, updateBuildingsAndTypes, resources, refreshResources }) => {
     const columns = useMemo(() => [
         { headerName: "Name", field: "name" },
         { headerName: "Type", field: "buildingType" , autoHeight: true},
@@ -39,7 +40,7 @@ const BuildingGrid = ({ buildings, onRowMouseOver, selectedImage, cityId, update
         {
             headerName: "Build",
             field: "id",
-            cellRenderer: (params) => <BuildButtonComponent data={params.data} cityId={cityId} updateBuildingsAndTypes={updateBuildingsAndTypes} resources={resources} />
+            cellRenderer: (params) => <BuildButtonComponent data={params.data} cityId={cityId} updateBuildingsAndTypes={updateBuildingsAndTypes} resources={resources} refreshResources={refreshResources} />
         },
     ], [cityId]);
 

@@ -16,8 +16,12 @@ import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
 import CurrentBuildingGrid from "./Grids/CurrentBuildingGrid"
 import ArmyGrid from "./Grids/ArmyGrid";
 import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer/EntityViewer";
+import { initializeResources } from "../../UI/ResourceViewer/ResourceViewer"
+import {useDispatch} from 'react-redux'
+
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
+     const dispatch = useDispatch();
     const [buildings, setBuildings] = useState([]);
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
@@ -122,6 +126,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         resources={resources}
                         upgradeCostMap={upgradeCostMap}
                         setUpgradeCostMap={setUpgradeCostMap}
+                        refreshResources={() => initializeResources(dispatch)}
                     />}
                     {selectedTab === 'newBuildings' &&
                               <NewBuildingGrid
@@ -131,6 +136,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 cityId={cityId}
                                 updateBuildingsAndTypes={updateBuildingsAndTypes}
                                 resources={resources}
+                                refreshResources={() => initializeResources(dispatch)}
                               />
                             }
 

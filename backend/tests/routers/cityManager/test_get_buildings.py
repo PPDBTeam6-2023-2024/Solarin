@@ -1,6 +1,3 @@
-import pytest
-from tests.conftest import client
-
 
 async def test_get_buildings(client):
 

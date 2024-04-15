@@ -1,6 +1,4 @@
 import pytest
-from tests.conftest import client
-
 
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(client):

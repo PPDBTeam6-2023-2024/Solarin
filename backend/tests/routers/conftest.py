@@ -2,12 +2,17 @@ import asyncio
 import pytest
 from pytest_postgresql import factories
 from pytest_postgresql.janitor import DatabaseJanitor
+from contextlib import ExitStack
+import pytest
+from fastapi.testclient import TestClient
 
+from src.app.app import init_app
+from src.app.config import APIConfig
+from src.app.database.database import get_db, sessionmanager
 from src.app.fill_db.create_tuples import CreateTuples
 from src.app.database.database import sessionmanager
-from src.app.database.database_access.data_access import DataAccess
 
-test_db = factories.postgresql_proc(port=None, dbname="test_db_db")
+test_db = factories.postgresql_proc(port=None, dbname="test_db_api")
 
 @pytest.fixture(scope="session")
 def event_loop(request):
@@ -39,14 +44,21 @@ async def create_tables(connection_test):
     async with sessionmanager.session() as session:
         await CreateTuples().create_all_tuples(session)
 
+@pytest.fixture(autouse=True)
+def app():
+    with ExitStack():
+        yield init_app(APIConfig())
+
+@pytest.fixture
+def client(app):
+    with TestClient(app) as c:
+        yield c
 
 @pytest.fixture(scope="function", autouse=True)
-async def data_access(connection_test):
-    async with sessionmanager.session() as session:
-        yield DataAccess(session)
+async def session_override(app, connection_test):
+    async def get_db_override():
+        async with sessionmanager.session() as session:
+            yield session
 
-@pytest.fixture(scope="function", autouse=True)
-async def session(connection_test):
-    async with sessionmanager.session() as session:
-        yield session
+    app.dependency_overrides[get_db] = get_db_override
 

@@ -1,11 +1,9 @@
 from datetime import timedelta
 
-from tests.conftest import client
-
 from src.app.database.database import sessionmanager
 from src.app.database.database_access.data_access import DataAccess
 
-from backend.src.app.routers.authentication.schemas import BattleStats
+from src.app.routers.authentication.schemas import BattleStats
 
 
 async def test_get_armies(client):

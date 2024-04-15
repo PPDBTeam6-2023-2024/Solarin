@@ -1,5 +1,3 @@
-from tests.conftest import client
-
 from src.app.database.database_access.data_access import DataAccess
 from src.app.database.database import sessionmanager
 

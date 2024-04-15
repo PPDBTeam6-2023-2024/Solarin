@@ -1,8 +1,3 @@
-from src.app.database.database import sessionmanager
-from src.app.database.database_access.data_access import DataAccess
-
-from tests.conftest import client
-from .conftest import data_access
 
 async def test_1(client, data_access):
     data = {

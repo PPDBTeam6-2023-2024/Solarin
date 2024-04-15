@@ -15,5 +15,4 @@ async def get_resources(user_id: Annotated[int, Depends(get_my_id)], db=Depends(
     """
     data_access = DataAccess(db)
     result = await data_access.ResourceAccess.get_resources(user_id)
-    print("r", result)
     return result

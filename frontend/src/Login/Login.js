@@ -50,13 +50,11 @@ function Login() {
      * communicates with the backend to either sign in or sign up by sending post requests using axios
      * @param {*} event information filled in the form after clicking on sign in or sign up
      */
-    const handleSubmit = async (event) => {
-        await event.preventDefault()
-        let username = event.target.username.value
-        let password = event.target.password.value
-        let email = event.target.email.value
-        if (clickedSignIn) {
-            try {
+    const doLogin = async (username, password) => {
+        /*
+        * Try to log in using the provided username and password
+        * */
+        try {
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/auth/token`, qs.stringify({
                         "username": username,
                         "password": password
@@ -75,26 +73,46 @@ function Login() {
                 }
             } catch (error) {
                 setSignError(error.response.data.detail)
+        }
+    }
+
+    const doRegister = async (username, password, email) => {
+        /*
+        * Try to create a new account using the provided username, password and email
+        * */
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/auth/add_user`, JSON.stringify({
+              "email": email,
+              "username": username,
+              "password": password
+            }),
+            {
+              headers: {
+                'content-type': 'application/json',
+                'accept': 'application/json',
+              },
+            })
+            if(response.status === 200) {
+              setSignError(null)
             }
+            }
+        catch(error) {
+          setSignError(error.response.data.detail)
+        }
+    }
+
+
+    const handleSubmit = async (event) => {
+        await event.preventDefault()
+        let username = event.target.username.value
+        let password = event.target.password.value
+        let email = event.target.email.value
+        if (clickedSignIn) {
+            await doLogin(username, password)
         } else {
-            try {
-                const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/auth/add_user`, JSON.stringify({
-                        "email": email,
-                        "username": username,
-                        "password": password
-                    }),
-                    {
-                        headers: {
-                            'content-type': 'application/json',
-                            'accept': 'application/json',
-                        },
-                    })
-                if (response.status === 200) {
-                    setSignError(null)
-                }
-            } catch (error) {
-                setSignError(error.response.data.detail)
-            }
+            await doRegister(username, password, email)
+            /*After creating an account it is convenient to automatically log in too*/
+            await doLogin(username, password)
         }
     }
     return (

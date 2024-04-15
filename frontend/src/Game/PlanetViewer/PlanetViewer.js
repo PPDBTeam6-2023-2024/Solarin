@@ -64,7 +64,8 @@ function PlanetViewer(props) {
     {/*Load cities from databank, and get images*/}
     useEffect(() => {
         if (!citiesLoaded) {
-            fetchCities({getCities:getCities, handleCityClick:handleCityClick, setCityImages:setCityImages, setCitiesLoaded:setCitiesLoaded});
+            console.log(props.planetId);
+            fetchCities({getCities:getCities, handleCityClick:handleCityClick, setCityImages:setCityImages, setCitiesLoaded:setCitiesLoaded}, props.planetId);
         }
     }, [handleCityClick, citiesLoaded]);
 

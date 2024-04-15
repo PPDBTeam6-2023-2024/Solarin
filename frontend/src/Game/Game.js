@@ -80,7 +80,8 @@ const Game = () => {
                                     <RiArrowLeftSLine className="basis-1/4"/>
                                     <IoMdPlanet/>
                                 </div>
-                                <PlanetViewer mapImage={planet_example} planetName={planetList[planetListIndex][1]}
+                                <PlanetViewer key={planetList[planetListIndex][0]} mapImage={planet_example} 
+                                              planetName={planetList[planetListIndex][1]}
                                               planetId={planetList[planetListIndex][0]}
                                               planetListIndex={[planetListIndex, setPlanetListIndex]}/>
                             </>

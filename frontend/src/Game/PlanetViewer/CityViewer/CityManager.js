@@ -84,6 +84,7 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose, cityContext
     };
 
     useEffect(() => {
+        console.log("load")
         cityContextLoader()
         setInitialClick(false);
     }, [])
@@ -162,12 +163,10 @@ const CityManager = ({cityId, primaryColor, secondaryColor, onClose, cityContext
 
                     {/*Displays a training menu*/}
                     {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" &&
+
                         <TrainingViewer key={selectedClick[0]}
-                                        building_id={selectedClick[0]}
-                                        onClose={() => {
-                                            selectedClick[0] = -1;
-                                            selectedClick[1] = null
-                                        }}
+                                        buildingId={selectedClick[0]}
+                                        onClose={() => { selectedClick[0] = -1; selectedClick[1] = null}}
 
                         />}
 

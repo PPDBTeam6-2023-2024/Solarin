@@ -9,6 +9,8 @@ function GetImagePath(regionType) {
         type1: '/images/region_types/rocks.jpeg',
         "valley of death": '/images/region_types/sandyrocks.jpeg',
         "dark valley": '/images/region_types/darkrocks.jpeg',
+        "arctic": '/images/region_types/ice.png',
+        "plain": '/images/region_types/grass.jpg'
     };
 
     return imagePaths[regionType] || '/images/region_types/rocks.jpeg'; // default is rocks

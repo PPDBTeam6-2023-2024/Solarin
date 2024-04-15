@@ -31,7 +31,6 @@ class PlanetSocketActions:
         """
         armies = await self.data_access.ArmyAccess.get_armies_on_planet(planet_id=self.planet_id)
 
-        print(armies)
         data = {
             "request_type": data["type"],
             "data": [army.to_dict() for army in armies]
@@ -62,9 +61,9 @@ class PlanetSocketActions:
         """
         Check that an army is not planning to attack/merge with itself
         """
+
         if data.get("on_arrive", False) and \
                 (data["target_id"] != army_id or data["target_type"] in ("attack_city", "enter")):
-
             """
             This dict translated a key to a function (function ptr), which can be used
             """
@@ -81,6 +80,7 @@ class PlanetSocketActions:
                 """
                 When we add an attack we need to setup an async check
                 """
+
                 asyncio.create_task(
                     self.check_army_combat(army_id, (army.arrival_time - datetime.datetime.utcnow()).total_seconds()))
 
@@ -109,6 +109,7 @@ class PlanetSocketActions:
         """
         On reload frontend needs to reload its cities and armies on the map
         """
+        await self.data_access.commit()
         await self.connection_pool.broadcast({"request_type": "reload"})
 
     async def load_on_arrive(self):

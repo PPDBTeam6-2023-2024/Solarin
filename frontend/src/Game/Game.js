@@ -42,6 +42,10 @@ const Game = () => {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets`)
             if (response.data.length > 0) setPlanetList(response.data)
             else await setPlanetListToDefault()
+
+            /*Make sure the user sees the right planets*/
+            const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
+            changePlanetId(response2.data.planet_id)
         } catch (error) {
             await setPlanetListToDefault()
         }
@@ -75,7 +79,8 @@ const Game = () => {
                                     <RiArrowLeftSLine className="basis-1/4"/>
                                     <IoMdPlanet/>
                                 </div>
-                                <PlanetViewer planetName={planetList[planetListIndex][1]}
+                                <PlanetViewer key={planetList[planetListIndex][0]} mapImage={planet_example}
+                                              planetName={planetList[planetListIndex][1]}
                                               planetId={planetList[planetListIndex][0]}
                                               planetListIndex={[planetListIndex, setPlanetListIndex]}/>
                             </>

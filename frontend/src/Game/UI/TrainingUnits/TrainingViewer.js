@@ -29,7 +29,6 @@ const addTrainingQueue = async (buildingId, trainJson) => {
 }
 
 function TrainingViewer({buildingId, onClose}) {
-
     const [trainingQueueList, setTrainingQueueList] = useState([])
     const scrollBar = React.useRef(null);
     const [errorMessage, setErrorMessage] = useState("");

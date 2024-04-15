@@ -22,6 +22,12 @@ class ResourceAccess:
         :param: resource_check: list of tuples (resource_name, amount), that will be checked
         """
         for resource in resource_check:
+            """
+            This costs None of this resoruce, so we don't have to check this
+            """
+            if resource[1] == 0:
+                continue
+
             get_resources = Select(HasResources.resource_type, HasResources.quantity).\
                 where((HasResources.owner_id == user_id) & (HasResources.resource_type == resource[0]))
             results = await self.__session.execute(get_resources)
@@ -66,12 +72,17 @@ class ResourceAccess:
         :param: resource_name: name of the resource that will be removed
         :param: amount: amount of the provide resource that will be removed
         """
+
         s = Select(HasResources).\
             where((user_id == HasResources.owner_id) & (HasResources.resource_type == resource_name))
         has_resources = await self.__session.execute(s)
-        has_resources = has_resources.scalar_one()
+        has_resources = has_resources.scalar_one_or_none()
 
-        has_resources.quantity -= amount
+        if has_resources is None:
+            self.__session.add(HasResources(resource_type=resource_name, quantity=0, owner_id=user_id))
+        else:
+            has_resources.quantity -= amount
+
         await self.__session.flush()
 
     async def get_resource_amount(self, user_id: int, resource_name: str) -> int:

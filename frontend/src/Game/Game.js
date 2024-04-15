@@ -4,7 +4,7 @@ import PlanetViewer from "./PlanetViewer/PlanetViewer"
 import GalaxyViewer from "./GalaxyViewer/GalaxyViewer"
 import UI from "./UI/UI"
 import {ViewModeContext, View} from "./Context/ViewModeContext"
-import ProfileViewer from "./UI/MainUI/ProfileViewer";
+import ProfileViewer from "./UI/ProfileViewer/ProfileViewer";
 import {RiArrowLeftSLine} from "react-icons/ri";
 import {IoMdPlanet} from "react-icons/io";
 import {UserInfoContext} from "./Context/UserInfoContext"

@@ -19,7 +19,7 @@ import { initializeResources } from "../../UI/ResourceViewer/ResourceViewer"
 import {useDispatch} from 'react-redux'
 
 
-const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityContextMap, setCityContextMap}) => {
+const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
     const dispatch = useDispatch();
     const [buildings, setBuildings] = useState([]);
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
@@ -36,28 +36,21 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
 
 
     const cityContextLoader = (() => {
-
-        if (!(cityId in cityContextMap)) {
-            getBuildings(cityId).then(buildings => {
+        /*Load city information*/
+        getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
             });
-            getUpgradeCost(cityId).then(buildings => {
-                const costMap = buildings.reduce((acc, building) => {
-                    acc[building.id] = building;
-                    return acc;
-                }, {});
-                setUpgradeCostMap(costMap);
-            });
-            getNewBuildingTypes(cityId).then(newBuildingTypes => {
-                setNewBuildingTypes(newBuildingTypes)
-            });
-            getArmyInCity(cityId).then(setTroops); // Fetch and set troops
-        } else {
-            setBuildings(cityContextMap[cityId].buildings)
-            setUpgradeCostMap(cityContextMap[cityId].upgradeCostMap)
-            setNewBuildingTypes(cityContextMap[cityId].newBuildingTypes)
-            setTroops(cityContextMap[cityId].troops)
-        }
+        getUpgradeCost(cityId).then(buildings => {
+            const costMap = buildings.reduce((acc, building) => {
+                acc[building.id] = building;
+                return acc;
+            }, {});
+            setUpgradeCostMap(costMap);
+        });
+        getNewBuildingTypes(cityId).then(newBuildingTypes => {
+            setNewBuildingTypes(newBuildingTypes)
+        });
+        getArmyInCity(cityId).then(setTroops); // Fetch and set troops
     })
 
 
@@ -89,19 +82,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
         setInitialClick(false);
     },[])
 
-    const cityContextSaver = useCallback(() => {
-        setCityContextMap(prevMap => ({
-            ...prevMap,
-            [cityId]: {
-                buildings: buildings,
-                upgradeCostMap: upgradeCostMap,
-                newBuildingTypes: newBuildingTypes,
-                troops: troops
-            }
-        }));
-    }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId, setCityContextMap]);
-
     useEffect(() => {
+        /*Refresh information on change*/
         const handleClickOutside = event => {
             const { target } = event;
             const agGridElement = document.querySelector('.building_view');
@@ -109,12 +91,11 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
 
             if (!initialClick && !(agGridElement.contains(target) || (selectedImageElement && selectedImageElement.contains(target)))) {
                 onClose();
-                cityContextSaver()
             }
         };
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [initialClick,buildings, upgradeCostMap, newBuildingTypes, troops, cityId,setCityContextMap]);
+    }, [initialClick,buildings, upgradeCostMap, newBuildingTypes, troops]);
 
     return (
         <div className="darken_background">
@@ -165,6 +146,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
                         <TrainingViewer key={selectedClick[0]}
                                         buildingId={selectedClick[0]}
                                         onClose={() => { selectedClick[0] = -1; selectedClick[1] = null}}
+                                        refreshResources={() => initializeResources(dispatch)}
 
                         />}
 

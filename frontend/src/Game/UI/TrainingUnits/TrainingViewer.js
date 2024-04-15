@@ -29,7 +29,7 @@ const addTrainingQueue = async (buildingId, trainJson) => {
     catch(e) {return []}
 }
 
-function TrainingViewer({buildingId, onClose}) {
+function TrainingViewer({buildingId, onClose, refreshResources}) {
     const [trainingQueueList, setTrainingQueueList] = useState([])
     const scrollBar = React.useRef(null);
     const [errorMessage, setErrorMessage] = useState("");
@@ -37,6 +37,7 @@ function TrainingViewer({buildingId, onClose}) {
     async function addTrainingData(train_json) {
         let data = await addTrainingQueue(buildingId, train_json)
         setTrainingQueueList(data["queue"]);
+        refreshResources()
         if (!data["success"]) {
             setErrorMessage(data["message"]);
         } else {

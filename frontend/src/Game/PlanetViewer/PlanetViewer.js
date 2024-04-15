@@ -104,6 +104,7 @@ function PlanetViewer(props) {
     const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
         let date = new Date()
         date.setHours(date.getHours() - 2)
+
         const elapsedTime = date - departureTime
         const totalTime = arrivalTime - departureTime
         const percentComplete = (elapsedTime < totalTime) ? elapsedTime / totalTime : 1;
@@ -148,8 +149,8 @@ function PlanetViewer(props) {
                 const currentPosition = lerp({
                     sourcePosition: {x: elem.x, y: elem.y},
                     targetPosition: {x: elem.to_x, y: elem.to_y},
-                    arrivalTime: elem.arrival_time,
-                    departureTime: elem.departure_time
+                    arrivalTime: elem.arrivalTime,
+                    departureTime: elem.departureTime
                 })
                 return {...elem, curr_x: currentPosition.x, curr_y: currentPosition.y}
             }))

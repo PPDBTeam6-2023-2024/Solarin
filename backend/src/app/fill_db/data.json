@@ -31,12 +31,12 @@
                     "troops": [
                         {
                             "type": "soldier",
-                            "rank": 1,
+                            "rank": 10,
                             "amount": 3
                         },
                         {
                             "type": "tank",
-                            "rank": 1,
+                            "rank": 3,
                             "amount": 0
                         },
                         {
@@ -46,18 +46,18 @@
                         },
                         {
                             "type": "medic",
-                            "rank": 1,
-                            "amount": 0
+                            "rank": 5,
+                            "amount": 8
                         },
                         {
                             "type": "fighter",
                             "rank": 1,
-                            "amount": 6
+                            "amount": 60
                         },
                         {
                             "type": "bomber",
-                            "rank": 1,
-                            "amount": 5
+                            "rank": 2,
+                            "amount": 50
                         }
                     ]
                 }
@@ -99,32 +99,32 @@
                         {
                             "type": "soldier",
                             "rank": 1,
-                            "amount": 0
+                            "amount": 6
                         },
                         {
                             "type": "tank",
                             "rank": 1,
-                            "amount": 0
+                            "amount": 3
                         },
                         {
                             "type": "assassin",
-                            "rank": 1,
-                            "amount": 0
+                            "rank": 7,
+                            "amount": 1
                         },
                         {
                             "type": "medic",
-                            "rank": 1,
-                            "amount": 0
+                            "rank": 11,
+                            "amount": 1
                         },
                         {
                             "type": "fighter",
-                            "rank": 1,
-                            "amount": 0
+                            "rank": 4,
+                            "amount": 7
                         },
                         {
                             "type": "bomber",
-                            "rank": 1,
-                            "amount": 0
+                            "rank": 9,
+                            "amount": 9
                         }
                     ]
                 }

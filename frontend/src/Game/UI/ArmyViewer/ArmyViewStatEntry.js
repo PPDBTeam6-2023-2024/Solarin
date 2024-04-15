@@ -10,7 +10,9 @@ function ArmyViewStatEntry(props) {
             <div style={{"width": "20%", "display": "inline-block"}}>
                 <Tooltip title={`${props.stat_name}`}>
                     <img src={(`/images/stats_icons/${statsJson[props.stat_name]["icon"]}`)} draggable={false}
-                         unselectable="on"/>
+                         unselectable="on"
+                         alt=""
+                    />
                 </Tooltip>
             </div>
 

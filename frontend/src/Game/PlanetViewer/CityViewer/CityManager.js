@@ -1,5 +1,4 @@
-// CityManager.js
-import React, {useState, useEffect, useMemo, useContext, useCallback} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
@@ -7,7 +6,7 @@ import {
     getArmyInCity,
     getBuildings,
     getNewBuildingTypes,
-    getResources, getUpgradeCost, refreshResourceAmount
+    getUpgradeCost
 } from './BuildingManager';
 import NewBuildingGrid from './Grids/NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
@@ -15,7 +14,7 @@ import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
 import CurrentBuildingGrid from "./Grids/CurrentBuildingGrid"
 import ArmyGrid from "./Grids/ArmyGrid";
 import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer/EntityViewer";
-import { initializeResources } from "../../UI/ResourceViewer/ResourceViewer"
+import {initializeResources} from "../../UI/ResourceViewer/ResourceViewer"
 import {useDispatch} from 'react-redux'
 
 
@@ -34,7 +33,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
     const [selectedTab, setSelectedTab] = useState('currentBuildings');
 
-
+    // load city context (buildings, troops, etc.) either from API or from context map
     const cityContextLoader = (() => {
         /*Load city information*/
         getBuildings(cityId).then(buildings => {
@@ -55,24 +54,24 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
 
     const updateBuildingsAndTypes = () => {
-        {/* Refresh buildings and types after building/upgrading */}
+        /* Refresh buildings and types after building/upgrading */
         getBuildings(cityId).then(setBuildings);
         getNewBuildingTypes(cityId).then(setNewBuildingTypes);
         getUpgradeCost(cityId).then(buildings => {
-                  const costMap = buildings.reduce((acc, building) => {
-                    acc[building.id] = building;
-                    return acc;
-                  }, {});
-                  setUpgradeCostMap(costMap);
-            });
+            const costMap = buildings.reduce((acc, building) => {
+                acc[building.id] = building;
+                return acc;
+            }, {});
+            setUpgradeCostMap(costMap);
+        });
     };
 
     const onRowMouseOver = event => {
-        if (selectedTab === 'Army'){
+        if (selectedTab === 'Army') {
             setSelectedImage(getImageForTroopType(event.data.troopType))
-        } else if(selectedTab === "newBuildings"){
+        } else if (selectedTab === "newBuildings") {
             setSelectedImage(getImageForBuildingType(event.data.name));
-        } else{
+        } else {
             setSelectedImage(getImageForBuildingType(event.data.buildingType));
         }
     };
@@ -80,12 +79,12 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
     useEffect(() => {
         cityContextLoader()
         setInitialClick(false);
-    },[])
+    }, [])
 
     useEffect(() => {
         /*Refresh information on change*/
         const handleClickOutside = event => {
-            const { target } = event;
+            const {target} = event;
             const agGridElement = document.querySelector('.building_view');
             const selectedImageElement = document.querySelector('.selected-image');
 
@@ -136,8 +135,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         troops={troops}
                         setSelectedClick={setSelectedClick}
                         selectedImage={selectedImage}
-                                />
-                             }
+                    />
+                    }
 
 
                     {/*Displays a training menu*/}

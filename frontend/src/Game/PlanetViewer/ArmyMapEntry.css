@@ -1,8 +1,8 @@
 .ArmyMapEntryEnemy{
-    cursor: url("/public/images/cursors/attack_cursor.png") 1 1, auto;
+    cursor: url("../../../public/images/cursors/attack_cursor.png") 1 1, auto;
 }
 .ArmyMapEntryMerge{
-    cursor: url("/public/images/cursors/merge_cursor.png") 1 1, auto;
+    cursor: url("../../../public/images/cursors/merge_cursor.png") 1 1, auto;
 }
 
 .ArmyMapEntryPointer{

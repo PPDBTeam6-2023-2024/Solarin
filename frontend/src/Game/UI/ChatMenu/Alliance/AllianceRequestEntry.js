@@ -13,7 +13,7 @@ function AllianceRequestEntry(props) {
         * */
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_requests`,
+            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_requests`,
                 JSON.stringify({
                     "user_id": user_id,
                     "accepted": accepted

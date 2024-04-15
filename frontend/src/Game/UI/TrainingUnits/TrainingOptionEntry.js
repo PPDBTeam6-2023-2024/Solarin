@@ -14,7 +14,7 @@ function TrainingOptionEntry(props) {
 
     return (
         <div className="TrainingOptionEntry" onClick={props.onSelect} style={styleAtt}>
-            <img src={(`/images/troop_images/${props.image}`)} draggable={false} unselectable="on"/>
+            <img src={(`/images/troop_images/${props.image}`)} draggable={false} unselectable="on" alt={""}/>
 
         </div>
     )

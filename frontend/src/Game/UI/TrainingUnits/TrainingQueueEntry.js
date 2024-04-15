@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import './TrainingViewer.css'
 import Troops from './../troops.json'
 import './TrainingQueueEntry.css'
@@ -37,7 +37,7 @@ function TrainingQueueEntry(props) {
     return (
         <div className="TrainingQueueEntry">
             <div className="TrainingQueueImageWrapper">
-                <img src={(`/images/troop_images/${Troops[props.queueData.troop_type]["icon"]}`)} draggable={false}/>
+                <img src={(`/images/troop_images/${Troops[props.queueData.troop_type]["icon"]}`)} draggable={false} alt={""}/>
             </div>
 
 

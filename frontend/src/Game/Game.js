@@ -9,7 +9,6 @@ import {RiArrowLeftSLine} from "react-icons/ri";
 import {IoMdPlanet} from "react-icons/io";
 import {UserInfoContext} from "./Context/UserInfoContext"
 
-import planet_example from './Images/Planets/example.png'
 import {PlanetListContext} from "./Context/PlanetListContext"
 
 const Game = () => {
@@ -45,14 +44,14 @@ const Game = () => {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets`)
             if (response.data.length > 0) setPlanetList(response.data)
-            else setPlanetListToDefault()
+            else await setPlanetListToDefault()
 
             changePlanetId(response2.data.planet_id)
 
             setPlanetListIndex(response.data.findIndex(planet => planet[0] === response2.data.planet_id))
 
         } catch (error) {
-            setPlanetListToDefault()
+            await setPlanetListToDefault()
         }
     }
 
@@ -84,7 +83,7 @@ const Game = () => {
                                     <RiArrowLeftSLine className="basis-1/4"/>
                                     <IoMdPlanet/>
                                 </div>
-                                <PlanetViewer key={planetList[planetListIndex][0]} mapImage={planet_example} 
+                                <PlanetViewer key={planetList[planetListIndex][0]}
                                               planetName={planetList[planetListIndex][1]}
                                               planetId={planetList[planetListIndex][0]}
                                               planetListIndex={[planetListIndex, setPlanetListIndex]}/>
@@ -92,7 +91,7 @@ const Game = () => {
                         }
 
                         {viewMode === View.GalaxyView &&
-                            <GalaxyViewer mapImage={planet_example} setViewMode={setViewMode}/>
+                            <GalaxyViewer setViewMode={setViewMode}/>
                         }
 
                         {viewMode === View.ProfileView &&

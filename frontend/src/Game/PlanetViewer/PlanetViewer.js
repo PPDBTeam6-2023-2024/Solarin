@@ -150,6 +150,11 @@ function PlanetViewer(props) {
             }
         });
     }
+
+    /*
+    * Update the army location of the armies on the map in real time
+    * by updating the army position, visually based on linear interpolation
+    */
     useEffect(() => {
         const interval = setInterval(async () => {
             setArmyImages(armyImages.map((elem) => {
@@ -166,6 +171,10 @@ function PlanetViewer(props) {
             clearInterval(interval)
         }
     })
+
+    /*
+    * Handle when an army changes direction
+    * */
     const handleChangeDirection = (data) => {
         return armyImages.map((army) => {
             if (army.id === data.id) {
@@ -174,6 +183,7 @@ function PlanetViewer(props) {
             return army
         })
     }
+
     useEffect(() => {
         if (!socket) return
         return () => {
@@ -195,7 +205,9 @@ function PlanetViewer(props) {
 
     }, [armyImages.map(army => army.id).join(";").toString()]);
 
-
+    /*
+    * Listen to incoming websocket messages
+    * */
     useEffect(() => {
         if (!socket) return
         socket.onmessage = async (event) => {
@@ -231,6 +243,11 @@ function PlanetViewer(props) {
         }
     }, [socket, armyImages])
 
+    /*
+    * Keeps into account which armies are in Move mode.
+    * Move mode means that an army is selected as an army that will move.
+    * When we click a place on the map, all selected armies will move to this position
+    * */
     const [armiesMoveMode, setArmiesMoveMode] = useState([])
     const isMoveMode = (armyId) => {
         return armiesMoveMode.indexOf(armyId) !== -1
@@ -240,14 +257,23 @@ function PlanetViewer(props) {
         else setArmiesMoveMode(armiesMoveMode.filter((id) => armyId !== id))
     }
 
-    /*For calculating the position we need to know the size of the map on the client, to calculate the position in range[0, 1]*/
+    /*For calculating the position 'move to' we need to know the size of the map on
+    *the client, to calculate the position in range[0, 1]
+    * */
 
     const screenSize = useRef();
 
     const mapOnClick = (e) => {
-
+        /*
+        * When we click on a map, we will move all our armies that are in MoveMode to the provided position
+        * */
         let action_json = {}
 
+        /*
+        * In case we want to trigger an onArrive event, we need to detect if
+        * we clicked on an army/city on
+        * Depending whether we are the owner of the clicked army/city we will attack, enter or merge.
+        * */
         const imageType = e.target.getAttribute("image_type")
         if (imageType !== null) {
             const clickedArmy = imageType === "army";
@@ -260,6 +286,7 @@ function PlanetViewer(props) {
             let target = ""
 
             if (clickedCity) {
+                /*In case city clicked*/
                 if (!isOwner) {
                     target = "attack_city"
                 } else {
@@ -267,6 +294,7 @@ function PlanetViewer(props) {
                 }
 
             } else if (clickedArmy) {
+                /*In case army clicked*/
                 if (!isOwner) {
                     target = "attack_army"
                 } else {
@@ -274,6 +302,7 @@ function PlanetViewer(props) {
                 }
             }
 
+            /*Create an action json providing the on Arrive action details*/
             action_json = {
                 on_arrive: true,
                 target_type: target,
@@ -282,7 +311,9 @@ function PlanetViewer(props) {
             }
         }
 
-
+        /*
+        * Let the armies change direction (movement) to the provided position
+        * */
         armiesMoveMode.forEach(async (armyId) => {
             const data_json = {
                 type: "change_direction",
@@ -293,13 +324,14 @@ function PlanetViewer(props) {
 
             const merged_data = Object.assign({}, data_json, action_json);
 
+            /*Send websocket message about movement change*/
             await socket.send(JSON.stringify(merged_data));
+            /*Make sure that the army is not in movement mode anymore*/
             toggleMoveMode(armyId)
         })
     }
     return (
         <>
-
             {/*Make it possible to access the socket in the children without using props (because cleaner)*/}
             <PlanetIdContext.Provider value={props.planetId}>
                 <SocketContext.Provider value={[socket, setSocket]}>
@@ -309,7 +341,7 @@ function PlanetViewer(props) {
 
                     {
                         /*
-                        This ArmyManageView is not a child component of the Army entry, because this is a rela UI component
+                        This ArmyManageView is not a child component of the Army entry, because this is a UI component
                         That should be a part of the map itself
                         */
                         activeArmyViewers.map(({id, owner, anchorEl}) => (
@@ -327,6 +359,7 @@ function PlanetViewer(props) {
                         </div>
                     )}
 
+                    {/*Display the zoom-able map*/}
                     <MapInteractionCSS
                         value={mapState}
                         onChange={(value) => setMapState(value)}

@@ -19,6 +19,10 @@ import {useDispatch} from 'react-redux'
 
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
+    /*
+    * This component represents the City Menu
+    * */
+
     const dispatch = useDispatch();
     const [buildings, setBuildings] = useState([]);
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);

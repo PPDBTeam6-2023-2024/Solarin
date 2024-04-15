@@ -32,7 +32,7 @@
                         {
                             "type": "soldier",
                             "rank": 1,
-                            "amount": 0
+                            "amount": 3
                         },
                         {
                             "type": "tank",
@@ -52,12 +52,12 @@
                         {
                             "type": "fighter",
                             "rank": 1,
-                            "amount": 0
+                            "amount": 6
                         },
                         {
                             "type": "bomber",
                             "rank": 1,
-                            "amount": 0
+                            "amount": 5
                         }
                     ]
                 }

@@ -57,6 +57,11 @@ class ArmyAccess:
         get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id,
                                                  ArmyConsistsOf.troop_type == troop_type,
                                                  ArmyConsistsOf.rank == rank)
+        """
+        Don't add empty entries
+        """
+        if amount == 0:
+            return
 
         results = await self.__session.execute(get_entry)
         result = results.scalar_one_or_none()
@@ -172,7 +177,7 @@ class ArmyAccess:
         1000/speed  (speed in range 149-350) * 3600 (= 1 hour)
         An army with a speed of 250 will take 4 hours to cross the entire map
         """
-
+        print(army_stats)
         map_cross_time = PropertyUtility.get_map_cross_time(army_stats["speed"])
 
         """
@@ -394,6 +399,7 @@ class ArmyAccess:
             """
             troop_size = troop_tup[0]
             troop_rank = troop_tup[1]
+
             troop_stats = troop_tup[2].getStats(troop_rank, troop_size)
 
             total_troop_amount += troop_size
@@ -411,6 +417,7 @@ class ArmyAccess:
         Speed is expresses as a weighted average, In case no troops are present, our
         army will have a speed of 100
         """
+
         army_stats["speed"] = army_stats.get("speed", 100) / max(total_troop_amount, 1)
 
         return army_stats

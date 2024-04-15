@@ -12,15 +12,15 @@ from .training_access import TrainingAccess
 from .ranking_access import RankingAccess
 from .resource_access import ResourceAccess
 import asyncio
+from .database_acess import DatabaseAccess
 
 
-class DataAccess:
+class DataAccess(DatabaseAccess):
     """
     Common interface to access data from the Database
     The access methods are divided into categories so it is more easy to navigate for developers
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
         self.UserAccess = UserAccess(session)
         self.AllianceAccess = AllianceAccess(session)
         self.MessageAccess = MessageAccess(session)
@@ -32,15 +32,16 @@ class DataAccess:
         self.TrainingAccess = TrainingAccess(session)
         self.RankingAccess = RankingAccess(session)
         self.ResourceAccess = ResourceAccess(session)
+        super().__init__(session)
 
     async def commit(self):
         """
         Make sure you can call commit without having access to the session directly
         """
-        await self.__session.commit()
+        await self.session.commit()
 
     async def rollback(self):
         """
         Rollback issues
         """
-        await self.__session.rollback()
+        await self.session.rollback()

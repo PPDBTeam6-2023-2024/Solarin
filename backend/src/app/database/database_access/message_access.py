@@ -3,14 +3,15 @@ from ..database import AsyncSession
 from .user_access import get_friends_query_sym
 from sqlalchemy.orm import aliased
 
+from .database_acess import DatabaseAccess
 
-class MessageAccess:
+class MessageAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of messages
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
-
+        super().__init__(session)
+        
     async def create_message(self, message_token: MessageToken):
         """
         Create a new message in the database
@@ -20,9 +21,9 @@ class MessageAccess:
         """
 
         message = Message.fromMessageToken(message_token)
-        self.__session.add(message)
+        self.session.add(message)
 
-        await self.__session.flush()
+        await self.session.flush()
         mid = message.mid
         return mid
 
@@ -48,7 +49,7 @@ class MessageAccess:
             where(f_sym.select().c.user_id == user2_id, f_sym.select().c.message_board == Message.message_board).\
             order_by(desc(Message.mid)).offset(offset).limit(amount)
 
-        results = await self.__session.execute(search_messages)
+        results = await self.session.execute(search_messages)
         results = results.scalars().all()
 
         """
@@ -77,7 +78,7 @@ class MessageAccess:
             join(Alliance, Alliance.message_board == MessageBoard.bid).where(Alliance.name == alliance_name).\
             order_by(desc(Message.mid)).offset(offset).limit(amount)
 
-        results = await self.__session.execute(search_messages)
+        results = await self.session.execute(search_messages)
 
         """
         query is sorted from newest till oldest, so we still need to put it in chronological order
@@ -94,7 +95,7 @@ class MessageAccess:
         :return: id of the messageboard of the alliance
         """
         search_message_board = Select(Alliance.message_board).where(Alliance.name == alliance_name)
-        results = await self.__session.execute(search_message_board)
+        results = await self.session.execute(search_message_board)
 
         return results.scalar_one()
 
@@ -109,7 +110,7 @@ class MessageAccess:
         sym_friends = get_friends_query_sym(user1_id)
 
         dm_mb = sym_friends.select().where(sym_friends.c.user_id == user2_id)
-        results = await self.__session.execute(dm_mb)
+        results = await self.session.execute(dm_mb)
         results = results.first()[1]
         return results
 
@@ -149,7 +150,7 @@ class MessageAccess:
             .order_by(desc(Message.create_date_time)).join(User, User.id == most_recent_message.c.user_id)\
             .join(message_sender, message_sender.id == Message.sender_id)
 
-        results = await self.__session.execute(message_overview)
+        results = await self.session.execute(message_overview)
 
         results = results.unique().all()
         return results
@@ -166,7 +167,7 @@ class MessageAccess:
         search_messages = Select(Message, User.username).join(User, User.id == Message.sender_id).where(Message.message_board == message_board). \
             order_by(desc(Message.create_date_time)).offset(offset).limit(limit)
 
-        results = await self.__session.execute(search_messages)
+        results = await self.session.execute(search_messages)
 
         """
         query is sorted from newest till oldest, so we still need to put it in chronological order
@@ -183,7 +184,7 @@ class MessageAccess:
         """
         search_message = Select(Message, User.username).join(User, User.id == Message.sender_id).where(Message.mid == mid)
 
-        results = await self.__session.execute(search_message)
+        results = await self.session.execute(search_message)
 
         """
         query is sorted from newest till oldest, so we still need to put it in chronological order

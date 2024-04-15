@@ -3,6 +3,7 @@ from ..database import AsyncSession
 from ..exceptions.not_found_exception import NotFoundException
 from ..exceptions.invalid_action_exception import InvalidActionException
 
+from .database_acess import DatabaseAccess
 
 def get_friends_query_sym(user_id: int):
     """
@@ -19,12 +20,12 @@ def get_friends_query_sym(user_id: int):
     return friends
 
 
-class UserAccess:
+class UserAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of a User
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
+        super().__init__(session)
 
     async def create_user(self, username: str, email: str, hashed_password: str):
         """
@@ -36,8 +37,8 @@ class UserAccess:
         """
 
         user = User(email=email, username=username, hashed_password=hashed_password)
-        self.__session.add(user)
-        await self.__session.flush()
+        self.session.add(user)
+        await self.session.flush()
         user_id = user.id
 
         """
@@ -56,7 +57,7 @@ class UserAccess:
         """
 
         find_faction_query = select(User.faction_name).where(User.id == user_id)
-        results = await self.__session.execute(find_faction_query)
+        results = await self.session.execute(find_faction_query)
         results = results.scalar_one_or_none()
 
         """
@@ -75,7 +76,7 @@ class UserAccess:
         """
 
         find_uuid = select(User.id).where(User.email == email)
-        results = await self.__session.execute(find_uuid)
+        results = await self.session.execute(find_uuid)
         results = results.scalar_one_or_none()
 
         """
@@ -95,7 +96,7 @@ class UserAccess:
         """
 
         find_uuid = select(User.id).where(User.username == username)
-        results = await self.__session.execute(find_uuid)
+        results = await self.session.execute(find_uuid)
         results = results.scalar_one_or_none()
 
         """
@@ -117,9 +118,9 @@ class UserAccess:
         """
 
         friends = get_friends_query_sym(user_id)
-        result = await self.__session.execute(friends)
+        result = await self.session.execute(friends)
 
-        await self.__session.flush()
+        await self.session.flush()
         return result.all()
 
     async def add_friendship(self, user1_id: int, user2_id: int):
@@ -135,11 +136,11 @@ class UserAccess:
         first create a messageboard that will be used for DM messages between the users
         """
         mb = MessageBoard(chat_name=f"DM {user1_id}-{user2_id}")
-        self.__session.add(mb)
-        await self.__session.flush()
-        self.__session.add(FriendsOf(user1_id=user1_id, user2_id=user2_id, message_board=mb.bid))
+        self.session.add(mb)
+        await self.session.flush()
+        self.session.add(FriendsOf(user1_id=user1_id, user2_id=user2_id, message_board=mb.bid))
 
-        await self.__session.flush()
+        await self.session.flush()
 
     async def send_friend_request(self, from_user: int, to_user: int):
         """
@@ -153,7 +154,7 @@ class UserAccess:
         """
         sym_friends = get_friends_query_sym(from_user)
         check_friends = sym_friends.select().where(sym_friends.c.user_id == to_user)
-        results = await self.__session.execute(check_friends)
+        results = await self.session.execute(check_friends)
         results = results.first()
         if results is not None:
             raise InvalidActionException("Users are already friends")
@@ -164,7 +165,7 @@ class UserAccess:
         """
         if friend request is already send we return that information
         """
-        results = await self.__session.execute(Select(FriendRequest).
+        results = await self.session.execute(Select(FriendRequest).
                                                where((FriendRequest.from_user_id == from_user) & (FriendRequest.to_user_id == to_user)))
 
         results = results.first()
@@ -172,9 +173,9 @@ class UserAccess:
             raise InvalidActionException("Friend request has already been send")
 
         fq = FriendRequest(from_user_id= from_user, to_user_id=to_user)
-        self.__session.add(fq)
+        self.session.add(fq)
 
-        await self.__session.flush()
+        await self.session.flush()
 
     async def accept_friend_request(self, from_user: int, to_user: int):
         """
@@ -202,9 +203,9 @@ class UserAccess:
         """
         delete_request = delete(FriendRequest).where(
             (from_user == FriendRequest.from_user_id) & (to_user == FriendRequest.to_user_id))
-        await self.__session.execute(delete_request)
+        await self.session.execute(delete_request)
 
-        await self.__session.flush()
+        await self.session.flush()
 
     async def get_friend_requests(self, user_id: int):
         """
@@ -214,7 +215,7 @@ class UserAccess:
         """
         friend_requests = Select(User).\
             join(FriendRequest, FriendRequest.from_user_id == User.id).where(FriendRequest.to_user_id == user_id)
-        results = await self.__session.execute(friend_requests)
+        results = await self.session.execute(friend_requests)
         results = results.scalars().all()
         return results
 
@@ -222,8 +223,8 @@ class UserAccess:
         """
         make a table entry for each resource for the given user in hasResource
         """
-        resources = await self.__session.execute(Select(ResourceType.name))
+        resources = await self.session.execute(Select(ResourceType.name))
         resources = resources.scalars().all()
         for resource in resources:
-            self.__session.add(HasResources(owner_id=user_id, resource_type=resource))
-        await self.__session.flush()
+            self.session.add(HasResources(owner_id=user_id, resource_type=resource))
+        await self.session.flush()

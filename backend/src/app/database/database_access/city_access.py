@@ -1,16 +1,17 @@
 import math
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import *
-from ..database import AsyncSession
 from .planet_access import PlanetAccess
+from .database_acess import DatabaseAccess
 
 
-class CityAccess:
+class CityAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of cities
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
+        super().__init__(session)
 
     async def create_city(self, planet_id: int, founder_id: int, x: float, y: float):
         """
@@ -24,14 +25,14 @@ class CityAccess:
         """
         Determine in which region the city is found in
         """
-        closest_region = await PlanetAccess(self.__session).get_closest_region(planet_id, x, y)
+        closest_region = await PlanetAccess(self.session).get_closest_region(planet_id, x, y)
 
         """
         Add the city to the database
         """
         city = City(region_id=closest_region.id, controlled_by=founder_id, x=x, y=y)
-        self.__session.add(city)
-        await self.__session.flush()
+        self.session.add(city)
+        await self.session.flush()
         city_id = city.id
         return city_id
 
@@ -44,7 +45,7 @@ class CityAccess:
 
         get_user = Select(User).join(City, City.controlled_by == User.id).where(city_id == City.id)
 
-        results = await self.__session.execute(get_user)
+        results = await self.session.execute(get_user)
 
         owner = results.scalar_one()
         return owner
@@ -57,7 +58,7 @@ class CityAccess:
         """
         get_cities = Select(City).where(City.controlled_by == user_id).order_by(asc(City.id))
 
-        results = await self.__session.execute(get_cities)
+        results = await self.session.execute(get_cities)
         results = results.scalars().all()
 
         return list(results)
@@ -81,7 +82,7 @@ class CityAccess:
         get_towers_attack = Select(TowerType.attack, BuildingInstance.rank).\
             join(BuildingInstance, BuildingInstance.building_type == TowerType.name).\
             where(BuildingInstance.city_id == city_id)
-        towers_attack = await self.__session.execute(get_towers_attack)
+        towers_attack = await self.session.execute(get_towers_attack)
         towers_attack = towers_attack.all()
 
         """
@@ -98,7 +99,7 @@ class CityAccess:
         get_walls_defense = Select(WallType.defense, BuildingInstance.rank).\
             join(BuildingInstance, BuildingInstance.building_type == WallType.name).\
             where(BuildingInstance.city_id == city_id)
-        walls_defense = await self.__session.execute(get_walls_defense)
+        walls_defense = await self.session.execute(get_walls_defense)
         walls_defense = walls_defense.all()
 
         """
@@ -118,4 +119,4 @@ class CityAccess:
         """
 
         u = Update(City).values({"controlled_by": user_id}).where(City.id == city_id)
-        await self.__session.execute(u)
+        await self.session.execute(u)

@@ -3,15 +3,16 @@ import math
 from ..models import *
 from ..database import AsyncSession
 from typing import Optional
+from .database_acess import DatabaseAccess
 
 
-class PlanetAccess:
+class PlanetAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of planets
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
-
+        super().__init__(session)
+        
     async def create_space_region(self, region_name: str):
         """
         Creates space region and returns the id generated
@@ -20,8 +21,8 @@ class PlanetAccess:
         :return: region_id of the space region we just created
         """
         sp = SpaceRegion(name=region_name)
-        self.__session.add(sp)
-        await self.__session.flush()
+        self.session.add(sp)
+        await self.session.flush()
         region_id = sp.id
         return region_id
 
@@ -35,8 +36,8 @@ class PlanetAccess:
         :return: planet_id of the planet we just created
         """
         planet = Planet(name=planet_name, planet_type=planet_type, space_region_id=space_region_id)
-        self.__session.add(planet)
-        await self.__session.flush()
+        self.session.add(planet)
+        await self.session.flush()
         planet_id = planet.id
         return planet_id
 
@@ -51,8 +52,8 @@ class PlanetAccess:
         :return: region_id of the region that is just created
         """
         region = PlanetRegion(planet_id=planet_id, region_type=region_type, x=x, y=y)
-        self.__session.add(region)
-        await self.__session.flush()
+        self.session.add(region)
+        await self.session.flush()
         region_id = region.id
         return region_id
 
@@ -64,7 +65,7 @@ class PlanetAccess:
         :return: a list of all regions that are on this planet
         """
         select_regions = Select(PlanetRegion).where(PlanetRegion.planet_id == planet_id)
-        results = await self.__session.execute(select_regions)
+        results = await self.session.execute(select_regions)
         return list(results.scalars().all())
 
     async def get_planet_cities(self, planet_id: int) -> list[City]:
@@ -78,7 +79,7 @@ class PlanetAccess:
             PlanetRegion, City.region_id == PlanetRegion.id
         ).where(PlanetRegion.planet_id == planet_id)
 
-        results = await self.__session.execute(select_cities)
+        results = await self.session.execute(select_cities)
         return list(results.scalars().all())
 
     async def get_region_cities(self, region_id: int) -> list[City]:
@@ -90,7 +91,7 @@ class PlanetAccess:
         """
 
         select_cities = Select(City).where(City.region_id == region_id)
-        results = await self.__session.execute(select_cities)
+        results = await self.session.execute(select_cities)
         return list(results.scalars().all())
 
     async def get_all_planets(self):
@@ -100,7 +101,7 @@ class PlanetAccess:
         :return: a list of tuples (planet id, planet name)
         """
         get_planets = Select(Planet.id, Planet.name)
-        results = await self.__session.execute(get_planets)
+        results = await self.session.execute(get_planets)
         results = results.all()
         return results
 
@@ -114,7 +115,7 @@ class PlanetAccess:
             Select(Planet)
             .where(Planet.id == planet_id)
         )
-        result = await self.__session.execute(stmt)
+        result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_planet_region_types(self, planet_type: str):
@@ -129,7 +130,7 @@ class PlanetAccess:
             .join(AssociatedWith, PlanetRegionType.region_type == AssociatedWith.region_type)
             .filter(AssociatedWith.planet_type == planet_type)
         )
-        results = await self.__session.execute(stmt)
+        results = await self.session.execute(stmt)
         return results.scalars().all()
 
     async def get_random_planet_type(self):
@@ -143,7 +144,7 @@ class PlanetAccess:
             .order_by(func.random())
             .limit(1)
         )
-        results = await self.__session.execute(stmt)
+        results = await self.session.execute(stmt)
         return results.scalar_one()
 
     async def get_planets_of_user(self, user_id: int) -> list[Planet]:
@@ -159,7 +160,7 @@ class PlanetAccess:
             .join(City, City.region_id == PlanetRegion.id)
             .where(City.controlled_by == user_id)
         )
-        results = await self.__session.execute(stmt)
+        results = await self.session.execute(stmt)
         return list(results.scalars().all())
 
     async def get_planets_between_times(self, start_time: datetime, end_time: datetime) -> list[Planet]:
@@ -176,7 +177,7 @@ class PlanetAccess:
             .where(Planet.created_at <= end_time)
             .order_by(Planet.created_at.asc())
         )
-        results = await self.__session.execute(stmt)
+        results = await self.session.execute(stmt)
         return list(results.scalars().all())
 
     async def get_closest_region(self, planet_id: int, x: float, y: float):
@@ -188,7 +189,7 @@ class PlanetAccess:
         :return: region that is the closest to the provided position
         """
 
-        regions = await PlanetAccess(self.__session).get_regions(planet_id)
+        regions = await PlanetAccess(self.session).get_regions(planet_id)
 
         """
         Calculate which region our city belongs too based on the closed distance

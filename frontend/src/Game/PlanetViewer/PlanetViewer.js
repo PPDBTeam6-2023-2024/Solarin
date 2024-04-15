@@ -20,12 +20,16 @@ import PlanetSwitcher from "../UI/PlanetSwitcher/PlanetSwitcher";
 
 function PlanetViewer(props) {
 
-
+    /*Map information to support scrolling and moving on the MapInteractionCSS component*/
     const [mapState, setMapState] = useState({
         scale: 1,
         translation: {x: 0, y: 0},
     });
+
+    /*State that keeps a list of all the armies that need to be displayed*/
     const [armyImages, setArmyImages] = useState([]);
+
+    /*Keep track of all the army viewers (army menu) that are currently open*/
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
 
     /*Get images of cities on map cities on the map*/
@@ -51,20 +55,22 @@ function PlanetViewer(props) {
     const [cityImages, setCityImages] = useState([]);
 
     const reloadCities = () => {
-        setCitiesLoaded(false)
-    }
-
-    /*Load cities from databank, and get images*/
-    useEffect(() => {
-        if (!citiesLoaded) {
-            fetchCities({
+        fetchCities({
                 getCities: GetCities,
                 handleCityClick: handleCityClick,
                 setCityImages: setCityImages,
                 setCitiesLoaded: setCitiesLoaded
-            }, props.planetId);
-        }
-    }, [handleCityClick, citiesLoaded]);
+        }, props.planetId);
+    }
+
+    /*
+    * When we load the planet:
+    * Load cities from database, and get images
+    */
+    useEffect(() => {
+        /*Load Cities*/
+        reloadCities()
+    }, []);
 
     /*handle closing of cityManager window*/
     const [showCityManager, setShowCityManager] = useState(true);

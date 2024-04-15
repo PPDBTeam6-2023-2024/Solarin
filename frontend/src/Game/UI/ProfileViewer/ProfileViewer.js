@@ -7,13 +7,27 @@ import PoliticsMenu from "./PoliticsMenu";
 
 function ProfileViewer(props) {
 
+    /*Get access to the user Information*/
     const [userInfo, setUserInfo] = useContext(UserInfoContext)
 
+    /*
+    * Indicates which category is currently selected
+    * */
     const [selectedCategory, setSelectedCategory] = useState("");
 
+    /*
+    * Stores the list of cities owned by the user
+    * */
     const [citiesList, setCitiesList] = useState([]);
+
+    /*
+    * Stores the list of armies owned by the user
+    * */
     const [armiesList, setArmiesList] = useState([]);
 
+    /*
+    * Retrieve the cities from backend (owned by the user)
+    * */
     const getCitiesPositions = async () => {
         /*get the list of all the requests to join the alliance*/
         try {
@@ -25,6 +39,9 @@ function ProfileViewer(props) {
         }
     }
 
+    /*
+    * Retrieve the armies from backend (owned by the user)
+    * */
     const getArmiesPositions = async () => {
         /*get the list of all the requests to join the alliance*/
         try {
@@ -41,7 +58,7 @@ function ProfileViewer(props) {
             <div className="profile_viewer">
                 <h1>Username: {userInfo.username}</h1>
 
-                {/*list of buttons on the left: cities and armies*/}
+                {/*list of buttons on the left: cities and armies (category tabs)*/}
                 <div style={{"width": "15%", "height": "100%", "marginLeft": "1vw"}}>
                     <ul>
                         <div className="profile_viewer_category_button" onClick={() => {
@@ -63,6 +80,7 @@ function ProfileViewer(props) {
 
                 </div>
 
+                {/*When cities tab selected, display a list of cities owner by the user*/}
                 {selectedCategory === "Cities" &&
                     <div className="profile_viewer_list absolute"
                          style={{"overflowY": "scroll", "width": "80%", "height": "80%", "scrollbarWidth:": "none"}}>
@@ -74,6 +92,7 @@ function ProfileViewer(props) {
                     </div>
                 }
 
+                {/*When armies tab selected, display a list of armies owner by the user*/}
                 {selectedCategory === "Armies" &&
                     <div className="profile_viewer_list absolute"
                          style={{"overflowY": "scroll", "width": "80%", "height": "80%", "scrollbarWidth:": "none"}}>
@@ -84,6 +103,7 @@ function ProfileViewer(props) {
                     </div>
                 }
 
+                {/*When politics tab selected, display the politics menu*/}
                 {selectedCategory === "Politics" &&
                     <div className="profile_viewer_list absolute"
                          style={{"overflowY": "scroll", "width": "80%", "height": "80%", "scrollbarWidth:": "none"}}>

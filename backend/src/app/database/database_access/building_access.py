@@ -259,7 +259,12 @@ class BuildingAccess:
         """
         ra = ResourceAccess(self.__session)
         for p in production:
-            await ra.add_resource(user_id, p.resource_name, min(int(p.base_production*hours), p.max_capacity))
+            """
+            Apply the bonus for higher levels of buildings
+            """
+            production_rate = PropertyUtility.getGPR(1.0, p.base_production, p.rank)
+            max_capacity = PropertyUtility.getGPR(1.0, p.max_capacity, p.rank)
+            await ra.add_resource(user_id, p.resource_name, min(int(production_rate*hours), max_capacity))
 
         """
         Check the building, indicating that the last checked timer needs to be set to now

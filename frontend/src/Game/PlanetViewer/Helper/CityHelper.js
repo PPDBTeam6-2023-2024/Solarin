@@ -1,4 +1,4 @@
-export const fetchCities = async ({getCities, handleCityClick, setCityImages, setCitiesLoaded}, planetId) => {
+export const fetchCities = async ({getCities, handleCityClick, setCityImages}, planetId) => {
     const cities = await getCities(planetId);
 
     // replace with actual planetID
@@ -7,5 +7,4 @@ export const fetchCities = async ({getCities, handleCityClick, setCityImages, se
         onClick: () => handleCityClick(city.id, city.controlled_by),
     }));
     setCityImages(cityElements);
-    setCitiesLoaded(true);
 };

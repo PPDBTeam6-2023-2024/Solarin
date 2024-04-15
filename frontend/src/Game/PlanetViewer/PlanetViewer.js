@@ -58,8 +58,7 @@ function PlanetViewer(props) {
         fetchCities({
                 getCities: GetCities,
                 handleCityClick: handleCityClick,
-                setCityImages: setCityImages,
-                setCitiesLoaded: setCitiesLoaded
+                setCityImages: setCityImages
         }, props.planetId);
     }
 
@@ -211,12 +210,7 @@ function PlanetViewer(props) {
                     This event just indicates that frontend needs to reload both armies and cities,
                     to be consistent with the backend
                     * */
-                    await fetchCities({
-                        getCities: GetCities,
-                        handleCityClick: handleCityClick,
-                        setCityImages: setCityImages,
-                        setCitiesLoaded: setCitiesLoaded
-                    }, props.planetId);
+                    await reloadCities()
                     socket.send(
                         JSON.stringify(
                             {

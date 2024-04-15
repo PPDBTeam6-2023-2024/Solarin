@@ -36,9 +36,21 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
     // load city context (buildings, troops, etc.) either from API or from context map
     const cityContextLoader = (() => {
         /*Load city information*/
+        updateBuildingsAndTypes()
+        /*Load army information*/
+        getArmyInCity(cityId).then(setTroops); // Fetch and set troops
+    })
+
+    /*Update the buildings their information*/
+    const updateBuildingsAndTypes = () => {
+        /* Refresh buildings and types, by loading its current information from the backend*/
+
+        /*Get information about the current buildings inside the city*/
         getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
             });
+
+        /*Get information about the upgrade cost of a building*/
         getUpgradeCost(cityId).then(buildings => {
             const costMap = buildings.reduce((acc, building) => {
                 acc[building.id] = building;
@@ -48,21 +60,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
         });
         getNewBuildingTypes(cityId).then(newBuildingTypes => {
             setNewBuildingTypes(newBuildingTypes)
-        });
-        getArmyInCity(cityId).then(setTroops); // Fetch and set troops
-    })
-
-
-    const updateBuildingsAndTypes = () => {
-        /* Refresh buildings and types after building/upgrading */
-        getBuildings(cityId).then(setBuildings);
-        getNewBuildingTypes(cityId).then(setNewBuildingTypes);
-        getUpgradeCost(cityId).then(buildings => {
-            const costMap = buildings.reduce((acc, building) => {
-                acc[building.id] = building;
-                return acc;
-            }, {});
-            setUpgradeCostMap(costMap);
         });
     };
 
@@ -94,7 +91,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
         };
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [initialClick,buildings, upgradeCostMap, newBuildingTypes, troops]);
+    }, [initialClick]);
+
     return (
         <div className="darken_background">
             <WindowUI>
@@ -134,6 +132,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         troops={troops}
                         setSelectedClick={setSelectedClick}
                         selectedImage={selectedImage}
+                        refresh={cityContextLoader}
                     />
                     }
 

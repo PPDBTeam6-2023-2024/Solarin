@@ -52,39 +52,39 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 * Nexus
 	* Produces: 
 		* *Solarium (SOL)*
-			* $\text{baseRate(SOL, nexus)}=5$
-			* $\text{baseCapacity(SOL, nexus)}=500$
+			* $\text{baseRate(SOL, nexus)}=600$
+			* $\text{baseCapacity(SOL, nexus)}=5000$
 		* *Techforge (TF)*
-			* $\text{baseRate(TF, nexus)}=15$
+			* $\text{baseRate(TF, nexus)}=400$
 			* $\text{baseCapacity(TF, nexus)}=5000$
 	* Creation Cost:
 		* 6500 TF
 	* The player begins with a free *Nexus*
 * Farmpod
 	* Produces *Rations (RA)*
-		* $\text{baseRate(RA, farmpod)}=30$
+		* $\text{baseRate(RA, farmpod)}=300$
 		* $\text{baseCapacity(RA, farmpod)}=5000$
-	* 1000 TF Creation Cost
+	* 1200 TF Creation Cost
 * Cloning Chamber
 	* Produces *Population (POP)*
-		* $\text{baseRate(POP, cloningChamber)}=15$
-		* $\text{baseCapacity(POP, cloningChamber)}=5000$
+		* $\text{baseRate(POP, cloningChamber)}=150$
+		* $\text{baseCapacity(POP, cloningChamber)}=1000$
 	* Creation Cost
 		* 1500 TF
 * Extractor
 	* Produces:
 		* *Minerals*
-			* $\text{baseRate(minerals, extractor)}=10$
-			* $\text{baseCapacity(minerals, extractor)}=1000$
+			* $\text{baseRate(minerals, extractor)}=500$
+			* $\text{baseCapacity(minerals, extractor)}=1500$
 		* *Oil*
-			* $\text{baseRate(oil, extractor)}=10$
-			* $\text{baseCapacity(oil, extractor)}=1000$
+			* $\text{baseRate(oil, extractor)}=500$
+			* $\text{baseCapacity(oil, extractor)}=1500$
 	* Creation Cost:
 		* 3000 TF
 * Reactor
 	* Produces *Uranium*
-		* $\text{baseRate(uranium, extractor))}=15$
-		* $\text{baseCapacity(uranium, extractor)}=250$
+		* $\text{baseRate(uranium, extractor))}=100$
+		* $\text{baseCapacity(uranium, extractor)}=550$
 	* Creation Cost:
 		* 10000 TF
  

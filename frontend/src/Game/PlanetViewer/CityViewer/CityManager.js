@@ -24,7 +24,10 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
     * */
 
     const dispatch = useDispatch();
+
+    /*List of the buildings inside the city*/
     const [buildings, setBuildings] = useState([]);
+
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
     const [troops, setTroops] = useState([]); // State for troops

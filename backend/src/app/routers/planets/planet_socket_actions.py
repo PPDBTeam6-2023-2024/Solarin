@@ -149,5 +149,7 @@ class PlanetSocketActions:
 
         city_id = await self.data_access.CityAccess.create_city(planet_id, self.user_id, x, y)
 
+        await self.data_access.ArmyAccess.enter_city(city_id, army_id)
+
         await self.data_access.commit()
         await self.connection_pool.broadcast({"request_type": "reload"})

@@ -17,7 +17,8 @@ function ProfileListEntry(props) {
             </div>
 
             <div className="goto" style={{"width": "30%", "display": "inline-block"}} onClick={handleClick}>
-                Go To {props.type} at ({props.x}, {props.y})
+                {/*Display a go to location button with rounded cords so we don't have a too ling integer*/}
+                Go To {props.type} at ({props.x.toFixed(4)}, {props.y.toFixed(4)})
             </div>
         </div>
 

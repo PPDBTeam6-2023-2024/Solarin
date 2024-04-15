@@ -20,7 +20,7 @@ import {useDispatch} from 'react-redux'
 
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityContextMap, setCityContextMap}) => {
-     const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const [buildings, setBuildings] = useState([]);
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
@@ -135,6 +135,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
                         cityId={cityId}
                         upgradeCostMap={upgradeCostMap}
                         setUpgradeCostMap={setUpgradeCostMap}
+                        setBuildings={setBuildings}
                         refreshResources={() => initializeResources(dispatch)}
                     />}
                     {selectedTab === 'newBuildings' &&

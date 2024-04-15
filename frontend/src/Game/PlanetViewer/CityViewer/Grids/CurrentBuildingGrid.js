@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect  } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
-    collectResources, getUpgradeCost,
+    collectResources, getBuildings, getUpgradeCost,
     upgradeBuilding
 } from "../BuildingManager";
 import './NewBuildingGrid.css';
@@ -44,8 +44,8 @@ const TrainButtonComponent = ({ data, setSelectedClick }) => {
 
 
 
-const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost, refreshResources }) => {
-    const upgradeBuildingHelper = async (cityId, buildingId) => {
+const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost, refreshResources, setBuildings }) => {
+    const upgradeBuildingHelper = async (cityId, buildingId, setBuildings) => {
         try {
             const upgrade_succesful= await upgradeBuilding(cityId, buildingId);
             if (upgrade_succesful.confirmed === true) {
@@ -56,6 +56,9 @@ const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost, 
                   }, {});
                   setUpgradeCostMap(costMap);
                   refreshResources();
+                  getBuildings(cityId).then(buildings => {
+                      setBuildings(buildings)
+            });
             });
             }
         } catch (error) {
@@ -78,15 +81,14 @@ const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost, 
         : "wide-button disabled";
 
     return (
-        <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id)} disabled={!isCostAvailable || !costData.can_upgrade}>
+        <button className={buttonStyle} onClick={() => upgradeBuildingHelper(cityId, data.id, setBuildings)} disabled={!isCostAvailable || !costData.can_upgrade}>
             {buttonText}
         </button>
     );
 };
 
 
-
-const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources, upgradeCostMap, setUpgradeCostMap, refreshResources }) => {
+const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
 
 
@@ -97,13 +99,15 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
 
     ], [cityId]);
 
+
     const rowData = useMemo(() => buildings.map((building, index) => ({
         buildingType: building.building_type,
         buildingRank: building.rank,
         index: index,
         id: building.id,
-        type: building.type
+        type: building.type,
     })), [buildings]);
+
 
     return (
         <>
@@ -135,7 +139,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     <ResourceButtonComponent data={selectedBuilding} cityId={cityId}  refreshResources={refreshResources}/>
                 }
                 {selectedBuilding &&
-                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} upgradeCost={upgradeCostMap} setUpgradeCostMap={setUpgradeCostMap} refreshResources={refreshResources} />
+                    <UpgradeButtonComponent data={selectedBuilding} cityId={cityId} upgradeCost={upgradeCostMap} setUpgradeCostMap={setUpgradeCostMap} refreshResources={refreshResources} setBuildings={setBuildings} />
                 }
             </div>
             }

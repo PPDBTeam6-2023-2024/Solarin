@@ -1,4 +1,4 @@
-from ..utils.compute_properties import *
+from ..formula.compute_properties import *
 from ...app.database.database_access.data_access import DataAccess
 
 

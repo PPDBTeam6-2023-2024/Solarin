@@ -8,6 +8,7 @@ from ..exceptions.permission_exception import PermissionException
 from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
+from .user_access import UserAccess
 
 class ArmyAccess(DatabaseAccess):
     """
@@ -57,6 +58,11 @@ class ArmyAccess(DatabaseAccess):
         get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id,
                                                  ArmyConsistsOf.troop_type == troop_type,
                                                  ArmyConsistsOf.rank == rank)
+        """
+        Don't add empty entries
+        """
+        if amount == 0:
+            return
 
         results = await self.session.execute(get_entry)
         result = results.scalar_one_or_none()
@@ -172,7 +178,6 @@ class ArmyAccess(DatabaseAccess):
         1000/speed  (speed in range 149-350) * 3600 (= 1 hour)
         An army with a speed of 250 will take 4 hours to cross the entire map
         """
-
         map_cross_time = PropertyUtility.get_map_cross_time(army_stats["speed"])
 
         """
@@ -317,8 +322,16 @@ class ArmyAccess(DatabaseAccess):
         Check a user doesn't attack himself
         """
         city_owner = await CityAccess(self.session).get_city_controller(target_id)
-        if attack_id == city_owner:
+        if attack_id == city_owner.id:
             raise InvalidActionException("You cannot attack your own army")
+
+        user_alliance = await UserAccess(self.session).get_alliance(attack_id)
+
+        """
+        Check user doesn't attack alliance member
+        """
+        if user_alliance == city_owner.alliance:
+            raise InvalidActionException("You cannot attack your allies")
 
         """
         add the attack event object to the database
@@ -394,6 +407,7 @@ class ArmyAccess(DatabaseAccess):
             """
             troop_size = troop_tup[0]
             troop_rank = troop_tup[1]
+
             troop_stats = troop_tup[2].getStats(troop_rank, troop_size)
 
             total_troop_amount += troop_size
@@ -411,6 +425,7 @@ class ArmyAccess(DatabaseAccess):
         Speed is expresses as a weighted average, In case no troops are present, our
         army will have a speed of 100
         """
+
         army_stats["speed"] = army_stats.get("speed", 100) / max(total_troop_amount, 1)
 
         return army_stats
@@ -438,9 +453,12 @@ class ArmyAccess(DatabaseAccess):
 
     async def get_army_in_city(self, city_id: int, add_on_none=True) -> int:
         """
-        Returns a list of army id's of armies that are inside a city
+        Returns an army id of an army that is inside a city
         param: city_id: the id of the city we want to check
-        return: List of Army id's
+        return: Army id
+
+        When no army is inside the city we will use the add_on_none optional
+        to create an empty army
         """
 
         armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
@@ -529,7 +547,6 @@ class ArmyAccess(DatabaseAccess):
         get_from_units = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == from_army_id)
         from_troops = await self.session.execute(get_from_units)
         from_troops = from_troops.scalars().all()
-
         """
         Add the units to the army
         """
@@ -540,6 +557,7 @@ class ArmyAccess(DatabaseAccess):
         Remove original army
         """
         await self.remove_army(from_army_id)
+        await self.__session.flush()
 
     async def add_merge_armies(self, army_id: int, target_id: int):
         """

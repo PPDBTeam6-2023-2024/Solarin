@@ -1,13 +1,13 @@
 import React, {useContext, useMemo} from "react";
-import { AgGridReact } from "ag-grid-react";
+import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
-import EntityViewer from "../../../UI/CityViewer/EntityViewer";
 import {SocketContext} from "../../../Context/SocketContext";
-const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage }) => {
+
+const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, refresh}) => {
     const columns = useMemo(() => [
-        { headerName: "Troop Type", field: "troopType", autoHeight: true },
-        { headerName: "Rank", field: "rank" },
-        { headerName: "Size", field: "size"},
+        {headerName: "Troop Type", field: "troopType", autoHeight: true},
+        {headerName: "Rank", field: "rank"},
+        {headerName: "Size", field: "size"},
     ], []);
 
     const rowData = useMemo(() => troops.troops.map((troop, index) => ({
@@ -21,13 +21,15 @@ const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, sel
 
     const handleLeaveCity = async () => {
 
-            const data_json  = {
-                        type: "leave_city",
-                        army_id: troops.army_id
-                };
-
-            await socket.send(JSON.stringify(data_json));
+        const data_json = {
+            type: "leave_city",
+            army_id: troops.army_id
         };
+
+        await socket.send(JSON.stringify(data_json));
+
+        refresh()
+    };
 
     return (
         <>
@@ -53,15 +55,19 @@ const ArmyGrid = ({ troops, onRowMouseOver, setSelectedClick, selectedClick, sel
                     }}
                 />
             </div>
-            <div className="right-screen">
+            <div style={{"width": "27%"}} className="right-screen">
                 {selectedImage &&
                     <div className="building_image">
                         <img src={selectedImage} alt="Troops" className="selected-image"/>
                     </div>
                 }
-                <button className="wide-button" onClick={handleLeaveCity}>
-                    Leave City
-                </button>
+
+                {rowData.length > 0 &&
+                    <button className="wide-button" onClick={handleLeaveCity}>
+                        Leave City
+                    </button>
+                }
+
             </div>
         </>
     );

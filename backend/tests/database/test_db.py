@@ -4,7 +4,7 @@ from src.app.database.database import sessionmanager
 from src.app.database.database_access.data_access import DataAccess
 from src.app.database.models import *
 from sqlalchemy import inspect
-from ...src.logic.combat.AttackCheck import *
+from ...src.logic.combat.ArriveCheck import *
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):
     async with sessionmanager.session() as session:
@@ -99,7 +99,7 @@ async def insert_test_data(connection_test):
         p_id = await da.PlanetAccess.create_planet("Umbara", "Shadow planet", sr_id)
         await da.DeveloperAccess.create_planet_region_type("valley of death", "Ooh.. very scary")
         r_id = await da.PlanetAccess.create_planet_region(p_id, "valley of death", 0, 0)
-        c_id = await da.CityAccess.create_city(r_id, 2, 0.2, 0.8)
+        c_id = await da.CityAccess.create_city(r_id, 20, 0.2, 0.8)
         c_id2 = await da.CityAccess.create_city(r_id, 1, 0.8, 0.2)
 
         """
@@ -123,25 +123,25 @@ async def insert_test_data(connection_test):
 
 
         await da.ResourceAccess.add_resource(1, "TF", 10000)
-        await da.ResourceAccess.add_resource(2, "TF", 10000)
+        await da.ResourceAccess.add_resource(20, "TF", 10000)
         await da.ResourceAccess.add_resource(1, "Vibranium", 10000)
-        await da.ResourceAccess.add_resource(2, "Vibranium", 10000)
+        await da.ResourceAccess.add_resource(20, "Vibranium", 10000)
         await da.ResourceAccess.add_resource(1, "Energon", 10000)
-        await da.ResourceAccess.add_resource(2, "Energon", 10000)
+        await da.ResourceAccess.add_resource(20, "Energon", 10000)
 
         """
         Create some actual buildings instances inside cities
         """
-        await da.BuildingAccess.create_building(2, c_id, "The mines of moria")
-        b_id = await da.BuildingAccess.create_building(2, c_id, "Kamino training complex")
-        await da.BuildingAccess.create_building(2, c_id, "Solarin mansion")
+        await da.BuildingAccess.create_building(20, c_id, "The mines of moria")
+        b_id = await da.BuildingAccess.create_building(20, c_id, "Kamino training complex")
+        await da.BuildingAccess.create_building(20, c_id, "Solarin mansion")
 
         await da.BuildingAccess.create_building(1, c_id2, "The mines of moria")
         b_id2 = await da.BuildingAccess.create_building(1, c_id2, "Kamino training complex")
         await da.BuildingAccess.create_building(1, c_id2, "Solarin mansion")
 
-        await da.BuildingAccess.create_building(2, c_id, "towerH")
-        await da.BuildingAccess.create_building(2, c_id, "wallW")
+        await da.BuildingAccess.create_building(20, c_id, "towerH")
+        await da.BuildingAccess.create_building(20, c_id, "wallW")
 
         """
         create some types of troops
@@ -149,7 +149,7 @@ async def insert_test_data(connection_test):
 
         a_id = await da.ArmyAccess.create_army(user_id=1, planet_id=p_id, x=0, y=0)
 
-        a_id2 = await da.ArmyAccess.create_army(user_id=3, planet_id=p_id, x=0, y=0)
+        a_id2 = await da.ArmyAccess.create_army(user_id=20, planet_id=p_id, x=0, y=0)
 
         await da.DeveloperAccess.create_troop_type("tank", timedelta(hours=4),
                                                    BattleStats(attack=5, defense=50, city_attack=1, city_defense=120,
@@ -260,7 +260,7 @@ async def test_planet():
         cities = await da.PlanetAccess.get_planet_cities(1)
         assert len(cities) == 2
         assert cities[0].id == 1
-        assert cities[0].controlled_by == 2
+        assert cities[0].controlled_by == 20
         assert cities[0].x == 0.2
         assert cities[0].y == 0.8
         assert cities[1].x == 0.8
@@ -483,7 +483,7 @@ async def test_army_combat():
 
         await da.ArmyAccess.attack_army(1, 2)
 
-        suc6 = await AttackCheck.check_attack(1, da)
+        suc6 = await ArriveCheck.check_arrive(1, da)
         assert suc6
 
         a1 = await da.ArmyAccess.get_army_by_id(1)
@@ -500,13 +500,13 @@ async def test_city_combat():
         da = DataAccess(session)
 
         owner = await da.CityAccess.get_city_controller(1)
-        assert owner.id == 2
+        assert owner.id == 20
 
         await da.ArmyAccess.enter_city(1, 2)
 
         await da.ArmyAccess.attack_city(1, 1)
 
-        suc6 = await AttackCheck.check_attack(1, da)
+        suc6 = await ArriveCheck.check_arrive(1, da)
         assert suc6
 
         owner = await da.CityAccess.get_city_controller(1)

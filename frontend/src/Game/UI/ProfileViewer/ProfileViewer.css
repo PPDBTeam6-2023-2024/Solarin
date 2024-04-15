@@ -1,0 +1,40 @@
+.profile_viewer * {
+    font-size: 2vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile_viewer * * {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+
+.profile_viewer h1 {
+    font-size: 3vw;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.profile_viewer_category_button {
+    border: 0.2vw solid white;
+    border-radius: 1vw;
+    width: 100%;
+}
+
+.profile_viewer_category_button:hover {
+
+    z-index: 21;
+    --scaleIndex: 110%;
+    --translate_size: calc((var(--scaleIndex) - 100%) / 2);
+    transform: translate(var(--translate_size), 0) scale(var(--scaleIndex));
+
+}
+
+.profile_viewer_list {
+    border: 0.2vw solid white;
+    right: 0;
+    top: 10%;
+}

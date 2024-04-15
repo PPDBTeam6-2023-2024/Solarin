@@ -9,6 +9,9 @@ Base = declarative_base()
 
 
 class DatabaseSessionManager:
+    """
+    Initialize database access
+    """
     def __init__(self):
         self._engine: AsyncEngine | None = None
         self._sessionmaker: async_sessionmaker | None = None
@@ -26,6 +29,9 @@ class DatabaseSessionManager:
 
     @contextlib.asynccontextmanager
     async def connect(self) -> AsyncIterator[AsyncConnection]:
+        """
+        Connect to the database
+        """
         if self._engine is None:
             raise Exception("DatabaseSessionManager is not initialized")
 

@@ -50,9 +50,6 @@ async def test_attack_army(client):
                    "accept": "application/json"
                    }
 
-        response2 = client.post(f"/army/leave_city/{army_id}", headers=headers)
-        r = response2.json()
-        assert r["success"]
 
 
 

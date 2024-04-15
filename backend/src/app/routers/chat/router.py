@@ -38,7 +38,6 @@ async def websocket_endpoint(
 
     await connection_pool.send_personal_message(websocket, {"type": "paging", "message": output_list})
 
-
     """
     start receiving new requests
     """
@@ -184,6 +183,7 @@ async def create_alliance(
     await data_access.commit()
     return {"success": True, "message": "Alliance is created"}
 
+
 @router.post("/join_alliance")
 async def join_alliance(
         request: Request,
@@ -229,6 +229,7 @@ async def alliance_requests(
         output_list.append((d.username, d.id))
     return output_list
 
+
 @router.post("/alliance_requests")
 async def alliance_requests(
         request: Request,
@@ -253,17 +254,22 @@ async def alliance_requests(
 
     return ""
 
+
 @router.get("/alliance_messageboard")
 async def alliance_messageboard(
         user_id: Annotated[int, Depends(get_my_id)],
         db: AsyncSession = Depends(get_db)
 
 ) -> int:
+    """
+    Get the alliance messageboard, of the alliance the user is a part of
+    """
     data_access = DataAccess(db)
 
     alliance = await data_access.AllianceAccess.get_alliance(user_id)
     message_board = await data_access.MessageAccess.get_alliance_message_board(alliance)
     return message_board
+
 
 @router.get("/ranking")
 async def get_ranking(
@@ -278,10 +284,3 @@ async def get_ranking(
     data_access = DataAccess(db)
     ranking = await data_access.RankingAccess.get_top_ranking(30)
     return ranking
-
-@router.websocket("/wss")
-async def websocket_test(
-        websocket: WebSocket
-):
-
-    await websocket.accept()

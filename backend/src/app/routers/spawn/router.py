@@ -45,13 +45,12 @@ async def spawn_user(
     recent_planets = await data_access.PlanetAccess.get_planets_between_times(curr_time - delta, curr_time)
 
     if recent_planets:
-        planet_id = recent_planets[0].planet_id
+        planet_id = recent_planets[0].id
     else:
         planet_id = await generate_random_planet(db, 1)
 
     await data_access.ArmyAccess.create_army(user_id, planet_id, random.uniform(0, 1), random.uniform(0, 1))
     await db.commit()
-
     return {
         "planet_id": planet_id
     }

@@ -1,8 +1,5 @@
-import React from "react";
-import troopsJson from "./../troops.json";
 import BuildingRecords from "../buildingImages.json";
 import TroopRecords from "../troops.json";
-import Troops from "../troops.json";
 
 export const getImageForBuildingType = (buildingType) => {
     if (BuildingRecords && BuildingRecords[buildingType]) {

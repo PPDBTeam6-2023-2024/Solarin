@@ -33,21 +33,21 @@
   ],
   "production-buildings": [
     {"name":  "nexus", "creation-cost" : 6500,"products": [
-      {"product-name":  "SOL", "base-rate":  5, "base-cap":  500},
-      {"product-name":  "TF", "base-rate":  15, "base-cap":  5000}
+      {"product-name":  "SOL", "base-rate":  600, "base-cap":  5000},
+      {"product-name":  "TF", "base-rate":  400, "base-cap":  5000}
     ]},
-    {"name":  "farmpod", "creation-cost": 1000,"products":  [
-      {"product-name":  "RA", "base-rate":  30, "base-cap":  5000}
+    {"name":  "farmpod", "creation-cost": 1200,"products":  [
+      {"product-name":  "RA", "base-rate":  300, "base-cap":  5000}
     ]},
     {"name":  "cloning-chamber", "creation-cost": 1500,"products":  [
-      {"product-name":  "POP", "base-rate":  15, "base-cap":  5000}
+      {"product-name":  "POP", "base-rate":  150, "base-cap":  1000}
     ]},
     {"name":  "extractor", "creation-cost": 3000,"products":  [
-      {"product-name":  "MI", "base-rate":  10, "base-cap":  1000},
-      {"product-name":  "OI", "base-rate":  10, "base-cap":  1000}
+      {"product-name":  "MI", "base-rate":  500, "base-cap":  1500},
+      {"product-name":  "OI", "base-rate":  500, "base-cap":  1500}
     ]},
         {"name":  "reactor", "creation-cost": 10000,"products":  [
-      {"product-name":  "UR", "base-rate":  15, "base-cap":  250}
+      {"product-name":  "UR", "base-rate":  100, "base-cap":  550}
     ]}
   ],
   "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],

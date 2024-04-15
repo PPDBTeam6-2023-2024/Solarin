@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import *
 from sqlalchemy import select, not_, or_, join
-from ....logic.utils.compute_properties import *
+from ....logic.formula.compute_properties import *
 from .resource_access import ResourceAccess
 from .city_access import CityAccess
 from ..exceptions.not_found_exception import NotFoundException
@@ -156,15 +156,14 @@ class BuildingAccess(DatabaseAccess):
 
         await self.session.flush()
 
-    async def get_available_building_types(self, user_id: int, city_id: int, city_rank: int):
+    async def get_available_building_types(self, user_id: int, city_id: int):
         """
         Get all building types that are being able to be build, based on the upgrade cost and the
-        required rank
+        required rank. Make sure only buildings not yet inside the city are available
 
         and check if the user has enough resources.
 
         :param city_id: ID of the city
-        :param city_rank: Rank of the city
         :param user_id: ID of the user
         :return: List of available building types for the city along with a boolean indicating if the user can build it
         """
@@ -181,11 +180,36 @@ class BuildingAccess(DatabaseAccess):
 
         building_types = await self.get_building_types()
 
+        """
+        get the building types of the buildings that are inside the city
+        """
+        get_city_building_type = Select(BuildingType.name).\
+            join(BuildingInstance, BuildingType.name == BuildingInstance.building_type).\
+            where(BuildingInstance.city_id == city_id)
+
+        city_buildings = await self.__session.execute(get_city_building_type)
+        city_buildings = city_buildings.scalars().all()
+
+        """
+        Calculate all the building types not yet inside the city
+        """
+        new_building_types = []
+        for b in building_types:
+            if b.name not in city_buildings:
+                new_building_types.append(b)
+
+        building_types = new_building_types
+
+        """
+        Obtain the costs of the building types the user is able to create
+        """
         buildings_data = []
 
         """
         For each building Type request the resource costs needed
         """
+        city_rank = await ca.get_city_rank(city_id)
+
         for building_type in building_types:
             if building_type.required_rank is not None and building_type.required_rank > city_rank:
                 continue
@@ -236,7 +260,12 @@ class BuildingAccess(DatabaseAccess):
         """
         ra = ResourceAccess(self.session)
         for p in production:
-            await ra.add_resource(user_id, p.resource_name, min(int(p.base_production*hours), p.max_capacity))
+            """
+            Apply the bonus for higher levels of buildings
+            """
+            production_rate = PropertyUtility.getGPR(1.0, p.base_production, p.rank)
+            max_capacity = PropertyUtility.getGPR(1.0, p.max_capacity, p.rank)
+            await ra.add_resource(user_id, p.resource_name, min(int(production_rate*hours), max_capacity))
 
         """
         Check the building, indicating that the last checked timer needs to be set to now

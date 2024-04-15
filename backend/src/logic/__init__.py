@@ -1,2 +1,2 @@
 from .name_generator import *
-from .utils import *
+from .formula import *

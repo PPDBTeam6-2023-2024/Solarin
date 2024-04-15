@@ -10,8 +10,4 @@ Gives back a random planet name.
 ## Description
 Function generate_planet_name() returns random line from planet_names.txt
 
-## Issues
-None
 
-## Additional Information
-None

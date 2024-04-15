@@ -1,6 +1,6 @@
 import json
 from src.app.database.database_access.developer_access import *
-from src.logic.utils.compute_properties import *
+from src.logic.formula.compute_properties import *
 from sqlalchemy import select
 import os
 

@@ -5,6 +5,7 @@ from ...database.database_access.data_access import DataAccess
 from ....logic.combat.ArriveCheck import ArriveCheck
 import asyncio
 import datetime
+from ...database.exceptions.invalid_action_exception import InvalidActionException
 
 
 class PlanetSocketActions:
@@ -30,6 +31,7 @@ class PlanetSocketActions:
         -> Return the armies that are on the planet (at least those not inside a city)
         """
         armies = await self.data_access.ArmyAccess.get_armies_on_planet(planet_id=self.planet_id)
+
         data = {
             "request_type": data["type"],
             "data": [army.to_dict() for army in armies]
@@ -56,8 +58,13 @@ class PlanetSocketActions:
         """
         Here we will check if some attack target message is added, If so we will set the attack target
         """
-        if data.get("on_arrive", False) and (data["target_id"] != army_id or
-                                             data["target_type"] in ("attack_city", "enter")):
+
+        """
+        Check that an army is not planning to attack/merge with itself
+        """
+
+        if data.get("on_arrive", False) and \
+                (data["target_id"] != army_id or data["target_type"] in ("attack_city", "enter")):
             """
             This dict translated a key to a function (function ptr), which can be used
             """
@@ -69,11 +76,18 @@ class PlanetSocketActions:
             arrive_func = target_type_dict.get(data["target_type"])
 
             if arrive_func is not None:
-                await arrive_func(army_id, data["target_id"])
+                """
+                When the action is invalid we will just not do the action
+                """
+                try:
+                    await arrive_func(army_id, data["target_id"])
+                except InvalidActionException:
+                    pass
 
                 """
                 When we add an attack we need to setup an async check
                 """
+
                 asyncio.create_task(
                     self.check_army_combat(army_id, (army.arrival_time - datetime.datetime.utcnow()).total_seconds()))
 
@@ -102,6 +116,7 @@ class PlanetSocketActions:
         """
         On reload frontend needs to reload its cities and armies on the map
         """
+        await self.data_access.commit()
         await self.connection_pool.broadcast({"request_type": "reload"})
 
     async def load_on_arrive(self):
@@ -120,3 +135,22 @@ class PlanetSocketActions:
             asyncio.create_task(
                 self.check_army_combat(pending_on_arrive[0],
                                        (pending_on_arrive[1] - datetime.datetime.utcnow()).total_seconds()))
+
+    async def create_city(self, data: json):
+        """
+        Create a new city on the position of the army
+        """
+        army_id = data["army_id"]
+
+        """
+        Create the new city
+        """
+
+        planet_id, x, y = await self.data_access.ArmyAccess.get_current_position(army_id)
+
+        city_id = await self.data_access.CityAccess.create_city(planet_id, self.user_id, x, y)
+
+        await self.data_access.ArmyAccess.enter_city(city_id, army_id)
+
+        await self.data_access.commit()
+        await self.connection_pool.broadcast({"request_type": "reload"})

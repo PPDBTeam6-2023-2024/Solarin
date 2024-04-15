@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import "./FriendOverviewEntry.css"
-import axios from "axios";
 
 
 function FriendOverviewEntry(props) {
@@ -10,21 +9,22 @@ function FriendOverviewEntry(props) {
      * */
 
     return (
-      <>
-          {/*Creates the div that contains the chat menu*/}
-      <div className="transition ease-in-out" id={"FriendOverviewEntryVisual"} onClick={props.onEntryClick}>
-          <div style={{"width": "35%", "marginLeft": "5%"}}>
-              {props.user}
-          </div>
+        <>
+            {/*Creates the div that contains the chat menu*/}
+            <div className="transition ease-in-out" id={"FriendOverviewEntryVisual"} onClick={props.onEntryClick}>
+                <div style={{"width": "35%", "marginLeft": "5%"}}>
+                    {props.user}
+                </div>
 
-          <div id={"FriendOverviewEntryMessage"} className="bg-gray-900" style={{"width": "60%", "height": "100%"}}>
-              {props.message.body}
+                <div id={"FriendOverviewEntryMessage"} className="bg-gray-900"
+                     style={{"width": "60%", "height": "100%"}}>
+                    {props.message.body}
 
-          </div>
+                </div>
 
 
-      </div>
-    </>
+            </div>
+        </>
     )
 }
 

@@ -1,4 +1,4 @@
-.TrainingQueueEntry{
+.TrainingQueueEntry {
     display: inline-block;
     position: relative;
     width: 6.5vw;
@@ -10,7 +10,7 @@
     margin: 0.1vw;
 }
 
-.TrainingQueueImageWrapper{
+.TrainingQueueImageWrapper {
     display: inline-block;
     position: relative;
     width: 100%;
@@ -18,23 +18,23 @@
 }
 
 
-.TrainingQueueImageWrapper img{
+.TrainingQueueImageWrapper img {
     position: absolute;
     bottom: 0;
 }
 
-.TrainingQueueStats div{
+.TrainingQueueStats div {
     font-size: 0.8vw;
 }
 
-.TrainingQueueStats div .QueueLabel{
+.TrainingQueueStats div .QueueLabel {
     font-size: 0.7vw;
     color: gray;
     display: inline;
     margin-right: 0.3vw;
 }
 
-.TrainingQueueStats{
+.TrainingQueueStats {
     position: absolute;
     bottom: 0;
 }

@@ -132,9 +132,10 @@ Cities, Armies and regions have coordinates to keep track of their location.
 <p>
 The following domains are used:
 
-|   Domain   | Purpose                                         |
-|:----------:|:------------------------------------------------|
-| Coordinate | Domain for coordinates that are in range [0, 1] |  
+|     Domain      | Purpose                                         |
+|:---------------:|:------------------------------------------------|
+|   Coordinate    | Domain for coordinates that are in range [0, 1] |  
+| PositiveInteger | Domain for integers that need to be positive    |  
 
 </p>
 </details>

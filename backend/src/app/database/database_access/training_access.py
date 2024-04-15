@@ -4,9 +4,8 @@ from ..models import *
 from ..database import AsyncSession
 from .building_access import BuildingAccess
 from .army_access import ArmyAccess
-from ....logic.utils.compute_properties import *
+from ....logic.formula.compute_properties import *
 from .database_acess import DatabaseAccess
-
 
 class TrainingAccess(DatabaseAccess):
     """

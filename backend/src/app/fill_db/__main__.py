@@ -12,6 +12,11 @@ from ..routers.authentication.router import pwd_context
 from ..database.database_access.message_access import MessageToken
 from .create_tuples import CreateTuples
 
+"""
+This code adds entries to the database, so the database is filled with good data
+to debug/ give demonstrations
+"""
+
 
 async def fill_db(data: dict):
     config = APIConfig(config_sources=FileSource(file='config.yml'))    
@@ -25,18 +30,30 @@ async def fill_db(data: dict):
         await create_friendships(data["friendships"], session)
         await session.commit()
 
+
 async def create_space_region(data: dict, session: AsyncSession):
+    """
+    Create a data space region
+    """
     region_id = await DataAccess(session=session).PlanetAccess.create_space_region(data["name"])
     for _ in range(data["planet count"]):
         await generate_random_planet(session, region_id)
     await session.flush()
 
+
 async def create_space_regions(data: list[dict], session: AsyncSession):
+    """
+    Create all the data space regions
+    """
     for region in data:
         await create_space_region(region, session)
     await session.flush()    
 
+
 async def create_user(data: dict, session: AsyncSession):
+    """
+    Create data related to the user
+    """
     data_access = DataAccess(session=session)
     user_id = await data_access.UserAccess.create_user(data["userinfo"]["username"], data["userinfo"]["email"], pwd_context.hash(data["userinfo"]["password"]))
     # add resources
@@ -54,13 +71,20 @@ async def create_user(data: dict, session: AsyncSession):
             await data_access.BuildingAccess.create_building(user_id, city_id, building, True)
     await session.flush()
 
+
 async def create_users(data: list[dict], session: AsyncSession):
+    """
+    Create multiple users
+    """
     for user in data:
         await create_user(user, session)
     await session.flush()
 
 
 async def create_alliances(data: list[dict], session: AsyncSession):
+    """
+    Setup alliances
+    """
     data_access = DataAccess(session=session)
     for alliance in data:
         await data_access.AllianceAccess.create_alliance(alliance["name"])
@@ -76,7 +100,11 @@ async def create_alliances(data: list[dict], session: AsyncSession):
             await data_access.MessageAccess.create_message(MessageToken(sender_id=sender_id, message_board=message_board, body=chat["body"]))
     await session.flush()
 
+
 async def create_friendships(data: list[dict], session: AsyncSession):
+    """
+    Add friends
+    """
     data_access = DataAccess(session=session)
     for friendship in data:
         forward_dict = {

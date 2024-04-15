@@ -3,7 +3,7 @@ import math
 from ..models import *
 from ..database import AsyncSession
 from .army_access import ArmyAccess
-from ....logic.utils.compute_properties import *
+from ....logic.formula.compute_properties import *
 from typing import Tuple, List
 from .database_acess import DatabaseAccess
 
@@ -23,6 +23,12 @@ class ResourceAccess(DatabaseAccess):
         :param: resource_check: list of tuples (resource_name, amount), that will be checked
         """
         for resource in resource_check:
+            """
+            This costs None of this resoruce, so we don't have to check this
+            """
+            if resource[1] == 0:
+                continue
+
             get_resources = Select(HasResources.resource_type, HasResources.quantity).\
                 where((HasResources.owner_id == user_id) & (HasResources.resource_type == resource[0]))
             results = await self.session.execute(get_resources)
@@ -67,12 +73,17 @@ class ResourceAccess(DatabaseAccess):
         :param: resource_name: name of the resource that will be removed
         :param: amount: amount of the provide resource that will be removed
         """
+
         s = Select(HasResources).\
             where((user_id == HasResources.owner_id) & (HasResources.resource_type == resource_name))
         has_resources = await self.session.execute(s)
-        has_resources = has_resources.scalar_one()
+        has_resources = has_resources.scalar_one_or_none()
 
-        has_resources.quantity -= amount
+        if has_resources is None:
+            self.session.add(HasResources(resource_type=resource_name, quantity=0, owner_id=user_id))
+        else:
+            has_resources.quantity -= amount
+
         await self.session.flush()
 
     async def get_resource_amount(self, user_id: int, resource_name: str) -> int:
@@ -93,3 +104,33 @@ class ResourceAccess(DatabaseAccess):
             has_resources = 0
 
         return has_resources
+
+    async def get_resources(self, user_id: int):
+        """
+        Get all the resources of a specific user
+
+        :param: user_id: id of the user whose resources we want
+        return: dict, with resource names as keys and resource amount as values
+        """
+
+        """
+        Retrieve the resources of the user
+        """
+        user_resources = await self.__session.execute(select(HasResources).where(HasResources.owner_id == user_id).\
+            order_by(asc(HasResources.resource_type)))
+        resources = await self.__session.execute(select(ResourceType))
+        result: dict[str, int] = {}
+
+        """
+        Put resources inside a dictionary
+        """
+        for user_resource in user_resources.scalars().all():
+            result[user_resource.resource_type] = user_resource.quantity
+
+        """
+        All the resources that do not have an entry, will receive value 0
+        """
+        for resource in resources.scalars().all():
+            result[resource.name] = 0 if not result.get(resource.name, False) else result[resource.name]
+
+        return result

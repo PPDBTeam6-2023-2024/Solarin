@@ -120,3 +120,14 @@ class CityAccess(DatabaseAccess):
 
         u = Update(City).values({"controlled_by": user_id}).where(City.id == city_id)
         await self.session.execute(u)
+
+    async def get_city_rank(self, city_id: int) -> int:
+        """
+        Get the rank of a city
+        param: city_id: the city whose rank we want
+        return: rank of the city
+        """
+        get_rank = Select(City.rank).where(City.id == city_id)
+        result = await self.session.execute(get_rank)
+        result = result.scalar_one()
+        return result

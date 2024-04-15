@@ -212,7 +212,7 @@ function PlanetViewer(props) {
                         handleCityClick: handleCityClick,
                         setCityImages: setCityImages,
                         setCitiesLoaded: setCitiesLoaded
-                    });
+                    }, props.planetId);
                     socket.send(
                         JSON.stringify(
                             {

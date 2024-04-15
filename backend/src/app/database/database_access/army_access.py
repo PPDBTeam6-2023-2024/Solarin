@@ -177,7 +177,6 @@ class ArmyAccess:
         1000/speed  (speed in range 149-350) * 3600 (= 1 hour)
         An army with a speed of 250 will take 4 hours to cross the entire map
         """
-        print(army_stats)
         map_cross_time = PropertyUtility.get_map_cross_time(army_stats["speed"])
 
         """
@@ -539,7 +538,6 @@ class ArmyAccess:
         get_from_units = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == from_army_id)
         from_troops = await self.__session.execute(get_from_units)
         from_troops = from_troops.scalars().all()
-        print("q3")
         """
         Add the units to the army
         """
@@ -549,10 +547,8 @@ class ArmyAccess:
         """
         Remove original army
         """
-        print(from_army_id)
         await self.remove_army(from_army_id)
         await self.__session.flush()
-        print("q4")
 
     async def add_merge_armies(self, army_id: int, target_id: int):
         """

@@ -1,10 +1,9 @@
 import {MapInteractionCSS} from 'react-map-interaction';
 import {useState, useEffect, useContext, useRef} from 'react';
 
-import GetCities from './CityViewer/GetCities';
 import CityManager from "./CityViewer/CityManager";
 
-import {PlanetListContext} from "../Context/PlanetListContext"
+
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
 
@@ -37,13 +36,20 @@ function PlanetViewer(props) {
     /*Keep track of all the army viewers (army menu) that are currently open*/
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
 
-    /*Get images of cities on map cities on the map*/
-
+    /*
+    * SelectCityId stores an Id of the currently selected city, this makes it possible
+    * To have the UI component, outside the MapInteractionCSS component
+    * ShowCities decides, whether or not cities will be visualized on the map
+    * */
     const [selectedCityId, setSelectedCityId] = useState(null);
     const [showCities, setShowCities] = useState(true);
 
+    /*User account information*/
     const [userInfo, setUserInfo] = useContext(UserInfoContext)
 
+    /*
+    * When we click on a city, we want to open the city menu, but only when our user is the owner of this city
+    * */
     const handleCityClick = (cityId, controlledBy) => {
         if (controlledBy === userInfo.id) {
             setSelectedCityId(cityId);
@@ -52,11 +58,12 @@ function PlanetViewer(props) {
         }
     };
 
+    /*Get images of cities on map cities on the map*/
     const [cityImages, setCityImages] = useState([]);
 
+    /*Reload all the city information from the backend*/
     const reloadCities = () => {
         fetchCities({
-                getCities: GetCities,
                 handleCityClick: handleCityClick,
                 setCityImages: setCityImages
         }, props.planetId);
@@ -79,9 +86,7 @@ function PlanetViewer(props) {
         setShowCities(true);
     }
 
-    const [planetList, setPlanetList] = useContext(PlanetListContext)
-    const [planetListIndex, setPlanetListIndex] = props.planetListIndex;
-
+    /*This state and ref keep information about the websocket*/
     const isWebSocketConnected = useRef(false);
     const [socket, setSocket] = useState(null)
 
@@ -195,6 +200,7 @@ function PlanetViewer(props) {
         if (!socket) return
         socket.onmessage = async (event) => {
             let response = JSON.parse(event.data)
+            /*Websocket cases depending on the type of request we receive from the abckend websockets*/
             switch (response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
@@ -299,7 +305,7 @@ function PlanetViewer(props) {
                 <SocketContext.Provider value={[socket, setSocket]}>
 
                     {/*Display planet switch component*/}
-                    <PlanetSwitcher planetList={planetList} planetIndex={[planetListIndex, setPlanetListIndex]}/>
+                    <PlanetSwitcher planetIndex={props.planetListIndex}/>
 
                     {
                         /*
@@ -314,8 +320,8 @@ function PlanetViewer(props) {
                     }
 
 
-                {/*Display cityManager over the map*/}
-                {selectedCityId && showCityManager && (
+                    {/*Display cityManager over the map*/}
+                    {selectedCityId && showCityManager && (
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
                             <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager}/>
                         </div>

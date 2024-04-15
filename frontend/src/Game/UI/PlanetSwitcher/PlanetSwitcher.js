@@ -6,11 +6,15 @@ import {IoMdClose} from 'react-icons/io';
 
 import {Resources} from '../ResourceViewer/ResourceViewer';
 import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
+import {PlanetListContext} from "../../Context/PlanetListContext";
 
 
 
-function PlanetSwitcher({planetList, planetIndex}) {
+function PlanetSwitcher({planetIndex}) {
     /*This component displays The planet in the top and makes it possible to switch between planets*/
+
+    const [planetList, setPlanetList] = useContext(PlanetListContext)
+
     const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
     const [planetListIndex, setPlanetListIndex] = planetIndex
     return (

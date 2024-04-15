@@ -129,7 +129,7 @@ function PlanetViewer(props) {
                 owner: army.owner,
                 arrivalTime: arrivalTime,
                 departureTime: departureTime,
-                src: '/images/troop_images/Soldier.png',
+                src: '/images/troop_images/Assassin.png',
                 style: {
                     position: 'absolute',
                     left: `${currentPos.x * 100}%`,

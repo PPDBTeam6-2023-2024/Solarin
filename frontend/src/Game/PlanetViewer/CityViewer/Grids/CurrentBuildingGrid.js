@@ -86,7 +86,6 @@ const UpgradeButtonComponent = ({ data, cityId, setUpgradeCostMap, upgradeCost, 
 
 
 
-
 const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, resources, upgradeCostMap, setUpgradeCostMap, refreshResources }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
 
@@ -97,6 +96,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         {headerName: "Function", field: "type", autoHeight: true },
 
     ], [cityId]);
+
     const rowData = useMemo(() => buildings.map((building, index) => ({
         buildingType: building.building_type,
         buildingRank: building.rank,

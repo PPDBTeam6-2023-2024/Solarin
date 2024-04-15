@@ -85,7 +85,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
     };
 
     useEffect(() => {
-        console.log("load")
         cityContextLoader()
         setInitialClick(false);
     },[])
@@ -113,10 +112,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
                 cityContextSaver()
             }
         };
-
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [initialClick]);
+    }, [initialClick,buildings, upgradeCostMap, newBuildingTypes, troops, cityId,setCityContextMap]);
 
     return (
         <div className="darken_background">

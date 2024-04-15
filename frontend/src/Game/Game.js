@@ -9,7 +9,6 @@ import {RiArrowLeftSLine} from "react-icons/ri";
 import {IoMdPlanet} from "react-icons/io";
 import {UserInfoContext} from "./Context/UserInfoContext"
 
-import planet_example from './Images/Planets/example.png'
 import {PlanetListContext} from "./Context/PlanetListContext"
 
 const Game = () => {
@@ -76,14 +75,14 @@ const Game = () => {
                                     <RiArrowLeftSLine className="basis-1/4"/>
                                     <IoMdPlanet/>
                                 </div>
-                                <PlanetViewer mapImage={planet_example} planetName={planetList[planetListIndex][1]}
+                                <PlanetViewer planetName={planetList[planetListIndex][1]}
                                               planetId={planetList[planetListIndex][0]}
                                               planetListIndex={[planetListIndex, setPlanetListIndex]}/>
                             </>
                         }
 
                         {viewMode === View.GalaxyView &&
-                            <GalaxyViewer mapImage={planet_example} setViewMode={setViewMode}/>
+                            <GalaxyViewer setViewMode={setViewMode}/>
                         }
 
                         {viewMode === View.ProfileView &&

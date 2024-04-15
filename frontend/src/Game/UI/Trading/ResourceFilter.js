@@ -19,11 +19,11 @@ function ResourceFilter(props) {
                       <>
                           {selectedFilter === resource[0] ?
                               <div className="ResourceFilterIcon" style={{"backgroundColor": "var(--tertiaryColor)"}}>
-                                  <img src={(`/src/Game/Images/resources/${resourcesJson[resource[0]]["icon"]}`)}
+                                  <img src={(`/images/resources/${resourcesJson[resource[0]]["icon"]}`)}
                                        alt={resource[0]} draggable={false}/>
                               </div>:
                               <div className="ResourceFilterIcon" onClick={() =>{setSelectedFilter(resource[0]);}}>
-                                  <img src={(`/src/Game/Images/resources/${resourcesJson[resource[0]]["icon"]}`)}
+                                  <img src={(`/images/resources/${resourcesJson[resource[0]]["icon"]}`)}
                                        alt={resource[0]} draggable={false}/>
                               </div>
                           }

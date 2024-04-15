@@ -41,7 +41,7 @@ export const Resources = () => {
                         <p>{resource[1]}
                             {getResourceField(resource[0], "icon", null) &&
                                 <img className="inline ml-2 max-w-7 max-h-7 w-auto h-auto"
-                                     src={(`/src/Game/Images/resources/${getResourceField(resource[0], "icon", "")}`)}
+                                     src={(`/images/resources/${getResourceField(resource[0], "icon", "")}`)}
                                      alt={resource[0]} draggable={false}/>
                             }
                             {

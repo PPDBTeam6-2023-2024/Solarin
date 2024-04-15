@@ -35,7 +35,7 @@ function ArmyViewTroopEntry(props) {
             {/*Display an icon for the rank of a unit (max 11, because we only have images till rank 11)*/}
             <div style={{"width": "20%", height: "auto", "display": "inline-block"}}>
                 <Tooltip title={`rank ${props.rank}`}>
-                    <img src={(`/src/Game/Images/ranks/Rank${Math.min(props.rank, 11)}.png`)} draggable={false}
+                    <img src={(`/images/ranks/Rank${Math.min(props.rank, 11)}.png`)} draggable={false}
                          unselectable="on"
                          alt=""
                     />

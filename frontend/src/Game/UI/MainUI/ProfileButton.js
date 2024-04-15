@@ -1,6 +1,5 @@
 import React, {useState, useContext} from 'react';
 import "./ProfileButton.css"
-import profile from "./../../Images/profile_images/profile_1.png"
 import {ViewModeContext, View} from "../../Context/ViewModeContext"
 import WindowUI from '../WindowUI/WindowUI';
 import {IoMdClose} from 'react-icons/io';
@@ -16,7 +15,7 @@ const ProfileElement = (props) => {
         <>
             <div className="profile_circle bottom-0 fixed transition ease-in-out" onClick={props.onProfileClick}>
                 <div className="profile_background bottom-0 fixed">
-                    <img src={profile} alt="profile_1" draggable="false"/>
+                    <img src={(`/images/profile_images/profile_1.png`)} alt="profile_1" draggable="false"/>
                 </div>
             </div>
 

@@ -15,7 +15,6 @@ import {fetchCities} from './Helper/CityHelper';
 
 import {IoMdClose} from "react-icons/io";
 
-import army_example from "../Images/troop_images/Soldier.png"
 import ArmyMapEntry from "./ArmyMapEntry";
 import CityMapEntry from "./CityMapEntry";
 import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
@@ -130,7 +129,7 @@ function PlanetViewer(props) {
                 owner: army.owner,
                 arrivalTime: arrivalTime,
                 departureTime: departureTime,
-                src: army_example,
+                src: '/images/troop_images/Soldier.png',
                 style: {
                     position: 'absolute',
                     left: `${currentPos.x * 100}%`,

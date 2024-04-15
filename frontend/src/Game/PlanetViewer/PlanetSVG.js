@@ -2,19 +2,16 @@ import {useState, useEffect, useMemo} from 'react';
 import {Delaunay} from 'd3';
 import axios from 'axios';
 
-import rocks from '../Images/region_types/rocks.jpeg'
-import sandyrocks from '../Images/region_types/sandyrocks.jpeg'
-import darkrocks from '../Images/region_types/darkrocks.jpeg'
 
-// get the correct image for the given region
+// get the correct image path for the given region
 function GetImagePath(regionType) {
     const imagePaths = {
-        type1: rocks,
-        "valley of death": sandyrocks,
-        "dark valley": darkrocks,
+        type1: '/images/region_types/rocks.jpeg',
+        "valley of death": '/images/region_types/sandyrocks.jpeg',
+        "dark valley": '/images/region_types/darkrocks.jpeg',
     };
 
-    return imagePaths[regionType] || rocks; // default is rocks
+    return imagePaths[regionType] || '/images/region_types/rocks.jpeg'; // default is rocks
 }
 
 function PlanetSVG(props) {
@@ -61,7 +58,7 @@ function PlanetSVG(props) {
                     </clipPath>
                     <image
                         key={`image-${i}`}
-                        xlinkHref={imagePath}
+                        href={imagePath}
                         clipPath={`url(#clip-${i})`}
                         width={width}
                         height={height}

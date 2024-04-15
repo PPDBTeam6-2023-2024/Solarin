@@ -100,7 +100,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
                 troops: troops
             }
         }));
-    }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId,setCityContextMap]);
+    }, [buildings, upgradeCostMap, newBuildingTypes, troops, cityId, setCityContextMap]);
 
     useEffect(() => {
         const handleClickOutside = event => {

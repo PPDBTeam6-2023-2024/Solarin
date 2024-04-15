@@ -51,7 +51,6 @@ async def spawn_user(
 
     await data_access.ArmyAccess.create_army(user_id, planet_id, random.uniform(0, 1), random.uniform(0, 1))
     await db.commit()
-
     return {
         "planet_id": planet_id
     }

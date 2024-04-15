@@ -39,14 +39,18 @@ const Game = () => {
     const getAllPlanets = async () => {
         /*retrieve a list of planet id's and planet names to switch between them*/
         try {
+            /*Make sure the user sees the right planets*/
+            const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
+
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets`)
             if (response.data.length > 0) setPlanetList(response.data)
             else setPlanetListToDefault()
 
-            /*Make sure the user sees the right planets*/
-            const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
             changePlanetId(response2.data.planet_id)
+
+            setPlanetListIndex(response.data.findIndex(planet => planet[0] === response2.data.planet_id))
+
         } catch (error) {
             setPlanetListToDefault()
         }

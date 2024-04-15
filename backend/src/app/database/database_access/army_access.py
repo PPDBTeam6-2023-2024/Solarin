@@ -6,7 +6,7 @@ from ..database import AsyncSession
 from .city_access import CityAccess
 from ..exceptions.permission_exception import PermissionException
 from ..exceptions.invalid_action_exception import InvalidActionException
-
+from .data_access import UserAccess
 
 class ArmyAccess:
     """
@@ -321,8 +321,16 @@ class ArmyAccess:
         Check a user doesn't attack himself
         """
         city_owner = await CityAccess(self.__session).get_city_controller(target_id)
-        if attack_id == city_owner:
+        if attack_id == city_owner.id:
             raise InvalidActionException("You cannot attack your own army")
+
+        user_alliance = await UserAccess(self.__session).get_alliance(attack_id)
+
+        """
+        Check user doesn't attack alliance member
+        """
+        if user_alliance == city_owner.alliance:
+            raise InvalidActionException("You cannot attack your allies")
 
         """
         add the attack event object to the database

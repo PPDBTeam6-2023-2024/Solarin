@@ -227,3 +227,16 @@ class UserAccess:
         for resource in resources:
             self.__session.add(HasResources(owner_id=user_id, resource_type=resource))
         await self.__session.flush()
+
+    async def get_alliance(self, user_id: int):
+        """
+        Get the alliance corresponding to the user
+        param: user_id: id of the user whose alliance we want
+
+        return: name of alliance (string or none in case the user is not in an alliance)
+        """
+
+        get_alliance = Select(User.alliance).where(User.id == user_id)
+        result = await self.__session.execute(get_alliance)
+        result = result.scalar_one_or_none()
+        return result

@@ -1,7 +1,7 @@
-// BuildingManager.js
 import axios from "axios";
 import Records from "./../../UI/buildingImages.json"
 
+// get all the buildings inside a given city
 export const getBuildings = async (cityId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
@@ -16,10 +16,10 @@ export const getBuildings = async (cityId) => {
     }
 };
 
-export const getNewBuildingTypes = async (cityId,cityRank) => {
+export const getNewBuildingTypes = async (cityId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/new_building_types?city_id=${cityId}&city_rank=${cityRank}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/new_building_types/${cityId}`);
         if (response.status === 200 && Array.isArray(response.data)) {
             return response.data;
         }
@@ -30,10 +30,10 @@ export const getNewBuildingTypes = async (cityId,cityRank) => {
     }
 };
 
-export const createBuilding = async (cityId,BuildingType) => {
+export const createBuilding = async (cityId, BuildingType) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/create_new_building?city_id=${cityId}&building_type=${BuildingType}`);
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/building/create_new_building?city_id=${cityId}&building_type=${BuildingType}`);
         if (response.status === 200) {
             return response.data;
         }
@@ -61,7 +61,7 @@ export const getResources = async () => {
 export const collectResources = async (cityId, buildingId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/collect?city_id=${cityId}&building_id=${buildingId}`);
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/building/collect/${buildingId}`);
         if (response.status === 200) {
             return response.data;
         }
@@ -74,7 +74,7 @@ export const collectResources = async (cityId, buildingId) => {
 export const upgradeBuilding = async (cityId, buildingId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/upgrade_building?city_id=${cityId}&building_id=${buildingId}`);
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/building/upgrade_building/${buildingId}`);
         if (response.status === 200) {
             return response.data;
         }
@@ -88,7 +88,7 @@ export const upgradeBuilding = async (cityId, buildingId) => {
 export const getUpgradeCost = async (cityId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_upgrade_cost?city_id=${cityId}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_upgrade_cost/${cityId}`);
         if (response.status === 200) {
             return response.data;
         }
@@ -98,19 +98,19 @@ export const getUpgradeCost = async (cityId) => {
     }
 };
 
-export const GetArmyInCity = async (cityId) => {
+// get all the armies that are currently in the given city
+export const getArmyInCity = async (cityId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies_in_city?city_id=${cityId}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/army_in_city?city_id=${cityId}`);
         if (response.status === 200) {
             return response.data;
         }
     } catch (error) {
-        console.error('Error retrieving upgrade cost:', error);
+        console.error('Error retrieving armies in a city:', error);
         return null;
     }
 };
-
 
 
 export const getImageForBuildingType = (buildingType) => {

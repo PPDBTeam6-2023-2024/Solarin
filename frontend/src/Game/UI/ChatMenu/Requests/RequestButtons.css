@@ -1,12 +1,12 @@
-.RequestButton{
+.RequestButton {
     padding: 0.5vw;
     font-size: 250%;
     border-radius: 2vw 2vw 2vw 2vw;
     transform: scale(70%);
-    border:0.2vw solid var(--tertiaryColor);
+    border: 0.2vw solid var(--tertiaryColor);
 }
 
-.RequestButton:hover{
+.RequestButton:hover {
     --scaleIndex: 95%;
     transform: scale(var(--scaleIndex));
     z-index: 21;

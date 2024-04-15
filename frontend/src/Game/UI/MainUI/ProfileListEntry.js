@@ -1,7 +1,6 @@
 import React, {useContext} from "react";
 import './ProfileListEntry.css';
 import {ViewModeContext, View} from "../../Context/ViewModeContext";
-import Game from "../../Game";
 
 function ProfileListEntry(props) {
     const [viewMode, setViewMode] = useContext(ViewModeContext)
@@ -13,12 +12,13 @@ function ProfileListEntry(props) {
 
     return (
         <div className="ProfileListEntry">
-            <div style={{"width":"70%", "display": "inline-block"}}>
+            <div style={{"width": "70%", "display": "inline-block"}}>
                 {props.text}
             </div>
 
-            <div className="goto" style={{"width":"30%", "display": "inline-block"}} onClick={handleClick}>
-                Go To {props.type} at ({props.x}, {props.y})
+            <div className="goto" style={{"width": "30%", "display": "inline-block"}} onClick={handleClick}>
+                {/*Display a go to location button with rounded cords so we don't have a too ling integer*/}
+                Go To {props.type} at ({props.x.toFixed(4)}, {props.y.toFixed(4)})
             </div>
         </div>
 

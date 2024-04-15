@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import axios from "axios";
 import '../Requests/RequestEntry.css'
 import "../Requests/RequestButtons.css"
@@ -12,44 +12,46 @@ function SendFriendRequestEntry(props) {
     const [anwserMessage, setAnwserMessage] = useState("");
 
 
-    const sendFriendRequest = async(username) => {
+    const sendFriendRequest = async (username) => {
         try {
             /*send a post request to try and create or join the alliance*/
-                axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
-                const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/friend_requests`,
+            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/friend_requests`,
                 JSON.stringify({
                     type: "add",
                     username: username
                 }),
                 {
-                  headers: {
-                    'content-type': 'application/json',
-                    'accept': 'application/json',
-                  },
+                    headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json',
+                    },
                 }
-                )
-                setAnwserMessage(response.data.message)
+            )
+            setAnwserMessage(response.data.message)
+        } catch (e) {
+            return ""
         }
-        catch(e) {return ""}
     }
 
 
-
     return (
-      <>
+        <>
 
-      <div>
-          Send Friend request:
-          <input name="friend_name" value={friendRequestName}
-          onChange={(event) => {setFriendRequestName(event.target.value)}}
-          className="bg-gray-900" required/>
+            <div>
+                Send Friend request:
+                <input name="friend_name" value={friendRequestName}
+                       onChange={(event) => {
+                           setFriendRequestName(event.target.value)
+                       }}
+                       className="bg-gray-900" required/>
 
-          <button className="RequestButton" onClick={() => sendFriendRequest(friendRequestName)}> Send </button>
+                <button className="RequestButton" onClick={() => sendFriendRequest(friendRequestName)}> Send</button>
 
-          {/*Display the message that is received after sending the friend request*/}
-          {anwserMessage}
-      </div>
-    </>
+                {/*Display the message that is received after sending the friend request*/}
+                {anwserMessage}
+            </div>
+        </>
     )
 }
 

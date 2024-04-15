@@ -40,6 +40,7 @@
     top: 5%;
     /*transform: translateY(350%) translateX(-20%);*/
 }
+
 .wide-button.disabled {
     background: linear-gradient(to top, #555, #888);
     color: white;
@@ -52,6 +53,7 @@
     top: 5%;
     cursor: not-allowed;
 }
+
 .wide-button.disabled:hover {
     background: linear-gradient(to top, #555, #888);
     border-radius: 1vh;

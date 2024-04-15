@@ -3,7 +3,7 @@ import datetime
 from ..models import *
 from ..database import AsyncSession
 from sqlalchemy import select, not_, or_, join
-from ....logic.utils.compute_properties import *
+from ....logic.formula.compute_properties import *
 from .resource_access import ResourceAccess
 from .city_access import CityAccess
 from ..exceptions.not_found_exception import NotFoundException
@@ -47,12 +47,13 @@ class BuildingAccess:
 
         return list(cost_query_rows)
 
-    async def create_building(self, user_id: int, city_id: int, building_type: str):
+    async def create_building(self, user_id: int, city_id: int, building_type: str, force: bool = False):
         """
         Create a new instance of building corresponding to a city
         :param: user_id: the id of the user who controls the city
         :param: city_id: the id of the city we want to add a building to
         :param: building_type: the type of building we want to add
+        :param: force: if you enforce to build it even if the user does not have enough resources
         :return: the id of the building we just created
         """
 
@@ -76,14 +77,15 @@ class BuildingAccess:
         """
         has_enough_resources: bool = await ra.has_resources(user_id, creation_cost)
 
-        if not has_enough_resources:
+        if not has_enough_resources and not force:
             raise InvalidActionException("The user does not have enough resources to build this building")
 
         """
         Remove the resources from the user his/hers account
         """
-        for cost_type, cost_amount in creation_cost:
-            await ra.remove_resource(user_id, cost_type, cost_amount)
+        if not force:
+            for cost_type, cost_amount in creation_cost:
+                await ra.remove_resource(user_id, cost_type, cost_amount)
 
         """
         Create the building instance
@@ -153,15 +155,14 @@ class BuildingAccess:
 
         await self.__session.flush()
 
-    async def get_available_building_types(self, user_id: int, city_id: int, city_rank: int):
+    async def get_available_building_types(self, user_id: int, city_id: int):
         """
         Get all building types that are being able to be build, based on the upgrade cost and the
-        required rank
+        required rank. Make sure only buildings not yet inside the city are available
 
         and check if the user has enough resources.
 
         :param city_id: ID of the city
-        :param city_rank: Rank of the city
         :param user_id: ID of the user
         :return: List of available building types for the city along with a boolean indicating if the user can build it
         """
@@ -178,11 +179,36 @@ class BuildingAccess:
 
         building_types = await self.get_building_types()
 
+        """
+        get the building types of the buildings that are inside the city
+        """
+        get_city_building_type = Select(BuildingType.name).\
+            join(BuildingInstance, BuildingType.name == BuildingInstance.building_type).\
+            where(BuildingInstance.city_id == city_id)
+
+        city_buildings = await self.__session.execute(get_city_building_type)
+        city_buildings = city_buildings.scalars().all()
+
+        """
+        Calculate all the building types not yet inside the city
+        """
+        new_building_types = []
+        for b in building_types:
+            if b.name not in city_buildings:
+                new_building_types.append(b)
+
+        building_types = new_building_types
+
+        """
+        Obtain the costs of the building types the user is able to create
+        """
         buildings_data = []
 
         """
         For each building Type request the resource costs needed
         """
+        city_rank = await ca.get_city_rank(city_id)
+
         for building_type in building_types:
             if building_type.required_rank is not None and building_type.required_rank > city_rank:
                 continue

@@ -42,8 +42,6 @@ With this token we can retrieve the user id for all the user specific requests.
 
 For adding a user, sqlalchemy will try to insert a user to the table. If this fails the email or username are already be inside the database.
 
-## Issues
-- database: make sure the User table is present in the database
 
 ## Additional Information
 

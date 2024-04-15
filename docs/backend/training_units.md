@@ -15,17 +15,8 @@ and will leave the remaining time. In case the delta time is bigger than the tim
 A queue entry contains an amount of troops, Even when de queue is not yet finished entirely, Some troops of this entry can already be trained.
 When trained these troops will automatically be assigned to the provided army.
 
-Units will currently be added to the lowest id army that is inside a city
-<<<<<<< HEAD
-When no army is inside the city, automatically a new army will be created
-=======
+Units will currently be added to the army that is inside a city.
 When no army is inside the city, automatically a new army will be created.
 
 Training units will cost a certain amount of resources.
 When a user sends a request to train units, first it will be checked if the user has these amount of resources.
->>>>>>> training_branch
-
-## Issues
-
-
-## Additional Information

@@ -1,0 +1,74 @@
+{
+  "planets": [
+    {"type-name": "arctic", "description": "A planet of arctic climate." },
+    {"type-name": "desert", "description":  "A planet of desert climate."},
+    {"type-name": "tropical", "description": "A planet of tropical climate"}
+  ],
+  "regions": [
+    {"type-name": "arctic", "description": "A region of arctic climate." },
+    {"type-name": "desert", "description":  "A region of desert climate."},
+    {"type-name": "alpine", "description": "A region with many mountains."},
+    {"type-name": "plain", "description": "A flat region with a few trees."}
+  ],
+  "associations": [
+    {"planet-type": "arctic", "region-type": "arctic"},
+    {"planet-type": "arctic", "region-type": "plain"},
+    {"planet-type": "desert", "region-type": "desert"},
+    {"planet-type": "desert", "region-type": "plain"},
+    {"planet-type": "tropical", "region-type": "plain"}
+  ],
+  "barracks":[
+    {"name":  "barracks", "creation-cost": 550, "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}]},
+    {"name":  "space-dock", "creation-cost": 1250, "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}]}
+    ],
+  "towers": [
+    {"name":  "Sentry Tower", "attack":  50, "creation-cost":  500},
+    {"name":  "Plasmic Cannons", "attack":  100, "creation-cost":  2500},
+    {"name":  "Directed Antiprotonic Annihilation System", "attack":  150, "creation-cost":  10000}
+  ],
+  "walls": [
+    {"name":  "Reinforced Techno-Mesh", "defense": 50, "creation-cost":  500},
+    {"name":  "Solarinium Absorption Barrier", "defense": 100, "creation-cost":  2500},
+    {"name":  "Void-fuelled Nullification Wall", "defense": 150, "creation-cost":  10000}
+  ],
+  "production-buildings": [
+    {"name":  "nexus", "creation-cost" : 6500,"products": [
+      {"product-name":  "SOL", "base-rate":  5, "base-cap":  500},
+      {"product-name":  "TF", "base-rate":  15, "base-cap":  5000}
+    ]},
+    {"name":  "farmpod", "creation-cost": 1000,"products":  [
+      {"product-name":  "RA", "base-rate":  30, "base-cap":  5000}
+    ]},
+    {"name":  "cloning-chamber", "creation-cost": 1500,"products":  [
+      {"product-name":  "POP", "base-rate":  15, "base-cap":  5000}
+    ]},
+    {"name":  "extractor", "creation-cost": 3000,"products":  [
+      {"product-name":  "MI", "base-rate":  10, "base-cap":  1000},
+      {"product-name":  "OI", "base-rate":  10, "base-cap":  1000}
+    ]},
+        {"name":  "reactor", "creation-cost": 10000,"products":  [
+      {"product-name":  "UR", "base-rate":  15, "base-cap":  250}
+    ]}
+  ],
+  "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],
+  "units": [
+    {"name":  "soldier", "spec": "land", "base-points":
+    {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250}
+    },
+    {"name":  "tank", "spec": "land", "base-points":
+    {"AP":  149, "DP":  350, "CAP":  149, "CDP":  300, "PBR": 250, "MS": 149}
+    },
+    {"name":  "assassin", "spec": "land", "base-points":
+    {"AP":  350, "DP":  149, "CAP":  250, "CDP":  149, "PBR": 250, "MS": 350}
+    },
+    {"name":  "medic", "spec": "land", "base-points":
+    {"AP":  200, "DP":  200, "CAP":  200, "CDP":  200, "PBR": 350, "MS": 250}
+    },
+    {"name":  "fighter", "spec": "space", "base-points":
+    {"AP":  350, "DP":  200, "CAP":  149, "CDP":  200, "PBR": 250, "MS": 350}
+    },
+    {"name":  "bomber", "spec": "space", "base-points":
+    {"AP":  250, "DP":  149, "CAP":  350, "CDP":  149, "PBR": 250, "MS": 350}
+    }
+  ]
+}

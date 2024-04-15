@@ -8,7 +8,7 @@ import {View} from "../Context/ViewModeContext"
 
 
 function GalaxyViewer(props) {
-    const planetMap = useLoader(TextureLoader, props.mapImage)
+    const planetMap = useLoader(TextureLoader, '/images/Planets/example.png')
     const [isHovering, setIsHovering] = useState(false)
     const {scale} = useSpring({scale: (isHovering) ? [1.05,1.05,1.05]: [1,1,1]})
     return (
@@ -25,4 +25,5 @@ function GalaxyViewer(props) {
     )
 
 }
+
 export default GalaxyViewer

@@ -1,30 +1,31 @@
-// CityManager.js
-import React, { useState, useEffect, useMemo, useContext} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import {
-    GetArmyInCity,
+    getArmyInCity,
     getBuildings,
     getNewBuildingTypes,
-    getResources, getUpgradeCost, refreshResourceAmount
+    getUpgradeCost
 } from './BuildingManager';
-import {UserInfoContext} from "../../Context/UserInfoContext";
 import NewBuildingGrid from './Grids/NewBuildingGrid';
 import WindowUI from '../../UI/WindowUI/WindowUI';
 import TrainingViewer from "../../UI/TrainingUnits/TrainingViewer";
 import CurrentBuildingGrid from "./Grids/CurrentBuildingGrid"
 import ArmyGrid from "./Grids/ArmyGrid";
 import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer/EntityViewer";
+import {initializeResources} from "../../UI/ResourceViewer/ResourceViewer"
+import {useDispatch} from 'react-redux'
 
-const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
+
+const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
+    const dispatch = useDispatch();
     const [buildings, setBuildings] = useState([]);
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
-    const [resources, setResources] = useState([]);
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [troops, setTroops] = useState([]); // State for troops
 
-    const [userInfo, setUserInfo] = useContext(UserInfoContext)
+    const [selectedImage, setSelectedImage] = useState(null);
 
     /* stores selected building*/
     const [selectedClick, setSelectedClick] = useState([-1, ""]);
@@ -32,76 +33,68 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
 
     const [selectedTab, setSelectedTab] = useState('currentBuildings');
 
-    const [troops, setTroops] = useState([]); // State for troops
-
-    useEffect(() => {
-        if (cityId && buildings.length === 0) {
-            getBuildings(cityId).then(buildings => {
+    // load city context (buildings, troops, etc.) either from API or from context map
+    const cityContextLoader = (() => {
+        /*Load city information*/
+        getBuildings(cityId).then(buildings => {
                 setBuildings(buildings)
             });
-            getUpgradeCost(cityId).then(buildings => {
-                  const costMap = buildings.reduce((acc, building) => {
-                    acc[building.id] = building;
-                    return acc;
-                  }, {});
-                  setUpgradeCostMap(costMap);
-            });
-            getNewBuildingTypes(cityId,0).then(newBuildingTypes => {
-                setNewBuildingTypes(newBuildingTypes)
-            });
-            getResources().then(availableResources => {
-                setResources(availableResources)
-            })
+        getUpgradeCost(cityId).then(buildings => {
+            const costMap = buildings.reduce((acc, building) => {
+                acc[building.id] = building;
+                return acc;
+            }, {});
+            setUpgradeCostMap(costMap);
+        });
+        getNewBuildingTypes(cityId).then(newBuildingTypes => {
+            setNewBuildingTypes(newBuildingTypes)
+        });
+        getArmyInCity(cityId).then(setTroops); // Fetch and set troops
+    })
 
-            GetArmyInCity(cityId).then(setTroops); // Fetch and set troops
-
-        }
-    }, [cityId, buildings]);
 
     const updateBuildingsAndTypes = () => {
-        {/* Refresh buildings and types after building/upgrading */}
+        /* Refresh buildings and types after building/upgrading */
         getBuildings(cityId).then(setBuildings);
-        getNewBuildingTypes(cityId, 0).then(setNewBuildingTypes);
+        getNewBuildingTypes(cityId).then(setNewBuildingTypes);
         getUpgradeCost(cityId).then(buildings => {
-                  const costMap = buildings.reduce((acc, building) => {
-                    acc[building.id] = building;
-                    return acc;
-                  }, {});
-                  setUpgradeCostMap(costMap);
-            });
+            const costMap = buildings.reduce((acc, building) => {
+                acc[building.id] = building;
+                return acc;
+            }, {});
+            setUpgradeCostMap(costMap);
+        });
     };
 
     const onRowMouseOver = event => {
-        if (selectedTab === 'Army'){
+        if (selectedTab === 'Army') {
             setSelectedImage(getImageForTroopType(event.data.troopType))
-        } else if(selectedTab === "newBuildings"){
+        } else if (selectedTab === "newBuildings") {
             setSelectedImage(getImageForBuildingType(event.data.name));
-        } else{
+        } else {
             setSelectedImage(getImageForBuildingType(event.data.buildingType));
         }
     };
 
     useEffect(() => {
+        cityContextLoader()
+        setInitialClick(false);
+    }, [])
+
+    useEffect(() => {
+        /*Refresh information on change*/
         const handleClickOutside = event => {
-            const { target } = event;
+            const {target} = event;
             const agGridElement = document.querySelector('.building_view');
             const selectedImageElement = document.querySelector('.selected-image');
 
-            if (agGridElement.contains(target) || (selectedImageElement && selectedImageElement.contains(target))) {
-                return;
-            }
-
-            if (!initialClick) {
+            if (!initialClick && !(agGridElement.contains(target) || (selectedImageElement && selectedImageElement.contains(target)))) {
                 onClose();
-            } else {
-                setInitialClick(false);
             }
         };
-
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [onClose, initialClick]);
-
+    }, [initialClick,buildings, upgradeCostMap, newBuildingTypes, troops]);
     return (
         <div className="darken_background">
             <WindowUI>
@@ -119,9 +112,10 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         selectedClick={selectedClick}
                         selectedImage={selectedImage}
                         cityId={cityId}
-                        resources={resources}
                         upgradeCostMap={upgradeCostMap}
                         setUpgradeCostMap={setUpgradeCostMap}
+                        setBuildings={setBuildings}
+                        refreshResources={() => initializeResources(dispatch)}
                     />}
                     {selectedTab === 'newBuildings' &&
                               <NewBuildingGrid
@@ -130,7 +124,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                                 selectedImage={selectedImage}
                                 cityId={cityId}
                                 updateBuildingsAndTypes={updateBuildingsAndTypes}
-                                resources={resources}
+                                refreshResources={() => initializeResources(dispatch)}
                               />
                             }
 
@@ -140,15 +134,17 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose }) => {
                         troops={troops}
                         setSelectedClick={setSelectedClick}
                         selectedImage={selectedImage}
-                                />
-                             }
+                    />
+                    }
 
 
                     {/*Displays a training menu*/}
                     {selectedTab === 'currentBuildings' && selectedClick[0] !== -1 && selectedClick[1] === "Barracks" &&
+
                         <TrainingViewer key={selectedClick[0]}
-                                        building_id={selectedClick[0]}
+                                        buildingId={selectedClick[0]}
                                         onClose={() => { selectedClick[0] = -1; selectedClick[1] = null}}
+                                        refreshResources={() => initializeResources(dispatch)}
 
                         />}
 

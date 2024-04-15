@@ -1,4 +1,4 @@
-.profile_background{
+.profile_background {
     /**
     This class gives the background behind the profile image alien
     This will make it appear that the profile is a picture of the alien with a background
@@ -11,7 +11,7 @@
     clip-path: circle(50% at 50% 50%);
 }
 
-.profile_circle{
+.profile_circle {
     /**
     style for the profile circle the alien is in
     */
@@ -22,7 +22,7 @@
     clip-path: circle(50% at 50% 50%);
 }
 
-.profile_circle:hover{
+.profile_circle:hover {
 
     /**
     formula to reshape the profile icon when it is hovered.
@@ -35,12 +35,12 @@
     In the transform we just apply the changes
     */
     --scaleIndex: 110%;
-    --translate_size: calc((var(--scaleIndex) - 100%)/2);
-    transform: translate(var(--translate_size), calc(var(--translate_size) * -1)) scale(var(--scaleIndex)) ;
+    --translate_size: calc((var(--scaleIndex) - 100%) / 2);
+    transform: translate(var(--translate_size), calc(var(--translate_size) * -1)) scale(var(--scaleIndex));
 
 }
 
-#profile_bar{
+#profile_bar {
     /**
     id of the profile bar
     This will be used for the long bar next and behind the profile button, and on this, the resources

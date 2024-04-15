@@ -18,6 +18,9 @@ async def get_planets(
         user_id: Annotated[int, Depends(get_my_id)],
         db=Depends(get_db)
 ) -> List[Tuple[int, str]]:
+    """
+    Retrieve all the existing planets
+    """
     data_access = DataAccess(db)
     planets = await data_access.PlanetAccess.get_all_planets()
 
@@ -56,7 +59,8 @@ async def planet_socket(
 
             data_type_map = {"get_armies": planet_actions.get_armies,
                              "change_direction": planet_actions.change_directions,
-                             "leave_city": planet_actions.leave_city}
+                             "leave_city": planet_actions.leave_city,
+                             "create_city": planet_actions.create_city}
 
             """
             Execute mapped planet socket action function

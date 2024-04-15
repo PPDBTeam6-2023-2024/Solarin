@@ -57,6 +57,11 @@ class ArmyAccess:
         get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id,
                                                  ArmyConsistsOf.troop_type == troop_type,
                                                  ArmyConsistsOf.rank == rank)
+        """
+        Don't add empty entries
+        """
+        if amount == 0:
+            return
 
         results = await self.__session.execute(get_entry)
         result = results.scalar_one_or_none()
@@ -109,7 +114,7 @@ class ArmyAccess:
         army = result.scalars().first()
         return army
 
-    async def get_user_armies(self, user_id: int):
+    async def get_user_armies(self, user_id: int) -> list[Army]:
         """
         Retrieve all armies belonging to a specific user
 
@@ -172,7 +177,7 @@ class ArmyAccess:
         1000/speed  (speed in range 149-350) * 3600 (= 1 hour)
         An army with a speed of 250 will take 4 hours to cross the entire map
         """
-
+        print(army_stats)
         map_cross_time = PropertyUtility.get_map_cross_time(army_stats["speed"])
 
         """
@@ -394,6 +399,7 @@ class ArmyAccess:
             """
             troop_size = troop_tup[0]
             troop_rank = troop_tup[1]
+
             troop_stats = troop_tup[2].getStats(troop_rank, troop_size)
 
             total_troop_amount += troop_size
@@ -411,6 +417,7 @@ class ArmyAccess:
         Speed is expresses as a weighted average, In case no troops are present, our
         army will have a speed of 100
         """
+
         army_stats["speed"] = army_stats.get("speed", 100) / max(total_troop_amount, 1)
 
         return army_stats
@@ -438,9 +445,12 @@ class ArmyAccess:
 
     async def get_army_in_city(self, city_id: int, add_on_none=True) -> int:
         """
-        Returns a list of army id's of armies that are inside a city
+        Returns an army id of an army that is inside a city
         param: city_id: the id of the city we want to check
-        return: List of Army id's
+        return: Army id
+
+        When no army is inside the city we will use the add_on_none optional
+        to create an empty army
         """
 
         armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
@@ -529,7 +539,7 @@ class ArmyAccess:
         get_from_units = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == from_army_id)
         from_troops = await self.__session.execute(get_from_units)
         from_troops = from_troops.scalars().all()
-
+        print("q3")
         """
         Add the units to the army
         """
@@ -539,7 +549,10 @@ class ArmyAccess:
         """
         Remove original army
         """
+        print(from_army_id)
         await self.remove_army(from_army_id)
+        await self.__session.flush()
+        print("q4")
 
     async def add_merge_armies(self, army_id: int, target_id: int):
         """

@@ -5,7 +5,7 @@ from ...database.database_access.data_access import DataAccess
 from ....logic.combat.ArriveCheck import ArriveCheck
 import asyncio
 import datetime
-
+from ...database.exceptions.invalid_action_exception import InvalidActionException
 
 class PlanetSocketActions:
     """
@@ -75,7 +75,13 @@ class PlanetSocketActions:
             arrive_func = target_type_dict.get(data["target_type"])
 
             if arrive_func is not None:
-                await arrive_func(army_id, data["target_id"])
+                """
+                When the action is invalid we will just not do the action
+                """
+                try:
+                    await arrive_func(army_id, data["target_id"])
+                except InvalidActionException:
+                    pass
 
                 """
                 When we add an attack we need to setup an async check

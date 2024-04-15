@@ -2,11 +2,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import pytest
 
-from tests.conftest import sessionmanager
-from .conftest import session, data_access
-
 from src.app.database.database_access.alliance_access import AllianceAccess, Alliance, AllianceRequest
-from src.app.database.database_access.user_access import UserAccess, User
+from src.app.database.database_access.user_access import User
 
 
 @pytest.fixture(scope="function", autouse=True)

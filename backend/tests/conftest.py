@@ -70,6 +70,8 @@ async def create_tables(connection_test):
     async with sessionmanager.connect() as connection:
         await sessionmanager.drop_all(connection)
         await sessionmanager.create_all(connection)
+    async with sessionmanager.session() as session:
+        await CreateTuples().create_all_tuples(session)
 
 
 @pytest.fixture(scope="function", autouse=True)

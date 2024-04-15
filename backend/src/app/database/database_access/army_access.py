@@ -6,6 +6,7 @@ from ..models import *
 from .city_access import CityAccess
 from ..exceptions.permission_exception import PermissionException
 from ..exceptions.invalid_action_exception import InvalidActionException
+from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
 
 class ArmyAccess(DatabaseAccess):
@@ -618,7 +619,7 @@ class ArmyAccess(DatabaseAccess):
         results = results.scalars().all()
 
         if len(results) != 2:
-            raise Exception("One of the provided armies does not exist")
+            raise NotFoundException(not_found_param="army_id", table_name="army")
 
         same_owner = results[0].id == results[1].id
         same_alliance = results[0].alliance == results[1].alliance and results[0].alliance is not None

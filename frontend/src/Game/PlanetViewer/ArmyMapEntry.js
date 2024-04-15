@@ -1,4 +1,4 @@
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import {UserInfoContext} from "../Context/UserInfoContext";
 
 import "./ArmyMapEntry.css"

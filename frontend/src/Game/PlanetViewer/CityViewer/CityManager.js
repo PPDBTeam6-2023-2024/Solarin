@@ -85,6 +85,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose , cityConte
     };
 
     useEffect(() => {
+        console.log("load")
         cityContextLoader()
         setInitialClick(false);
     },[])

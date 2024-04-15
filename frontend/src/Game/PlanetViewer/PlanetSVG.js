@@ -5,13 +5,15 @@ import axios from 'axios';
 import rocks from '../Images/region_types/rocks.jpeg'
 import sandyrocks from '../Images/region_types/sandyrocks.jpeg'
 import darkrocks from '../Images/region_types/darkrocks.jpeg'
-
-
+import ice from "../Images/region_types/ice.jpeg"
+import grass from "../Images/region_types/grass.jpg"
 function GetImagePath(regionType) {
     const imagePaths = {
         type1: rocks,
         "valley of death": sandyrocks,
         "dark valley": darkrocks,
+        "arctic": ice,
+        "plain": grass
     };
 
     return imagePaths[regionType] || rocks;

@@ -43,8 +43,8 @@ const TrainButtonComponent = ({data, setSelectedClick}) => {
 };
 
 
-const UpgradeButtonComponent = ({data, cityId, setUpgradeCostMap, upgradeCost, refreshResources}) => {
-    const upgradeBuildingHelper = async (cityId, buildingId) => {
+const UpgradeButtonComponent = ({data, cityId, setUpgradeCostMap, setBuildings, upgradeCost, refreshResources}) => {
+    const upgradeBuildingHelper = async (cityId, buildingId, setBuildings) => {
         try {
             const upgradeSuccessful = await upgradeBuilding(cityId, buildingId);
             if (upgradeSuccessful.confirmed === true) {
@@ -55,6 +55,11 @@ const UpgradeButtonComponent = ({data, cityId, setUpgradeCostMap, upgradeCost, r
                     }, {});
                     setUpgradeCostMap(costMap);
                     refreshResources();
+
+                    /*Live update the building rank*/
+                    getBuildings(cityId).then(buildings => {
+                      setBuildings(buildings)
+                    });
                 });
             }
         } catch (error) {

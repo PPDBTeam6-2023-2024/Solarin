@@ -19,6 +19,11 @@ import {PlanetIdContext} from "../Context/PlanetIdContext";
 import PlanetSwitcher from "../UI/PlanetSwitcher/PlanetSwitcher";
 
 function PlanetViewer(props) {
+    /*
+    *This component represents the view of a planet, when we visit another planet,
+    * this component will be replaced by another planetViewer Component. This means that
+    * this component manages a planet view of 1 specific planet
+    * */
 
     /*Map information to support scrolling and moving on the MapInteractionCSS component*/
     const [mapState, setMapState] = useState({
@@ -36,7 +41,6 @@ function PlanetViewer(props) {
 
     const [selectedCityId, setSelectedCityId] = useState(null);
     const [showCities, setShowCities] = useState(true);
-    const [citiesLoaded, setCitiesLoaded] = useState(false)
 
     const [userInfo, setUserInfo] = useContext(UserInfoContext)
 
@@ -47,10 +51,6 @@ function PlanetViewer(props) {
             setShowCities(false);
         }
     };
-
-    useEffect(() => {
-        setCitiesLoaded(false)
-    }, [props.planetId])
 
     const [cityImages, setCityImages] = useState([]);
 

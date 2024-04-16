@@ -240,12 +240,12 @@ class BuildingAccess:
         """
         retrieve the resource production
         """
-        get_production = Select(ProducesResources).\
+        get_production = Select(ProducesResources, BuildingInstance.rank).\
             join(BuildingInstance, BuildingInstance.building_type == ProducesResources.building_name).\
             where(BuildingInstance.id == building_id)
 
         production = await self.__session.execute(get_production)
-        production = production.scalars().all()
+        production = production.all()
 
         """
         Add resources earned over time to user
@@ -262,9 +262,9 @@ class BuildingAccess:
             """
             Apply the bonus for higher levels of buildings
             """
-            production_rate = PropertyUtility.getGPR(1.0, p.base_production, p.rank)
-            max_capacity = PropertyUtility.getGPR(1.0, p.max_capacity, p.rank)
-            await ra.add_resource(user_id, p.resource_name, min(int(production_rate*hours), max_capacity))
+            production_rate = PropertyUtility.getGPR(1.0, p[0].base_production, p[1])
+            max_capacity = PropertyUtility.getGPR(1.0, p[0].max_capacity, p[1])
+            await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours), max_capacity))
 
         """
         Check the building, indicating that the last checked timer needs to be set to now

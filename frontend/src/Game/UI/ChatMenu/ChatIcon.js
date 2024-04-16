@@ -15,7 +15,8 @@ function ChatIcon() {
                 <div id={"chat_icon"} className="bottom-0 right-0 fixed transition ease-in-out"
                      onClick={() => setChatMenuOpen(!chatMenuOpen)}>
                     <IoMdClose className='text-7xl' onClick={() => setHideChat(!hideChat)}/>
-                    <img src={(`/images/icons/chat_icon.png`)} className="bottom-0 absolute" alt={"Chat"}/>
+                    <img src={(`/images/icons/chat_icon.png`)} className="bottom-0 absolute" alt={"Chat"} draggable={false}
+                         unselectable="on"/>
                 </div>
                 {chatMenuOpen && <ChatMenu/>}
             </>

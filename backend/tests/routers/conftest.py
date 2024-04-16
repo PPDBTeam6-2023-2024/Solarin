@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 from src.app.app import init_app
 from src.app.config import APIConfig
 from src.app.database.database import get_db, sessionmanager
+from src.app.database.database_access.data_access import DataAccess
 from src.app.fill_db.create_tuples import CreateTuples
 from src.app.database.database import sessionmanager
 
@@ -62,3 +63,12 @@ async def session_override(app, connection_test):
 
     app.dependency_overrides[get_db] = get_db_override
 
+@pytest.fixture(scope="function", autouse=True)
+async def data_access(connection_test):
+    async with sessionmanager.session() as session:
+        yield DataAccess(session)
+
+@pytest.fixture(scope="function", autouse=True)
+async def session(connection_test):
+    async with sessionmanager.session() as session:
+        yield session

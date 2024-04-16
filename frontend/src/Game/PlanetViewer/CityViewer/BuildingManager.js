@@ -4,8 +4,7 @@ import Records from "./../../UI/buildingImages.json"
 // get all the buildings inside a given city
 export const getBuildings = async (cityId) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/buildings?city_id=${cityId}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/buildings/${cityId}`);
         if (response.status === 200 && Array.isArray(response.data)) {
             return response.data;
         }
@@ -18,7 +17,6 @@ export const getBuildings = async (cityId) => {
 
 export const getNewBuildingTypes = async (cityId) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/new_building_types/${cityId}`);
         if (response.status === 200 && Array.isArray(response.data)) {
             return response.data;
@@ -32,8 +30,7 @@ export const getNewBuildingTypes = async (cityId) => {
 
 export const createBuilding = async (cityId, BuildingType) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/building/create_new_building?city_id=${cityId}&building_type=${BuildingType}`);
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/building/create_new_building/${cityId}/${BuildingType}`);
         if (response.status === 200) {
             return response.data;
         }
@@ -46,7 +43,6 @@ export const createBuilding = async (cityId, BuildingType) => {
 
 export const getResources = async () => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
         if (response.status === 200) {
             return response.data;
@@ -60,7 +56,6 @@ export const getResources = async () => {
 
 export const collectResources = async (cityId, buildingId) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/building/collect/${buildingId}`);
         if (response.status === 200) {
             return response.data;
@@ -73,7 +68,6 @@ export const collectResources = async (cityId, buildingId) => {
 
 export const upgradeBuilding = async (cityId, buildingId) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/building/upgrade_building/${buildingId}`);
         if (response.status === 200) {
             return response.data;
@@ -87,7 +81,6 @@ export const upgradeBuilding = async (cityId, buildingId) => {
 
 export const getUpgradeCost = async (cityId) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_upgrade_cost/${cityId}`);
         if (response.status === 200) {
             return response.data;
@@ -101,7 +94,6 @@ export const getUpgradeCost = async (cityId) => {
 // get all the armies that are currently in the given city
 export const getArmyInCity = async (cityId) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/army_in_city/${cityId}`);
         if (response.status === 200) {
             return response.data;

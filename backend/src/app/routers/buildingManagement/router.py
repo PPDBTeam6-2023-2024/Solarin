@@ -44,7 +44,7 @@ async def get_training_queue(
     return output
 
 
-@router.post("/create_new_building")
+@router.post("/create_new_building/{city_id}/{building_type}")
 async def create_building(
         city_id: int,
         building_type: str,

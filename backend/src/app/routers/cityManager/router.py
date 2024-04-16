@@ -10,7 +10,7 @@ from .city_checker import CityChecker
 router = APIRouter(prefix="/cityManager", tags=["City"])
 
 
-@router.get("/buildings", response_model=List[BuildingInstanceSchema])
+@router.get("/buildings/{city_id}", response_model=List[BuildingInstanceSchema])
 async def get_buildings(
         user_id: Annotated[int, Depends(get_my_id)],
         city_id: int,

@@ -107,8 +107,6 @@ async def get_armies_in_city(
     """
     do the city check, checking all the idle mechanics
     """
-    city_checker = CityChecker(city_id, data_access)
-    await city_checker.check_all()
 
     troops = await get_troops(user_id, army_id, db)
 

@@ -15,7 +15,6 @@ function TrainingOptionAdder(props) {
 
     const getTypeCosts = async () => {
         try {
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/unit/train_cost/${props.type}`)
             return response.data
         } catch (e) {

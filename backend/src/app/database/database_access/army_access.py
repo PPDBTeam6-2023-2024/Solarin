@@ -474,6 +474,7 @@ class ArmyAccess(DatabaseAccess):
             city = city.scalar_one()
 
             army_id = await self.create_army(city.controlled_by, city.region.planet_id, city.x, city.y)
+            await self.flush()
             await self.enter_city(city.id, army_id)
             result = army_id
 
@@ -486,7 +487,7 @@ class ArmyAccess(DatabaseAccess):
         param: city_id: the city we want to enter
         param: army_id: the id of the army who wants to enter the city
         """
-
+        await self.session.flush()
         in_city = ArmyInCity(army_id=army_id, city_id=city_id)
         self.session.add(in_city)
         await self.session.flush()

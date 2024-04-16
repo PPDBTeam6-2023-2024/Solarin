@@ -8,7 +8,6 @@ import {useNavigate} from 'react-router-dom';
 
 const hasValidToken = async () => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/auth/me`)
         return response.status === 200
     } catch (e) {
@@ -69,7 +68,8 @@ function Login() {
                     setSignError(null)
                     setIsSignedIn(true)
                     localStorage.setItem("access-token", response.data.access_token)
-                    axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+                    axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`,
+                        "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"}
                 }
             } catch (error) {
                 setSignError(error.response.data.detail.msg)

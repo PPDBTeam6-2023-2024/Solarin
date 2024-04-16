@@ -15,7 +15,6 @@ function SendFriendRequestEntry(props) {
     const sendFriendRequest = async (username) => {
         try {
             /*send a post request to try and create or join the alliance*/
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/friend_requests`,
                 JSON.stringify({
                     type: "add",

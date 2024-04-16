@@ -12,7 +12,6 @@ function FriendRequestEntry(props) {
         * communicate to the server whether we accepted or rejected this friend request
         * */
         try {
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/friend_requests`,
                 JSON.stringify({
                     "friend_id": friend_id,

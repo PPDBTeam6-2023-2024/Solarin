@@ -35,7 +35,6 @@ const AllianceTab = (props) => {
 
         try {
             /*send a post request to try and create or join the alliance*/
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/${end_point}_alliance`,
                 JSON.stringify({
                     "alliance_name": alliance_name
@@ -67,7 +66,6 @@ const AllianceTab = (props) => {
     const getAllianceRequests = async () => {
         /*get the list of all the requests to join the alliance*/
         try {
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_requests`)
             return response.data
         } catch (e) {
@@ -78,7 +76,6 @@ const AllianceTab = (props) => {
     const getMessageBoard = async () => {
         /*get messageboard for the alliance, because we do not yet have that*/
         try {
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/alliance_messageboard`)
             return response.data
         } catch (e) {

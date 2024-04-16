@@ -6,7 +6,6 @@ import RankingEntry from "./RankingEntry";
 
 const getRanking = async () => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/ranking`)
         return response.data
     } catch (e) {

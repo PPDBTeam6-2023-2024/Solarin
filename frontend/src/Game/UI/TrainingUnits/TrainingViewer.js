@@ -6,7 +6,6 @@ import TrainingOptionBar from "./TrainingOptionBar";
 
 const getTrainingQueue = async (building_id) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/building/training_queue/${building_id}`)
         return response.data
     }
@@ -15,7 +14,6 @@ const getTrainingQueue = async (building_id) => {
 
 const addTrainingQueue = async (buildingId, trainJson) => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/unit/train/${buildingId}`, trainJson, {
             headers: {
                 'content-type': 'application/json',

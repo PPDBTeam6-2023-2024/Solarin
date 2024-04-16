@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse, Response, ORJSONResponse
 from typing import List, Annotated
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...database.database import get_db
 from ...database.database_access.army_access import *

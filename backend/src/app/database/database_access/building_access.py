@@ -1,7 +1,7 @@
 import datetime
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import *
-from ..database import AsyncSession
 from sqlalchemy import select, not_, or_, join
 from ....logic.formula.compute_properties import *
 from .resource_access import ResourceAccess
@@ -9,14 +9,15 @@ from .city_access import CityAccess
 from ..exceptions.not_found_exception import NotFoundException
 from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.permission_exception import PermissionException
+from .database_acess import DatabaseAccess
 
 
-class BuildingAccess:
+class BuildingAccess(DatabaseAccess):
     """
-    This class will manage the sql access for data related to information of planets
+    This class will manage the sql access for data related to information of buildings
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
+        super().__init__(session)
 
     async def __get_building_cost(self, building_type: str, to_rank: int) -> list:
         """
@@ -31,7 +32,7 @@ class BuildingAccess:
         """
         cost_query = select(CreationCost.cost_type, CreationCost.cost_amount).where(
             CreationCost.building_name == building_type)
-        cost_query_results = await self.__session.execute(cost_query)
+        cost_query_results = await self.session.execute(cost_query)
         cost_query_rows = cost_query_results.all()
 
         """
@@ -57,8 +58,8 @@ class BuildingAccess:
         :return: the id of the building we just created
         """
 
-        ra = ResourceAccess(self.__session)
-        ca = CityAccess(self.__session)
+        ra = ResourceAccess(self.session)
+        ca = CityAccess(self.session)
 
         """
         Check if the user is also the owner of the provided city
@@ -91,9 +92,9 @@ class BuildingAccess:
         Create the building instance
         """
         building_instance = BuildingInstance(city_id=city_id, building_type=building_type)
-        self.__session.add(building_instance)
+        self.session.add(building_instance)
 
-        await self.__session.flush()
+        await self.session.flush()
         building_id = building_instance.id
 
         return building_id
@@ -112,9 +113,9 @@ class BuildingAccess:
             join(BuildingInstance, BuildingInstance.building_type == BuildingType.name).\
             where(BuildingInstance.city_id == city_id).order_by(asc(BuildingInstance.id))
 
-        building_types = await self.__session.execute(get_buildings)
+        building_types = await self.session.execute(get_buildings)
 
-        return building_types.all()
+        return building_types.scalars().all()
 
     async def get_building_types(self):
         """
@@ -127,22 +128,25 @@ class BuildingAccess:
         """
         generate query to access all building tables to access its types
         """
-        building_types = await self.__session.execute(Select(BuildingType))
+        building_types = await self.session.execute(Select(BuildingType))
 
         return building_types.scalars().all()
 
-    async def get_delta_time(self, building_id: int) -> timedelta:
+    async def get_delta_time(self, building_id: int, raw_time: bool=False) -> timedelta:
         """
         get the between now and when the building was last checked
         :param: building_id: id of the building
+        :param: raw_time: return the last_checked time instead of delta time
         :return: datetime of when the building was last checked
         """
         last_checked = Select(BuildingInstance.last_checked).where(BuildingInstance.id == building_id)
-        results = await self.__session.execute(last_checked)
+        results = await self.session.execute(last_checked)
         last = results.scalar_one_or_none()
         if last is None:
             raise NotFoundException(building_id, "Building Instance")
 
+        if raw_time:
+            return last
         return datetime.utcnow() - last
 
     async def checked(self, building_id: int):
@@ -151,9 +155,9 @@ class BuildingAccess:
         """
         u = update(BuildingInstance).values({"last_checked": datetime.utcnow()}).\
             where(BuildingInstance.id == building_id)
-        await self.__session.execute(u)
+        await self.session.execute(u)
 
-        await self.__session.flush()
+        await self.session.flush()
 
     async def get_available_building_types(self, user_id: int, city_id: int):
         """
@@ -167,8 +171,8 @@ class BuildingAccess:
         :return: List of available building types for the city along with a boolean indicating if the user can build it
         """
 
-        ra = ResourceAccess(self.__session)
-        ca = CityAccess(self.__session)
+        ra = ResourceAccess(self.session)
+        ca = CityAccess(self.session)
 
         """
         Check if the user is also the owner of the provided city
@@ -186,7 +190,7 @@ class BuildingAccess:
             join(BuildingInstance, BuildingType.name == BuildingInstance.building_type).\
             where(BuildingInstance.city_id == city_id)
 
-        city_buildings = await self.__session.execute(get_city_building_type)
+        city_buildings = await self.session.execute(get_city_building_type)
         city_buildings = city_buildings.scalars().all()
 
         """
@@ -244,8 +248,8 @@ class BuildingAccess:
             join(BuildingInstance, BuildingInstance.building_type == ProducesResources.building_name).\
             where(BuildingInstance.id == building_id)
 
-        production = await self.__session.execute(get_production)
-        production = production.all()
+        production = await self.session.execute(get_production)
+        production = production.scalars().all()
 
         """
         Add resources earned over time to user
@@ -257,7 +261,7 @@ class BuildingAccess:
         """
         Add the resources to user taking into account the max capacity
         """
-        ra = ResourceAccess(self.__session)
+        ra = ResourceAccess(self.session)
         for p in production:
             """
             Apply the bonus for higher levels of buildings
@@ -271,7 +275,7 @@ class BuildingAccess:
         """
         await self.checked(building_id)
 
-        await self.__session.commit()
+        await self.session.commit()
 
         return True
 
@@ -290,7 +294,7 @@ class BuildingAccess:
         """
         building_instance_query = select(BuildingInstance).where(
             BuildingInstance.id == building_id)
-        building_instances_results = await self.__session.execute(building_instance_query)
+        building_instances_results = await self.session.execute(building_instance_query)
 
         building_instance = building_instances_results.scalar_one()
 
@@ -300,14 +304,14 @@ class BuildingAccess:
         current_rank = building_instance.rank
         current_type = building_instance.building_type
 
-        await self.__session.flush()
+        await self.session.flush()
 
         """
         get upgrade cost
         """
         upgrade_cost = await self.__get_building_cost(current_type, current_rank+1)
 
-        ra = ResourceAccess(self.__session)
+        ra = ResourceAccess(self.session)
         can_upgrade = await ra.has_resources(user_id, upgrade_cost)
 
         if not can_upgrade:
@@ -324,7 +328,7 @@ class BuildingAccess:
         for u_type, u_amount in upgrade_cost:
             await ra.remove_resource(user_id, u_type, u_amount)
 
-        await self.__session.commit()
+        await self.session.commit()
 
         return True
 
@@ -344,7 +348,7 @@ class BuildingAccess:
         retrieve building type
         """
         building_instance_query = select(BuildingInstance).where(BuildingInstance.id == building_id)
-        building_instances_results = await self.__session.execute(building_instance_query)
+        building_instances_results = await self.session.execute(building_instance_query)
         building_instance = building_instances_results.scalar_one()
 
         current_rank = building_instance.rank
@@ -355,7 +359,7 @@ class BuildingAccess:
         """
         upgrade_cost = await self.__get_building_cost(current_type, current_rank+1)
 
-        ra = ResourceAccess(self.__session)
+        ra = ResourceAccess(self.session)
         can_upgrade = await ra.has_resources(user_id, upgrade_cost)
 
         """
@@ -372,7 +376,7 @@ class BuildingAccess:
 
         gc = Select(City).\
             join(BuildingInstance, BuildingInstance.city_id ==City.id).where(building_id == BuildingInstance.id)
-        results = await self.__session.execute(gc)
+        results = await self.session.execute(gc)
         result = results.scalar_one()
         return result
 
@@ -387,7 +391,7 @@ class BuildingAccess:
 
         get_building = Select(City.controlled_by).\
             join(BuildingInstance, City.id == BuildingInstance.city_id).where(BuildingInstance.id == building_id)
-        results = await self.__session.execute(get_building)
+        results = await self.session.execute(get_building)
         results = results.scalar_one_or_none()
 
         if results is None:

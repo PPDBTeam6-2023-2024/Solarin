@@ -42,7 +42,7 @@ async def get_buildings(
     Iterate through each building, creating a BuildingInstanceSchema for each one
     """
     for building in buildings:
-        schema = building[0].to_schema(building[1].type)
+        schema = building.to_schema(building.type.type)
         buildings_schemas.append(schema)
 
     """

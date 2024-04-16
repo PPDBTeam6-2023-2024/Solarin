@@ -1,15 +1,16 @@
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
 from ..models import *
-from ..database import AsyncSession
+from .database_acess import DatabaseAccess
 
 
-class AllianceAccess:
+class AllianceAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of an alliance
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
+        super().__init__(session)
 
     async def create_alliance(self, alliance_name: str):
         """
@@ -23,10 +24,10 @@ class AllianceAccess:
         Create a message board for the alliance
         """
         mb = MessageBoard(chat_name=f"{alliance_name} clan chat")
-        self.__session.add(mb)
-        await self.__session.flush()
+        self.session.add(mb)
+        await self.session.flush()
 
-        self.__session.add(Alliance(name=alliance_name, message_board=mb.bid))
+        self.session.add(Alliance(name=alliance_name, message_board=mb.bid))
 
     async def set_alliance(self, user_id: int, alliance_name: str):
         """
@@ -40,7 +41,7 @@ class AllianceAccess:
         add_ally = add_ally.values({"alliance": alliance_name})
         add_ally = add_ally.where(User.id == user_id)
 
-        await self.__session.execute(add_ally)
+        await self.session.execute(add_ally)
 
     async def get_alliance_members(self, alliance_name: str):
         """
@@ -50,7 +51,7 @@ class AllianceAccess:
         :return: all the members of the alliance
         """
         search_members = Select(User).where(User.alliance == alliance_name)
-        results = await self.__session.execute(search_members)
+        results = await self.session.execute(search_members)
 
         return results.scalars().all()
 
@@ -68,8 +69,8 @@ class AllianceAccess:
         await self.__remove_alliance_request(user_id)
 
         ar = AllianceRequest(user_id=user_id, alliance_name=alliance_name)
-        self.__session.add(ar)
-        await self.__session.flush()
+        self.session.add(ar)
+        await self.session.flush()
 
     async def accept_alliance_request(self, user_id: int, alliance_name: str):
         """
@@ -95,8 +96,8 @@ class AllianceAccess:
         :param: user_id: id of the user
         """
         dr = Delete(AllianceRequest).where(AllianceRequest.user_id == user_id)
-        await self.__session.execute(dr)
-        await self.__session.flush()
+        await self.session.execute(dr)
+        await self.session.flush()
 
     async def alliance_exists(self, alliance_name: str):
         """
@@ -106,7 +107,7 @@ class AllianceAccess:
         """
 
         get_alliance = Select(Alliance).where(Alliance.name == alliance_name)
-        results = await self.__session.execute(get_alliance)
+        results = await self.session.execute(get_alliance)
         result = results.scalar_one_or_none()
         return result is not None
 
@@ -125,7 +126,7 @@ class AllianceAccess:
         alliance_requests = Select(User).join(AllianceRequest, AllianceRequest.user_id == User.id).\
             join(alliance_member, alliance_member.alliance == AllianceRequest.alliance_name).\
             where(alliance_member.id == user_id)
-        results = await self.__session.execute(alliance_requests)
+        results = await self.session.execute(alliance_requests)
         return results.scalars().all()
 
     async def get_alliance(self, user_id: int):
@@ -135,7 +136,7 @@ class AllianceAccess:
         :return: alliance name
         """
 
-        result = await self.__session.execute(Select(User.alliance).where(User.id == user_id))
+        result = await self.session.execute(Select(User.alliance).where(User.id == user_id))
         result = result.scalar_one_or_none()
         if result is None:
             return None

@@ -7,6 +7,11 @@ from sqlalchemy import inspect
 from ...src.logic.combat.ArriveCheck import *
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):
+    async with sessionmanager.connect() as connection:
+        # we use our own test types not the tuples
+        await sessionmanager.drop_all(connection)
+        await sessionmanager.create_all(connection)
+
     async with sessionmanager.session() as session:
         """
         setup database data that can be queried
@@ -283,13 +288,13 @@ async def test_buildings():
 
         cbt = await da.BuildingAccess.get_city_buildings(1)
         assert len(cbt) == 5
-        assert (cbt[0][1].name, cbt[0][1].type) == ('The mines of moria', 'productionBuilding')
-        assert (cbt[1][1].name, cbt[1][1].type) == ('Kamino training complex', 'Barracks')
-        assert (cbt[2][1].name, cbt[2][1].type) == ('Solarin mansion', 'house')
+        assert (cbt[0].type.name, cbt[0].type.type) == ('The mines of moria', 'productionBuilding')
+        assert (cbt[1].type.name, cbt[1].type.type) == ('Kamino training complex', 'Barracks')
+        assert (cbt[2].type.name, cbt[2].type.type) == ('Solarin mansion', 'house')
 
-        assert cbt[0][0].id == 1
-        assert cbt[1][0].id == 2
-        assert cbt[2][0].id == 3
+        assert cbt[0].id == 1
+        assert cbt[1].id == 2
+        assert cbt[2].id == 3
 
 
 async def test_DM_overview():

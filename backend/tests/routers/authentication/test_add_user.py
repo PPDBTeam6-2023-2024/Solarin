@@ -1,5 +1,3 @@
-from tests.conftest import client
-
 
 async def test_happy(client):
     data = {

@@ -1,10 +1,8 @@
-from tests.conftest import client
-
 from src.app.database.database_access.data_access import DataAccess
 from src.app.database.database import sessionmanager
 
 
-async def test_get_armies(client):
+async def test_get_armies(client, data_access: DataAccess):
     data = {
         "email": "insert@example.com",
         "username": "test",
@@ -13,20 +11,16 @@ async def test_get_armies(client):
     response = client.post("/auth/add_user", json=data)
     assert response.status_code == 200
 
-    async with sessionmanager.session() as session:
-        data_access = DataAccess(session)
+    user_id = await data_access.UserAccess.get_user_id_email(
+        email="insert@example.com"
+    )
 
-        user_id = await data_access.UserAccess.get_user_id_email(
-            email="insert@example.com"
-        )
+    region_id = await data_access.PlanetAccess.create_space_region("test")
+    planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", region_id)
 
-        region_id = await data_access.PlanetAccess.create_space_region("test")
-        await data_access.DeveloperAccess.create_planet_type("arctic")
-        planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", region_id)
-
-        await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
-        await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
-        await session.commit()
+    await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
+    await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
+    await data_access.commit()
 
     data = {
         "username": "test",
@@ -51,7 +45,7 @@ async def test_get_armies(client):
         assert "x" in data["data"][0]
 
 
-async def test_move_army(client):
+async def test_move_army(client, data_access: DataAccess):
     data = {
         "email": "insert@example.com",
         "username": "test",
@@ -60,19 +54,15 @@ async def test_move_army(client):
     response = client.post("/auth/add_user", json=data)
     assert response.status_code == 200
 
-    async with sessionmanager.session() as session:
-        data_access = DataAccess(session)
+    user_id = await data_access.UserAccess.get_user_id_email(
+        email="insert@example.com"
+    )
 
-        user_id = await data_access.UserAccess.get_user_id_email(
-            email="insert@example.com"
-        )
+    region_id = await data_access.PlanetAccess.create_space_region("test")
+    planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", region_id)
 
-        region_id = await data_access.PlanetAccess.create_space_region("test")
-        await data_access.DeveloperAccess.create_planet_type("arctic")
-        planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", region_id)
-
-        army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
-        await session.commit()
+    army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
+    await data_access.commit()
 
     data = {
         "username": "test",

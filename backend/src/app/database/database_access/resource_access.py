@@ -5,14 +5,15 @@ from ..database import AsyncSession
 from .army_access import ArmyAccess
 from ....logic.formula.compute_properties import *
 from typing import Tuple, List
+from .database_acess import DatabaseAccess
 
 
-class ResourceAccess:
+class ResourceAccess(DatabaseAccess):
     """
-    This class will manage the sql access for data related to information of training units
+    This class will manage the sql access for data related to information of resources
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
+        super().__init__(session)
 
     async def has_resources(self, user_id: int, resource_check: List[Tuple[str, int]]) -> bool:
         """
@@ -30,7 +31,7 @@ class ResourceAccess:
 
             get_resources = Select(HasResources.resource_type, HasResources.quantity).\
                 where((HasResources.owner_id == user_id) & (HasResources.resource_type == resource[0]))
-            results = await self.__session.execute(get_resources)
+            results = await self.session.execute(get_resources)
             resource_real = results.first()
 
             if resource_real is None:
@@ -54,15 +55,15 @@ class ResourceAccess:
         """
         s = Select(HasResources).\
             where((user_id == HasResources.owner_id) & (HasResources.resource_type == resource_name))
-        has_resources = await self.__session.execute(s)
+        has_resources = await self.session.execute(s)
         has_resources = has_resources.scalar_one_or_none()
 
         if has_resources is None:
-            self.__session.add(HasResources(resource_type=resource_name, quantity=amount, owner_id=user_id))
+            self.session.add(HasResources(resource_type=resource_name, quantity=amount, owner_id=user_id))
         else:
             has_resources.quantity += amount
 
-        await self.__session.flush()
+        await self.session.flush()
 
     async def remove_resource(self, user_id: int, resource_name: str, amount: int):
         """
@@ -75,15 +76,15 @@ class ResourceAccess:
 
         s = Select(HasResources).\
             where((user_id == HasResources.owner_id) & (HasResources.resource_type == resource_name))
-        has_resources = await self.__session.execute(s)
+        has_resources = await self.session.execute(s)
         has_resources = has_resources.scalar_one_or_none()
 
         if has_resources is None:
-            self.__session.add(HasResources(resource_type=resource_name, quantity=0, owner_id=user_id))
+            self.session.add(HasResources(resource_type=resource_name, quantity=0, owner_id=user_id))
         else:
             has_resources.quantity -= amount
 
-        await self.__session.flush()
+        await self.session.flush()
 
     async def get_resource_amount(self, user_id: int, resource_name: str) -> int:
         """
@@ -96,7 +97,7 @@ class ResourceAccess:
         """
         s = Select(HasResources.quantity).\
             where((user_id == HasResources.owner_id) & (HasResources.resource_type == resource_name))
-        has_resources = await self.__session.execute(s)
+        has_resources = await self.session.execute(s)
         has_resources = has_resources.scalar_one_or_none()
 
         if has_resources is None:

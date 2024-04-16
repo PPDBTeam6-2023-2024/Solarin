@@ -1,20 +1,21 @@
 from typing import Optional
 from math import dist
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import *
-from ..database import AsyncSession
 from .city_access import CityAccess
 from ..exceptions.permission_exception import PermissionException
 from ..exceptions.invalid_action_exception import InvalidActionException
-from .data_access import UserAccess
+from ..exceptions.not_found_exception import NotFoundException
+from .database_acess import DatabaseAccess
+from .user_access import UserAccess
 
-class ArmyAccess:
+class ArmyAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of armies
     """
-
     def __init__(self, session: AsyncSession):
-        self.__session = session
+        super().__init__(session)
 
     async def create_army(self, user_id: int, planet_id: int, x: float, y: float):
         """
@@ -34,8 +35,8 @@ class ArmyAccess:
             to_x=x,
             to_y=y
         )
-        self.__session.add(army)
-        await self.__session.flush()
+        self.session.add(army)
+        await self.session.flush()
         return army.id
 
     async def add_to_army(self, army_id: int, troop_type: str, rank: int, amount: int):
@@ -63,7 +64,7 @@ class ArmyAccess:
         if amount == 0:
             return
 
-        results = await self.__session.execute(get_entry)
+        results = await self.session.execute(get_entry)
         result = results.scalar_one_or_none()
 
         """
@@ -75,7 +76,7 @@ class ArmyAccess:
             We will create a new entry
             """
             army_consists_of = ArmyConsistsOf(army_id=army_id, troop_type=troop_type, rank=rank, size=amount)
-            self.__session.add(army_consists_of)
+            self.session.add(army_consists_of)
 
         else:
             """
@@ -89,7 +90,7 @@ class ArmyAccess:
         Flush is necessary in case multiple adds to an army are done before a commit, because we might need
         to alter the just created entry when the exact same troops are added to the army
         """
-        await self.__session.flush()
+        await self.session.flush()
 
     async def get_troops(self, army_id: int):
         """
@@ -99,7 +100,7 @@ class ArmyAccess:
         return: list of ArmyConsistsOf objects
         """
         get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id)
-        troops = await self.__session.execute(get_entry)
+        troops = await self.session.execute(get_entry)
         return troops.scalars().all()
 
     async def get_army_by_id(self, army_id: int):
@@ -110,7 +111,7 @@ class ArmyAccess:
         return: Army Object
         """
         get_entry = Select(Army).where(Army.id == army_id)
-        result = await self.__session.execute(get_entry)
+        result = await self.session.execute(get_entry)
         army = result.scalars().first()
         return army
 
@@ -122,8 +123,8 @@ class ArmyAccess:
         return: List of Army Objects
         """
         get_entry = Select(Army).where(Army.user_id == user_id)
-        armies = await self.__session.execute(get_entry)
-        await self.__session.flush()
+        armies = await self.session.execute(get_entry)
+        await self.session.flush()
         armies = armies.scalars().all()
         return armies
 
@@ -139,7 +140,7 @@ class ArmyAccess:
         Get all the armies on the planet
         """
         get_entry = Select(Army).where(Army.planet_id == planet_id)
-        armies = await self.__session.execute(get_entry)
+        armies = await self.session.execute(get_entry)
         armies = armies.scalars().all()
 
         """
@@ -147,7 +148,7 @@ class ArmyAccess:
         """
         get_entry_in_city = Select(Army).join(ArmyInCity, ArmyInCity.army_id == Army.id).where(
             Army.planet_id == planet_id)
-        city_armies = await self.__session.execute(get_entry_in_city)
+        city_armies = await self.session.execute(get_entry_in_city)
         city_armies = city_armies.scalars().all()
 
         """
@@ -205,7 +206,7 @@ class ArmyAccess:
             select(Army).where(Army.id == army_id)
         )
 
-        result = await self.__session.execute(stmt)
+        result = await self.session.execute(stmt)
         army: Optional[Army] = result.scalar_one_or_none()
 
         """
@@ -258,8 +259,8 @@ class ArmyAccess:
         army.departure_time = current_time
         army.arrival_time = current_time + delta
 
-        await self.__session.commit()
-        await self.__session.refresh(army)
+        await self.session.commit()
+        await self.session.refresh(army)
 
         """
         When an army was on route to attack someone, we will remove it when the army changes its position,
@@ -272,7 +273,7 @@ class ArmyAccess:
         So the attacking army cannot combat the other army on arrival anymore
         """
         get_attackers = Select(AttackArmy).where(AttackArmy.target_id == army_id)
-        results = await self.__session.execute(get_attackers)
+        results = await self.session.execute(get_attackers)
         results = results.scalars().all()
         for r in results:
             await self.cancel_attack(r)
@@ -305,8 +306,8 @@ class ArmyAccess:
         add the attack event object to the database
         """
         attack_object = AttackArmy(army_id=attack_id, target_id=target_id)
-        self.__session.add(attack_object)
-        await self.__session.flush()
+        self.session.add(attack_object)
+        await self.session.flush()
 
     async def attack_city(self, attack_id: int, target_id: int):
         """
@@ -320,11 +321,11 @@ class ArmyAccess:
         """
         Check a user doesn't attack himself
         """
-        city_owner = await CityAccess(self.__session).get_city_controller(target_id)
+        city_owner = await CityAccess(self.session).get_city_controller(target_id)
         if attack_id == city_owner.id:
             raise InvalidActionException("You cannot attack your own army")
 
-        user_alliance = await UserAccess(self.__session).get_alliance(attack_id)
+        user_alliance = await UserAccess(self.session).get_alliance(attack_id)
 
         """
         Check user doesn't attack alliance member
@@ -336,8 +337,8 @@ class ArmyAccess:
         add the attack event object to the database
         """
         attack_object = AttackCity(army_id=attack_id, target_id=target_id)
-        self.__session.add(attack_object)
-        await self.__session.flush()
+        self.session.add(attack_object)
+        await self.session.flush()
 
     async def will_on_arrive(self, army_id):
         """
@@ -348,7 +349,7 @@ class ArmyAccess:
         """
 
         get_on_arrive = Select(OnArrive).where(OnArrive.army_id == army_id)
-        results = await self.__session.execute(get_on_arrive)
+        results = await self.session.execute(get_on_arrive)
         result = results.scalar_one_or_none()
 
         """
@@ -357,7 +358,7 @@ class ArmyAccess:
         if result is None:
             return None
 
-        await self.__session.refresh(result)
+        await self.session.refresh(result)
 
         return result
 
@@ -367,7 +368,7 @@ class ArmyAccess:
         param: army_id: the id of the army whose on arrive event we want to cancel
         """
         d = delete(OnArrive).where(OnArrive.army_id == army_id)
-        await self.__session.execute(d)
+        await self.session.execute(d)
 
     async def get_army_stats(self, army_id: int, army_stats=None):
         """
@@ -392,7 +393,7 @@ class ArmyAccess:
             join(TroopType, TroopType.type == ArmyConsistsOf.troop_type).where(
             ArmyConsistsOf.army_id == army_id)
 
-        results = await self.__session.execute(get_troops)
+        results = await self.session.execute(get_troops)
         army_troops = results.all()
 
         """
@@ -436,11 +437,11 @@ class ArmyAccess:
         """
 
         s = Select(AttackArmy.army_id).where(AttackArmy.target_id == army_id)
-        results = await self.__session.execute(s)
+        results = await self.session.execute(s)
         results = results.scalars().all()
 
         d = delete(Army).where(Army.id == army_id)
-        await self.__session.execute(d)
+        await self.session.execute(d)
 
         """
         Proper removal (because SQL alchemy does not have cascade delete support for polymorphic tables, 
@@ -448,7 +449,7 @@ class ArmyAccess:
         """
         for r in results:
             d = delete(OnArrive).where(OnArrive.army_id == r)
-            await self.__session.execute(d)
+            await self.session.execute(d)
 
     async def get_army_in_city(self, city_id: int, add_on_none=True) -> int:
         """
@@ -461,7 +462,7 @@ class ArmyAccess:
         """
 
         armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
-        results = await self.__session.execute(armies_in_cities)
+        results = await self.session.execute(armies_in_cities)
         result = results.scalar_one_or_none()
 
         if result is None and add_on_none:
@@ -469,7 +470,7 @@ class ArmyAccess:
             When no army is inside the city put a default army inside the city
             """
             get_city = Select(City).where(City.id == city_id)
-            city = await self.__session.execute(get_city)
+            city = await self.session.execute(get_city)
             city = city.scalar_one()
 
             army_id = await self.create_army(city.controlled_by, city.region.planet_id, city.x, city.y)
@@ -487,8 +488,8 @@ class ArmyAccess:
         """
 
         in_city = ArmyInCity(army_id=army_id, city_id=city_id)
-        self.__session.add(in_city)
-        await self.__session.flush()
+        self.session.add(in_city)
+        await self.session.flush()
 
     async def get_army_owner(self, army_id: int) -> User:
         """
@@ -498,7 +499,7 @@ class ArmyAccess:
         """
 
         get_owner = Select(User).join(Army, Army.user_id == User.id).where(Army.id == army_id)
-        results = await self.__session.execute(get_owner)
+        results = await self.session.execute(get_owner)
 
         result = results.scalars().first()
         return result
@@ -511,7 +512,7 @@ class ArmyAccess:
         """
 
         get_army = Select(Army).where(Army.id == army_id)
-        results = await self.__session.execute(get_army)
+        results = await self.session.execute(get_army)
         army = results.scalars().first()
         army = army
 
@@ -526,7 +527,7 @@ class ArmyAccess:
 
         get_attackers = Select(OnArrive.army_id, Army.arrival_time).join(Army, OnArrive.army_id == Army.id).where(
             Army.planet_id == planet_id)
-        results = await self.__session.execute(get_attackers)
+        results = await self.session.execute(get_attackers)
         results = results.all()
         return results
 
@@ -544,7 +545,7 @@ class ArmyAccess:
         """
 
         get_from_units = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == from_army_id)
-        from_troops = await self.__session.execute(get_from_units)
+        from_troops = await self.session.execute(get_from_units)
         from_troops = from_troops.scalars().all()
         """
         Add the units to the army
@@ -578,8 +579,8 @@ class ArmyAccess:
         Add army on arrive event to database
         """
         merge_object = MergeArmies(army_id=army_id, target_id=target_id)
-        self.__session.add(merge_object)
-        await self.__session.flush()
+        self.session.add(merge_object)
+        await self.session.flush()
 
     async def add_enter_city(self, army_id: int, target_id: int):
         """
@@ -593,8 +594,8 @@ class ArmyAccess:
         """
         Check a user doesn't enter someone else their city
         """
-        city_owner = await CityAccess(self.__session).get_city_controller(target_id)
-        army: Army = await ArmyAccess(self.__session).get_army_by_id(army_id)
+        city_owner = await CityAccess(self.session).get_city_controller(target_id)
+        army: Army = await ArmyAccess(self.session).get_army_by_id(army_id)
 
         if army.user_id != city_owner.id:
             raise InvalidActionException("You enter someone else their city")
@@ -603,8 +604,8 @@ class ArmyAccess:
         Add army on arrive event to database
         """
         enter_object = EnterCity(army_id=army_id, target_id=target_id)
-        self.__session.add(enter_object)
-        await self.__session.flush()
+        self.session.add(enter_object)
+        await self.session.flush()
 
     async def leave_city(self, army_id: int):
         """
@@ -614,7 +615,7 @@ class ArmyAccess:
         """
 
         d = delete(ArmyInCity).where(ArmyInCity.army_id == army_id)
-        await self.__session.execute(d)
+        await self.session.execute(d)
 
     async def check_army_relation(self, army_1: int, army_2: int) -> tuple[bool, bool]:
         """
@@ -632,11 +633,11 @@ class ArmyAccess:
         """
         army_owner = Select(User).join(Army, Army.user_id == User.id).where(
             (Army.id == army_1) | (Army.id == army_2))
-        results = await self.__session.execute(army_owner)
+        results = await self.session.execute(army_owner)
         results = results.scalars().all()
 
         if len(results) != 2:
-            raise Exception("One of the provided armies does not exist")
+            raise NotFoundException(not_found_param="army_id", table_name="army")
 
         same_owner = results[0].id == results[1].id
         same_alliance = results[0].alliance == results[1].alliance and results[0].alliance is not None
@@ -654,7 +655,7 @@ class ArmyAccess:
             select(Army).where(Army.id == army_id)
         )
 
-        result = await self.__session.execute(stmt)
+        result = await self.session.execute(stmt)
         army: Optional[Army] = result.scalar_one_or_none()
 
         """

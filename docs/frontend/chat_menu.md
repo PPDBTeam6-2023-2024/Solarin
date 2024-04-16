@@ -29,7 +29,7 @@ The main component for the overview is called 'FriendsTab'.
 To retrieve an overview from the backend we use a get request from the /chat/dm_overview
 endpoint. This endpoint will return the overview information: a list of friends their (username, message board id, last message send between the users).
 For each overview entry a 'FriendOverviewEntry' will be created. The friends overview will be ordered starting with the latest send message on top 
-and decreasing in createtime of the last message
+and decreasing in create time of the last message
 </details>
 
 <details>
@@ -39,6 +39,8 @@ When a friend request is send to a user, the receiving user will have an entry f
 2 Buttons will appear:
 - Accept: the friend request will be accepted, and the accepting user will send an automatic message in the group indicating that the friend request ahs been accepted
 - Reject: removing the friend request from the pending friend requests
+
+<br>![alt text](../images/friend_request.png)
 
 To do these operations some communication with the backend is needed.
 First we want the pending friend requests to appear in our overview, we do this in the 'FriendsTab' component

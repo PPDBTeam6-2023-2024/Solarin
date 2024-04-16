@@ -15,7 +15,7 @@ This means the following:
 
 ## Description
 State arrays are stored on the frontend to know which armies are currently selected under "Move To". Furthermore the armies can be seen moving smoothly after choosing their destination. This is done by having set up a code that runs every interval to actually move the army images dynamically. 
-
+Depending on where the user clicks on the map, the army will move to this position and may or may not do an on arrive action.
 ## Issues
 
 ## Additional Information

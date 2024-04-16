@@ -14,11 +14,12 @@ The Army Viewer component is a movable window within a web application that disp
 
 ## Description
 
-The `ArmyViewer` component is designed as a draggable window that provides detailed information about an army identified by `armyId`. It fetches and displays the troops associated with the army, allowing users to view the total count and individual details of the troops. The component offers functionalities to:
+The `ArmyViewer` component is designed as a window that provides detailed information about an army identified by `armyId`. It fetches and displays the troops associated with the army, allowing users to view the total count and individual details of the troops. 
+Displaying the troops their rank amount and type. We are also able to see the combat stats of the army
+<br>![alt text](../images/army_details.png)
 
+The component offers functionalities too:
 - **Move Army**: Users can specify new coordinates (`x`, `y`) to relocate the army. 
 - **Create City**: Allows users to create a city at the army's current location, utilizing the army's `planet_id` and coordinates.
 
-
-## Issues
 

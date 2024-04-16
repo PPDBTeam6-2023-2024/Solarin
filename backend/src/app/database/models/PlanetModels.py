@@ -40,7 +40,7 @@ class Planet(Base):
                          nullable=False)
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id", deferrable=True, initially='DEFERRED'),
                              nullable=False)
-    created_at = Column(DateTime(), nullable=True, default=datetime.utcnow())
+    created_at = Column(DateTime(), nullable=True, default=datetime.utcnow)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
     armies = relationship("Army", back_populates="planet", lazy="select")

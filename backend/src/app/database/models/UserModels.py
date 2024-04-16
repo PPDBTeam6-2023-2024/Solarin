@@ -56,7 +56,7 @@ class Message(Base):
                                            ondelete="SET NULL"), nullable=False)
     message_board = Column(Integer, ForeignKey("messageBoard.bid", deferrable=True, initially='DEFERRED',
                                                ondelete="cascade"), nullable=False)
-    create_date_time = Column(TIMESTAMP, nullable=False, default=datetime.utcnow())
+    create_date_time = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
     body = Column(TEXT, nullable=False)
 
     @classmethod

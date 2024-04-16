@@ -63,13 +63,9 @@ async def test_add_to_army_1(army_access: ArmyAccess, session: AsyncSession):
     assert result.rank == 1
 
 async def test_add_to_army_2(army_access: ArmyAccess):
-    try:
+    with pytest.raises(IntegrityError):
         await army_access.add_to_army(2, "assassin", 1, 1)
         await army_access.commit()
-    except IntegrityError:
-        pass
-    else:
-        assert False
 
 async def test_get_troops_1(army_access: ArmyAccess):
     army_id = await army_access.create_army(1, 1, 1, 1)
@@ -220,13 +216,9 @@ async def test_attack_army_1(army_access: ArmyAccess, session: AsyncSession):
     assert result is not None
 
 async def test_attack_army_2(army_access: ArmyAccess):
-    try:
+    with pytest.raises(NotFoundException):
         await army_access.attack_army(1, 2)
         await army_access.commit()
-    except NotFoundException:
-        pass
-    else:
-        assert False
 
 async def test_attack_army_3(army_access: ArmyAccess):
     army_id_ally_1 = await army_access.create_army(1, 1, 1, 1)
@@ -235,13 +227,8 @@ async def test_attack_army_3(army_access: ArmyAccess):
     await army_access.add_to_army(army_id_ally_2, "soldier", 1, 1)
     await army_access.commit()
 
-    try:
+    with pytest.raises(InvalidActionException):
         await army_access.attack_army(army_id_ally_1, army_id_ally_2)
-    except InvalidActionException as e:
-        assert "own" in str(e)
-    else:
-        assert False
-
 
 async def test_attack_army_4(army_access: ArmyAccess, data_access):
     await data_access.AllianceAccess.create_alliance("test")
@@ -255,9 +242,5 @@ async def test_attack_army_4(army_access: ArmyAccess, data_access):
 
     await army_access.commit()
 
-    try:
+    with pytest.raises(InvalidActionException):
         await army_access.attack_army(army_id_ally, army_id_alliance_ally)
-    except InvalidActionException as e:
-        assert "allies" in str(e)
-    else:
-        assert False

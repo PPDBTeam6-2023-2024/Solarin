@@ -115,7 +115,7 @@ class BuildingAccess(DatabaseAccess):
 
         building_types = await self.session.execute(get_buildings)
 
-        return building_types.all()
+        return building_types.scalars().all()
 
     async def get_building_types(self):
         """
@@ -132,10 +132,11 @@ class BuildingAccess(DatabaseAccess):
 
         return building_types.scalars().all()
 
-    async def get_delta_time(self, building_id: int) -> timedelta:
+    async def get_delta_time(self, building_id: int, raw_time: bool=False) -> timedelta:
         """
         get the between now and when the building was last checked
         :param: building_id: id of the building
+        :param: raw_time: return the last_checked time instead of delta time
         :return: datetime of when the building was last checked
         """
         last_checked = Select(BuildingInstance.last_checked).where(BuildingInstance.id == building_id)
@@ -144,6 +145,8 @@ class BuildingAccess(DatabaseAccess):
         if last is None:
             raise NotFoundException(building_id, "Building Instance")
 
+        if raw_time:
+            return last
         return datetime.utcnow() - last
 
     async def checked(self, building_id: int):
@@ -187,7 +190,7 @@ class BuildingAccess(DatabaseAccess):
             join(BuildingInstance, BuildingType.name == BuildingInstance.building_type).\
             where(BuildingInstance.city_id == city_id)
 
-        city_buildings = await self.__session.execute(get_city_building_type)
+        city_buildings = await self.session.execute(get_city_building_type)
         city_buildings = city_buildings.scalars().all()
 
         """

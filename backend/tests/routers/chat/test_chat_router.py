@@ -1,14 +1,3 @@
-import pytest
-import asyncio
-from tests.conftest import client
-
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-from fastapi.websockets import WebSocket
-
-
-app = FastAPI()
-
 
 def insert_test_data(client):
     data = {

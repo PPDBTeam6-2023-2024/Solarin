@@ -1,4 +1,4 @@
-.TrainingOptionEntry{
+.TrainingOptionEntry {
     display: inline-block;
     width: 4vw;
     height: 5vw;
@@ -8,7 +8,7 @@
     border-radius: 0.2vw 0.2vw 0.2vw 0.2vw;
 }
 
-.TrainingOptionEntry img{
+.TrainingOptionEntry img {
     max-width: 100%;
     max-height: 100%;
     margin-left: auto;
@@ -17,6 +17,6 @@
     user-select: none;
 }
 
-.TrainingOptionEntry:hover{
+.TrainingOptionEntry:hover {
     transform: scale(110%);
 }

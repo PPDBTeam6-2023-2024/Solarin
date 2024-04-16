@@ -4,36 +4,35 @@
     "description": "Solarium: A versatile and universal currency also considered the main currency of the galaxy."
   },
   "TF": {
-    "icon": "techforge.png",
-    "description": "Techforge: Used to create and upgrade buildings.",
-    "scale": 1.6
+    "icon": "techforge.svg",
+    "description": "Techforge: Used to create and upgrade buildings."
   },
   "RA": {
-    "icon": "rations.svg",
+    "icon": "rations.png",
     "description": "Rations: Used to maintain armies."
   },
   "POP": {
-    "icon": "population.svg",
-    "description": "Population: Number of people in a city. Taken into account when recruiting new units."
+    "icon": "population.png",
+    "description": "Population: Number of people currently owned."
   },
   "INF": {
-    "icon": "influence.svg",
+    "icon": "influence.png",
     "description": "Influence: Used to make political decisions."
   },
-  "MIN": {
-    "icon": "minerals.svg",
+  "MI": {
+    "icon": "minerals.png",
     "description": "Minerals: Used as a resource for various industrial processes."
   },
   "UR": {
-    "icon": "uranium.svg",
-    "description": "Uranium: Used for energy production and advanced technologies."
+    "icon": "uranium.png",
+    "description": "Uranium: Used for energy production and nuclear technologies."
   },
   "OI": {
     "icon": "oil.svg",
-    "description": "Used as a primary energy source and for manufacturing various products."
+    "description": "Oil: Used as a primary energy source and for manufacturing various products."
   },
   "CO": {
-    "icon": "coal.svg",
-    "description": "Used primarily as a fuel source for energy generation."
+    "icon": "coal.png",
+    "description": "Coal: Used primarily as a fuel source for energy generation."
   }
 }

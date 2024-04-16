@@ -1,10 +1,10 @@
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 from typing import List, Tuple
-from sqlalchemy import select, exists
+from .database_acess import DatabaseAccess
 
 
-class DeveloperAccess:
+class DeveloperAccess(DatabaseAccess):
     """
     This class will manage the sql access for developers to easily expand the game
     These data accesses will mainly create Lookup tables and do other action ordinary players are not allowed to do
@@ -13,9 +13,9 @@ class DeveloperAccess:
     None of these function calls are supposed to be called because of a non-dev user action
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
-
-    async def createPlanetType(self, type_name: str, description: str = None):
+        super().__init__(session)
+        
+    async def create_planet_type(self, type_name: str, description: str = None):
         """
         creates a new type of planet
 
@@ -23,10 +23,10 @@ class DeveloperAccess:
         :param: description: description of the planet type (if provided)
         :return: nothing
         """
-        self.__session.add(PlanetType(type=type_name, description=description))
-        await self.__session.flush()
+        self.session.add(PlanetType(type=type_name, description=description))
+        await self.session.flush()
 
-    async def createPlanetRegionType(self, type_name: str, description: str = None):
+    async def create_planet_region_type(self, type_name: str, description: str = None):
         """
         creates a new type of planet region
 
@@ -34,10 +34,10 @@ class DeveloperAccess:
         :param: description: description of the planet region type (if provided)
         :return: nothing
         """
-        self.__session.add(PlanetRegionType(region_type=type_name, description=description))
-        await self.__session.flush()
+        self.session.add(PlanetRegionType(region_type=type_name, description=description))
+        await self.session.flush()
 
-    async def createProductionBuildingType(self, name: str):
+    async def create_production_building_type(self, name: str):
         """
         Creates a new type of building that can produce certain resources
         These types of buildings will generate certain resources over time
@@ -49,9 +49,9 @@ class DeveloperAccess:
         :return: nothing
         """
         pb = ProductionBuildingType(name=name)
-        self.__session.add(pb)
+        self.session.add(pb)
 
-    async def createBarracksType(self, name: str):
+    async def create_barracks_type(self, name: str):
         """
         Creates a new type of barrack that can train new kinds of troops
 
@@ -59,9 +59,9 @@ class DeveloperAccess:
         :return: nothing
         """
         brt = BarracksType(name=name)
-        self.__session.add(brt)
+        self.session.add(brt)
 
-    async def createTowerType(self, name: str, attack: int):
+    async def create_tower_type(self, name: str, attack: int):
         """
         Creates a new type of tower
 
@@ -69,9 +69,9 @@ class DeveloperAccess:
         :return: nothing
         """
         tower = TowerType(name=name, attack=attack)
-        self.__session.add(tower)
+        self.session.add(tower)
 
-    async def createWallType(self, name: str, defense: int):
+    async def create_wall_type(self, name: str, defense: int):
         """
        Creates a new type of wall
 
@@ -79,9 +79,9 @@ class DeveloperAccess:
        :return: nothing
        """
         wall = WallType(name=name, defense=defense)
-        self.__session.add(wall)
+        self.session.add(wall)
 
-    async def createHouseType(self, name: str, residents: int):
+    async def create_house_type(self, name: str, residents: int):
         """
         Create a new type of house having its citizens
 
@@ -90,9 +90,9 @@ class DeveloperAccess:
         :return: nothing
         """
         ht = HouseType(name=name, residents=residents)
-        self.__session.add(ht)
+        self.session.add(ht)
 
-    async def createResourceType(self, type_name: str):
+    async def create_resource_type(self, type_name: str):
         """
         Add a new type of resource
 
@@ -100,9 +100,10 @@ class DeveloperAccess:
         :return: nothing
         """
         r = ResourceType(name=type_name)
-        self.__session.add(r)
+        self.session.add(r)
 
-    async def setProducesResources(self, building_name: str, resource_name: str, base_production: int, max_capacity: int):
+    async def set_produces_resources(self, building_name: str, resource_name: str, base_production: int,
+                                     max_capacity: int):
         """
         Creates the link between a productionBuildingType and the Resource type it produces
 
@@ -110,11 +111,12 @@ class DeveloperAccess:
         :param: resource_name: name of resource that will be produced
         :return: nothing
         """
-        pr = ProducesResources(building_name=building_name, resource_name=resource_name, base_production=base_production, max_capacity=max_capacity)
-        self.__session.add(pr)
+        pr = ProducesResources(building_name=building_name, resource_name=resource_name,
+                               base_production=base_production, max_capacity=max_capacity)
+        self.session.add(pr)
 
-    async def createToopType(self, type_name: str, training_time: timedelta, battle_stats: BattleStats,
-                             required_rank: int = None):
+    async def create_troop_type(self, type_name: str, training_time: timedelta, battle_stats: BattleStats,
+                                required_rank: int = None):
         """
         Create a new type of troop that can be added to an army
 
@@ -125,9 +127,9 @@ class DeveloperAccess:
         :return: nothing
         """
         troop_type = TroopType.withBattleStats(type_name, training_time, battle_stats, required_rank)
-        self.__session.add(troop_type)
+        self.session.add(troop_type)
 
-    async def setTroopTypeCost(self, troop_name: str, resource_costs: List[Tuple[str, int]]):
+    async def set_troop_type_cost(self, troop_name: str, resource_costs: List[Tuple[str, int]]):
         """
         make costs associated with training troops
 
@@ -138,17 +140,23 @@ class DeveloperAccess:
         :return: nothing
         """
 
-        await self.__session.flush()
+        """
+        Delete the costs that were set before
+        """
+        await self.session.flush()
         old_cost = delete(TroopTypeCost).where(TroopTypeCost.troop_type == troop_name)
-        await self.__session.execute(old_cost)
+        await self.session.execute(old_cost)
 
+        """
+        Set the new costs
+        """
         for resource in resource_costs:
             troop_type_cost = TroopTypeCost(troop_type=troop_name, resource_type=resource[0], amount=resource[1])
-            self.__session.add(troop_type_cost)
+            self.session.add(troop_type_cost)
 
-    async def setCreationCost(self, building_name: str, resource_costs: List[Tuple[str, int]]):
+    async def set_creation_cost(self, building_name: str, resource_costs: List[Tuple[str, int]]):
         """
-        add an crate cost for a certain building,
+        add a create cost for a certain building,
         This stores the base values for a creation
 
         :param: building_name: the name of the building type we want to create
@@ -158,14 +166,28 @@ class DeveloperAccess:
         :return: nothing
         """
 
-        await self.__session.flush()
+        """
+        Delete the costs that were set before
+        """
         old_up_cost = delete(CreationCost).where(CreationCost.building_name == building_name)
-        await self.__session.execute(old_up_cost)
+        await self.session.execute(old_up_cost)
 
+        """
+        Set the new costs
+        """
         for resource in resource_costs:
             upgrade = CreationCost(building_name=building_name, cost_type=resource[0], cost_amount=resource[1])
-            self.__session.add(upgrade)
+            self.session.add(upgrade)
 
-    async def createAssociatedWith(self, planet_type: str, region_type: str):
-        self.__session.add(AssociatedWith(planet_type=planet_type, region_type=region_type))
-        await self.__session.flush()
+        await self.session.flush()
+
+    async def create_associated_with(self, planet_type: str, region_type: str):
+        """
+        Store which region types are associated with which planet
+
+        :param: planet_type: type of the planet of the association
+        :param: region_type: type of the region of the association
+        """
+
+        self.session.add(AssociatedWith(planet_type=planet_type, region_type=region_type))
+        await self.session.flush()

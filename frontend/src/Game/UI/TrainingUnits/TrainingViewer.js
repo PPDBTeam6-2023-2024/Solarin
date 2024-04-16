@@ -3,9 +3,8 @@ import './TrainingViewer.css'
 import axios from "axios";
 import TrainingQueueEntry from "./TrainingQueueEntry";
 import TrainingOptionBar from "./TrainingOptionBar";
-import {cos} from "three/examples/jsm/nodes/math/MathNode";
 
-const getTrainingQueue = async(building_id) => {
+const getTrainingQueue = async (building_id) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/building/training_queue/${building_id}`)
@@ -14,40 +13,40 @@ const getTrainingQueue = async(building_id) => {
     catch(e) {return []}
 }
 
-const addTrainingQueue = async(building_id, train_json) => {
+const addTrainingQueue = async (buildingId, trainJson) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
-        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/unit/train/${building_id}`, train_json, {
-              headers: {
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/unit/train/${buildingId}`, trainJson, {
+            headers: {
                 'content-type': 'application/json',
                 'accept': 'application/json',
-              },
-            })
+            },
+        })
 
         return response.data
     }
     catch(e) {return []}
 }
 
-function TrainingViewer(props) {
-
+function TrainingViewer({buildingId, onClose, refreshResources}) {
     const [trainingQueueList, setTrainingQueueList] = useState([])
-    const scroll_bar = React.useRef(null);
+    const scrollBar = React.useRef(null);
     const [errorMessage, setErrorMessage] = useState("");
 
     async function addTrainingData(train_json) {
-        let data = await addTrainingQueue(props.building_id, train_json)
+        let data = await addTrainingQueue(buildingId, train_json)
         setTrainingQueueList(data["queue"]);
-        if (!data["success"]){
+        refreshResources()
+        if (!data["success"]) {
             setErrorMessage(data["message"]);
-        }else{
+        } else {
             setErrorMessage("");
         }
     }
 
     useEffect(() => {
         async function makeTrainingQueueOverview() {
-            let data = await getTrainingQueue(props.building_id)
+            let data = await getTrainingQueue(buildingId)
             setTrainingQueueList(data);
         }
 
@@ -56,39 +55,54 @@ function TrainingViewer(props) {
 
     /*
     * The effect below makes it possible to horizontally scroll
-    * and see the the enter training queue
+    * and see the enter training queue
     * */
     useEffect(() => {
-        if (scroll_bar.current === null) {return;}
+        if (scrollBar.current === null) {
+            return;
+        }
 
         //support horizontal scrolling
-        scroll_bar.current?.addEventListener("wheel", (evt) => {
+        scrollBar.current?.addEventListener("wheel", (evt) => {
             evt.preventDefault();
-            scroll_bar.current.scrollLeft += evt.deltaY;
+            scrollBar.current.scrollLeft += evt.deltaY;
         });
 
+        /* Calls onClose() when user clicks outside TrainingViewScreen */
+        const handleClickOutside = (event) => {
+            if (!event.target.closest('.TrainingViewScreen')) {
+                onClose();
+            }
+        };
 
-    }, [scroll_bar]);
+        // Add and remove the event listener
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
 
 
+    }, [scrollBar]);
 
 
     return (
         <div className="TrainingViewScreen">
             {/*Displays the list of units that are currently  in the queue*/}
-            <div  ref={scroll_bar} className="TrainingViewEntriesList">
-                {trainingQueueList.map((queue_entry, index) => <TrainingQueueEntry OnTrainedFunction={
+            <div ref={scrollBar} className="TrainingViewEntriesList">
+                {trainingQueueList.map((queueEntry, index) => <TrainingQueueEntry OnTrainedFunction={
                 async() => {
                     /*When a unit should be trained we recalibrate with the backend*/
-                    let data = await getTrainingQueue(props.building_id);
+                    let data = await getTrainingQueue(buildingId);
                     setTrainingQueueList(data);
 
                     }
-                } key={queue_entry.id+' '+queue_entry.r+' '+queue_entry.train_remaining} queue_data={queue_entry} index={index}/>)}
+                } key={queueEntry.id + ' ' + queueEntry.r + ' ' + queueEntry.train_remaining}
+                                                                                   queueData={queueEntry}
+                                                                                   index={index}/>)}
 
             </div>
 
-            <TrainingOptionBar onTrain={(train_json) => addTrainingData(train_json)}/>
+            <TrainingOptionBar onTrain={(trainJson) => addTrainingData(trainJson)}/>
             {errorMessage}
         </div>
     )

@@ -17,14 +17,8 @@ class Chat(Message):
     parent: Optional[int] = None
 
 
-class ParentMessage(BaseModel):
-    id: int
-    body: str
-
-
 class MessageOut(BaseModel):
     sender_name: str
     created_at: str # datetime is not serializable, that is why we use datatime as a string representation
     body: str
-    parent_message: Optional[ParentMessage] = None
 

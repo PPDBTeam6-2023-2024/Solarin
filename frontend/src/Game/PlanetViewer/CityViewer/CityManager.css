@@ -1,27 +1,29 @@
 /* CityViewer.css */
 .ag-theme-alpine-dark .ag-header-cell,
-.ag-theme-alpine-dark .ag-header-group-cell{
+.ag-theme-alpine-dark .ag-header-group-cell {
     /* Replace primaryColor and secondaryColor with actual colors or add classes dynamically */
     background: linear-gradient(to top, black, #d20000) !important;
-    font-size: 150%;
+    font-size: 1.2vw;
     color: #030303;
 }
 
-.ag-theme-alpine-dark .ag-row{
+.ag-theme-alpine-dark .ag-row {
     font-size: 1vw;
     height: 3vw;
     line-height: 3vw;
-    margin : auto;
+    margin: auto;
     align-items: center;
 }
 
 
 /* CityViewer.css */
 .darken_background {
-    background-color: rgba(0,0,0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     height: 100vh;
     width: 100vw;
+    justify-content: center;
+    align-items: center;
 }
 
 .selected-image {
@@ -39,23 +41,23 @@
     height: 27vw;
     overflow: scroll;
     /*background: transparent;  => add if nescessary*/
-    margin-top: 1vw;
+    margin-top: auto;
     margin-bottom: auto;
-    margin-left: 2%;
+    margin-left: auto;
     margin-right: auto;
-    border-radius: 1vw 0 0 1vw;
+    border-radius: 0.2vw 0 0 0.2vw;
 }
 
 
-.building_view{
+.building_view {
     display: flex;
     width: 90vw;
     height: 30vw;
-    background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(139,0,0,0.5));
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(139, 0, 0, 0.5));
     border-radius: 3vw;
 }
 
-.building_image{
+.building_image {
     width: 25vw;
     height: 20vw;
     position: relative;
@@ -90,5 +92,13 @@
 
 .tabs button:hover {
     background: linear-gradient(to top, #d20000, black);
+}
+
+.right-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(10%) translateX(-12%);
+
 }
 

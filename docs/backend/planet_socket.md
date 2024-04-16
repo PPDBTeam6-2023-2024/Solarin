@@ -1,4 +1,4 @@
-# [Planet socket]
+# Planet socket
 
 ## Overview
 - The backend implementation of the planet websocket
@@ -25,17 +25,24 @@
         - `army id`: id of army
         - `to_x`: x coordinate to move to
         - `to_y`: y coordinate to move to
+        - `on_arrive` (optional): Indicates whether or not to do some special onArrive action when our army arrives
+          - `target_id`: id of the target to do the event with
+          - `target_type`: type of on Arrive event we will do
       - Response: 
         - `request_type`: type of the request, this will be `change_direction`
         - `data`: the updated **army**
+    - `leave_city`: Let an army leave the city
+      - `army id`: id of army
+    - `create_city`: Let an army create a city
+      - `army id`: id of army
 - The connection is managed by the `ConnectionPool` class from `manager.py`, which ensures efficient handling of multiple clients and broadcasting updates to all connected clients.
 - Upon disconnection (`WebSocketDisconnect`), the connection is properly closed and removed from the connection pool.
 - Army response json: 
   - `id`: army id
   - `departure_time`: time the army left (last direction change received) in _isoformat_
   - `arrival_time`: time the army arrives at destination in _isoformat_
-  - `from_x`: the from x position 
-  - `from_y`: the from y position
+  - `x`: the from x position 
+  - `y`: the from y position
   - `to_x`: the to x position 
   - `to_y`: the to y position
 
@@ -46,15 +53,14 @@ current_time = datetime.utcnow()
 total_time_diff = (army.arrival_time - army.departure_time).total_seconds()
 current_time_diff = (min(current_time, army.arrival_time) - army.departure_time).total_seconds()
 
-x_diff = army.to_x - army.from_x
-y_diff = army.to_y - army.from_y
+x_diff = army.to_x - army.x
+y_diff = army.to_y - army.y
 
 current_x = x_diff * (current_time_diff / total_time_diff)
 current_y = y_diff * (current_time_diff / total_time_diff)
 ```
 
-## Issues
-//
 
 ## Additional Information
 - All the backend features are tested with pytest
+- The handling of these events occurs in 'planet_socket_actions.py'

@@ -15,7 +15,6 @@ class TimestampDone(BaseModel):
 class TrainingQueueEntry(BaseModel):
     id: int
     building_id: int
-    army_id: int
     train_remaining: int
     troop_type: str
     rank: int

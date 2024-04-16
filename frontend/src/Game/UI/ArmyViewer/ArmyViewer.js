@@ -1,69 +1,100 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
-import { TreeView, TreeItem } from '@mui/x-tree-view';
+import {TreeView, TreeItem} from '@mui/x-tree-view';
 import WindowUI from '../WindowUI/WindowUI';
 import {Button} from "@mui/material";
+import ArmyViewTroopEntry from "./ArmyViewTroopEntry";
+import ArmyViewStatEntry from "./ArmyViewStatEntry";
+import {SocketContext} from "../../Context/SocketContext";
+import statsJson from "../stats.json";
 
-function ArmyViewer({armyId, onCityCreated}) {
+function ArmyViewer({armyId, onCityCreated, is_owner}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
+    const [socket, setSocket] = useContext(SocketContext);
 
     useEffect(() => {
         const fetchTroops = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops?armyid=${armyId}`);
+
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops/${armyId}`);
                 if (response.status === 200) {
                     setTroops(response.data.troops);
+
                     setStats(response.data.stats);
                 }
             } catch (error) {
                 console.error("Failed to fetch troops", error);
             }
         };
-        fetchTroops(); 
+        fetchTroops();
     }, [armyId]);
 
     const createCity = async () => {
-        try {
-            // get the planetID and coordinates from the army using the armyID
-            const army = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/getarmy?army_id=${armyId}`)
-        const armyData = army.data;
-        let planet_id = armyData.planet_id
-        const cityData = {
-            x: armyData.x,
-            y: armyData.y
-        };
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/create_city?planet_id=${planet_id}`, cityData);
-            onCityCreated()
-        } catch (error) {
-            console.error("Failed creating city", error);
-        }
+        /*Send a websocket message to create a city*/
+        const data_json  = {
+                        type: "create_city",
+                        army_id: armyId
+                };
+
+        await socket.send(JSON.stringify(data_json));
+
     };
 
+    // for every troop type in the army create a TroopEntry
     let troopsOutput = troops.map((troop, index) => (
-        <TreeItem key={index} nodeId={`${index}`} label={`${troop.size}x Troop ${troop.troop_type}`}/>
+        <>
+            <ArmyViewTroopEntry key={index} troop_type={troop.troop_type} troop_size={troop.size} rank={troop.rank}/>
+        </>
+
     ));
 
     /*displays the stats*/
     let statsOutput = Object.entries(stats).map(([key, value], index) => (
-        <TreeItem key={index} nodeId={`${index}`} label={`${key}: ${value}`} />
+        <>
+            <ArmyViewStatEntry key={index} stat_name={key} stat_value={value}/>
+        </>
+
     ));
 
     let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);
 
     return (
         <WindowUI>
-            <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: 'auto', minWidth: '300px', height: 'auto' }}>
+            <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto',
+                maxHeight: "60vh", "overflow": "scroll"}}>
                 <TreeView aria-label="file system navigator">
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
-                    <Button variant="contained" onClick={createCity} sx={{margin: "10px"}}>
+
+                    {/*Only display the create city button when the user is the owner of that army*/}
+                    {is_owner &&
+                        <Button variant="contained" onClick={createCity} sx={{margin: "10px"}}>
                         Create City
-                    </Button>
-                    <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`stats-${armyId}`} label={`Stats`}>
+                        </Button>
+                    }
+
+                    <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`general-${armyId}`} label={`General`}>
+                        {/*THIS PART IS A MOCK FOR AMRY GENERALS*/}
+                        <div style={{"width": "50%", "display": "inline-block"}}>
+                            <img src={(`/images/general_images/general01.png`)} draggable={false}
+                         unselectable="on"/>
+                        </div>
+                        <div>
+                            attack: <span style={{"color": "green"}}>+5%</span>
+                        </div>
+                        <div>
+                            city defense: <span style={{"color": "green"}}>+11%</span>
+                        </div>
+
+
+                    </TreeItem>
+
+                    <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`stats-${armyId}`} label={`Stats`}>
                         {statsOutput}
                     </TreeItem>
 
-                    <TreeItem className="border-2" sx={{ padding: "0.25rem" }} nodeId={`total-${armyId}`} label={`${totalCount} Units`}>
+                    <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`total-${armyId}`}
+                              label={`${totalCount >= 0 ? totalCount : "?"} Units`}>
                         {troopsOutput}
                     </TreeItem>
                 </TreeView>

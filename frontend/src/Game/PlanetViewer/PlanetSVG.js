@@ -1,23 +1,22 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Delaunay } from 'd3'; 
+import {useState, useEffect, useMemo} from 'react';
+import {Delaunay} from 'd3';
 import axios from 'axios';
 
-import rocks from '../Images/region_types/rocks.jpeg'
-import sandyrocks from '../Images/region_types/sandyrocks.jpeg'
-import darkrocks from '../Images/region_types/darkrocks.jpeg'
 
-
-function getImagePath(regionType) {
+// get the correct image path for the given region
+function GetImagePath(regionType) {
     const imagePaths = {
-        type1:  rocks,
-        "valley of death":  sandyrocks,
-        "dark valley":  darkrocks,
+        type1: '/images/region_types/rocks.jpeg',
+        "valley of death": '/images/region_types/sandyrocks.jpeg',
+        "dark valley": '/images/region_types/darkrocks.jpeg',
+        "arctic": '/images/region_types/ice.jpeg',
+        "plain": '/images/region_types/grass.jpg'
     };
 
-    return imagePaths[regionType] || rocks;
+    return imagePaths[regionType] || '/images/region_types/rocks.jpeg'; // default is rocks
 }
 
-function PlanetSVG(props) { 
+function PlanetSVG(props) {
     const [data, setData] = useState([]);
 
     useEffect(() => {
@@ -34,34 +33,34 @@ function PlanetSVG(props) {
                 setData([]);
             }
         };
-        
+
         fetchData();
     }, [props.planetId]);
-    
+
     const width = 1920;
     const height = 1080;
 
     const delaunay = useMemo(() => {
-        const formattedData = data.map((d) => [width*d.x, height*d.y]);
+        const formattedData = data.map((d) => [width * d.x, height * d.y]);
         return Delaunay.from(formattedData);
     }, [data, width, height]);
 
     const voronoi = useMemo(() => {
         return delaunay.voronoi([0, 0, width, height]);
-      }, [delaunay]);
+    }, [delaunay]);
 
     const renderClippedImages = () => {
         return data.map((d, i) => {
             const regionPath = voronoi.renderCell(i);
-            const imagePath = getImagePath(d.region_type);
+            const imagePath = GetImagePath(d.region_type);
             return (
                 <g key={`group-${i}`}>
                     <clipPath id={`clip-${i}`}>
-                        <path d={regionPath} />
+                        <path d={regionPath}/>
                     </clipPath>
                     <image
                         key={`image-${i}`}
-                        xlinkHref={imagePath}
+                        href={imagePath}
                         clipPath={`url(#clip-${i})`}
                         width={width}
                         height={height}
@@ -74,9 +73,10 @@ function PlanetSVG(props) {
     };
 
     return (
-        <svg onClick={props.onClick} style={{width: "100vw", height: "auto"}} viewBox={'0 0 ' + width + ' ' + height} preserveAspectRatio="none">
+        <svg style={{width: "100vw", height: "auto"}} viewBox={'0 0 ' + width + ' ' + height}
+             preserveAspectRatio="none">
             {renderClippedImages()}
-            <path key="voronoi-total" d={voronoi.render()} stroke="black" strokeWidth={2} />
+            <path key="voronoi-total" d={voronoi.render()} stroke="black" strokeWidth={2}/>
         </svg>
     );
 }

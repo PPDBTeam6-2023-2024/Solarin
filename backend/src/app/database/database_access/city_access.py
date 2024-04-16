@@ -1,53 +1,56 @@
 import math
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.models import *
-from ..database import AsyncSession
+from ..models import *
 from .planet_access import PlanetAccess
+from .database_acess import DatabaseAccess
 
 
-class CityAccess:
+class CityAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of cities
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
+        super().__init__(session)
 
-    async def createCity(self, planet_id: int, founder_id: int, x: float, y: float):
+    async def create_city(self, planet_id: int, founder_id: int, x: float, y: float):
         """
         Creates a city like it was just founded
+        :param: planet_id: id of the planet where we want to create a new city
         :param: founder_id: id of the user who created the city
+        :param: x, y: coordinates of where the city will be created
         :return: the id of the city
         """
-        regions = await PlanetAccess(self.__session).getRegions(planet_id)
 
-        closest_region = regions[0]
-        closest_distance = math.dist((closest_region.x,closest_region.y), (x,y))
-        for region in regions[1:]:
-            distance = math.dist((region.x,region.y), (x,y))
-            if distance < closest_distance:
-                closest_distance = distance
-                closest_region = region
+        """
+        Determine in which region the city is found in
+        """
+        closest_region = await PlanetAccess(self.session).get_closest_region(planet_id, x, y)
 
+        """
+        Add the city to the database
+        """
         city = City(region_id=closest_region.id, controlled_by=founder_id, x=x, y=y)
-        self.__session.add(city)
-        await self.__session.flush()
+        self.session.add(city)
+        await self.session.flush()
         city_id = city.id
-        await self.__session.commit()
         return city_id
 
-    async def getCityController(self, city_id: int):
+    async def get_city_controller(self, city_id: int) -> User:
         """
         get the user who controls the city
         :param: city_id: id of the city
         :return: the id of the user who is currently in control of the city
         """
+
         get_user = Select(User).join(City, City.controlled_by == User.id).where(city_id == City.id)
 
-        results = await self.__session.execute(get_user)
+        results = await self.session.execute(get_user)
 
-        return results.first()[0]
+        owner = results.scalar_one()
+        return owner
 
-    async def getCitiesByController(self, user_id: int):
+    async def get_cities_by_controller(self, user_id: int) -> list[City]:
         """
         get all the cities controlled by a certain user
         :param: city_id: id of the city
@@ -55,32 +58,36 @@ class CityAccess:
         """
         get_cities = Select(City).where(City.controlled_by == user_id).order_by(asc(City.id))
 
-        results = await self.__session.execute(get_cities)
-        results = results.all()
+        results = await self.session.execute(get_cities)
+        results = results.scalars().all()
 
-        return results
+        return list(results)
 
-    async def get_cities_stats(self, city_id: int):
+    async def get_cities_stats(self, city_id: int) -> dict[str, int]:
         """
         Get the attack and defense stats of a city
         :param: city_id: id of the city
         :return: dict of the city stats
         """
 
-        city_stats = {}
+        city_stats = {"speed": 0,
+                      "attack": 0,
+                      "defense": 0,
+                      "city_attack": 0,
+                      "city_defense": 0}
 
         """
         Check the towers to calculate the attack stat
         """
-
-        get_towers_attack = Select(TowerType.attack, BuildingInstance.rank).join(BuildingInstance, BuildingInstance.building_type==TowerType.name).where(BuildingInstance.city_id == city_id)
-        towers_attack = await self.__session.execute(get_towers_attack)
+        get_towers_attack = Select(TowerType.attack, BuildingInstance.rank).\
+            join(BuildingInstance, BuildingInstance.building_type == TowerType.name).\
+            where(BuildingInstance.city_id == city_id)
+        towers_attack = await self.session.execute(get_towers_attack)
         towers_attack = towers_attack.all()
 
-        city_stats["speed"] = 0
-        city_stats["city_attack"] = 0
-
-        city_stats["attack"] = 0
+        """
+        Change the stats based on the rank of the building
+        """
         for tower in towers_attack:
             city_stats["attack"] += PropertyUtility.getUnitStatsRanked(tower[0], tower[1])
             city_stats["city_attack"] += PropertyUtility.getUnitStatsRanked(tower[0], tower[1])
@@ -89,14 +96,15 @@ class CityAccess:
         Check the towers to calculate the attack stat
         """
 
-        get_walls_defense = Select(WallType.defense, BuildingInstance.rank).join(BuildingInstance,
-                                                                                 BuildingInstance.building_type == WallType.name).where(
-            BuildingInstance.city_id == city_id)
-        walls_defense = await self.__session.execute(get_walls_defense)
+        get_walls_defense = Select(WallType.defense, BuildingInstance.rank).\
+            join(BuildingInstance, BuildingInstance.building_type == WallType.name).\
+            where(BuildingInstance.city_id == city_id)
+        walls_defense = await self.session.execute(get_walls_defense)
         walls_defense = walls_defense.all()
 
-        city_stats["defense"] = 0
-        city_stats["city_defense"] = 0
+        """
+        Change the stats based on the rank of the building
+        """
         for wall in walls_defense:
             city_stats["defense"] += PropertyUtility.getUnitStatsRanked(wall[0], wall[1])
             city_stats["city_defense"] += PropertyUtility.getUnitStatsRanked(wall[0], wall[1])
@@ -111,4 +119,15 @@ class CityAccess:
         """
 
         u = Update(City).values({"controlled_by": user_id}).where(City.id == city_id)
-        await self.__session.execute(u)
+        await self.session.execute(u)
+
+    async def get_city_rank(self, city_id: int) -> int:
+        """
+        Get the rank of a city
+        param: city_id: the city whose rank we want
+        return: rank of the city
+        """
+        get_rank = Select(City.rank).where(City.id == city_id)
+        result = await self.session.execute(get_rank)
+        result = result.scalar_one()
+        return result

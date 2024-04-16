@@ -1,0 +1,56 @@
+.profile_background {
+    /**
+    This class gives the background behind the profile image alien
+    This will make it appear that the profile is a picture of the alien with a background
+    */
+    width: 8vw;
+    height: 8vw;
+    left: 1vw;
+    bottom: 1vw;
+    background-image: linear-gradient(5deg, rgb(9, 11, 19), rgb(9, 35, 101));
+    clip-path: circle(50% at 50% 50%);
+}
+
+.profile_circle {
+    /**
+    style for the profile circle the alien is in
+    */
+    width: 10vw;
+    height: 10vw;
+    z-index: 21;
+    background-image: inherit;
+    clip-path: circle(50% at 50% 50%);
+}
+
+.profile_circle:hover {
+
+    /**
+    formula to reshape the profile icon when it is hovered.
+    How does the formula work:
+    --scaleIndex contains the pct we want to increase.
+    --translate_size makes sure our profile icon stays inside the screen on his left and bottom border
+    It does the following calculations:
+    After we would have scaled our sphere our radius is bigger, (we go from a 100% radius to and 100% + (scaleIndex-100%)/2)
+    This change is calculated in translate_size.
+    In the transform we just apply the changes
+    */
+    --scaleIndex: 110%;
+    --translate_size: calc((var(--scaleIndex) - 100%) / 2);
+    transform: translate(var(--translate_size), calc(var(--translate_size) * -1)) scale(var(--scaleIndex));
+
+}
+
+#profile_bar {
+    /**
+    id of the profile bar
+    This will be used for the long bar next and behind the profile button, and on this, the resources
+    will be displayed
+    */
+    width: auto;
+    height: 5vw;
+    z-index: 5;
+    background-image: inherit;
+    opacity: 0.7;
+    /* top-left | top-right | bottom-right | bottom-left */
+    border-radius: 0 1vw 1vw 0;
+}

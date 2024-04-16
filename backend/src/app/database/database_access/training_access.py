@@ -1,20 +1,20 @@
 import datetime
 import math
-from ..models.models import *
+from ..models import *
 from ..database import AsyncSession
 from .building_access import BuildingAccess
 from .army_access import ArmyAccess
-from ....logic.utils.compute_properties import *
+from ....logic.formula.compute_properties import *
+from .database_acess import DatabaseAccess
 
-
-class TrainingAccess:
+class TrainingAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of training units
     """
     def __init__(self, session: AsyncSession):
-        self.__session = session
-
-    async def trainType(self, army_id: int, building_id: int, troop_type: str, rank: int, amount: int):
+        super().__init__(session)
+        
+    async def train_type(self, building_id: int, troop_type: str, rank: int, amount: int):
         """
         Make a training queue for each training request, an entry in the training queue is 1 Entry in the
         queue for a barrack, each queue entry needs to be identified, and linked to barrack building.
@@ -25,7 +25,6 @@ class TrainingAccess:
         next id is 1 higher than the highest id corresponding to the building.
         Concrete NextQueue Is = highest queue Id (correspond to the building id) + 1
 
-        :param: army_id: army we want to add the units to after they are trained
         :param: building_id: id of the building which will be some kind of barrack
         :param: troop_type: type of troop we are training
         :param: rank: the rank of the troop we want to train
@@ -35,7 +34,7 @@ class TrainingAccess:
         """
         get_highest_id = Select(func.max(TrainingQueue.id)).group_by(TrainingQueue.building_id).\
             where(TrainingQueue.building_id == building_id)
-        highest_nr = await self.__session.execute(get_highest_id)
+        highest_nr = await self.session.execute(get_highest_id)
         highest_nr = highest_nr.first()
 
         """
@@ -48,29 +47,32 @@ class TrainingAccess:
             highest_nr = highest_nr[0]+1
 
         """
-        when the highest_nr == 0, it means the queue is empty, to make sure the remaining time is not affected (in case user leaves training menu open)
-        And so reduces its waiting time in advance, we will set the last_checked to current time if the queue was empty before
+        when the highest_nr == 0, it means the queue is empty, to make sure the remaining time is not 
+        affected (in case user leaves training menu open)
+        And so reduces its waiting time in advance, we will set the last_checked to current time 
+        if the queue was empty before
         """
         if highest_nr == 0:
-            u = update(BuildingInstance).values({"last_checked": datetime.now()}).where(BuildingInstance.id == building_id)
-            await self.__session.execute(u)
+            u = update(BuildingInstance).values({"last_checked": datetime.now()}).\
+                where(BuildingInstance.id == building_id)
+            await self.session.execute(u)
 
         """
         create queue
         """
         training_time: int = await self.__getTrainingTime(troop_type)
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,
-                           training_size=amount, army_id=army_id, train_remaining=training_time*amount)
+                           training_size=amount, train_remaining=training_time*amount)
 
-        self.__session.add(tq)
-        await self.__session.flush()
+        self.session.add(tq)
+        await self.session.flush()
 
     async def __getTrainingTime(self, troop_type: str):
         """
         Private function to get the training time of a TroopType
         """
         get_time = Select(TroopType.training_time).where(TroopType.type == troop_type)
-        results = await self.__session.execute(get_time)
+        results = await self.session.execute(get_time)
 
         if results is None:
             raise Exception("SQL TrainingAccess --> __getTrainingTime: unit does not exist")
@@ -94,7 +96,7 @@ class TrainingAccess:
         developers should be allowed to change the time, that is why seconds can be provided
         """
         if seconds is None:
-            delta_time = await BuildingAccess(self.__session).getDeltaTime(building_id)
+            delta_time = await BuildingAccess(self.session).get_delta_time(building_id)
             seconds = delta_time.total_seconds()
         for r in results:
             if seconds <= 0:
@@ -107,13 +109,13 @@ class TrainingAccess:
             If multiple troops trained add only part to army when not fully done
             """
 
-            per_unit_training_time = r[1]
+            unit_training_time = r[1]
             queue_entry: TrainingQueue = r[0]
 
             """
             make sure we don't train more units than are in a queue => use min
             """
-            trained = queue_entry.training_size-math.ceil((queue_entry.train_remaining - seconds)/per_unit_training_time)
+            trained = queue_entry.training_size-math.ceil((queue_entry.train_remaining - seconds)/unit_training_time)
 
             troops_trained = min(trained, queue_entry.training_size)
             diff = queue_entry.train_remaining - seconds
@@ -126,19 +128,29 @@ class TrainingAccess:
             """
             handle the trained unit changes
             """
-            army_access = ArmyAccess(self.__session)
-            await army_access.addToArmy(queue_entry.army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
+            army_access = ArmyAccess(self.session)
+
+            aa = ArmyAccess(self.session)
+            ba = BuildingAccess(self.session)
+
+            building_city = await ba.get_city(building_id)
+
+            await self.session.flush()
+
+            army_id = await aa.get_army_in_city(building_city.id)
+
+            await army_access.add_to_army(army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
             queue_entry.training_size -= troops_trained
             """
             when entry done, remove training queue entry
             """
             if diff < 0:
-                await self.__session.delete(queue_entry)
+                await self.session.delete(queue_entry)
 
         """
         make a commit of the training changes and potentially removed training queue entries
         """
-        await self.__session.flush()
+        await self.session.flush()
 
     async def get_queue(self, building_id):
         """
@@ -153,7 +165,7 @@ class TrainingAccess:
         get_queue_entries = Select(TrainingQueue, TroopType.training_time).join(TroopType,
                                                                                 TroopType.type == TrainingQueue.troop_type).where(
             TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))
-        results = await self.__session.execute(get_queue_entries)
+        results = await self.session.execute(get_queue_entries)
         results = results.all()
         return results
 
@@ -170,7 +182,7 @@ class TrainingAccess:
 
         get_cost = Select(TroopTypeCost.resource_type, TroopTypeCost.amount).where(TroopTypeCost.troop_type == troop_type)
 
-        resources = await self.__session.execute(get_cost)
+        resources = await self.session.execute(get_cost)
         resources = resources.all()
         ranked_cost = []
 
@@ -192,7 +204,7 @@ class TrainingAccess:
         """
 
         rank = Select(TroopRank.rank).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
-        results = await self.__session.execute(rank)
+        results = await self.session.execute(rank)
         result = results.first()
 
         if result is None:
@@ -222,13 +234,14 @@ class TrainingAccess:
             """
             create new row entry
             """
-            self.__session.add(TroopRank(user_id=user_id, troop_type=troop_type, rank=rank))
+            self.session.add(TroopRank(user_id=user_id, troop_type=troop_type, rank=rank))
         else:
             """
             alter row entry
             """
-            u = update(TroopRank).values({"rank": rank}).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
-            await self.__session.execute(u)
+            u = update(TroopRank).\
+                values({"rank": rank}).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
+            await self.session.execute(u)
 
-        await self.__session.flush()
+        await self.session.flush()
 

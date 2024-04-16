@@ -102,7 +102,7 @@ export const getUpgradeCost = async (cityId) => {
 export const getArmyInCity = async (cityId) => {
     try {
         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`};
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/army_in_city?city_id=${cityId}`);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/army_in_city/${cityId}`);
         if (response.status === 200) {
             return response.data;
         }

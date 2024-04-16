@@ -557,7 +557,7 @@ class ArmyAccess(DatabaseAccess):
         Remove original army
         """
         await self.remove_army(from_army_id)
-        await self.__session.flush()
+        await self.session.flush()
 
     async def add_merge_armies(self, army_id: int, target_id: int):
         """

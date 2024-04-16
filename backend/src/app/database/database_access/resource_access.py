@@ -116,9 +116,9 @@ class ResourceAccess(DatabaseAccess):
         """
         Retrieve the resources of the user
         """
-        user_resources = await self.__session.execute(select(HasResources).where(HasResources.owner_id == user_id).\
+        user_resources = await self.session.execute(select(HasResources).where(HasResources.owner_id == user_id).\
             order_by(asc(HasResources.resource_type)))
-        resources = await self.__session.execute(select(ResourceType))
+        resources = await self.session.execute(select(ResourceType))
         result: dict[str, int] = {}
 
         """

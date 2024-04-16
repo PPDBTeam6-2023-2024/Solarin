@@ -8,6 +8,7 @@ import {useNavigate} from 'react-router-dom';
 
 const hasValidToken = async () => {
     try {
+         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/auth/me`)
         return response.status === 200
     } catch (e) {

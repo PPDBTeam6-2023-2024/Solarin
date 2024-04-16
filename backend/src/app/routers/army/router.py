@@ -92,7 +92,7 @@ async def armies_user(
     return armies_schemas
 
 
-@router.get("/army_in_city/")
+@router.get("/army_in_city/{city_id}")
 async def get_armies_in_city(
         user_id: Annotated[int, Depends(get_my_id)],
         city_id: int,

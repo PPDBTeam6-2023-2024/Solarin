@@ -111,7 +111,7 @@ class PlanetSocketActions:
         This function will wait some time before checking army combat (This function will be called as a asyncio task)
         """
         delay = max(0, delay)
-        await asyncio.sleep(delay + 1)  # safety wait a 1 seconds
+        await asyncio.sleep(delay + 0.4)  # safety wait a 0.4 seconds
         await ArriveCheck.check_arrive(army, self.data_access)
         """
         On reload frontend needs to reload its cities and armies on the map

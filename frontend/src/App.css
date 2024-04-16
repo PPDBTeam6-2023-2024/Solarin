@@ -11,3 +11,7 @@
 .moveable-control {
   opacity: 0!important;
 }
+
+img{
+  user-select: none;
+}

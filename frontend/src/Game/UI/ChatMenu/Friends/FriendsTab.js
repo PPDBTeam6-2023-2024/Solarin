@@ -7,7 +7,6 @@ import SendFriendRequestEntry from "./SendFriendRequestEntry";
 
 const getDMOverview = async () => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/dm_overview`)
         return response.data
     } catch (e) {
@@ -17,7 +16,6 @@ const getDMOverview = async () => {
 
 const getFriendRequests = async () => {
     try {
-        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/friend_requests`)
         return response.data
     } catch (e) {

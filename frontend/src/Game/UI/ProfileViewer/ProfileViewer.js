@@ -31,7 +31,6 @@ function ProfileViewer(props) {
     const getCitiesPositions = async () => {
         /*get the list of all the requests to join the alliance*/
         try {
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/cities_user`)
             setCitiesList(response.data)
         } catch (e) {
@@ -45,7 +44,6 @@ function ProfileViewer(props) {
     const getArmiesPositions = async () => {
         /*get the list of all the requests to join the alliance*/
         try {
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies_user`)
             setArmiesList(response.data)
         } catch (e) {

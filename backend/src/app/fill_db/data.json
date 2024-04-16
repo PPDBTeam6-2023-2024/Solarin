@@ -13,12 +13,12 @@
                 "password": "admin1"
             },
             "resources": {
-                "TF": 0,
+                "TF": 80,
                 "RA": 0,
-                "SOL": 0,
+                "SOL": 1023,
                 "POP": 0,
                 "INF": 0,
-                "MI": 0,
+                "MI": 56,
                 "UR": 0,
                 "OI": 0,
                 "CO": 0

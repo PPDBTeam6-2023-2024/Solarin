@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends
 from ...database.database_access.data_access import DataAccess
-from typing import Annotated, Tuple, List
-from .schemas import BuildingInstanceSchema, CitySchema, PlanetRegion, CityLocationSchema, BuildingTypeSchema, CostSchema, CreateCitySchema
+from typing import Annotated, List
+from .schemas import BuildingInstanceSchema, CitySchema, BuildingTypeSchema, CostSchema
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 

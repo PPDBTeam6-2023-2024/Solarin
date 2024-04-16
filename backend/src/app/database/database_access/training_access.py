@@ -7,6 +7,7 @@ from .army_access import ArmyAccess
 from ....logic.formula.compute_properties import *
 from .database_acess import DatabaseAccess
 
+
 class TrainingAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of training units
@@ -53,7 +54,7 @@ class TrainingAccess(DatabaseAccess):
         if the queue was empty before
         """
         if highest_nr == 0:
-            u = update(BuildingInstance).values({"last_checked": datetime.now()}).\
+            u = update(BuildingInstance).values({"last_checked": datetime.utcnow()}).\
                 where(BuildingInstance.id == building_id)
             await self.session.execute(u)
 

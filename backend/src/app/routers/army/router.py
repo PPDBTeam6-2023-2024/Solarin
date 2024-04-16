@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse, Response, ORJSONResponse
 from typing import List, Annotated
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...database.database import get_db
 from ...database.database_access.army_access import *
 from ..authentication.router import get_my_id
 from .schemas import *
 from ...database.database_access.data_access import DataAccess
+
+from ..cityManager.city_checker import CityChecker
 
 router = APIRouter(prefix="/army", tags=["Army"])
 
@@ -103,6 +103,12 @@ async def get_armies_in_city(
     """
     data_access = DataAccess(db)
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
+
+    """
+    do the city check, checking all the idle mechanics
+    """
+    city_checker = CityChecker(city_id, data_access)
+    await city_checker.check_all()
 
     troops = await get_troops(user_id, army_id, db)
 

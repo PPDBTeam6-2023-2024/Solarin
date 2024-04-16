@@ -109,8 +109,7 @@ class BuildingAccess(DatabaseAccess):
         :param: city_id: id of the city whose buildings we want
         :return: list of tuples: BuildingInstance object, Building Type Object
         """
-        get_buildings = Select(BuildingInstance, BuildingType).\
-            join(BuildingInstance, BuildingInstance.building_type == BuildingType.name).\
+        get_buildings = Select(BuildingInstance).\
             where(BuildingInstance.city_id == city_id).order_by(asc(BuildingInstance.id))
 
         building_types = await self.session.execute(get_buildings)

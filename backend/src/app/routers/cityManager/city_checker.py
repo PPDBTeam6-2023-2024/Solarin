@@ -32,7 +32,7 @@ class CityChecker:
         checks the queues of barrack type buildings
         """
         for b in buildings:
-            if not isinstance(b, BarracksType):
+            if not isinstance(b.type, BarracksType):
                 continue
 
             await self.da.TrainingAccess.check_queue(b.id)

@@ -13,9 +13,9 @@
                 "password": "admin1"
             },
             "resources": {
-                "TF": 15045,
-                "RA": 6085,
-                "SOL": 19657,
+                "TF": 150450,
+                "RA": 60805,
+                "SOL": 196570,
                 "POP": 239,
                 "INF": 2358,
                 "MI": 5644,
@@ -27,6 +27,43 @@
                 {
                     "x": 0.1,
                     "y": 0.1,
+                    "planet nr": 1,
+                    "troops": [
+                        {
+                            "type": "soldier",
+                            "rank": 10,
+                            "amount": 3
+                        },
+                        {
+                            "type": "tank",
+                            "rank": 3,
+                            "amount": 205
+                        },
+                        {
+                            "type": "assassin",
+                            "rank": 1,
+                            "amount": 456
+                        },
+                        {
+                            "type": "medic",
+                            "rank": 5,
+                            "amount": 84
+                        },
+                        {
+                            "type": "fighter",
+                            "rank": 1,
+                            "amount": 100
+                        },
+                        {
+                            "type": "bomber",
+                            "rank": 2,
+                            "amount": 150
+                        }
+                    ]
+                },
+                {
+                    "x": 0.1,
+                    "y": 0.2,
                     "planet nr": 1,
                     "troops": [
                         {

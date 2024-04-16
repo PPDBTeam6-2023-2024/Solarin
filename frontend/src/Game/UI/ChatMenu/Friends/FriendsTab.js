@@ -46,7 +46,6 @@ const FriendsTab = (props) => {
 
         makeOverviewEntries()
     }, [])
-    console.log("dm", dmData)
 
     return (
         <>

@@ -72,7 +72,7 @@ function Login() {
                     axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
                 }
             } catch (error) {
-                setSignError(error.response.data.detail)
+                setSignError(error.response.data.detail.msg)
         }
     }
 
@@ -95,9 +95,11 @@ function Login() {
             if(response.status === 200) {
               setSignError(null)
             }
-            }
-        catch(error) {
-          setSignError(error.response.data.detail)
+
+            /*After creating an account it is convenient to automatically log in too*/
+            await doLogin(username, password)
+        }catch(error) {
+          setSignError(error.response.data.detail[0].msg)
         }
     }
 
@@ -111,9 +113,9 @@ function Login() {
             await doLogin(username, password)
         } else {
             await doRegister(username, password, email)
-            /*After creating an account it is convenient to automatically log in too*/
-            await doLogin(username, password)
+
         }
+
     }
     return (
         <div className="App">
@@ -164,6 +166,7 @@ function Login() {
                                                className="justify-center rounded-md bg-transparent hover:bg-white hover:text-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-white-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white-600"/>
                                     </div>
                                 </form>
+                                {console.log(signError)}
                                 {signError && <h4 className="text-red-500">{signError}</h4>}
                             </div>
                         }

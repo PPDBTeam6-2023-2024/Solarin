@@ -78,7 +78,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail={"msg": "Incorrect username or password"},
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(

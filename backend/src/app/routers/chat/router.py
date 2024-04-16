@@ -104,7 +104,6 @@ async def dm_overview(
         if d[1] is None:
             continue
         output_list.append((d[0], d[1].toMessageOut(d[2]), d[1].message_board))
-
     return output_list
 
 

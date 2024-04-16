@@ -29,7 +29,10 @@ The main component for the overview is called 'FriendsTab'.
 To retrieve an overview from the backend we use a get request from the /chat/dm_overview
 endpoint. This endpoint will return the overview information: a list of friends their (username, message board id, last message send between the users).
 For each overview entry a 'FriendOverviewEntry' will be created. The friends overview will be ordered starting with the latest send message on top 
-and decreasing in createtime of the last message
+and decreasing in create time of the last message.
+
+<br>![alt text](../images/dm_overview.png)
+
 </details>
 
 <details>
@@ -39,6 +42,8 @@ When a friend request is send to a user, the receiving user will have an entry f
 2 Buttons will appear:
 - Accept: the friend request will be accepted, and the accepting user will send an automatic message in the group indicating that the friend request ahs been accepted
 - Reject: removing the friend request from the pending friend requests
+
+<br>![alt text](../images/friend_request.png)
 
 To do these operations some communication with the backend is needed.
 First we want the pending friend requests to appear in our overview, we do this in the 'FriendsTab' component
@@ -65,6 +70,8 @@ if true, the alliance is created and the user will directly see the screen it wo
 When we press the 'join alliance' we will send a request to the alliance (corresponding to the text input) to ask their alliance.
 They will receive an alliance join request. When the user decide to try to join another alliance, the original request will be removed.
 
+<br>![alt text](../images/alliance_menu_not_in.png)
+
 </details>
 
 
@@ -75,12 +82,18 @@ When we press this button we will go to the chat of the alliance.
 This overview will also show a list of all players who want to join the alliance.
 We can accept or reject users. These components are called 'AllianceRequestEntry', and behave similary to friend request entries,
 but has as backend endpoint /chat/alliance_requests
+
+<br>![alt text](../images/alliance_menu_in.png)
+
 </details>
 
 ### Ranking
 <details>
 <summary><strong>Player Ranking</strong></summary>
 The category ranking shows the top 30 ranking of players, based on a 'quantity'. This quantity is the amount of solarium a player has
+
+<br>![alt text](../images/ranking.png)
+
 </details>
 
 ### Message Board
@@ -110,13 +123,10 @@ The requests send from client to server:
 - Limit (only when paging): limit of amount of messages we want to receive
 - body (only when new message): body of the new message
 
-Messages can be sent by pressing the button, at the bottom  of the chatmenu called 'Send'.
+Messages can be sent by pressing the button, at the bottom  of the chat menu called 'Send'.
 The bottom also contains an input field so users can enter their text. This part has its own component called 'SendMessage'
 
-The Messages themself are inside the component 'Message', which gives the message the right visual format.
-</details>
-## Issues
-[Any issues you can face when using the feature]
+<br>![alt text](../images/message_board.png)
 
-## Additional Information
-[Anything else you want to add]
+The Messages themselves are inside the component 'Message', which gives the message the right visual format.
+</details>

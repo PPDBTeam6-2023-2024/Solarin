@@ -28,6 +28,8 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
 
         await socket.send(JSON.stringify(data_json));
 
+        /*Makes it so that the access of armies arrives after the websocket arrives, a really short sleep*/
+        await new Promise((resolve) => setTimeout(resolve, 50))
         refresh()
     };
 

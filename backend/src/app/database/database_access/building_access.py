@@ -249,7 +249,7 @@ class BuildingAccess(DatabaseAccess):
             where(BuildingInstance.id == building_id)
 
         production = await self.session.execute(get_production)
-        production = production.scalars().all()
+        production = production.all()
 
         """
         Add resources earned over time to user

@@ -37,35 +37,35 @@
                         {
                             "type": "tank",
                             "rank": 3,
-                            "amount": 0
+                            "amount": 205
                         },
                         {
                             "type": "assassin",
                             "rank": 1,
-                            "amount": 0
+                            "amount": 456
                         },
                         {
                             "type": "medic",
                             "rank": 5,
-                            "amount": 8
+                            "amount": 84
                         },
                         {
                             "type": "fighter",
                             "rank": 1,
-                            "amount": 60
+                            "amount": 100
                         },
                         {
                             "type": "bomber",
                             "rank": 2,
-                            "amount": 50
+                            "amount": 150
                         }
                     ]
                 }
             ],
             "cities": [
                 {
-                    "x": 0.7,
-                    "y": 0.7,
+                    "x": 0.2,
+                    "y": 0.2,
                     "planet nr": 1,
                     "buildings": [
                         "barracks"
@@ -92,8 +92,8 @@
             },
             "armies": [
                 {
-                    "x": 0.5,
-                    "y": 0.5,
+                    "x": 0.3,
+                    "y": 0.6,
                     "planet nr": 1,
                     "troops": [
                         {
@@ -132,7 +132,74 @@
             "cities": [
                 {
                     "x": 0.2,
-                    "y": 0.2,
+                    "y": 0.7,
+                    "planet nr": 1,
+                    "buildings": [
+                        "barracks"
+                    ]
+                }
+            ]
+        },
+        {
+            "userinfo": {
+                "username": "admin3",
+                "email": "admin3@example.com",
+                "password": "admin3"
+            },
+            "resources": {
+                "TF": 15045,
+                "RA": 6085,
+                "SOL": 19657,
+                "POP": 239,
+                "INF": 2358,
+                "MI": 5644,
+                "UR": 1044,
+                "OI": 28764,
+                "CO": 8653
+            },
+            "armies": [
+                {
+                    "x": 0.7,
+                    "y": 0.6,
+                    "planet nr": 1,
+                    "troops": [
+                        {
+                            "type": "soldier",
+                            "rank": 1,
+                            "amount": 3
+                        },
+                        {
+                            "type": "tank",
+                            "rank": 1,
+                            "amount": 2
+                        },
+                        {
+                            "type": "assassin",
+                            "rank": 1,
+                            "amount": 2
+                        },
+                        {
+                            "type": "medic",
+                            "rank": 1,
+                            "amount": 8
+                        },
+                        {
+                            "type": "fighter",
+                            "rank": 1,
+                            "amount": 3
+                        },
+                        {
+                            "type": "bomber",
+                            "rank": 2,
+                            "amount": 2
+                        }
+                    ]
+                }
+            ],
+            "cities": [
+                {
+                    "x": 0.9,
+                    "y": 0.6,
                     "planet nr": 1,
                     "buildings": [
                         "barracks"

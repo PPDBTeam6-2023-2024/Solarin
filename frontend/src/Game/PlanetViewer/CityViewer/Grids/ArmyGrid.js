@@ -3,7 +3,7 @@ import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
 
-const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage}) => {
+const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, refresh}) => {
     const columns = useMemo(() => [
         {headerName: "Troop Type", field: "troopType", autoHeight: true},
         {headerName: "Rank", field: "rank"},
@@ -27,6 +27,8 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
         };
 
         await socket.send(JSON.stringify(data_json));
+
+        refresh()
     };
 
     return (

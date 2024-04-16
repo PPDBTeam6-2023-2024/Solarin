@@ -1,44 +1,55 @@
 import {MapInteractionCSS} from 'react-map-interaction';
-import {useState, useEffect, useContext, useRef, Fragment} from 'react';
-import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
+import {useState, useEffect, useContext, useRef} from 'react';
 
-import GetCities from './CityViewer/GetCities';
 import CityManager from "./CityViewer/CityManager";
 
-import {PlanetListContext} from "../Context/PlanetListContext"
+
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
-import WindowUI from '../UI/WindowUI/WindowUI';
 
 import {toggleArmyViewer, closeArmyViewer} from './Helper/ArmyViewerHelper';
 import {fetchCities} from './Helper/CityHelper';
-
-import {IoMdClose} from "react-icons/io";
 
 import ArmyMapEntry from "./ArmyMapEntry";
 import CityMapEntry from "./CityMapEntry";
 import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
 import {SocketContext} from "../Context/SocketContext";
 import {PlanetIdContext} from "../Context/PlanetIdContext";
+import PlanetSwitcher from "../UI/PlanetSwitcher/PlanetSwitcher";
 
 function PlanetViewer(props) {
-    const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
+    /*
+    *This component represents the view of a planet, when we visit another planet,
+    * this component will be replaced by another planetViewer Component. This means that
+    * this component manages a planet view of 1 specific planet
+    * */
 
+    /*Map information to support scrolling and moving on the MapInteractionCSS component*/
     const [mapState, setMapState] = useState({
         scale: 1,
         translation: {x: 0, y: 0},
     });
+
+    /*State that keeps a list of all the armies that need to be displayed*/
     const [armyImages, setArmyImages] = useState([]);
+
+    /*Keep track of all the army viewers (army menu) that are currently open*/
     const [activeArmyViewers, setActiveArmyViewers] = useState([]);  // array of army ids
 
-    /*Get images of cities on map cities on the map*/
-
+    /*
+    * SelectCityId stores an Id of the currently selected city, this makes it possible
+    * To have the UI component, outside the MapInteractionCSS component
+    * ShowCities decides, whether or not cities will be visualized on the map
+    * */
     const [selectedCityId, setSelectedCityId] = useState(null);
     const [showCities, setShowCities] = useState(true);
-    const [citiesLoaded, setCitiesLoaded] = useState(false)
 
+    /*User account information*/
     const [userInfo, setUserInfo] = useContext(UserInfoContext)
 
+    /*
+    * When we click on a city, we want to open the city menu, but only when our user is the owner of this city
+    * */
     const handleCityClick = (cityId, controlledBy) => {
         if (controlledBy === userInfo.id) {
             setSelectedCityId(cityId);
@@ -47,27 +58,25 @@ function PlanetViewer(props) {
         }
     };
 
-    useEffect(() => {
-        setCitiesLoaded(false)
-    }, [props.planetId])
-
+    /*Get images of cities on map cities on the map*/
     const [cityImages, setCityImages] = useState([]);
 
+    /*Reload all the city information from the backend*/
     const reloadCities = () => {
-        setCitiesLoaded(false)
+        fetchCities({
+                handleCityClick: handleCityClick,
+                setCityImages: setCityImages
+        }, props.planetId);
     }
 
-    /*Load cities from databank, and get images*/
+    /*
+    * When we load the planet:
+    * Load cities from database, and get images
+    */
     useEffect(() => {
-        if (!citiesLoaded) {
-            fetchCities({
-                getCities: GetCities,
-                handleCityClick: handleCityClick,
-                setCityImages: setCityImages,
-                setCitiesLoaded: setCitiesLoaded
-            }, props.planetId);
-        }
-    }, [handleCityClick, citiesLoaded]);
+        /*Load Cities*/
+        reloadCities()
+    }, []);
 
     /*handle closing of cityManager window*/
     const [showCityManager, setShowCityManager] = useState(true);
@@ -77,9 +86,7 @@ function PlanetViewer(props) {
         setShowCities(true);
     }
 
-    const [planetList, setPlanetList] = useContext(PlanetListContext)
-    const [planetListIndex, setPlanetListIndex] = props.planetListIndex;
-
+    /*This state and ref keep information about the websocket*/
     const isWebSocketConnected = useRef(false);
     const [socket, setSocket] = useState(null)
 
@@ -143,6 +150,11 @@ function PlanetViewer(props) {
             }
         });
     }
+
+    /*
+    * Update the army location of the armies on the map in real time
+    * by updating the army position, visually based on linear interpolation
+    */
     useEffect(() => {
         const interval = setInterval(async () => {
             setArmyImages(armyImages.map((elem) => {
@@ -159,6 +171,10 @@ function PlanetViewer(props) {
             clearInterval(interval)
         }
     })
+
+    /*
+    * Handle when an army changes direction
+    * */
     const handleChangeDirection = (data) => {
         return armyImages.map((army) => {
             if (army.id === data.id) {
@@ -167,6 +183,7 @@ function PlanetViewer(props) {
             return army
         })
     }
+
     useEffect(() => {
         if (!socket) return
         return () => {
@@ -188,11 +205,14 @@ function PlanetViewer(props) {
 
     }, [armyImages.map(army => army.id).join(";").toString()]);
 
-
+    /*
+    * Listen to incoming websocket messages
+    * */
     useEffect(() => {
         if (!socket) return
         socket.onmessage = async (event) => {
             let response = JSON.parse(event.data)
+            /*Websocket cases depending on the type of request we receive from the abckend websockets*/
             switch (response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
@@ -208,12 +228,7 @@ function PlanetViewer(props) {
                     This event just indicates that frontend needs to reload both armies and cities,
                     to be consistent with the backend
                     * */
-                    await fetchCities({
-                        getCities: GetCities,
-                        handleCityClick: handleCityClick,
-                        setCityImages: setCityImages,
-                        setCitiesLoaded: setCitiesLoaded
-                    }, props.planetId);
+                    await reloadCities()
                     socket.send(
                         JSON.stringify(
                             {
@@ -228,6 +243,11 @@ function PlanetViewer(props) {
         }
     }, [socket, armyImages])
 
+    /*
+    * Keeps into account which armies are in Move mode.
+    * Move mode means that an army is selected as an army that will move.
+    * When we click a place on the map, all selected armies will move to this position
+    * */
     const [armiesMoveMode, setArmiesMoveMode] = useState([])
     const isMoveMode = (armyId) => {
         return armiesMoveMode.indexOf(armyId) !== -1
@@ -237,14 +257,23 @@ function PlanetViewer(props) {
         else setArmiesMoveMode(armiesMoveMode.filter((id) => armyId !== id))
     }
 
-    /*For calculating the position we need to know the size of the map on the client, to calculate the position in range[0, 1]*/
+    /*For calculating the position 'move to' we need to know the size of the map on
+    *the client, to calculate the position in range[0, 1]
+    * */
 
     const screenSize = useRef();
 
     const mapOnClick = (e) => {
-
+        /*
+        * When we click on a map, we will move all our armies that are in MoveMode to the provided position
+        * */
         let action_json = {}
 
+        /*
+        * In case we want to trigger an onArrive event, we need to detect if
+        * we clicked on an army/city on
+        * Depending whether we are the owner of the clicked army/city we will attack, enter or merge.
+        * */
         const imageType = e.target.getAttribute("image_type")
         if (imageType !== null) {
             const clickedArmy = imageType === "army";
@@ -257,6 +286,7 @@ function PlanetViewer(props) {
             let target = ""
 
             if (clickedCity) {
+                /*In case city clicked*/
                 if (!isOwner) {
                     target = "attack_city"
                 } else {
@@ -264,6 +294,7 @@ function PlanetViewer(props) {
                 }
 
             } else if (clickedArmy) {
+                /*In case army clicked*/
                 if (!isOwner) {
                     target = "attack_army"
                 } else {
@@ -271,6 +302,7 @@ function PlanetViewer(props) {
                 }
             }
 
+            /*Create an action json providing the on Arrive action details*/
             action_json = {
                 on_arrive: true,
                 target_type: target,
@@ -279,7 +311,9 @@ function PlanetViewer(props) {
             }
         }
 
-
+        /*
+        * Let the armies change direction (movement) to the provided position
+        * */
         armiesMoveMode.forEach(async (armyId) => {
             const data_json = {
                 type: "change_direction",
@@ -290,43 +324,24 @@ function PlanetViewer(props) {
 
             const merged_data = Object.assign({}, data_json, action_json);
 
+            /*Send websocket message about movement change*/
             await socket.send(JSON.stringify(merged_data));
+            /*Make sure that the army is not in movement mode anymore*/
             toggleMoveMode(armyId)
         })
     }
     return (
         <>
-
             {/*Make it possible to access the socket in the children without using props (because cleaner)*/}
             <PlanetIdContext.Provider value={props.planetId}>
                 <SocketContext.Provider value={[socket, setSocket]}>
 
-                    <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
-                        <div
-                            className='bg-gray-800 mx-auto w-2/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl'>
-                            <IoMdClose className="top-0 text-sm ml-1 absolute mt-1 left-0"
-                                       onClick={() => setHidePlanetSwitcherWindow(!hidePlanetSwitcherWindow)}/>
-                            <div className="justify-between items-center flex z-30">
-                                <RiArrowLeftSLine className="transition ease-in-out hover:scale-150" onClick={() => {
-                                    let new_id = planetListIndex - 1;
-                                    if (new_id < 0) {
-                                        new_id += planetList.length;
-                                    }
-                                    setPlanetListIndex(new_id)
-                                }}/>
-                                <h1>{props.planetName}</h1>
-                                <RiArrowRightSLine className="transition ease-in-out hover:scale-150" onClick={() => {
-                                    let new_id = planetListIndex + 1;
-                                    new_id = new_id % planetList.length;
-                                    setPlanetListIndex(new_id)
-                                }}/>
-                            </div>
-                        </div>
-                    </WindowUI>
+                    {/*Display planet switch component*/}
+                    <PlanetSwitcher planetIndex={props.planetListIndex}/>
 
                     {
                         /*
-                        This ArmyManageView is not a child component of the Army entry, because this is a rela UI component
+                        This ArmyManageView is not a child component of the Army entry, because this is a UI component
                         That should be a part of the map itself
                         */
                         activeArmyViewers.map(({id, owner, anchorEl}) => (
@@ -337,13 +352,14 @@ function PlanetViewer(props) {
                     }
 
 
-                {/*Display cityManager over the map*/}
-                {selectedCityId && showCityManager && (
+                    {/*Display cityManager over the map*/}
+                    {selectedCityId && showCityManager && (
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
                             <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager}/>
                         </div>
                     )}
 
+                    {/*Display the zoom-able map*/}
                     <MapInteractionCSS
                         value={mapState}
                         onChange={(value) => setMapState(value)}

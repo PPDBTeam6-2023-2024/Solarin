@@ -6,7 +6,7 @@ from ..database import AsyncSession
 from .city_access import CityAccess
 from ..exceptions.permission_exception import PermissionException
 from ..exceptions.invalid_action_exception import InvalidActionException
-
+from .data_access import UserAccess
 
 class ArmyAccess:
     """
@@ -177,7 +177,6 @@ class ArmyAccess:
         1000/speed  (speed in range 149-350) * 3600 (= 1 hour)
         An army with a speed of 250 will take 4 hours to cross the entire map
         """
-        print(army_stats)
         map_cross_time = PropertyUtility.get_map_cross_time(army_stats["speed"])
 
         """
@@ -322,8 +321,16 @@ class ArmyAccess:
         Check a user doesn't attack himself
         """
         city_owner = await CityAccess(self.__session).get_city_controller(target_id)
-        if attack_id == city_owner:
+        if attack_id == city_owner.id:
             raise InvalidActionException("You cannot attack your own army")
+
+        user_alliance = await UserAccess(self.__session).get_alliance(attack_id)
+
+        """
+        Check user doesn't attack alliance member
+        """
+        if user_alliance == city_owner.alliance:
+            raise InvalidActionException("You cannot attack your allies")
 
         """
         add the attack event object to the database
@@ -539,7 +546,6 @@ class ArmyAccess:
         get_from_units = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == from_army_id)
         from_troops = await self.__session.execute(get_from_units)
         from_troops = from_troops.scalars().all()
-        print("q3")
         """
         Add the units to the army
         """
@@ -549,10 +555,8 @@ class ArmyAccess:
         """
         Remove original army
         """
-        print(from_army_id)
         await self.remove_army(from_army_id)
         await self.__session.flush()
-        print("q4")
 
     async def add_merge_armies(self, army_id: int, target_id: int):
         """

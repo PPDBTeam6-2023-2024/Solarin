@@ -169,8 +169,8 @@ class Army(Base):
     user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED',
                                          ondelete="cascade"), nullable=False)
     planet_id = Column(Integer, ForeignKey("planet.id"), nullable=True)
-    departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow())
-    arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow())
+    departure_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
+    arrival_time = Column(DateTime(), nullable=True, default=datetime.utcnow)
     x = Column(Coordinate, nullable=False)
     y = Column(Coordinate, nullable=False)
     to_x = Column(Coordinate, nullable=False)

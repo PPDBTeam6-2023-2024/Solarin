@@ -5,7 +5,7 @@ from ...database.database_access.planet_access import PlanetAccess
 from ....logic.name_generator.random_name_generator import generate_planet_name
 
 
-def generate_regions(regions: list[str], row_col_count: int = 10) -> dict[str, list[tuple[float, float]]]:
+def generate_regions(regions: list[str], row_col_count: int = 5) -> dict[str, list[tuple[float, float]]]:
     """
     Generate random points on the map.
     1 point represents a region. Using voronoi, we can see which region a position is in, by searching

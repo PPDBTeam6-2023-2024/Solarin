@@ -68,7 +68,7 @@ class BuildingInstance(Base):
     """
     stores when the data about this building is last checked
     """
-    last_checked = Column(TIMESTAMP, nullable=False, default=func.now())
+    last_checked = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
 
     """
     This relation is joined, because when we ask for an instance we will often also be interested in the type 

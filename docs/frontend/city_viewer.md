@@ -24,7 +24,7 @@ It uses a combination of custom React hooks, state management, and external libr
 - **Upgrade System**: Buildings can now be upgraded, enhancing their rank and capabilities.
 - **Resource Collection**: Enables users to collect resources from production buildings, crucial for urban and military development.
 - **Building Construction**: Users can construct new buildings, expanding their city's capabilities.
-- 
+
 ### Implementation Details
 - **Fetching Cities**: Uses a custom `getCities` function that makes an API call to fetch cities based on the planet ID. It dynamically generates clickable city images on the map based on the fetched data.
 - **CityManager Integration**: Once a city is clicked, the CityManager component is rendered, providing a detailed view of the city's buildings. This integration allows users to interact with individual buildings and gain insights into their status and attributes.

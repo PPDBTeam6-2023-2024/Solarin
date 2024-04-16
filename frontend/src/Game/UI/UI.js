@@ -1,6 +1,6 @@
 import {useState} from "react"
 import SideMenu from "./SideMenu/SideMenu";
-import ProfileButton from "./MainUI/ProfileButton";
+import ProfileButton from "./ProfileViewer/ProfileButton";
 import "./UI.css"
 import ChatIcon from "./ChatMenu/ChatIcon";
 import HiddenWindowsViewer from "./HiddenWIndowsViewer/HIddenWIndowsViewer";

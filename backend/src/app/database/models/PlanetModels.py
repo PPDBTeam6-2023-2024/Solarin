@@ -51,6 +51,22 @@ class Planet(Base):
     armies = relationship("Army", back_populates="planet", lazy="select")
     regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')
 
+    @staticmethod
+    def to_dict(row: "Planet") -> dict:
+        """
+        Convert the planet row object to a dictionary
+        """
+        return {
+            "id": row.id,
+            "name": row.name,
+            "planet_type": row.planet_type,
+            "space_region_id": row.space_region_id,
+            "created_at": row.created_at,
+            "x": row.x,
+            "y": row.y,
+            "visible": row.visible
+        }
+
 
 class PlanetType(Base):
     """

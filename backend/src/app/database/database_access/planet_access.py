@@ -1,6 +1,8 @@
 from sqlalchemy.orm import joinedload
 import math
 from ..models.PlanetModels import *
+from ..models.SettlementModels import City
+from ..models.ArmyModels import Army
 from ..database import AsyncSession
 from typing import Optional
 from .database_acess import DatabaseAccess
@@ -149,7 +151,7 @@ class PlanetAccess(DatabaseAccess):
 
     async def get_planets_of_user(self, user_id: int) -> list[Planet]:
         """
-        Get all the planets that a user has a city on
+        Get all the planets that a user has a city or an army on
 
         :param: user_id: id of the user we want to check
         :return: a list of all planets this user has a city on
@@ -160,8 +162,13 @@ class PlanetAccess(DatabaseAccess):
             .join(City, City.region_id == PlanetRegion.id)
             .where(City.controlled_by == user_id)
         )
+        stmt = stmt.union(
+            Select(Planet)
+            .join(Army, Army.planet_id == Planet.id)
+            .where(Army.user_id == user_id)
+        )
         results = await self.session.execute(stmt)
-        return list(results.scalars().all())
+        return results.all()
 
     async def get_planets_between_times(self, start_time: datetime, end_time: datetime) -> list[Planet]:
         """
@@ -216,3 +223,32 @@ class PlanetAccess(DatabaseAccess):
         )
         result = await self.session.execute(stmt)
         return result.scalar_one()
+    
+    async def get_planets_global(self, user_id) -> list[Planet]:
+        """
+        Get all the planets who are globally visible and include the user its planets
+
+        :param: user_id: id of the user
+        :param: region_id: id of the region
+        :return: a list of planets
+        """
+        stmt_city = (
+                Select(Planet)
+                .join(PlanetRegion, PlanetRegion.planet_id == Planet.id)
+                .join(City, City.region_id == PlanetRegion.id)
+                .where(City.controlled_by == user_id)
+            )
+
+        stmt_army = (
+            Select(Planet)
+            .join(Army, Army.planet_id == Planet.id)
+            .where(Army.user_id == user_id)
+            )
+
+        stmt_visible = (
+            Select(Planet)
+            .where(Planet.visible == True)
+        )
+
+        results = await self.session.execute(stmt_city.union(stmt_army, stmt_visible))
+        return results.all()

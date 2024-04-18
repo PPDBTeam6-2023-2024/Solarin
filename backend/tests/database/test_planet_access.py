@@ -1,4 +1,7 @@
 import pytest
+from sqlalchemy import update
+
+from src.app.database.database_access.planet_access import PlanetAccess, Planet
 
 @pytest.fixture(scope="function", autouse=True)
 async def insert_users(data_access):
@@ -31,6 +34,23 @@ async def test_get_planets_of_user_2(data_access, planet_access):
     planets = await planet_access.get_planets_of_user(1)
     assert len(planets) == 5
 
+
+async def test_get_planets_of_user_3(data_access, planet_access):
+    for i in range(1, 6):
+        await data_access.ArmyAccess.create_army(1, i, 0, 0)
+
+    planets = await planet_access.get_planets_of_user(1)
+    assert len(planets) == 5
+
+async def test_get_planets_of_user_4(data_access, planet_access):
+    for i in range(1, 2):
+        await data_access.ArmyAccess.create_army(1, i, 0, 0)
+    for i in range(2, 6):
+        await data_access.CityAccess.create_city(i, 1, 0, 0)
+
+    planets = await planet_access.get_planets_of_user(1)
+    assert len(planets) == 5
+
 async def test_get_panet_count_1(planet_access):
     region_id = await planet_access.create_space_region("Test Region 2")
 
@@ -44,3 +64,29 @@ async def test_get_panet_count_2(planet_access):
 
     count = await planet_access.get_planets_amount(region_id)
     assert count == 5
+
+async def test_get_planets_global_1(planet_access: PlanetAccess):
+    planets = await planet_access.get_planets_global(1)
+    assert len(planets) == 0
+
+async def test_get_planets_global_2(planet_access, data_access):
+    for i in range(1, 6):
+        await data_access.ArmyAccess.create_army(1, i, 0, 0)
+    planets = await planet_access.get_planets_global(1)
+    assert len(planets) == 5
+
+async def test_get_planets_global_3(planet_access, data_access, session):
+    for i in range(1, 2):
+        await data_access.ArmyAccess.create_army(1, i, 0, 0)
+    for i in range(2, 6):
+        await data_access.CityAccess.create_city(i, 1, 0, 0)
+
+
+    for i in range(1, 6):
+        p_id = await planet_access.create_planet(f"Test Planet{i}", "arctic", 1, 1, 1)
+        await planet_access.create_planet_region(p_id, "arctic", 0.5, 0.5)
+        stmt = update(Planet).where(Planet.id == p_id).values(visible=True)
+        await planet_access.session.execute(stmt)
+
+    planets = await planet_access.get_planets_global(1)
+    assert len(planets) == 10

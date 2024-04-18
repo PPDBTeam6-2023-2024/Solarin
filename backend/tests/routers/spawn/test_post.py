@@ -80,7 +80,7 @@ async def test_2(client):
 async def test_3(client):
     async with sessionmanager.session() as session:
         data_access = DataAccess(session)
-        planet_id = await data_access.PlanetAccess.create_planet("test", "test_planet_type", 1)
+        planet_id = await data_access.PlanetAccess.create_planet("test", "test_planet_type", 1, 1, 1)
         await session.commit()
 
     data = {

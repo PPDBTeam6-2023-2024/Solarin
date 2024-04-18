@@ -8,7 +8,7 @@ async def insert_users(data_access):
     planet_access = data_access.PlanetAccess
     await planet_access.create_space_region("Test Region")
     for i in range(1, 6):
-        await planet_access.create_planet(f"Test Planet{i}", "arctic", 1)
+        await planet_access.create_planet(f"Test Planet{i}", "arctic", 1, 1, 1)
         await planet_access.create_planet_region(i, "arctic", 0.5, 0.5)
     await data_access.commit()
 

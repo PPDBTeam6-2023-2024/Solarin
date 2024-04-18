@@ -21,7 +21,7 @@ async def insert_data(data_access):
         await user_access.create_user(f"Test{i}", f"test{i}@test.test", f"test{i}")
     planet_access = data_access.PlanetAccess
     await planet_access.create_space_region("Test Region")
-    planet_id = await planet_access.create_planet("Test Planet", "arctic", 1)
+    planet_id = await planet_access.create_planet("Test Planet", "arctic", 1, 1, 1)
     await planet_access.create_planet_region(planet_id, "arctic", 0.5, 0.5)
     city_access = data_access.CityAccess
     for i in range(1, 6):

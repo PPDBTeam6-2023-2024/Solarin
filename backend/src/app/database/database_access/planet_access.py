@@ -1,6 +1,6 @@
 from sqlalchemy.orm import joinedload
 import math
-from ..models import *
+from ..models.PlanetModels import *
 from ..database import AsyncSession
 from typing import Optional
 from .database_acess import DatabaseAccess
@@ -26,7 +26,7 @@ class PlanetAccess(DatabaseAccess):
         region_id = sp.id
         return region_id
 
-    async def create_planet(self, planet_name: str, planet_type: str, space_region_id: int):
+    async def create_planet(self, planet_name: str, planet_type: str, space_region_id: int, x: float, y: float):
         """
         Creates a new planet
 
@@ -35,7 +35,7 @@ class PlanetAccess(DatabaseAccess):
         :param: space_region_id: space region this planet belongs too
         :return: planet_id of the planet we just created
         """
-        planet = Planet(name=planet_name, planet_type=planet_type, space_region_id=space_region_id)
+        planet = Planet(name=planet_name, planet_type=planet_type, space_region_id=space_region_id, x=x, y=y)
         self.session.add(planet)
         await self.session.flush()
         planet_id = planet.id
@@ -201,5 +201,18 @@ class PlanetAccess(DatabaseAccess):
             if distance < closest_distance:
                 closest_distance = distance
                 closest_region = region
-
         return closest_region
+    
+    async def get_planets_amount(self, region_id: int) -> int:
+        """
+        Get the amount of planets in a region
+
+        :param: region_id: id of the space region we want to check
+        :return: the amount of planets in this space region
+        """
+        stmt = (
+            Select(func.count(Planet.id))
+            .where(Planet.space_region_id == region_id)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one()

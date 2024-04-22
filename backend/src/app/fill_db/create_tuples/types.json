@@ -2,20 +2,52 @@
   "planets": [
     {"type-name": "arctic", "description": "A planet of arctic climate." },
     {"type-name": "desert", "description":  "A planet of desert climate."},
-    {"type-name": "tropical", "description": "A planet of tropical climate"}
+    {"type-name": "tropical", "description": "A planet of tropical climate"},
+    {"type-name": "red", "description": "A planet with a dominant red color, and few food sources"},
+    {"type-name": "dry", "description": "A planet with a lack of water, only rains a couple weeks a year"},
+    {"type-name": "shadow", "description": "A planet far away for any sun, receiving few sunlight"}
   ],
   "regions": [
     {"type-name": "arctic", "description": "A region of arctic climate." },
+    {"type-name": "polar", "description": "A very cold region with lots snow." },
     {"type-name": "desert", "description":  "A region of desert climate."},
     {"type-name": "alpine", "description": "A region with many mountains."},
-    {"type-name": "plain", "description": "A flat region with a few trees."}
+    {"type-name": "plain", "description": "A flat region with a few trees."},
+    {"type-name": "taiga", "description": "A region filled with aggregation common for cold regions."},
+    {"type-name": "savannah", "description": "Long stretching plains in a hot climate, with barely any trees."},
+    {"type-name": "steppe", "description": "A region covered with dry grass."},
+    {"type-name": "rainforest", "description": "A region filled with large trees, in these regions there is a lot of rainfall ."},
+    {"type-name": "coast", "description": "A region which has some water near/in it."},
+    {"type-name": "magma", "description": "A region filled with hot stones, and warm magma."},
+    {"type-name": "volcanic", "description": "A region filled with warm stones."},
+    {"type-name": "silicaat", "description": "A region filled with precious minerals."},
+    {"type-name": "dark forest", "description": "A forest without much light ."},
+    {"type-name": "valley of shadow", "description": "What or who lives in these regions is still unknown, while difficult to see because of the darkness, the region is full of richness ."}
   ],
   "associations": [
     {"planet-type": "arctic", "region-type": "arctic"},
     {"planet-type": "arctic", "region-type": "plain"},
+    {"planet-type": "arctic", "region-type": "taiga"},
+    {"planet-type": "arctic", "region-type": "alpine"},
+    {"planet-type": "arctic", "region-type": "polar"},
     {"planet-type": "desert", "region-type": "desert"},
     {"planet-type": "desert", "region-type": "plain"},
-    {"planet-type": "tropical", "region-type": "plain"}
+    {"planet-type": "desert", "region-type": "savannah"},
+    {"planet-type": "desert", "region-type": "steppe"},
+    {"planet-type": "tropical", "region-type": "plain"},
+    {"planet-type": "tropical", "region-type": "alpine"},
+    {"planet-type": "tropical", "region-type": "rainforest"},
+    {"planet-type": "tropical", "region-type": "coast"},
+    {"planet-type": "red", "region-type": "magma"},
+    {"planet-type": "red", "region-type": "volcanic"},
+    {"planet-type": "red", "region-type": "silicaat"},
+    {"planet-type": "dry", "region-type": "desert"},
+    {"planet-type": "dry", "region-type": "savannah"},
+    {"planet-type": "dry", "region-type": "silicaat"},
+    {"planet-type": "dry", "region-type": "steppe"},
+    {"planet-type": "shadow", "region-type": "dark forest"},
+    {"planet-type": "shadow", "region-type": "valley of shadow"},
+    {"planet-type": "shadow", "region-type": "silicaat"}
   ],
   "barracks":[
     {"name":  "barracks", "creation-cost": 550, "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}]},

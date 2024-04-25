@@ -78,8 +78,32 @@
       {"product-name":  "MI", "base-rate":  500, "base-cap":  1500},
       {"product-name":  "OI", "base-rate":  500, "base-cap":  1500}
     ]},
-        {"name":  "reactor", "creation-cost": 10000,"products":  [
+    {"name":  "reactor", "creation-cost": 10000,"products":  [
       {"product-name":  "UR", "base-rate":  100, "base-cap":  550}
+    ]},
+    {"name":  "oil-pump", "creation-cost": 3500,"products":  [
+      {"product-name":  "OI", "base-rate":  400, "base-cap":  1600}
+    ]},
+    {"name":  "parlement", "creation-cost": 1500,"products":  [
+      {"product-name":  "INF", "base-rate":  100, "base-cap":  200}
+    ]},
+    {"name":  "solar-generator", "creation-cost": 6800,"products":  [
+      {"product-name":  "SOL", "base-rate":  700, "base-cap":  5000}
+    ]},
+    {"name":  "material-lab", "creation-cost": 9000,"products":  [
+      {"product-name":  "TF", "base-rate":  700, "base-cap":  6000}
+    ]},
+    {"name":  "plant-growth-accelerator", "creation-cost": 15000,"products":  [
+      {"product-name":  "SOL", "base-rate":  1500, "base-cap":  10000}
+    ]},
+    {"name":  "electric-mine", "creation-cost": 9000,"products":  [
+      {"product-name":  "MI", "base-rate":  800, "base-cap":  10000},
+      {"product-name":  "CO", "base-rate":  200, "base-cap":  7000},
+      {"product-name":  "OI", "base-rate":  30, "base-cap":  300}
+    ]},
+    {"name":  "solar-lab", "creation-cost": 7000,"products":  [
+      {"product-name":  "TF", "base-rate":  100, "base-cap":  600},
+      {"product-name":  "SOL", "base-rate":  500, "base-cap":  4000}
     ]}
   ],
   "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],

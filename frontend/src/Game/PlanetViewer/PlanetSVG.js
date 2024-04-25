@@ -17,7 +17,9 @@ function GetImagePath(regionType) {
         "taiga": "/images/region_types/taiga.jpg",
         "polar": "/images/region_types/polar.jpg",
         "rainforest": "/images/region_types/rainforest.jpeg",
-        "volcanic": "/images/region_types/volcanic.jpeg"
+        "volcanic": "/images/region_types/volcanic.jpeg",
+        "steppe": "/images/region_types/steppe.jpeg",
+        "dark forest":"/images/region_types/dark_forest.jpeg"
     };
 
     return imagePaths[regionType] || '/images/region_types/rocks.jpeg'; // default is rocks

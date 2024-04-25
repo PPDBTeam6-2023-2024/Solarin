@@ -23,9 +23,10 @@ class TradeAccess(DatabaseAccess):
         Make it possible for a user to place a trading offer
         :param:user_id: id of the user who makes the trade offer
         :param:gives_resources: list of tuples (resource, amount), indicating the resources the user is willing to give
-        to those who accept the trading.
-        :param:receive_resources: list of tuples (resource, amount), indicating the resources the user is willing to receive
-        from those who accept the trading.
+        to the user who made the offer
+        :param:receive_resources: list of tuples (resource, amount), indicating the resources the user is willing to
+        receive from the user who made the offer
+
         """
 
         alliance_access = AllianceAccess(self.session)
@@ -37,13 +38,13 @@ class TradeAccess(DatabaseAccess):
         """
         Check if the user ahs the resources it want to give
         """
-        if not resource_access.has_resources(user_id, gives_resources):
+        if not resource_access.has_resources(user_id, receives_resources):
             raise InvalidActionException("user does not have the resources it offers to give")
 
         """
         Remove the resources from the user account, and put it into the offer later on
         """
-        for resource, amount in gives_resources:
+        for resource, amount in receives_resources:
             await resource_access.remove_resource(user_id, resource, amount)
 
         await self.session.flush()
@@ -133,18 +134,18 @@ class TradeAccess(DatabaseAccess):
             raise PermissionException(user_id, "Cancel the trading offer of another user")
 
         """
-        Refund the give resources to the user
+        Refund the receive resources to the user
         """
-        get_give_resources = Select(TradeGives).where(TradeGives.offer_id == offer_id)
-        give_resources = await self.session.execute(get_give_resources)
-        give_resources = give_resources.scalars().unique().all()
+        get_receive_resources = Select(TradeReceives).where(TradeReceives.offer_id == offer_id)
+        receive_resources = await self.session.execute(get_receive_resources)
+        receive_resources = receive_resources.scalars().unique().all()
 
         """
         Do the resource refunding
         """
         resource_access = ResourceAccess(self.session)
-        for give_resource in give_resources:
-            await resource_access.add_resource(user_id, give_resource.resource_type, give_resource.amount)
+        for receive_resource in receive_resources:
+            await resource_access.add_resource(user_id, receive_resource.resource_type, receive_resource.amount)
 
         """
         Remove the trade offer,
@@ -152,5 +153,59 @@ class TradeAccess(DatabaseAccess):
         """
         delete_offer = delete(TradeOffer).where(TradeOffer.id == offer_id)
         await self.session.execute(delete_offer)
+
+        await self.flush()
+
+    async def accept_offer(self, user_id: int, offer_id: int):
+        """
+        Make it possible for users to accept a trading offer
+
+        :param: user_id: id of the user who wants to cancel this offer
+        :param: offer_id: id of the offer we want to cancel
+        """
+
+        get_offer = Select(TradeOffer).where(TradeOffer.id == offer_id)
+        offer = await self.session.execute(get_offer)
+        offer = offer.unique().scalar_one()
+        offer_user_id = offer.offer_owner
+
+        """
+        Get the user its alliance
+        """
+        alliance_access = AllianceAccess(self.session)
+        alliance_name = await alliance_access.get_alliance(user_id)
+
+        if alliance_name is None or offer.alliance_name != alliance_name:
+            raise InvalidActionException("Trading offers can only be accepted when the user is in the same alliance")
+
+        """
+        Check if the accepting user has the required offer resources
+        """
+        resource_access = ResourceAccess(self.session)
+
+        give_resource_list = [(give_resource.resource_type, give_resource.amount)
+                              for give_resource in offer.gives]
+
+        can_give = await resource_access.has_resources(user_id, give_resource_list)
+        if not can_give:
+            raise InvalidActionException("user does not have the resources to accept this offer")
+
+        """
+        When the user is able to accept the offer
+        """
+
+        """
+        Remove the resources from the 1 user and add it to the other 1
+        """
+        for give_resource in offer.gives:
+            await resource_access.remove_resource(user_id, give_resource.resource_type, give_resource.amount)
+            await resource_access.add_resource(offer_user_id, give_resource.resource_type, give_resource.amount)
+
+        """
+        Give the offer accept-er the 'receive resources'
+        """
+
+        for receive_resource in offer.receives:
+            await resource_access.add_resource(user_id, receive_resource.resource_type, receive_resource.amount)
 
         await self.flush()

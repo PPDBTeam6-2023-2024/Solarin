@@ -252,3 +252,13 @@ class PlanetAccess(DatabaseAccess):
 
         results = await self.session.execute(stmt_city.union(stmt_army, stmt_visible))
         return results.all()
+    
+    async def get_planet_from_city_id(self, city_id: int) -> Planet:
+        stmt = (
+            Select(Planet)
+            .join(PlanetRegion, PlanetRegion.planet_id == Planet.id)
+            .join(City, City.region_id == PlanetRegion.id)
+            .where(City.id == city_id)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one()

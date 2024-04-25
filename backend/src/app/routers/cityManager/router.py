@@ -27,7 +27,7 @@ async def get_buildings(
     """
     Make sure only the city owner can retrieve building information
     """
-    city_owner = await data_access.CityAccess.get_city_controller(city_id)
+    city_owner = await data_access.CityAccess.get_city_controller(city_id) 
     if user_id != city_owner.id:
         return []
 

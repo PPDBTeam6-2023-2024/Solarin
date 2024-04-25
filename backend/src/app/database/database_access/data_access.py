@@ -11,8 +11,8 @@ from .army_access import ArmyAccess
 from .training_access import TrainingAccess
 from .ranking_access import RankingAccess
 from .resource_access import ResourceAccess
-import asyncio
 from .database_acess import DatabaseAccess
+from .trade_access import TradeAccess
 
 
 class DataAccess(DatabaseAccess):
@@ -32,6 +32,7 @@ class DataAccess(DatabaseAccess):
         self.TrainingAccess = TrainingAccess(session)
         self.RankingAccess = RankingAccess(session)
         self.ResourceAccess = ResourceAccess(session)
+        self.TradeAccess = TradeAccess(session)
         super().__init__(session)
 
     async def commit(self):

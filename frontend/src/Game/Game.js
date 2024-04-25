@@ -41,7 +41,7 @@ const Game = () => {
             /*Make sure the user sees the right planets*/
             const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
 
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets`)
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/private`)
             if (response.data.length > 0) setPlanetList(response.data)
             else await setPlanetListToDefault()
 

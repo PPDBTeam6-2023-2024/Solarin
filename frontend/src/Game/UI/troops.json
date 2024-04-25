@@ -3,6 +3,6 @@
  "soldier": {"icon":  "Soldier.png"},
  "tank": {"icon":  "Tank.png"},
  "fighter": {"icon":  "Fighter.png"},
- "bomber": {"icon":  "Bomber.png"}
-
+ "bomber": {"icon":  "Bomber.png"},
+ "mothership": {"icon":  "Mothership.png"}
 }

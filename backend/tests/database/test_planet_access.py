@@ -90,3 +90,10 @@ async def test_get_planets_global_3(planet_access, data_access, session):
 
     planets = await planet_access.get_planets_global(1)
     assert len(planets) == 10
+
+async def test_get_planet_from_city_id(planet_access, data_access):
+    city_id = await data_access.CityAccess.create_city(1, 1, 0, 0)
+    planet = await planet_access.get_planet_from_city_id(city_id)
+    assert planet is not None
+    assert planet.id == 1
+    assert planet.name == "Test Planet1"

@@ -4,7 +4,6 @@ from src.logic.formula.compute_properties import *
 from sqlalchemy import select
 import os
 
-
 class CreateTuples:
     async def create_all_tuples(self, session):
         self.__session: AsyncSession = session
@@ -14,6 +13,7 @@ class CreateTuples:
         await self.create_resource_types(types["resources"])
         await self.create_region_types(types["regions"])
         await self.create_planet_types(types["planets"])
+        await self.create_production_modifiers(types["production-modifiers"])
         await self.create_associations(types["associations"])
         await self.create_troop_types(types["units"])
         await self.create_barracks_types(types["barracks"])
@@ -98,3 +98,20 @@ class CreateTuples:
                                                          battle_stats.city_attack, battle_stats.city_defense,
                                                          battle_stats.recovery, battle_stats.speed])
                 await self.__dev.set_troop_type_cost(troop_type["name"], [("SOL", base_cost)])
+    async def create_production_modifiers(self, production_modifiers: list[dict[str, Any]]):
+        for coefficient in production_modifiers:
+            stmt = (
+                select(ProductionRegionModifier)
+                .where(ProductionRegionModifier.resource_type == coefficient["resource-type"])
+                .where(ProductionRegionModifier.region_type == coefficient["region-type"])
+            )
+            result = await self.__session.execute(stmt)
+            if result.scalar_one_or_none() is None:
+                resource_type = coefficient["resource-type"]
+                region_type = coefficient["region-type"]
+                modifier = coefficient["modifier"]
+
+                await self.__dev.set_production_modifier(resource_type=resource_type, region_type=region_type,
+                                                         modifier=modifier)
+
+

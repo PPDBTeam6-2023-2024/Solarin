@@ -32,4 +32,15 @@ class ResourceType(Base):
     __tablename__ = 'resourceType'
     name = Column(String, primary_key=True)
 
+class ProductionRegionModifier(Base):
+    """
+    Stores the modifiers applied to resource production based on the planet's region type.
 
+    resource_type: Identifier for the type of resource.
+    region_type: Type of the planetary region affecting production.
+    production_modifier: Multiplier for base production rates, indicating boosts or reductions.
+    """
+    __tablename__ = 'ProductionRegionModifier'
+    resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
+    region_type = Column(String, ForeignKey('planetRegionType.region_type'), primary_key=True)
+    modifier = Column(Float(precision=53))

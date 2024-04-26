@@ -11,7 +11,6 @@ from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.permission_exception import PermissionException
 from .database_acess import DatabaseAccess
 
-
 class BuildingAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of buildings
@@ -225,6 +224,27 @@ class BuildingAccess(DatabaseAccess):
 
         return buildings_data
 
+    async def get_region_controlled_by(self, region_id: int) -> int | None:
+        """
+        Get the controller of a region
+
+        :param: region_id: id of the region we want to check
+        :return: user_id of controller of the region, returns None if there is no controller of the region,
+        meaning at least two different users have cities in the region
+        """
+
+        get_cities = Select(City).where(City.region_id == region_id)
+        cities = await self.session.execute(get_cities)
+        cities = set(cities.scalars().all())
+        users = set()
+        for city in cities:
+            city: City
+            users.add(city.controlled_by)
+        if len(users) != 1:
+            return None
+        else:
+            return users.pop()
+
     async def collect_resources(self, user_id: int, building_id: int):
         """
         Collect resources from a production building
@@ -258,23 +278,70 @@ class BuildingAccess(DatabaseAccess):
         hours = delta.total_seconds()/3600
 
         """
+        Get planet_region building is located in
+        """
+        get_building = select(BuildingInstance).where(BuildingInstance.id==building_id)
+        building = await self.session.execute(get_building)
+        building: BuildingInstance = building.first()[0]
+
+        get_planet_region_id = select(City.region_id).where(building.city_id == City.id)
+        planet_region_id = await self.session.execute(get_planet_region_id)
+        planet_region_id = planet_region_id.scalar_one_or_none()
+
+        region_controller = await self.get_region_controlled_by(planet_region_id)
+
+        region_control = False
+        if region_controller == user_id:
+            region_control = True
+
+        """
+        Get production bonuses based on region type and store as dict
+        """
+        get_production_modifier = select(ProductionRegionModifier.resource_type, ProductionRegionModifier.modifier) \
+            .join(City, City.id == building.city_id) \
+            .join(PlanetRegion, City.region_id == PlanetRegion.id).where(ProductionRegionModifier.region_type == PlanetRegion.region_type)
+
+
+        production_modifier = await self.session.execute(get_production_modifier)
+        production_modifier = production_modifier.fetchall()
+
+
+
+        modifier_dict = dict()
+        for row_list in production_modifier:
+            resource_type = row_list[0]
+            modifier_dict[resource_type] = row_list[1]
+        """
         Add the resources to user taking into account the max capacity
         """
         ra = ResourceAccess(self.session)
         for p in production:
             """
-            Apply the bonus for higher levels of buildings
+            if regional modifier exists, apply
+            else set regional modifier to 1.0
             """
-            production_rate = PropertyUtility.getGPR(1.0, p[0].base_production, p[1])
-            max_capacity = PropertyUtility.getGPR(1.0, p[0].max_capacity, p[1])
+            modifier_ = modifier_dict.get(p[0].resource_name)
+            if modifier_ is None:
+                modifier_ = 1.0
+
+            """
+            Calculate production rate using following modifiers:
+            - bonus for higher levels of buildings
+            - regional modifiers (for higher yields in certain regions)
+            - control modifier (higher production rate if in control of region)
+            """
+            production_rate = PropertyUtility.getGPR(modifier_, p[0].base_production, p[1], region_control)
+
+            max_capacity = PropertyUtility.getGPR(modifier_, p[0].max_capacity, p[1], False)
             await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours), max_capacity))
 
         """
         Check the building, indicating that the last checked timer needs to be set to now
         """
+
         await self.checked(building_id)
 
-        await self.session.commit()
+        # await self.session.commit()
 
         return True
 

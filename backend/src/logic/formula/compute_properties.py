@@ -69,11 +69,11 @@ class PropertyUtility:
         return int((creation_cost * (level+1)) / 2)
 
     @staticmethod
-    def getGPR(modifier: float, base_rate: int, level: int) -> int:
+    def getGPR(modifier: float, base_rate: int, level: int, region_control: bool) -> int:
         """
         General production rate, decides how fast resources are produced
         """
-        return int(floor(modifier * base_rate * (level ** 2)))
+        return int(floor(modifier * base_rate * (level ** 2) * (1.0 + 0.25* int(region_control))))
 
     @staticmethod
     def getArmyStrength(army_stats: dict[str, int], city_weight) -> float:

@@ -1,4 +1,4 @@
-import { useLoader, Canvas} from '@react-three/fiber'
+import { Canvas, useLoader} from '@react-three/fiber'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import { OrbitControls, Bounds, useBounds, Stars, Html} from '@react-three/drei'
 import { useState, useRef, useEffect, Fragment } from 'react'
@@ -43,9 +43,14 @@ function GalaxyViewer(props) {
         fetchPrivatePlanets()
 
     }, [])
-    const planetMap = useLoader(TextureLoader, '/images/Planets/example.png')
     const [isHovering, setIsHovering] = useState([])
     const [planetSelected, setPlanetSelected] = useState(null)
+    const planetImages = {
+      "terrestrial": useLoader(TextureLoader, "/images/Planets/terrestrial.png"),
+      "tropical": useLoader(TextureLoader, "/images/Planets/tropical.png"),
+      "desert": useLoader(TextureLoader, "/images/Planets/desert.png"),
+      "arctic": useLoader(TextureLoader, "/images/Planets/arctic.png")
+    }
     /*const getScale = (id) => {
       const {scale} = useSpring({scale: (isHovering.find((id) => id == )) ? [1.05,1.05,1.05]: [1,1,1]})
       return scale
@@ -66,7 +71,7 @@ function GalaxyViewer(props) {
               <SelectToZoom setPlanetSelected={setPlanetSelected} planetId={planet.id}>
               <animated.mesh position={[50*planet.x,0, 50*planet.y]} onPointerEnter={() => setIsHovering([...isHovering, planet.id])} onPointerLeave={() => setIsHovering(isHovering.filter(id => id !== planet.id))} onDoubleClick={() => {if(privatePlanets.find((privatePlanet) => privatePlanet.id === planet.id)) {props.changePlanetId(planet.id); props.setViewMode(View.PlanetView)}}}>
               <sphereGeometry args={[2]}/>
-              <meshStandardMaterial map={planetMap}/>
+              <meshStandardMaterial map={planetImages[planet.planet_type]}/>
               { planetSelected === planet.id &&
               <Html>
                 <div className="bg-black whitespace-nowrap p-2">

@@ -3,10 +3,11 @@ from sqlalchemy import select
 from sqlalchemy.sql.functions import coalesce
 from typing import Union, Annotated
 
-from .schemas import PoliticalStanceInput
+from .schemas import PoliticalStanceInput, PoliticalStanceChange
 
 from ....app.routers.authentication.router import get_my_id, get_db
 from ....app.database.database_access.data_access import DataAccess
+from ....app.database.exceptions.invalid_action_exception import InvalidActionException
 
 router = APIRouter(prefix="/logic")
 
@@ -30,14 +31,47 @@ async def get_political_stance(user_id: Annotated[int, Depends(get_my_id)], db=D
     result = await data_access.UserAccess.get_politics(user_id)
     return result
 
+def model_to_dict(instance):
+    return {key: value for key, value in instance.__dict__.items() if not key.startswith('_')}
+
 
 @router.post("/update_politics")
-async def update_politics(user_id: Annotated[int, Depends(get_my_id)], stance: PoliticalStanceInput, db=Depends(get_db)):
+async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: PoliticalStanceChange, db=Depends(get_db)):
     """
-    update the political values of a user
+    Update the political values of a user
     :param user_id: the user whose values are changing
-    :param stance: the new values
-    :return:
+    :param changes: the new values as percentage changes
+    :param db: Database session dependency
     """
     data_access = DataAccess(db)
-    await data_access.UserAccess.update_politics(user_id, stance.dict())
+    current_stance = await data_access.UserAccess.get_politics(user_id)
+    print(changes)
+    cost = []
+    for key, value in changes.Cost.items():
+        cost.append((key, value))
+
+    has_resources: bool = await data_access.ResourceAccess.has_resources(user_id, cost)
+
+    if not has_resources:
+        print("exception occurred")
+        raise InvalidActionException("The user does not have enough resources")
+
+    for cost_type in cost:
+        await data_access.ResourceAccess.remove_resource(user_id, cost_type[0], cost_type[1])
+
+    # convert to dict using helper function
+    current_stance_dict = model_to_dict(current_stance)
+
+    updated_stance = {}
+    for key, value in changes.dict().items():
+        if key == "Cost":
+            continue
+        attr = key.lower()
+        change_percent = float(value.replace('%', '')) / 100
+        if attr in current_stance_dict:
+            updated_value = max(0, min(1, current_stance_dict[attr] + change_percent))
+            updated_stance[attr] = updated_value
+
+    await data_access.UserAccess.update_politics(user_id, updated_stance)
+
+    return {"message": "Political stance updated successfully", "new_stance": updated_stance}

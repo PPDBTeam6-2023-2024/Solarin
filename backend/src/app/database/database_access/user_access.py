@@ -279,9 +279,18 @@ class UserAccess(DatabaseAccess):
 
     async def update_politics(self, user_id: int, stance: dict):
         """
-        overwrite the current database values with the new values
+        Overwrite the current database values with the new values
         :param user_id: the user whose values are being changed
         :param stance: the new values
         """
-        update_query = update(PoliticalStance).where(PoliticalStance.user_id == user_id).values(anarchism=stance["anarchism"], authoritarian=stance["authoritarian"], democratic=stance["democratic"], corporate_state=stance["corporate_state"], theocracy=stance["theocracy"], technocracy=stance["technocracy"])
+        if not stance:
+            raise ValueError("No stance provided for update.")
+
+        valid_updates = {key: value for key, value in stance.items() if key in ["anarchism", "authoritarian", "democratic", "corporate_state", "theocracy", "technocracy"] and value is not None}
+
+        if not valid_updates:
+            raise ValueError("No valid fields provided for update.")
+
+        update_query = update(PoliticalStance).where(PoliticalStance.user_id == user_id).values(**valid_updates)
         await self.session.execute(update_query)
+        await self.session.commit()

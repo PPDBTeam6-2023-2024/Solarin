@@ -15,49 +15,54 @@ import {useEffect, useState} from "react";
 
 ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title, RadialLinearScale, Filler);
 
+// limiting function used to keep modifiers in a reasonable range [-30%, +30%]
+function clamp(value) {
+    return Math.min(Math.max(value, -30), 30);
+}
+
 function generateModifiers(stance) {
     const resourceProduction = Math.round(
-        (stance.anarchism * 10) +
-        (stance.democratic * 3) -
-        (stance.theocracy * 10) +
-        (stance.technocracy * 5) +
-        (stance.corporate_state * 20)
+        (stance.anarchism * 10) +   // Scale up by 10x
+        (stance.democratic * 3) -   // Scale up by 10x
+        (stance.theocracy * 10) -   // Scale up by 10x
+        (stance.technocracy * 5) +  // Scale up by 10x
+        (stance.corporate_state * 20)  // Scale up by 10x
     );
 
     const upgradeSpeed = Math.round(
-        (stance.technocracy * 25) +
-        (stance.democratic * 20) -
-        (stance.authoritarian * 15) -
-        (stance.theocracy * 20) +
-        (stance.corporate_state * 10)
+        (stance.technocracy * 25) +  // Scale up by 10x
+        (stance.democratic * 20) -   // Scale up by 10x
+        (stance.authoritarian * 15) -  // Scale up by 10x
+        (stance.theocracy * 20) -    // Scale up by 10x
+        (stance.corporate_state * 10)  // Scale up by 10x
     );
 
     const armyStrength = Math.round(
-        (stance.authoritarian * 30) -
-        (stance.anarchism * 20) +
-        (stance.theocracy * 15) -
-        (stance.democratic * 10)
+        (stance.authoritarian * 30) -  // Scale up by 10x
+        (stance.anarchism * 20) +    // Scale up by 10x
+        (stance.theocracy * 15) -    // Scale up by 10x
+        (stance.democratic * 10)    // Scale up by 10x
     );
 
     const trainingTime = Math.round(
-        -(stance.authoritarian * 20) -
-        (stance.technocracy * 15) -
-        (stance.corporate_state * 10) +
-        (stance.theocracy * 10)
+        -(stance.authoritarian * 20) -  // Scale up by 10x
+        (stance.technocracy * 15) -     // Scale up by 10x
+        (stance.corporate_state * 10) +  // Scale up by 10x
+        (stance.theocracy * 10)    // Scale up by 10x
     );
 
     const armyMovementSpeed = Math.round(
-        (stance.anarchism * 10) -
-        (stance.corporate_state * 30) -
-        (stance.theocracy * 5)
+        (stance.anarchism * 10) -   // Scale up by 10x
+        (stance.corporate_state * 30) -  // Scale up by 10x
+        (stance.theocracy * 5)   // Scale up by 10x
     );
 
     return {
-        resourceProduction: formatModifier(resourceProduction * 100),
-        upgradeSpeed: formatModifier(upgradeSpeed * 100),
-        armyStrength: formatModifier(armyStrength * 100),
-        trainingTime: formatModifier(trainingTime * 100),
-        armyMovementSpeed: formatModifier(armyMovementSpeed * 100)
+        resourceProduction: clamp(resourceProduction),
+        upgradeSpeed: clamp(upgradeSpeed),
+        armyStrength: clamp(armyStrength),
+        trainingTime: clamp(trainingTime),
+        armyMovementSpeed: clamp(armyMovementSpeed)
     };
 }
 
@@ -66,34 +71,24 @@ function formatModifier(value) {
     return `${value >= 0 ? '+' : ''}${value}%`;
 }
 
-
 function PoliticsMenu() {
-    const [stance, setStance] = useState({})
+    const [stance, setStance] = useState({});
+    const [stanceFetched, setStanceFetched] = useState(false);
 
-    const updateStance = async (changes) => {
-        const translation = {
-            "Technocracy": "technocracy",
-            "Democracy": "democratic",
-            "CorporateState": "corporate_state",
-            "Theocracy": "theocracy",
-            "Anarchism": "anarchism",
-            "Authoritarian": "authoritarian"
-        }
-        const newStance = {...stance};
-        for (let key in changes) {
-            const translatedKey = translation[key];
-            if (translatedKey && newStance.hasOwnProperty(translatedKey)) {
-                // Remove the '%' character and convert to integer
-                const changeValue = parseInt(changes[key], 10);
-                newStance[translatedKey] = Math.max(0, Math.min(1, newStance[translatedKey] + (changeValue / 100)));
-            }
-        }
-        try {
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, newStance);
-        } catch (error) {
-            console.error('Failed to update political stance:', error);
-        }
-    };
+    const updateStance = async (impacts, cost) => {
+    console.log("updateStance");
+    setStanceFetched(false);
+    try {
+        const payload = {
+            ...impacts,
+            Cost: cost
+        };
+        await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
+    } catch (error) {
+        console.error('Failed to update political stance:', error);
+    }
+};
+
 
     useEffect(() => {
         const fetchStance = async () => {
@@ -106,7 +101,9 @@ function PoliticsMenu() {
         };
 
         fetchStance();
-    }, []);
+        console.log("fetch Stance");
+        setStanceFetched(true);
+    }, [stanceFetched]);
 
     const modifiers = generateModifiers(stance);
 
@@ -158,10 +155,10 @@ function PoliticsMenu() {
                     <div style={{whiteSpace: "nowrap", display: "inline"}}>
                         {statName}:
                         <span style={{
-                            color: statValue === "+0%" ? "#777" : (statValue[0] === '+' ? "green" : "red"),
+                            color: statValue === 0 ? "#777" : (statValue > 0 ? "green" : "red"),
                             display: "inline"
                         }}>
-                        {statValue}
+                        {formatModifier(statValue)}
                     </span>
                     </div>
                 </div>
@@ -172,7 +169,6 @@ function PoliticsMenu() {
             </div>
         </>
     );
-
 }
 
 export default PoliticsMenu;

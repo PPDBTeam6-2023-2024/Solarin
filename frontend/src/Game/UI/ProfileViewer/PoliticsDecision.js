@@ -23,7 +23,7 @@ function PoliticsDecision({ updateStance }) {
                             </span>
                         ))}
                         <button
-                            onClick={() => updateStance(decision.impacts)}
+                            onClick={() => updateStance(decision.impacts, decision.cost)}
                             style={{"border": "0.2vw solid white", "borderRadius": "1vw 1vw 1vw 1vw"}}>
                             Do Decision
                         </button>

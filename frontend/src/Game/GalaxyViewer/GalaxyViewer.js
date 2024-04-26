@@ -2,9 +2,9 @@ import { Canvas, useLoader} from '@react-three/fiber'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import { OrbitControls, Bounds, useBounds, Stars, Html} from '@react-three/drei'
 import { useState, useRef, useEffect, Fragment } from 'react'
-import {useSprings, animated} from '@react-spring/three'
+import {animated} from '@react-spring/three'
+import { SelectiveBloom, EffectComposer } from '@react-three/postprocessing'
 import axios from 'axios'
-import Tooltip from '@mui/material/Tooltip';
 
 
 import {View} from "../Context/ViewModeContext"
@@ -61,6 +61,9 @@ function GalaxyViewer(props) {
         <Stars/>
         <ambientLight intensity={0.9}/>
         <mesh ref={solarinRef} position={[0,0,0]} scale={5}>
+        <EffectComposer multisampling={1} resolutionScale={0.1}>
+          <SelectiveBloom selection={solarinRef} intensity={0.3} luminanceThreshold={0.1} luminanceSmoothing={0.1} />
+        </EffectComposer>
           <sphereGeometry args={[2]}/>
           <meshStandardMaterial emissive="white" emissiveIntensity={1} toneMapped={false}/>
           </mesh>

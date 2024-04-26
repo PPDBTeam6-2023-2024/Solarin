@@ -89,7 +89,7 @@ const Game = () => {
                         }
 
                         {viewMode === View.GalaxyView &&
-                            <GalaxyViewer setViewMode={setViewMode}/>
+                            <GalaxyViewer setViewMode={setViewMode} changePlanetId={changePlanetId}/>
                         }
 
                         {viewMode === View.ProfileView &&

@@ -29,7 +29,6 @@ async def planet_socket(
     try:
         while True:
             data = await websocket.receive_json()
-
             if data["type"] == "get_trades":
                 trades = await data_access.TradeAccess.get_other_trade_offers(user_id)
                 trades = [t.toSchema() for t in trades]

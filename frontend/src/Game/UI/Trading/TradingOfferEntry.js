@@ -6,31 +6,52 @@ import ResourceFilter from "./ResourceFilter";
 import {useSelector} from "react-redux";
 import "./TradingOfferEntry.css"
 import resourcesJson from "../ResourceViewer/resources.json"
-function TradingOfferEntry(props) {
+
+const getOfferResourceSide = (to_map) => {
+    return to_map.map((map_element, index) =>
+      <div>
+          <img key={index} src={(`/images/resources/${resourcesJson[map_element[0]]["icon"]}`)}
+                           alt={map_element[0]} draggable={false} style={{"width": "60%"}}/>
+
+          <div style={{"fontSize": "1.2vw", "textAlign": "center", "width": "60%"}}>{map_element[1]}</div>
+      </div>
+
+    )
+}
+
+
+function TradingOfferEntry({give_resources, receive_resources}) {
     return (
       <div className="TradingOfferEntry">
-          <div className="TradingOfferEntryResourceSide" style={{"marginLeft": "3vw", "width": "15%"}}>
+          <div className="TradingOfferEntryResourceSide" style={{"marginLeft": "3vw", "width": "20%"}}>
             Give:
-              <img src={(`/images/resources/${resourcesJson[props.give_resource]["icon"]}`)}
-                                       alt={props.give_resource} draggable={false} style={{"width": "60%"}}/>
-
+              {/*Displays the resources the offer accept-er needs to give */}
+              {getOfferResourceSide(give_resources)}
           </div>
-          <img src={(`/images/icons/exchange.png`)} draggable={false} style={{"width": "3vw", "display": "inline-block"}}/>
 
-          <div className="TradingOfferEntryResourceSide" style={{"width": "15%", "marginLeft": "1vw"}}>
+          {/*Shot the exchange symbol*/}
+          <div style={{"display": "inline-block"}}>
+              <img src={(`/images/icons/exchange.png`)} draggable={false} style={{"width": "3vw"}}/>
+          </div>
+
+
+          <div className="TradingOfferEntryResourceSide" style={{"width": "20%", "marginLeft": "1vw"}}>
             Receive:
-              <img src={(`/images/resources/${resourcesJson[props.receive_resource]["icon"]}`)}
-                                       alt={props.receive_resource} draggable={false} style={{"width": "60%"}}/>
+              {/*Displays the resources the offer accept-er receives */}
+              {getOfferResourceSide(receive_resources)}
+
           </div>
 
           {/*Trading offer accept button*/}
           <div className="offer_button">
-              <img src={(`/images/icons/accept.png`)} draggable={false} style={{"width": "3vw", "display": "inline-block"}}/>
+              <img src={(`/images/icons/accept.png`)} draggable={false}
+                   style={{"width": "3vw", "display": "inline-block"}}/>
           </div>
 
           {/*Trading offer reject button*/}
           <div className="offer_button">
-              <img src={(`/images/icons/reject.png`)} draggable={false} style={{"width": "3vw", "display": "inline-block"}}/>
+              <img src={(`/images/icons/reject.png`)} draggable={false}
+                   style={{"width": "3vw", "display": "inline-block"}}/>
           </div>
       </div>
     )

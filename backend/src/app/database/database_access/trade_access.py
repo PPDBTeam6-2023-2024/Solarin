@@ -208,4 +208,7 @@ class TradeAccess(DatabaseAccess):
         for receive_resource in offer.receives:
             await resource_access.add_resource(user_id, receive_resource.resource_type, receive_resource.amount)
 
+        delete_offer = delete(TradeOffer).where(TradeOffer.id == offer_id)
+        await self.session.execute(delete_offer)
+
         await self.flush()

@@ -5,7 +5,8 @@ from ..database import Base
 from .domains import PositiveInteger
 
 from ..models import *
-
+from sqlalchemy.orm import relationship
+from ...routers.trading.schemas import TradeOfferSchema
 
 class HasResources(Base):
     """
@@ -52,6 +53,11 @@ class TradeOffer(Base):
     """
     gives = relationship("TradeGives", back_populates="offer", lazy='joined')
     receives = relationship("TradeReceives", back_populates="offer", lazy='joined')
+
+    def toSchema(self):
+        return TradeOfferSchema(user_id=self.offer_owner, offer_id=self.id, 
+                                gives=[(g.resource_type, g.amount) for g in self.gives],
+                                receives=[(r.resource_type, r.amount) for r in self.receives])
 
 
 class TradeGives(Base):

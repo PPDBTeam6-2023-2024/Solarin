@@ -1,10 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import resourcesJson from "../ResourceViewer/resources.json"
 import "./AddTradeEntry.css"
 import {useSelector} from "react-redux";
 import {initParticlesEngine} from "@tsparticles/react";
 import {loadSlim} from "@tsparticles/slim";
 import Tooltip from "@mui/material/Tooltip";
+import {tradeSocketContext} from "./TradeSocketContext";
+import {openAddTradeContext} from "./openAddTradeContext";
 const addTradeResourceList = (onClickAction, skip_list) => {
     return (
         <ul style={{"overflow": "scroll", "maxHeight": "8vw", "width": "30%"}}>
@@ -26,6 +28,9 @@ const addTradeResourceList = (onClickAction, skip_list) => {
 
 function AddTradeEntry(props) {
 
+    const [tradeSocket, setTradeSocket] = useContext(tradeSocketContext);
+    const [openAddTrade, setOpenAddTrade] = useContext(openAddTradeContext);
+
     /*This gives corresponds with what the user would receive and the accept-er of the trade offer would give*/
     const [gives, setGives] = useState([]);
 
@@ -40,11 +45,23 @@ function AddTradeEntry(props) {
         setReceives(r => [...r, [resource, 1]]);
     }
 
-    const resource_amount = useSelector((state) => state.resources.resources)
+    const addTradeOffer = () => {
+        tradeSocket.send(
 
-    useEffect(() => {
-        console.log("rerender")
-    }, []);
+            JSON.stringify(
+            {
+                "type": "create_trade",
+                "gives": gives,
+                "receives": receives
+
+            })
+
+        )
+        setOpenAddTrade(false);
+
+    }
+
+    const resource_amount = useSelector((state) => state.resources.resources)
 
     return (
         <div className="TradingOfferEntry">
@@ -59,7 +76,7 @@ function AddTradeEntry(props) {
                        onChange={(event) => {
 
                            const updateGives = [...gives];
-                            updateGives[index][1] = event.target.value;
+                            updateGives[index][1] = Number(event.target.value);
 
                            setGives(updateGives)
                        }}></input>
@@ -110,7 +127,7 @@ function AddTradeEntry(props) {
           </div>
             {/*Trading offer accept button*/}
           <Tooltip title={"Create the Trade Offer"}>
-              <div className="offer_button">
+              <div className="offer_button" onClick={addTradeOffer}>
                   <img src={(`/images/icons/accept.png`)} draggable={false}
                        style={{"width": "3vw", "display": "inline-block"}}/>
               </div>

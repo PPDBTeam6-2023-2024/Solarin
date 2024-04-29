@@ -45,7 +45,7 @@ class TradeOffer(Base):
     alliance_name = Column(String, nullable=False)
     offer_owner = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                          nullable=False)
-    id = Column(Integer, Sequence('trade_offer_id_seq'), primary_key=True, index=True)
+    id = Column(Integer, Sequence('tradeOffer_id_seq'), primary_key=True, index=True)
 
     """
     Relations with trade Gives and Receives is joined, because in every situation with regards to this trade we are 

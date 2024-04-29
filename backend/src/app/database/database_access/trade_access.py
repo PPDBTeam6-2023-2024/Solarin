@@ -38,7 +38,7 @@ class TradeAccess(DatabaseAccess):
         """
         Check if the user ahs the resources it want to give
         """
-        if not resource_access.has_resources(user_id, receives_resources):
+        if not await resource_access.has_resources(user_id, receives_resources):
             raise InvalidActionException("user does not have the resources it offers to give")
 
         """
@@ -70,7 +70,6 @@ class TradeAccess(DatabaseAccess):
         for resource, amount in receives_resources:
             trading_give = TradeReceives(offer_id=offer_id, resource_type=resource, amount=amount)
             self.session.add(trading_give)
-
         await self.session.flush()
 
     async def get_own_trade_offers(self, user_id: int):

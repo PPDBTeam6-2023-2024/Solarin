@@ -59,7 +59,6 @@ async def planet_socket(
             await connection_pool.broadcast({"trades": jsonable_encoder(trades), "action": "show_trades",
                                              "own_offers": jsonable_encoder(own_offers)})
 
-
     except WebSocketDisconnect:
         connection_pool.disconnect(websocket)
 

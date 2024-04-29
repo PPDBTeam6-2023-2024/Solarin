@@ -16,7 +16,8 @@ Own trade offers appear at the top and can be cancelled using the red cancel but
 
 Others their trade offers can be accepted using the green accept button.
 When your own offer is canceled your offered resources will be refunded. When a trade offer is accepted,
-the resources will be exchanged.
+the resources will be exchanged. When a user does not have the resources to accept the offer, no accept button
+will appear.
 
 Users can also create trade offers.
 Among the resources a 'PLUS' icon appears. <br>![alt text](../images/add_trade_icon.png)

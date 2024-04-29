@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from ...database.database_access.data_access import DataAccess
-from typing import Annotated, List
-from .schemas import BuildingInstanceSchema, CitySchema, BuildingTypeSchema, CostSchema
+from typing import Annotated, List, Tuple
+from .schemas import BuildingInstanceSchema, CitySchema, BuildingTypeSchema, CostSchema, Confirmation, \
+    ResourceStockSchema, StockOverViewSchema, CityInfoSchema
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 
@@ -10,7 +11,7 @@ from .city_checker import CityChecker
 router = APIRouter(prefix="/cityManager", tags=["City"])
 
 
-@router.get("/buildings/{city_id}", response_model=List[BuildingInstanceSchema])
+@router.get("/buildings/{city_id}", response_model=Tuple[List[BuildingInstanceSchema],CityInfoSchema])
 async def get_buildings(
         user_id: Annotated[int, Depends(get_my_id)],
         city_id: int,
@@ -35,7 +36,7 @@ async def get_buildings(
     do the city check, checking all the idle mechanics
     """
     city_checker = CityChecker(city_id, data_access)
-    await city_checker.check_all()
+    remaining_time_update_time = await city_checker.check_all()
 
     """
     Iterate through each building, creating a BuildingInstanceSchema for each one
@@ -47,8 +48,7 @@ async def get_buildings(
     """
     Return the list of BuildingInstanceSchema instances
     """
-
-    return buildings_schemas
+    return buildings_schemas,CityInfoSchema(remaining_update_time=remaining_time_update_time)
 
 
 @router.get("/cities/{planet_id}", response_model=List[CitySchema])
@@ -95,7 +95,7 @@ async def get_new_building_types(
     return building_type_schema
 
 
-@router.get("/get_upgrade_cost/{city_id}", response_model=List[CostSchema])
+@router.get("/get_upgrade_cost/{city_id}", response_model=Tuple[List[CostSchema], CostSchema])
 async def get_upgrade_cost(
         user_id: Annotated[int, Depends(get_my_id)],
         city_id: int,
@@ -106,15 +106,32 @@ async def get_upgrade_cost(
     """
 
     data_access = DataAccess(db)
-    buildings = await get_buildings(user_id, city_id, db=db)
+    buildings = await data_access.BuildingAccess.get_city_buildings(city_id)
     result = []
 
     for building in buildings:
         cost = await data_access.BuildingAccess.get_upgrade_cost(user_id, building.id)
-        result.append(CostSchema(id=cost[0], costs=cost[1], can_upgrade=cost[2]))
+        result.append(CostSchema(id=cost[0], costs=cost[1], time_cost=0, can_upgrade=cost[2]))
 
-    return result
+    """
+    Add city upgrade cost to result
+    """
 
+    city_cost_tuple = await data_access.CityAccess.get_city_upgrade_cost(city_id)
+    city_upgrade_cost = CostSchema(id=city_id, costs=city_cost_tuple[0], time_cost=city_cost_tuple[1], can_upgrade=city_cost_tuple[2])
+
+    return result,city_upgrade_cost
+
+
+@router.get("/upgrade_city/{city_id}", response_model=Confirmation)
+async def upgrade_city(
+        user_id: Annotated[int, Depends(get_my_id)],
+        city_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    data_access = DataAccess(db)
+    data = await data_access.CityAccess.upgrade_city(user_id, city_id)
+    return Confirmation(confirmed=data)
 
 @router.get("/cities_user")
 async def friend_requests(
@@ -132,3 +149,27 @@ async def friend_requests(
     cities_schemas = [city.to_city_schema() for city in data]
 
     return cities_schemas
+
+@router.get("/get_resource_stocks/{city_id}", response_model=StockOverViewSchema)
+async def get_resource_stocks(
+        user_id: Annotated[int, Depends(get_my_id)],
+        city_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    returns a dictionary of all the resources stored in a given city
+    key: building_id: the id of the building storing the resource
+    value: a list tuples respresenting the resources stored: (resource_type, amount_in_storage, max_storage_capacity)
+    """
+    data_access = DataAccess(db)
+    data = await data_access.BuildingAccess.get_resource_stocks(user_id,city_id)
+
+    result_dict = dict()
+
+    for building_id,stock_overview in data.items():
+        stock_list = []
+        for resource_stock in stock_overview:
+            stock_list.append(ResourceStockSchema(resource_name=resource_stock[0], amount_in_stock=resource_stock[1], max_amount=resource_stock[2]))
+        result_dict[building_id] = stock_list
+    return StockOverViewSchema(overview=result_dict)
+

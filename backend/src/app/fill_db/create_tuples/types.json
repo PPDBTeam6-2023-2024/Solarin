@@ -50,6 +50,20 @@
       {"product-name":  "UR", "base-rate":  100, "base-cap":  550}
     ]}
   ],
+  "city-costs": [
+    {"resource-type":  "SOL", "amount": 25600,
+      "activity": "create", "time_cost": 900
+    },
+    {"resource-type":  "POP", "amount": 1024,
+      "activity": "create", "time_cost": 900
+    },
+    {"resource-type":  "SOL", "amount": 5120,
+      "activity": "upgrade", "time_cost": 600
+    },
+    {"resource-type":  "POP", "amount": 1280,
+      "activity": "upgrade", "time_cost": 600
+    }
+  ],
   "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],
   "units": [
     {"name":  "soldier", "spec": "land", "base-points":

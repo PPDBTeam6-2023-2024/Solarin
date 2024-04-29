@@ -112,3 +112,27 @@ export const getImageForBuildingType = (buildingType) => {
     return null;
 }
 
+export const upgradeCity = async (cityId) => {
+    try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/upgrade_city/${cityId}`);
+        if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error) {
+        console.error('Error upgrading city', error);
+        return null;
+    }
+    return null;
+}
+
+export const getResourcesInStorage = async (cityId) =>{
+    try{
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_resource_stocks/${cityId}`);
+        if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error){
+        console.error('Error retrieving resources in storage', error);
+        return null;
+    }
+}

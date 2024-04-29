@@ -207,3 +207,9 @@ class DeveloperAccess(DatabaseAccess):
 
         self.session.add(ProductionRegionModifier(resource_type=resource_type, region_type=region_type, modifier=modifier))
         await self.session.flush()
+
+    async def set_city_costs(self, activity: str ,resource_type: str, cost_amount: int, time_cost: int):
+        """
+        Sets the costs related to cities, e.g. the creation cost of the city
+        """
+        self.session.add(CityCosts(activity=activity, resource_type=resource_type, cost_amount=cost_amount, time_cost=time_cost))

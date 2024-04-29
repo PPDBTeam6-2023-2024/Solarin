@@ -88,5 +88,4 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacity(uranium, extractor)}=550$
 	* Creation Cost:
 		* 10000 TF
- 
 

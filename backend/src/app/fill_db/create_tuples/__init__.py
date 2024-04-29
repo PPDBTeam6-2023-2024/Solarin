@@ -14,6 +14,7 @@ class CreateTuples:
         await self.create_region_types(types["regions"])
         await self.create_planet_types(types["planets"])
         await self.create_production_modifiers(types["production-modifiers"])
+        await self.create_city_costs(types["city-costs"])
         await self.create_associations(types["associations"])
         await self.create_troop_types(types["units"])
         await self.create_barracks_types(types["barracks"])
@@ -72,6 +73,7 @@ class CreateTuples:
                 for resource_type in building_type["products"]:
                     await self.__dev.set_produces_resources(building_type["name"], resource_type["product-name"], resource_type["base-rate"], resource_type["base-cap"])
 
+
     async def create_resource_types(self, resource_types: list[str]):
         for resource_type in resource_types:
             if await self.__session.get(ResourceType, resource_type) is None:
@@ -114,4 +116,7 @@ class CreateTuples:
                 await self.__dev.set_production_modifier(resource_type=resource_type, region_type=region_type,
                                                          modifier=modifier)
 
+    async def create_city_costs(self, city_costs: list[dict[str,Any]]):
+        for city_cost in city_costs:
+                await self.__dev.set_city_costs(city_cost["activity"],city_cost["resource-type"], city_cost["amount"], city_cost["time_cost"])
 

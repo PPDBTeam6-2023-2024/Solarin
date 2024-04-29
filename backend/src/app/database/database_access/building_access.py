@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import *
 from sqlalchemy import select, not_, or_, join
+
+from ..models.SettlementModels import BuildingType
 from ....logic.formula.compute_properties import *
 from .resource_access import ResourceAccess
 from .city_access import CityAccess
@@ -245,9 +247,41 @@ class BuildingAccess(DatabaseAccess):
         else:
             return users.pop()
 
-    async def collect_resources(self, user_id: int, building_id: int):
+
+    async def get_resource_stocks(self, user_id: int, city_id: int):
         """
-        Collect resources from a production building
+        Get the dict with resources for each building in a city
+
+        :param: user_id: the id of the user who is collecting the resources
+        :param: city_id: id of the target city
+        """
+
+        ba = BuildingAccess(self.session)
+        building_list = await BuildingAccess.get_city_buildings(ba,city_id)
+
+        get_production_building_list = select(ProductionBuildingType)
+        production_building_list = await self.session.execute(get_production_building_list)
+        production_building_list = production_building_list.all()
+
+
+        production_building_set = set()
+        for building in production_building_list:
+            production_building_set.add(building[0])
+
+        overview_dict = dict()
+
+        for building_instance in building_list:
+            building_instance: BuildingInstance
+            if building_instance.type in production_building_set:
+                temp = await self.collect_resources(user_id, building_instance.id, False)
+                overview_dict[building_instance.id] = temp
+
+        return overview_dict
+
+    async def collect_resources(self, user_id: int, building_id: int, collect_resources: bool):
+        """
+        Get the resources stocks for a building and
+        collect resources from a production building ( by setting collect_resources=True )
 
         :param: user_id: the id of the user who is collecting the resources
         :param: building_id: id of the building whose resources we will collect
@@ -311,6 +345,13 @@ class BuildingAccess(DatabaseAccess):
         for row_list in production_modifier:
             resource_type = row_list[0]
             modifier_dict[resource_type] = row_list[1]
+
+
+        """
+        Store new amount to list
+        """
+        updated_resource_stocks = []
+
         """
         Add the resources to user taking into account the max capacity
         """
@@ -333,17 +374,25 @@ class BuildingAccess(DatabaseAccess):
             production_rate = PropertyUtility.getGPR(modifier_, p[0].base_production, p[1], region_control)
 
             max_capacity = PropertyUtility.getGPR(modifier_, p[0].max_capacity, p[1], False)
-            await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours), max_capacity))
+
+            # add increased resource to list
+            updated_resource_stocks.append((p[0].resource_name, min(int(production_rate*hours),max_capacity), max_capacity ))
+
+            # if flag "increase_resources" is on, increase resources
+            if collect_resources:
+                await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours), max_capacity))
+
 
         """
-        Check the building, indicating that the last checked timer needs to be set to now
+        If flag "increase_resources" is on,
+        check the building, indicating that the last checked timer needs to be set to now
         """
+        if collect_resources:
+            await self.checked(building_id)
 
-        await self.checked(building_id)
+            await self.session.commit()
 
-        # await self.session.commit()
-
-        return True
+        return updated_resource_stocks
 
     async def upgrade_building(self, user_id: int, building_id: int):
         """
@@ -464,5 +513,6 @@ class BuildingAccess(DatabaseAccess):
             return False
 
         return results == user_id
+
 
 

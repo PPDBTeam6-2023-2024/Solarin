@@ -252,3 +252,29 @@ class CreationCost(Base):
     cost_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
     cost_amount = Column(PositiveInteger, nullable=False)
 
+class CityCosts(Base):
+    """
+    Stores the costs related to city-related activities.
+
+    activity: The type of activity the cost is associated with, such as 'construction' or 'upgrade'.
+    resource_type: The type of resource required, linked via foreign key to a 'resourceType' table.
+    cost_amount: The amount of the resource required to complete the activity.
+    time_cost: The time required to complete the activity, measured in seconds.
+    """
+    __tablename__ = "CityCosts"
+    activity = Column(String, primary_key=True)
+    resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
+    time_cost = Column(Integer, nullable=True)
+    cost_amount = Column(Integer, nullable=False)
+
+class CityUpdateQueue(Base):
+    """
+    Queue that holds cities being updated
+    city_id: the id number of a city
+    start_time: the time at which the update started
+    duration: the duration of the update in seconds
+    """
+    __tablename__ = "CityUpdateQueue"
+    city_id = Column(ForeignKey("city.id"), primary_key=True)
+    start_time = Column(DateTime, nullable=False)
+    duration = Column(Integer)

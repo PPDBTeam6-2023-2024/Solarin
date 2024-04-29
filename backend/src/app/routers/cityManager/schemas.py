@@ -46,12 +46,25 @@ class BuildingTypeSchema(ConfigClass):
 class CostSchema(ConfigClass):
     id: int
     costs: list[tuple[str, int]]
+    time_cost: int
     can_upgrade: bool
 
 class CityLocationSchema(BaseModel):
     x: float
     y: float
 
-
 class CreateCitySchema(BaseModel):
     army_id: int
+
+class ResourceStockSchema(BaseModel):
+    resource_name: str
+    amount_in_stock: int
+    max_amount: int
+
+class StockOverViewSchema(BaseModel):
+    overview: dict[int,list[ResourceStockSchema]]
+
+class CityInfoSchema(BaseModel):
+    remaining_update_time: int
+
+

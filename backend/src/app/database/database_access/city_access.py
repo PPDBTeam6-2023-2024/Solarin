@@ -242,7 +242,6 @@ class CityAccess(DatabaseAccess):
         """
         Calculate the remaining time
         """
-        elapsed_time = datetime.utcnow() - update_queue_entry.start_time
         remaining_time = (update_queue_entry.start_time + timedelta(seconds=update_queue_entry.duration)) - datetime.utcnow()
 
         if remaining_time.total_seconds() <= 0:

@@ -48,6 +48,8 @@ async def get_buildings(
     """
     Return the list of BuildingInstanceSchema instances
     """
+
+
     return buildings_schemas,CityInfoSchema(remaining_update_time=remaining_time_update_time)
 
 
@@ -122,17 +124,6 @@ async def get_upgrade_cost(
 
     return result,city_upgrade_cost
 
-
-@router.get("/upgrade_city/{city_id}", response_model=Confirmation)
-async def upgrade_city(
-        user_id: Annotated[int, Depends(get_my_id)],
-        city_id: int,
-        db: AsyncSession = Depends(get_db)
-):
-    data_access = DataAccess(db)
-    data = await data_access.CityAccess.upgrade_city(user_id, city_id)
-    return Confirmation(confirmed=data)
-
 @router.get("/cities_user")
 async def friend_requests(
         user_id: Annotated[int, Depends(get_my_id)],
@@ -149,6 +140,19 @@ async def friend_requests(
     cities_schemas = [city.to_city_schema() for city in data]
 
     return cities_schemas
+
+@router.post("/upgrade_city/{city_id}", response_model=Confirmation)
+async def upgrade_city(
+        user_id: Annotated[int, Depends(get_my_id)],
+        city_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Upgrade the rank of city
+    """
+    data_access = DataAccess(db)
+    data = await data_access.CityAccess.upgrade_city(user_id, city_id)
+    return Confirmation(confirmed=data)
 
 @router.get("/get_resource_stocks/{city_id}", response_model=StockOverViewSchema)
 async def get_resource_stocks(

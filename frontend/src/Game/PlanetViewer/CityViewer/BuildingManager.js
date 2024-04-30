@@ -114,7 +114,7 @@ export const getImageForBuildingType = (buildingType) => {
 
 export const upgradeCity = async (cityId) => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/upgrade_city/${cityId}`);
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/upgrade_city/${cityId}`);
         if (response.status === 200) {
             return response.data;
         }

@@ -77,6 +77,8 @@ An overview of each the tables in the database:
 | ProductionBuildingType | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
 |   ProducesResources    | Lookup | Stores which resources a production building produces                                                                     |   
 |      CreationCost      | Lookup | Stores the cost to create/upgrade certain buildings                                                                       |
+|       CityCosts        | Lookup | Stores the base cost to create/upgrade a city                                                                             |
+|    CityUpdateQueue     | Lookup | Stores the cities being upgraded                                                                                          |
 
 
 </p>
@@ -108,10 +110,11 @@ An overview of each the tables in the database:
 <summary><strong>Resources</strong></summary>
 <p>
 
-|    Table     |  Type  | Purpose                                                                              |
-|:------------:|:------:|:-------------------------------------------------------------------------------------|
-| ResourceType | Lookup | Types of resources that are in the game                                              |  
-| HasResources |  Data  | Store resources associated with a user (stores how many of the resources a user has) |
+|           Table           |  Type  | Purpose                                                                                 |
+|:-------------------------:|:------:|:----------------------------------------------------------------------------------------|
+|       ResourceType        | Lookup | Types of resources that are in the game                                                 |  
+|       HasResources        |  Data  | Store resources associated with a user (stores how many of the resources a user has)    |
+| ProductionRegionModifier  |  Data  | Stores the modifiers applied to resource production based on the planet's region type.  |
 
 </p>
 </details>

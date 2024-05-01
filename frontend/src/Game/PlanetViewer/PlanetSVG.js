@@ -6,11 +6,20 @@ import axios from 'axios';
 // get the correct image path for the given region
 function GetImagePath(regionType) {
     const imagePaths = {
-        type1: '/images/region_types/rocks.jpeg',
-        "valley of death": '/images/region_types/sandyrocks.jpeg',
-        "dark valley": '/images/region_types/darkrocks.jpeg',
-        "arctic": '/images/region_types/ice.jpeg',
-        "plain": '/images/region_types/grass.jpg'
+        "valley of shadow": '/images/region_types/valley_of_shadow.jpeg',
+        "arctic": '/images/region_types/arctic.jpg',
+        "plain": '/images/region_types/plain.jpeg',
+        "magma": '/images/region_types/magma.jpg',
+        "savannah": '/images/region_types/savannah.jpg',
+        "silicaat": '/images/region_types/silicaat.jpg',
+        "alpine": "/images/region_types/alpine.jpg",
+        "desert": "/images/region_types/desert.jpg",
+        "taiga": "/images/region_types/taiga.jpg",
+        "polar": "/images/region_types/polar.jpg",
+        "rainforest": "/images/region_types/rainforest.jpeg",
+        "volcanic": "/images/region_types/volcanic.jpeg",
+        "steppe": "/images/region_types/steppe.jpeg",
+        "dark forest":"/images/region_types/dark_forest.jpeg"
     };
 
     return imagePaths[regionType] || '/images/region_types/rocks.jpeg'; // default is rocks

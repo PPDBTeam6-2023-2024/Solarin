@@ -71,7 +71,8 @@ export const UpgradeButtonComponent = ({
     refreshResources,
     setCityUpgradeInfo,
     cityUpgradeBool,
-    timerDuration = 0 // Default timer duration in seconds
+    timerDuration = 0, // Default timer duration in seconds
+    setTimeDuration
 }) => {
     const [timer, setTimer] = useState(timerDuration);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -114,6 +115,10 @@ export const UpgradeButtonComponent = ({
                 setCityUpgradeInfo(buildings[1]);
                 const updatedBuildings = await getBuildings(cityId);
                 setBuildings(updatedBuildings[0]);
+                if (cityUpgradeBool){
+                    console.log("debug here:", buildings[1])
+                    setTimeDuration(buildings[1].time_cost)
+                }
             }
         } catch (error) {
             console.error("Failed to upgrade building:", error);

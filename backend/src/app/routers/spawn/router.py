@@ -32,13 +32,6 @@ async def spawn_user(
         return {
             "planet_id": planet_id
         }
-    
-    armies = await data_access.ArmyAccess.get_user_armies(user_id)
-
-    if len(armies) > 0:
-        return {
-            "planet_id": armies[0].planet_id
-        }
 
     delta = timedelta(hours=1)
     curr_time = datetime.utcnow()

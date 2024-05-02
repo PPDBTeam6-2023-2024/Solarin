@@ -6,6 +6,7 @@ from typing import Annotated, Tuple, List, Optional
 from ..authentication.router import get_my_id
 from ...database.database import get_db
 from ...database.database_access.data_access import DataAccess
+from ...database.models.PlanetModels import Planet
 from .connection_manager import ConnectionManager
 from .schemas import PlanetOut, Region
 from .planet_socket_actions import PlanetSocketActions
@@ -13,18 +14,29 @@ router = APIRouter(prefix="/planet", tags=["Planet"])
 manager = ConnectionManager()
 
 
-@router.get("/planets")
-async def get_planets(
+@router.get("/planets/public")
+async def get_planets_public(
         user_id: Annotated[int, Depends(get_my_id)],
         db=Depends(get_db)
-) -> List[Tuple[int, str]]:
+) -> List[dict]:
     """
-    Retrieve all the existing planets
+    Get all the planets who are globally visible and include the user its planets
     """
     data_access = DataAccess(db)
-    planets = await data_access.PlanetAccess.get_all_planets()
+    planets = await data_access.PlanetAccess.get_planets_global(user_id)
+    return [Planet.to_dict(planet) for planet in planets]
 
-    return planets
+@router.get("/planets/private")
+async def get_planets_private(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db=Depends(get_db)
+) -> List[dict]:
+    """
+    Get all the planets that a user has a city or an army on
+    """
+    data_access = DataAccess(db)
+    planets = await data_access.PlanetAccess.get_planets_of_user(user_id=user_id)
+    return [Planet.to_dict(planet) for planet in planets]
 
 
 @router.websocket("/ws/{planet_id}")

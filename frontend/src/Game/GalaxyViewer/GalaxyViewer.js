@@ -60,6 +60,8 @@ function GalaxyViewer(props) {
         <Canvas style={{position: "fixed", backgroundColor: "#0a0a0a"}} scene={{background: "black"}}>
         <Stars/>
         <ambientLight intensity={0.9}/>
+
+            {/*Display a sun in the center*/}
         <mesh ref={solarinRef} position={[0,0,0]} scale={5}>
         <EffectComposer multisampling={1} resolutionScale={0.1}>
           <SelectiveBloom selection={solarinRef} intensity={0.3} luminanceThreshold={0.1} luminanceSmoothing={0.1} />
@@ -68,6 +70,7 @@ function GalaxyViewer(props) {
           <meshStandardMaterial emissive="white" emissiveIntensity={1} toneMapped={false}/>
           </mesh>
         <Bounds fit clip observe margin={1.2}>
+            {/*Display the planets in the galaxy view*/}
           { publicPlanets.map((planet) => {
             return (
               <Fragment key={planet.id}>

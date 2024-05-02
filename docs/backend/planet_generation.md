@@ -13,6 +13,8 @@ Our planets also have a planet type. We first choose a random planet type, and t
 ## Fibonacci Spiral Planet Generation
 The Fibonacci spiral pattern is utilized to determine the placement of planets in the universe. Each planet's coordinates are calculated based on its index, which represents the number of planets currently existing in the universe plus one.
 
+<br>![alt text](../images/fibonacci_spiral.png).
+
 ### Angle Calculation
 The angle for each planet is determined using a variation of the golden angle, derived from the golden ratio. This ensures even spacing between planets around the origin.
 

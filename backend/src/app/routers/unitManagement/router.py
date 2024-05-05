@@ -78,6 +78,11 @@ async def get_buildings(
     await da.commit()
 
     rank = await da.TrainingAccess.get_troop_rank(user_id, troop_type)
+    rank2 = await da.BuildingAccess.get_building_rank(building_id)
+    """
+    Rank of the troops are the average of the troop rank and the building type
+    """
+    rank = floor((rank+rank2)/2)
     await da.TrainingAccess.train_type(building_id, troop_type, rank, amount)
     await da.commit()
 

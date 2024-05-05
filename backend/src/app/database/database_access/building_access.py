@@ -225,6 +225,18 @@ class BuildingAccess(DatabaseAccess):
 
         return buildings_data
 
+    async def get_building_rank(self, building_id: int):
+        """
+        Get the rank of a building
+
+        :param: building_id: id of the building whose rank we want
+        return: int indicating the rank of the building
+        """
+        get_rank = Select(BuildingInstance.rank).where(BuildingInstance.id == building_id)
+        rank = await self.session.execute(get_rank)
+        rank = rank.scalar_one()
+        return rank
+
     async def collect_resources(self, user_id: int, building_id: int):
         """
         Collect resources from a production building

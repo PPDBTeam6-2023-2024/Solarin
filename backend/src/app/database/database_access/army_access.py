@@ -10,6 +10,7 @@ from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
 
+
 class ArmyAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of armies

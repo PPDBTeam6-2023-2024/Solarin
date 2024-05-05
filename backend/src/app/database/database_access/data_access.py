@@ -13,6 +13,7 @@ from .ranking_access import RankingAccess
 from .resource_access import ResourceAccess
 from .database_acess import DatabaseAccess
 from .trade_access import TradeAccess
+from .general_access import GeneralAccess
 
 
 class DataAccess(DatabaseAccess):
@@ -33,6 +34,7 @@ class DataAccess(DatabaseAccess):
         self.RankingAccess = RankingAccess(session)
         self.ResourceAccess = ResourceAccess(session)
         self.TradeAccess = TradeAccess(session)
+        self.GeneralAccess = GeneralAccess(session)
         super().__init__(session)
 
     async def commit(self):

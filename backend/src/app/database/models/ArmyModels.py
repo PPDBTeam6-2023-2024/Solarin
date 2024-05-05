@@ -347,3 +347,33 @@ class ArmyInCity(Base):
 
     city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED'), nullable=False,
                      unique=True)
+
+
+class Generals(Base):
+    """
+    Stores the possible generals that exist
+
+    name: name of the general
+    """
+    __tablename__ = 'generals'
+
+    name = Column(String, primary_key=True)
+
+    def __hash__(self):
+        """
+        Make a hash for Generals so 2 generals with same names are the same
+        """
+        return hash(self.name)
+
+
+class ArmyHasGeneral(Base):
+    """
+    Stores which generals are assigned to which army, each army has maximum 1 general
+
+    general_name: name of the general
+    army_id: id of the army the general is associated with
+    """
+    general_name = Column(String, ForeignKey("generals.name", deferrable=True, initially='DEFERRED',
+                                             ondelete="cascade"), nullable=False)
+    army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)

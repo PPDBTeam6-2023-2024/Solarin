@@ -28,8 +28,8 @@ class Coordinate(TypeDecorator):
         SQL Alchemy has no native support for adding checks to Domains, so
         we check manually if the value of a coordinate is between 0 and 1.
         """
-        if not (0 <= value <= 1):
-            raise DomainException("Coordinate", "value in range [0, 1]")
+        '''if not (0 <= value <= 1):
+            raise DomainException("Coordinate", "value in range [0, 1]")'''
 
         return value
 

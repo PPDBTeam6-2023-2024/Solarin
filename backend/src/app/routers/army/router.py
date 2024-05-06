@@ -12,6 +12,36 @@ from ..cityManager.city_checker import CityChecker
 router = APIRouter(prefix="/army", tags=["Army"])
 
 
+@router.get("/fleets_in_space", response_model=List[ArmySchema])
+async def get_fleets(db: AsyncSession = Depends(get_db)) -> List[ArmySchema]:
+    """
+    Endpoint to retrieve fleet information (armies in space)
+    """
+    data_access = DataAccess(db)
+    db_reply = await data_access.ArmyAccess.get_fleets_in_space()
+
+    armies_schema = []
+
+    for army in db_reply:
+        temp = army.to_army_schema()
+        armies_schema.append(temp)
+
+    return armies_schema
+@router.get("/fleets", response_model=List[ArmySchema])
+async def get_user_fleets(user_id: int, planet_id: int, db: AsyncSession = Depends(get_db)) -> List[ArmySchema]:
+    """
+    Endpoint to retrieve fleet information (armies in space)
+    """
+    data_access = DataAccess(db)
+    db_reply = await data_access.ArmyAccess.get_user_fleets_on_planet(user_id, planet_id)
+
+    armies_schema = []
+
+    for army in db_reply:
+        temp = army.to_army_schema()
+        armies_schema.append(temp)
+
+    return armies_schema
 @router.get("/armies", response_model=List[ArmySchema])
 async def get_armies(
         planet_id: int,

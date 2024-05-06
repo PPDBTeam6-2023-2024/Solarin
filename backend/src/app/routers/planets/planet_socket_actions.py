@@ -71,7 +71,8 @@ class PlanetSocketActions:
             target_type_dict = {"attack_city": self.data_access.ArmyAccess.attack_city,
                                 "attack_army": self.data_access.ArmyAccess.attack_army,
                                 "merge": self.data_access.ArmyAccess.add_merge_armies,
-                                "enter": self.data_access.ArmyAccess.add_enter_city}
+                                "enter": self.data_access.ArmyAccess.add_enter_city,
+                                "enter_planet": self.data_access.ArmyAccess.add_enter_planet}
 
             arrive_func = target_type_dict.get(data["target_type"])
 
@@ -96,6 +97,13 @@ class PlanetSocketActions:
                 "request_type": "change_direction",
                 "data": army.to_dict()
             })
+    async def leave_planet(self, data: json):
+        army_id = data["army_id"]
+        owner = await self.data_access.ArmyAccess.get_army_owner(army_id)
+        if owner.id == self.user_id:
+            await self.data_access.ArmyAccess.leave_planet(army_id)
+            await self.data_access.commit()
+            await self.connection_pool.broadcast({"request_type": "reload"})
 
     async def leave_city(self, data: json):
         army_id = data["army_id"]

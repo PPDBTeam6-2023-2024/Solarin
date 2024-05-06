@@ -180,7 +180,7 @@ class CityAccess(DatabaseAccess):
 
         return result[0], result[1], can_upgrade
 
-    async def get_city_info(self, city_id: int) -> tuple[int, str, list[tuple[str, float]], int]:
+    async def get_city_info(self, city_id: int) -> tuple[Any, Any, Sequence[Row[tuple[Any, ...] | Any]], Any]:
         """
         get the following city info:
         - population_size: size of the city population
@@ -194,13 +194,13 @@ class CityAccess(DatabaseAccess):
         city_instance = await self.session.execute(get_city_instance)
         city = city_instance.first()[0]
 
-        city_region = city.region_id
-        population_size = city.population
-        city_rank = city.rank
+        city_region: int = city.region_id
+        population_size: int = city.population
+        city_rank: int = city.rank
 
         get_region_type = Select(PlanetRegion.region_type).where(PlanetRegion.id == city_region)
         region_type = await self.session.execute(get_region_type)
-        region_type = region_type.first()[0]
+        region_type: str = region_type.first()[0]
 
         get_region_buffs = Select(ProductionRegionModifier.resource_type, ProductionRegionModifier.modifier).where(ProductionRegionModifier.region_type == region_type)
         region_buffs = await self.session.execute(get_region_buffs)
@@ -241,9 +241,6 @@ class CityAccess(DatabaseAccess):
             for u_type, u_amount in resource_cost:
                 await ra.remove_resource(user_id, u_type, u_amount)
 
-            city.rank += 1
-
-
             """
             Add city to the cityUpdateQueue
             """
@@ -282,6 +279,14 @@ class CityAccess(DatabaseAccess):
         remaining_time = (update_queue_entry.start_time + timedelta(seconds=update_queue_entry.duration)) - datetime.utcnow()
 
         if remaining_time.total_seconds() <= 0:
+            """
+            Upgrade the city rank
+            """
+            get_city = select(City).where(City.id == city_id)
+            city = await self.session.execute(get_city)
+            city: City = city.first()[0]
+            city.rank += 1
+
             """
             If the remaining time is zero or negative, remove the update queue entry
             """

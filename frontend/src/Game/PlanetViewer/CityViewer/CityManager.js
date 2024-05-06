@@ -60,9 +60,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
         /*Get information about the current buildings inside the city*/
         getCityData(cityId).then(cityData => {
-                setBuildings(cityData.buildings)
-                setCityUpgradeTimer(cityData.city.remaining_update_time)
-                setCityInfo(cityData.city)
+                setBuildings(cityData?.buildings)
+                setCityUpgradeTimer(cityData?.city?.remaining_update_time)
+                setCityInfo(cityData?.city)
             });
 
         /*Get information about the upgrade cost of a building*/
@@ -72,7 +72,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                 console.error("Invalid or no data for building costs:", building_costs);
                 return;
             }
-            const costMap = building_costs.reduce((acc, building) => {
+            const costMap = building_costs?.reduce((acc, building) => {
                 acc[building.id] = building;
                 return acc;
             }, {});

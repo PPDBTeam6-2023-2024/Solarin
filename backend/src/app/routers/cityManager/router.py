@@ -10,13 +10,12 @@ from .city_checker import CityChecker
 
 router = APIRouter(prefix="/cityManager", tags=["City"])
 
-
 @router.get("/get_city_data/{city_id}", response_model=CityData)
 async def get_city_and_building_info(
         user_id: Annotated[int, Depends(get_my_id)],
         city_id: int,
         db=Depends(get_db)
-) -> List[BuildingInstanceSchema]:
+) -> CityData:
     data_access = DataAccess(db)
     buildings = await data_access.BuildingAccess.get_city_buildings(city_id)
 
@@ -52,7 +51,7 @@ async def get_city_and_building_info(
     city_info_schema = CityInfoSchema(population=city_info[0], region_type=city_info[1], region_buffs=city_info[2], rank=city_info[3], remaining_update_time=remaining_time_update_time)
 
     """
-    Return the list of BuildingInstanceSchema instances
+    Return the city data, consisting of the building_schemas info and the city_info_schema
     """
     return CityData(city = city_info_schema, buildings = buildings_schemas)
 

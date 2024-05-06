@@ -160,7 +160,7 @@ class CityAccess(DatabaseAccess):
         Returns the upgrade cost of a city,
         the remaining update time,
         and a boolean indicating whether the user has sufficient resources to upgrade the city
-        return: (upgrade cost, upgrade time remaining, can_upgrade: bool)
+        return: (upgrade cost: list[tuple[str, int]], upgrade time remaining: int, can_upgrade: bool)
         """
         get_city_level = select(City).where(City.id == city_id)
         city = await self.session.execute(get_city_level)
@@ -257,6 +257,22 @@ class CityAccess(DatabaseAccess):
         else:
             return False
 
+    async def update_population_and_rank(self, city_id, population_increase, rank_increase):
+        """
+        Update the population of the city asynchronously and rank
+        """
+        # Get the city instance in the database
+        get_city = select(City).where(City.id == city_id)
+        city = await self.session.execute(get_city)
+        city: City = city.scalar()
+
+        # Update the population
+        city.population += population_increase
+        city.rank += rank_increase
+
+        # Commit the changes to the database
+        await self.session.commit()
+
     async def get_remain_update_time(self, city_id: int) -> float:
         """
         Checks the remaining time a city has left to be updated,
@@ -280,12 +296,25 @@ class CityAccess(DatabaseAccess):
 
         if remaining_time.total_seconds() <= 0:
             """
-            Upgrade the city rank
+            get the upgrade cost
+            """
+            upgrade_tuple = await self.get_city_upgrade_cost(city_id)
+            resource_cost = upgrade_tuple[0]
+
+            """
+            get the city instance in the database
             """
             get_city = select(City).where(City.id == city_id)
             city = await self.session.execute(get_city)
             city: City = city.first()[0]
-            city.rank += 1
+
+            """
+            Update the population according to the population upgrade cost and increase the city_rank by 1
+            """
+            for resource_type, resource_cost in resource_cost:
+                if resource_type == "POP":
+                    await self.update_population_and_rank(city_id, resource_cost, city.rank+1)
+                    break
 
             """
             If the remaining time is zero or negative, remove the update queue entry

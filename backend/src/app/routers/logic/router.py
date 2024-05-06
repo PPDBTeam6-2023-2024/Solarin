@@ -3,8 +3,11 @@ from sqlalchemy import select
 from sqlalchemy.sql.functions import coalesce
 from typing import Union, Annotated
 
+from .schemas import PoliticalStanceInput
+
 from ....app.routers.authentication.router import get_my_id, get_db
 from ....app.database.database_access.data_access import DataAccess
+
 router = APIRouter(prefix="/logic")
 
 
@@ -16,3 +19,27 @@ async def get_resources(user_id: Annotated[int, Depends(get_my_id)], db=Depends(
     data_access = DataAccess(db)
     result = await data_access.ResourceAccess.get_resources(user_id)
     return result
+
+
+@router.get("/politics")
+async def get_political_stance(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
+    """
+    get the political values of a user
+    """
+    data_access = DataAccess(db)
+    result = await data_access.UserAccess.get_politics(user_id)
+    return result
+
+
+router.post("/update_politics")
+
+
+async def update_politics(user_id: Annotated[int, Depends(get_my_id)], stance: PoliticalStanceInput, db=Depends(get_db)):
+    """
+    update the political values of a user
+    :param user_id: the user whose values are changing
+    :param stance: the new values
+    :return:
+    """
+    data_access = DataAccess(db)
+    await data_access.UserAccess.update_politics(user_id, stance.dict())

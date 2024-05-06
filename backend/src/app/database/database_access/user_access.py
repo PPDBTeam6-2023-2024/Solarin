@@ -46,6 +46,13 @@ class UserAccess(DatabaseAccess):
         """
         await self.__set_has_resource_entries(user_id)
 
+        """
+        set the user's political stance to neutral
+        """
+        await self.initialize_politics(user_id)
+
+        await self.session.commit()
+
         return user_id
 
     async def get_faction_name(self, user_id: str):
@@ -241,3 +248,40 @@ class UserAccess(DatabaseAccess):
         result = await self.session.execute(get_alliance)
         result = result.scalar_one_or_none()
         return result
+
+    async def initialize_politics(self, new_user_id: int):
+        """
+        initialize the value for each political stance to 0
+        :param new_user_id: the id of the user we are creating
+        """
+        query = Select(PoliticalStance).where(PoliticalStance.user_id == new_user_id)
+        existing_entry = await self.session.execute(query)
+        if existing_entry.first() is not None:
+            # there already is an entry for some reason
+            update_query = update(PoliticalStance).where(PoliticalStance.user_id == new_user_id).values(anarchism=0, authoritarian=0, democratic=0, corporate_state=0, theocracy=0, technocracy=0)
+            await self.session.execute(update_query)
+        else:
+            # create a new entry
+            insert_query = insert(PoliticalStance).values(user_id=new_user_id, anarchism=0, authoritarian=0, democratic=0, corporate_state=0, theocracy=0, technocracy=0)
+            await self.session.execute(insert_query)
+
+    async def get_politics(self, user_id: int):
+        """
+        get the political values of a user
+        :param user_id: the user in question
+        :return: a values between 0 and 1 for each type of society
+        """
+
+        get_query = Select(PoliticalStance).where(PoliticalStance.user_id == user_id)
+        result = await self.session.execute(get_query)
+        result = result.first()
+        return result
+
+    async def update_politics(self, user_id: int, stance: dict):
+        """
+        overwrite the current database values with the new values
+        :param user_id: the user whose values are being changed
+        :param stance: the new values
+        """
+        update_query = update(PoliticalStance).where(PoliticalStance.user_id == user_id).values(anarchism=stance["anarchism"], authoritarian=stance["authoritarian"], democratic=stance["democratic"], corporate_state=stance["corporate_state"], theocracy=stance["theocracy"], technocracy=stance["technocracy"])
+        await self.session.execute(update_query)

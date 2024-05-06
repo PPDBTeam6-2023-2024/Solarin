@@ -7,10 +7,10 @@ ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title, 
 function PoliticsMenu() {
     /*THIS PAGE IS A MOCK PAGE AND NOT A FINISHED RESULT*/
     const data = {
-    labels: ['Anarchism', 'Authoritarian', 'Democratic', 'Corporatism', 'Religious'],
+    labels: ['Anarchism', 'Authoritarian', 'Democratic', 'Corporate state', 'Theocracy', 'Technocracy'],
     datasets: [
       {
-        data: [0.3, 0.3, 0.5, 0.2, 0.6],
+        data: [0.3, 0.3, 0.5, 0.2, 0.6, 0.5],
         backgroundColor: 'rgba(215,113,12, 0.6)',
         borderColor: 'rgba(220,53,16, 0.8)',
           fill: true,

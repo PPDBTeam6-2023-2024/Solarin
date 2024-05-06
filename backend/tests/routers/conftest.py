@@ -72,3 +72,23 @@ async def data_access(connection_test):
 async def session(connection_test):
     async with sessionmanager.session() as session:
         yield session
+
+@pytest.fixture(scope="function")
+async def auth(client, data_access: DataAccess):
+    data = {
+        "email": "insert@example.com",
+        "username": "test",
+        "password": "test"
+    }
+    response = client.post("/auth/add_user", json=data)
+    assert response.status_code == 200
+
+    response = client.post("/auth/token", data=data)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["token_type"] == "bearer"
+    token = body["access_token"]
+
+    user_id = await data_access.UserAccess.get_user_id_email("insert@example.com")
+
+    yield user_id, {"Authorization": f"Bearer {token}"}

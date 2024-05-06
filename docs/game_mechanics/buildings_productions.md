@@ -87,5 +87,61 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacity(uranium, extractor)}=550$
 	* Creation Cost:
 		* 10000 TF
- 
+  
+* Oil Pump
+	* Produces *Oil*
+		* $\text{baseRate(oil, oil pump))}=400$
+		* $\text{baseCapacit(yoil, oil pump)}=1600$
+	* Creation Cost:
+		* 3500 TF
+      
+* Parlement
+	* Produces *Influence*
+		* $\text{baseRate(influence, parlement))}=100$
+		* $\text{baseCapacity(influence, parlement)}=200$
+	* Creation Cost:
+		* 1500 TF
 
+* Solar Generator
+	* Produces *SOL*
+		* $\text{baseRate(SOL, solar generator))}=700$
+		* $\text{baseCapacity(SOL, solar generator)}=5000$
+	* Creation Cost:
+		* 6800 TF
+ 
+* Material Lab
+	* Produces *TF*
+		* $\text{baseRate(TF, material lab))}=700$
+		* $\text{baseCapacity(TF, material lab)}=6000$
+	* Creation Cost:
+		* 9000 TF
+ 
+* Plant Growth Accelerator
+	* Produces *RA*
+		* $\text{baseRate(RA, plant growth accelerator))}=1500$
+		* $\text{baseCapacity(RA, plant growth accelerator)}=10000$
+	* Creation Cost:
+		* 15000 TF
+ 
+* Electric Mine
+	* Produces *Minerals*
+		* $\text{baseRate(Minerals, electric mine))}=800$
+		* $\text{baseCapacity(Minerals, electric mine)}=10000$
+    * Produces *Coal*
+		* $\text{baseRate(Coal, electric mine))}=200$
+		* $\text{baseCapacity(Coal, electric mine)}=7000$
+    * Produces *Oil*
+		* $\text{baseRate(Oil, electric mine))}=30$
+		* $\text{baseCapacity(Oil, electric mine)}=300$
+	* Creation Cost:
+		* 9000 TF
+ 
+* Solar Lab
+    * Produces *TF*
+        * $\text{baseRate(TF, material lab))}=100$
+        * $\text{baseCapacity(TF, material lab)}=600$
+    * Produces *SOL*
+        * $\text{baseRate(TF, material lab))}=500$
+        * $\text{baseCapacity(TF, material lab)}=4000$
+    * Creation Cost:
+        * 7000 TF

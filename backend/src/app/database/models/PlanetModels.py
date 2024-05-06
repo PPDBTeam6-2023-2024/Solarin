@@ -32,6 +32,8 @@ class Planet(Base):
     planet_type: the type of the planet
     space_region_id: the id of the space region the planet belongs to
     created_at: when the planet is created
+    x, y: the position of the planet in space
+    visible: if the planet is visible to all players
     """
     __tablename__ = 'planet'
     id = Column(Integer, Sequence('planet_id_seq'), primary_key=True)
@@ -41,10 +43,29 @@ class Planet(Base):
     space_region_id = Column(Integer, ForeignKey("spaceRegion.id", deferrable=True, initially='DEFERRED'),
                              nullable=False)
     created_at = Column(DateTime(), nullable=True, default=datetime.utcnow)
+    x = Column(FLOAT, nullable=False)
+    y = Column(FLOAT, nullable=False)
+    visible = Column(Boolean, nullable=False, default=False)
 
     space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
     armies = relationship("Army", back_populates="planet", lazy="select")
     regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')
+
+    @staticmethod
+    def to_dict(row: "Planet") -> dict:
+        """
+        Convert the planet row object to a dictionary
+        """
+        return {
+            "id": row.id,
+            "name": row.name,
+            "planet_type": row.planet_type,
+            "space_region_id": row.space_region_id,
+            "created_at": row.created_at,
+            "x": row.x,
+            "y": row.y,
+            "visible": row.visible
+        }
 
 
 class PlanetType(Base):

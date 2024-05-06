@@ -14,6 +14,7 @@ class Decimal(TypeDecorator):
     """
 
     impl = Float(precision=53)
+    cache_ok = True
 
     @property
     def python_type(self) -> Type[Any]:
@@ -58,7 +59,7 @@ class PositiveInteger(TypeDecorator):
     """
 
     impl = Integer
-
+    cache_ok = True
     @property
     def python_type(self) -> Type[Any]:
         return int

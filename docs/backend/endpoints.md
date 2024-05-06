@@ -137,3 +137,15 @@ This router will handle the communication about Armies and their actions
 
 </p>
 </details>
+
+
+<details>
+<summary><strong>Spawn: '/trading'</strong></summary>
+<p>
+
+| Endpoint |  Method   | Purpose                         |
+|:--------:|:---------:|:--------------------------------|
+|    WS    | WEBSOCKET | Websocket for handeling trading |
+
+</p>
+</details>

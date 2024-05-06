@@ -5,6 +5,7 @@ from sqlalchemy.orm import aliased
 
 from .database_acess import DatabaseAccess
 
+
 class MessageAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of messages

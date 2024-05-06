@@ -21,7 +21,7 @@ async def insert_data(data_access):
         await user_access.create_user(f"Test{i}", f"test{i}@test.test", f"test{i}")
     planet_access = data_access.PlanetAccess
     await planet_access.create_space_region("Test Region")
-    planet_id = await planet_access.create_planet("Test Planet", "arctic", 1)
+    planet_id = await planet_access.create_planet("Test Planet", "arctic", 1, 1, 1)
     await planet_access.create_planet_region(planet_id, "arctic", 0.5, 0.5)
     city_access = data_access.CityAccess
     for i in range(1, 6):
@@ -82,7 +82,7 @@ async def test_get_city_buildings_3(building_access: BuildingAccess):
 
 async def test_get_building_types(building_access: BuildingAccess):
     types = await building_access.get_building_types()
-    assert len(types) == 13
+    assert len(types) == 20
 
 async def test_checked(building_access: BuildingAccess):
     b_id = await building_access.create_building(1, 1, "nexus", True)
@@ -98,7 +98,7 @@ async def test_get_available_building_types_1(building_access: BuildingAccess, d
     await building_access.commit()
 
     avail = await building_access.get_available_building_types(1, 1)
-    assert len(avail) == 11
+    assert len(avail) == 18
     for a in avail:
         assert not a["can_build"]
 
@@ -108,7 +108,7 @@ async def test_get_available_building_types_2(building_access: BuildingAccess, d
     await building_access.commit()
 
     avail = await building_access.get_available_building_types(1, 1)
-    assert len(avail) == 12
+    assert len(avail) == 19
     can_build_count = 0
     for a in avail:
         if a["can_build"]:

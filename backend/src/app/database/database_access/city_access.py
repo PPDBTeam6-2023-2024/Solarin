@@ -131,3 +131,4 @@ class CityAccess(DatabaseAccess):
         result = await self.session.execute(get_rank)
         result = result.scalar_one()
         return result
+    

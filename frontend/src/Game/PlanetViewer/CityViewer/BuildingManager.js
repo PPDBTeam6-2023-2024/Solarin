@@ -2,10 +2,10 @@ import axios from "axios";
 import Records from "./../../UI/buildingImages.json"
 
 // get all the buildings inside a given city
-export const getBuildings = async (cityId) => {
+export const getCityData = async (cityId) => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/buildings/${cityId}`);
-        if (response.status === 200 && Array.isArray(response.data)) {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_city_data/${cityId}`);
+        if (response.status === 200) {
             return response.data;
         }
         return [];
@@ -136,3 +136,4 @@ export const getResourcesInStorage = async (cityId) =>{
         return null;
     }
 }
+

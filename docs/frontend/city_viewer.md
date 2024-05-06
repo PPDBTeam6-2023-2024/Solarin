@@ -28,7 +28,7 @@ It uses a combination of custom React hooks, state management, and external libr
 ### Implementation Details
 - **Fetching Cities**: Uses a custom `getCities` function that makes an API call to fetch cities based on the planet ID. It dynamically generates clickable city images on the map based on the fetched data.
 - **CityManager Integration**: Once a city is clicked, the CityManager component is rendered, providing a detailed view of the city's buildings. This integration allows users to interact with individual buildings and gain insights into their status and attributes.
-- **Building Data**: The CityManager uses `getBuildings` to fetch building information for the selected city. It displays this data in an AG Grid, providing a sortable and interactive table of building details.
+- **Building Data**: The CityManager uses `getCityData` to fetch city and building information for the selected city. It displays this data in an AG Grid, providing a sortable and interactive table of building details.
 - **UpgradeButtonComponent**: Facilitates upgrading buildings, interfacing with backend services to update and retrieve the latest upgrade costs and statuses.
 - **ResourceButtonComponent**: Allows users to collect resources from specific buildings, integrating real-time data updates to increases in resources stored in production buildings overtime.
 - **CurrentBuildingGrid**: Provides a UI for managing current buildings, including an interface for upgrading buildings, collecting resources and managing the troops in a city.

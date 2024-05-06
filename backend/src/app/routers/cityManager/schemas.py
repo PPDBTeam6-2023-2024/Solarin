@@ -24,6 +24,7 @@ class CitySchema(ConfigClass):
     region_type: str
     planet_name: str
     planet_id: int
+    population: int
 
 class Confirmation(BaseModel):
     confirmed: bool
@@ -65,6 +66,13 @@ class StockOverViewSchema(BaseModel):
     overview: dict[int,list[ResourceStockSchema]]
 
 class CityInfoSchema(BaseModel):
+    population: int
+    rank: int
+    region_type: str
+    region_buffs: list[tuple[str,float]]
     remaining_update_time: int
 
+class CityData(BaseModel):
+    city: CityInfoSchema
+    buildings: list[BuildingInstanceSchema]
 

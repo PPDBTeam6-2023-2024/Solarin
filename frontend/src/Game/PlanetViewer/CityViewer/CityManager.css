@@ -68,6 +68,15 @@
     justify-content: center;
 }
 
+.city_info_grid {
+    display: inline-block;
+    width: 40%;
+    height: 40%;
+    overflow: scroll;
+    border-radius: 0.2vw 0 0 0.2vw;
+    transform: translateY(60%) translateX(10%);
+}
+
 .tabs {
     display: flex;
     flex-direction: column;
@@ -101,6 +110,13 @@
     flex-direction: column;
     align-items: center;
     transform: translateY(10%) translateX(-12%);
+}
+
+.right-screen-city-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(5%) translateX(25%);
 }
 
 

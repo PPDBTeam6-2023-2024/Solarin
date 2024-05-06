@@ -32,6 +32,8 @@ class City(Base):
 
     region = relationship("PlanetRegion", back_populates="cities", lazy='joined')
 
+    population = Column(Integer, default= 1024)
+
     def to_city_schema(self):
         """
         Convert the City object to a CitySchema (scheme)
@@ -45,7 +47,8 @@ class City(Base):
                           rank=self.rank,
                           region_type=self.region.region_type,
                           planet_name=self.region.planet.name,
-                          planet_id=self.region.planet_id)
+                          planet_id=self.region.planet_id,
+                          population=self.population)
 
 
 class BuildingInstance(Base):

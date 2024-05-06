@@ -1,6 +1,6 @@
 import {
     collectResources,
-    getBuildings,
+    getCityData,
     getResourcesInStorage,
     getUpgradeCost,
     upgradeBuilding,
@@ -72,7 +72,8 @@ export const UpgradeButtonComponent = ({
     setCityUpgradeInfo,
     cityUpgradeBool,
     timerDuration = 0, // Default timer duration in seconds
-    setTimeDuration
+    setTimeDuration,
+    setCityInfo
 }) => {
     const [timer, setTimer] = useState(timerDuration);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -113,10 +114,10 @@ export const UpgradeButtonComponent = ({
                 setUpgradeCostMap(costMap);
                 refreshResources();
                 setCityUpgradeInfo(buildings[1]);
-                const updatedBuildings = await getBuildings(cityId);
-                setBuildings(updatedBuildings[0]);
+                const cityData = await getCityData(cityId);
+                setBuildings(cityData.buildings);
+                setCityInfo(cityData.city)
                 if (cityUpgradeBool){
-                    console.log("debug here:", buildings[1])
                     setTimeDuration(buildings[1].time_cost)
                 }
             }

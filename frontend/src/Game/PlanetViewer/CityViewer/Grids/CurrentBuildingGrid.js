@@ -3,7 +3,7 @@ import { AgGridReact } from "ag-grid-react";
 import './NewBuildingGrid.css';
 import { ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent } from "./Buttons";
 
-const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityUpgradeInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage }) => {
+const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
 
     const columns = useMemo(() => [
@@ -75,7 +75,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                                     setUpgradeCostMap={setUpgradeCostMap}
                                                     refreshResources={refreshResources}
                                                     setBuildings={setBuildings}
-                                                    setCityUpgradeInfo={setCityUpgradeInfo}
+                                                    setCityInfo = {setCityInfo}
                                                     cityUpgradeBool={false}
                             />
                         }

@@ -4,7 +4,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import {
     getArmyInCity,
-    getBuildings,
+    getCityData,
     getNewBuildingTypes, getResourcesInStorage,
     getUpgradeCost
 } from './BuildingManager';
@@ -20,7 +20,7 @@ import CityInfoGrid from "./Grids/CityInfoGrid";
 import {getCityImage} from "./GetCityImage";
 
 
-const CityManager = ({ cityId, cityRankInput, primaryColor, secondaryColor, onClose}) => {
+const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
     /*
     * This component represents the City Menu
     * */
@@ -34,7 +34,7 @@ const CityManager = ({ cityId, cityRankInput, primaryColor, secondaryColor, onCl
 
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [cityUpgradeInfo, setCityUpgradeInfo] = useState([]);
-    const [cityRank, setCityRank] = useState(cityRankInput);
+    const [cityInfo, setCityInfo] = useState([])
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
     const [troops, setTroops] = useState([]); // State for troops
 
@@ -59,9 +59,10 @@ const CityManager = ({ cityId, cityRankInput, primaryColor, secondaryColor, onCl
         /* Refresh buildings and types, by loading its current information from the backend*/
 
         /*Get information about the current buildings inside the city*/
-        getBuildings(cityId).then(buildings => {
-                setBuildings(buildings[0])
-                setCityUpgradeTimer(buildings[1].remaining_update_time)
+        getCityData(cityId).then(cityData => {
+                setBuildings(cityData.buildings)
+                setCityUpgradeTimer(cityData.city.remaining_update_time)
+                setCityInfo(cityData.city)
             });
 
         /*Get information about the upgrade cost of a building*/
@@ -139,9 +140,9 @@ const CityManager = ({ cityId, cityRankInput, primaryColor, secondaryColor, onCl
                         setUpgradeCostMap={setUpgradeCostMap}
                         setBuildings={setBuildings}
                         refreshResources={() => initializeResources(dispatch)}
-                        setCityUpgradeInfo={setCityUpgradeInfo}
                         resourcesInStorage={resourcesInStorage}
                         setResourcesInStorage={setResourcesInStorage}
+                        setCityInfo={setCityInfo}
                     />}
                     {selectedTab === 'newBuildings' &&
                               <NewBuildingGrid
@@ -167,17 +168,15 @@ const CityManager = ({ cityId, cityRankInput, primaryColor, secondaryColor, onCl
                     {selectedTab === 'City' && <CityInfoGrid
                         cityUpgradeInfo={cityUpgradeInfo}
                         onRowMouseOver={onRowMouseOver}
-                        selectedImage={selectedImage}
                         refresh={cityContextLoader}
                         setBuildings={setBuildings}
                         refreshResources={() => initializeResources(dispatch)}
-                        setCityUpgradeInfo={setCityUpgradeInfo}
                         setUpgradeCostMap={setUpgradeCostMap}
-                        setSelectedClick={setSelectedClick}
-                        selectedClick={selectedClick}
-                        CityRank = {cityRank}
                         cityId = {cityId}
+                        setCityUpgradeInfo={setCityUpgradeInfo}
                         upgradeCost={cityUpgradeInfo}
+                        cityInfo = {cityInfo}
+                        setCityInfo = {setCityInfo}
                         cityUpgradeTimer={cityUpgradeTimer}
                         setCityUpgradeTimer={setCityUpgradeTimer}
                     />

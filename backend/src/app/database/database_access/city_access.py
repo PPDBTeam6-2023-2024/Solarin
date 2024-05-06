@@ -1,4 +1,7 @@
 import math
+from typing import Tuple, Any, Sequence
+
+from sqlalchemy import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .resource_access import ResourceAccess
@@ -153,6 +156,12 @@ class CityAccess(DatabaseAccess):
         return cost_map
 
     async def get_city_upgrade_cost(self, city_id: int):
+        """
+        Returns the upgrade cost of a city,
+        the remaining update time,
+        and a boolean indicating whether the user has sufficient resources to upgrade the city
+        return: (upgrade cost, upgrade time remaining, can_upgrade: bool)
+        """
         get_city_level = select(City).where(City.id == city_id)
         city = await self.session.execute(get_city_level)
         city : City= city.first()[0]
@@ -170,6 +179,34 @@ class CityAccess(DatabaseAccess):
         result = PropertyUtility.get_upgrade_city_costs(base_time, base_upgrade_cost, city_level)
 
         return result[0], result[1], can_upgrade
+
+    async def get_city_info(self, city_id: int) -> tuple[int, str, list[tuple[str, float]], int]:
+        """
+        get the following city info:
+        - population_size: size of the city population
+        - region_type: type of region the city is located in
+        - region_buffs: buffs applied to production based on the region type, a region buff is expressed as a tuple (resource buffed, modifier)
+        - city_rank: the rank of a city
+        :param: city_id: id of the city
+        :return: (population_size: int, region_type: str, region_buffs: list[tuple[str, int]])
+        """
+        get_city_instance = Select(City).where(City.id == city_id)
+        city_instance = await self.session.execute(get_city_instance)
+        city = city_instance.first()[0]
+
+        city_region = city.region_id
+        population_size = city.population
+        city_rank = city.rank
+
+        get_region_type = Select(PlanetRegion.region_type).where(PlanetRegion.id == city_region)
+        region_type = await self.session.execute(get_region_type)
+        region_type = region_type.first()[0]
+
+        get_region_buffs = Select(ProductionRegionModifier.resource_type, ProductionRegionModifier.modifier).where(ProductionRegionModifier.region_type == region_type)
+        region_buffs = await self.session.execute(get_region_buffs)
+        region_buffs = region_buffs.all()
+
+        return population_size, region_type, region_buffs, city_rank
 
     async def upgrade_city(self, user_id: int, city_id: int) -> bool:
         """

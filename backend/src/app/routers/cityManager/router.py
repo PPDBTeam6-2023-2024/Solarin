@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, List, Tuple
 from .schemas import BuildingInstanceSchema, CitySchema, BuildingTypeSchema, CostSchema, Confirmation, \
-    ResourceStockSchema, StockOverViewSchema, CityInfoSchema
+    ResourceStockSchema, StockOverViewSchema, CityInfoSchema, CityData
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 
@@ -11,8 +11,8 @@ from .city_checker import CityChecker
 router = APIRouter(prefix="/cityManager", tags=["City"])
 
 
-@router.get("/buildings/{city_id}", response_model=Tuple[List[BuildingInstanceSchema],CityInfoSchema])
-async def get_buildings(
+@router.get("/get_city_data/{city_id}", response_model=CityData)
+async def get_city_and_building_info(
         user_id: Annotated[int, Depends(get_my_id)],
         city_id: int,
         db=Depends(get_db)
@@ -46,11 +46,15 @@ async def get_buildings(
         buildings_schemas.append(schema)
 
     """
+    Get city info
+    """
+    city_info = await data_access.CityAccess.get_city_info(city_id)
+    city_info_schema = CityInfoSchema(population=city_info[0], region_type=city_info[1], region_buffs=city_info[2], rank=city_info[3], remaining_update_time=remaining_time_update_time)
+
+    """
     Return the list of BuildingInstanceSchema instances
     """
-
-
-    return buildings_schemas,CityInfoSchema(remaining_update_time=remaining_time_update_time)
+    return CityData(city = city_info_schema, buildings = buildings_schemas)
 
 
 @router.get("/cities/{planet_id}", response_model=List[CitySchema])

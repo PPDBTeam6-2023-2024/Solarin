@@ -31,9 +31,7 @@ async def get_political_stance(user_id: Annotated[int, Depends(get_my_id)], db=D
     return result
 
 
-router.post("/update_politics")
-
-
+@router.post("/update_politics")
 async def update_politics(user_id: Annotated[int, Depends(get_my_id)], stance: PoliticalStanceInput, db=Depends(get_db)):
     """
     update the political values of a user

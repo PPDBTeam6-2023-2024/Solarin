@@ -274,7 +274,7 @@ class UserAccess(DatabaseAccess):
 
         get_query = Select(PoliticalStance).where(PoliticalStance.user_id == user_id)
         result = await self.session.execute(get_query)
-        result = result.first()
+        result = result.scalars().first()
         return result
 
     async def update_politics(self, user_id: int, stance: dict):

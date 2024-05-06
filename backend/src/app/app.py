@@ -15,7 +15,7 @@ from .routers.trading.router import router as trade_router
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
 from .database.models import *
-from .routers.generalRouter import router as general_router
+from .routers.generalRouter.router import router as general_router
 
 def init_app(config: APIConfig) -> FastAPI:
     app = FastAPI(title="SolarinAPI", root_path="/api")

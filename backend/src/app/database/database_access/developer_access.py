@@ -191,3 +191,9 @@ class DeveloperAccess(DatabaseAccess):
 
         self.session.add(AssociatedWith(planet_type=planet_type, region_type=region_type))
         await self.session.flush()
+
+    async def create_general(self, general_name: str):
+        general = Generals(name=general_name)
+        self.session.add(general)
+        await self.session.flush()
+

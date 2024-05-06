@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 from ...routers.authentication.schemas import BattleStats
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from ...routers.buildingManagement.schemas import TrainingQueueEntry
+from ...routers.generalRouter.schemas import GeneralScheme
 from datetime import timedelta
 from ....logic.formula.compute_properties import *
 
@@ -365,6 +366,10 @@ class Generals(Base):
         """
         return hash(self.name)
 
+    def to_scheme(self):
+        scheme = GeneralScheme(name= self.name)
+        return scheme
+
 
 class ArmyHasGeneral(Base):
     """
@@ -373,6 +378,8 @@ class ArmyHasGeneral(Base):
     general_name: name of the general
     army_id: id of the army the general is associated with
     """
+    __tablename__ = 'armyHasGeneral'
+
     general_name = Column(String, ForeignKey("generals.name", deferrable=True, initially='DEFERRED',
                                              ondelete="cascade"), nullable=False)
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),

@@ -129,5 +129,15 @@
     {"name":  "mothership", "spec": "space", "base-points":
     {"AP":  0, "DP":  0, "CAP":  0, "CDP":  0, "PBR": 0, "MS": 0}
     }
+  ],
+  "generals": [
+    {"name": "brave"},
+    {"name": "sad"},
+    {"name": "angry"},
+    {"name": "confused"},
+    {"name": "empathic"},
+    {"name": "afraid"},
+    {"name": "calm"},
+    {"name": "emotionless"}
   ]
 }

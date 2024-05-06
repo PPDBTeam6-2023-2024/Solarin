@@ -21,6 +21,7 @@ class CreateTuples:
         await self.create_wall_types(types["walls"])
         await self.create_production_building_types(types["production-buildings"])
         await self.__session.commit()
+        await self.create_general_types(types["generals"])
 
     async def create_associations(self, associations: list[dict[str, Any]]):
         for association in associations:
@@ -98,3 +99,10 @@ class CreateTuples:
                                                          battle_stats.city_attack, battle_stats.city_defense,
                                                          battle_stats.recovery, battle_stats.speed])
                 await self.__dev.set_troop_type_cost(troop_type["name"], [("SOL", base_cost)])
+
+    async def create_general_types(self, general_types: list[dict[str, str]]):
+        """
+        Add general types to the database
+        """
+        for general_type in general_types:
+            await self.__dev.create_general(general_type["name"])

@@ -146,6 +146,7 @@ class TrainingAccess(DatabaseAccess):
             when entry done, remove training queue entry
             """
             if diff < 0:
+                print("deleting: ", queue_entry)
                 await self.session.delete(queue_entry)
 
         """

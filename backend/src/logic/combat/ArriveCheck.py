@@ -1,5 +1,5 @@
 from ...app.database.database_access.data_access import DataAccess
-from ...app.database.models import AttackArmy, AttackCity, EnterCity, MergeArmies
+from ...app.database.models import AttackArmy, AttackCity, EnterCity, MergeArmies, EnterPlanet
 from .ArmyCombat import ArmyCombat
 from ...app.routers.cityManager.city_checker import CityChecker
 
@@ -24,7 +24,6 @@ class ArriveCheck:
         """
         Checks if an army is attacking something, and if so check if he arrived at his target location
         """
-
         target = await da.ArmyAccess.will_on_arrive(army_id)
 
         """
@@ -68,6 +67,21 @@ class ArriveCheck:
                 await da.ArmyAccess.enter_city(target.target_id, army_id)
             else:
                 await da.ArmyAccess.merge_armies(army_in_city, army_id)
+
+        if isinstance(target, EnterPlanet):
+            """
+            Enters the planet when it arrives
+            """
+
+            """
+            When army is already in planet, don't add again
+            """
+            print("enter planet on arrive")
+            armies_on_planet = await da.ArmyAccess.get_armies_on_planet(target.target_id)
+            if army_id in armies_on_planet:
+                return
+
+            await da.ArmyAccess.enter_planet(target.target_id, army_id)
 
         if isinstance(target, MergeArmies):
             """

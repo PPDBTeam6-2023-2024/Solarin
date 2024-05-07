@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useRef} from "react";
+import React, {useContext, useState, useEffect, useRef, useCallback} from "react";
 import {UserInfoContext} from "../Context/UserInfoContext";
 import {Html, useContextBridge} from "@react-three/drei";
 import {SocketContext} from "../Context/SocketContext";
@@ -12,11 +12,11 @@ import {MathUtils} from "three"
 
 // spaceship model credit: "Ameaterasu" (https://skfb.ly/oTpuL) by gavinpgamer1
 
-const Fleet = ({fleet, isMoveMode, toggleMoveMode, mapOnClick}) => {
+const Fleet = ({onClick, fleet, decideMoving, movingSelected, toggleMoveMode}) => {
     const fleetRef = useRef()
+    const [clicked, setClicked] = useState(false)
     const [userInfo, setUserInfo] = useContext(UserInfoContext);
 
-    const [clicked, setClicked] = useState(false)
     const [detailsOpen, setDetailsOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
 
@@ -34,35 +34,51 @@ const Fleet = ({fleet, isMoveMode, toggleMoveMode, mapOnClick}) => {
         const currentY = sourcePosition.y + (targetPosition.y - sourcePosition.y) * percentComplete
         return {x: currentX, y: currentY}
     }
-
-    useEffect(() => {}, [isMoveMode, toggleMoveMode])
-
-    useFrame(() => {
-        const arrivalTime = new Date(fleet.arrivalTime).getTime()
-        const departureTime = new Date(fleet.departureTime).getTime()
+    useEffect(() => {
         const currentPos = lerp({
             sourcePosition: {x: fleet.x, y: fleet.y}, targetPosition: {x: fleet.to_x, y: fleet.to_y},
-            arrivalTime: arrivalTime, departureTime: departureTime
+            arrivalTime:  new Date(fleet.arrivalTime).getTime(), departureTime: new Date(fleet.departureTime).getTime()
         })
-        if(fleet.to_x !== currentPos.x || fleet.to_y !== currentPos.y) {
+        fleetRef.current.rotation.y = Math.atan2(fleet.to_x - currentPos.x, fleet.to_y - currentPos.y) + Math.PI
+    }, [])
+
+    useFrame(() => {
+        const currentPos = lerp({
+            sourcePosition: {x: fleet.x, y: fleet.y}, targetPosition: {x: fleet.to_x, y: fleet.to_y},
+            arrivalTime:  new Date(fleet.arrivalTime).getTime(), departureTime: new Date(fleet.departureTime).getTime()
+        })
+        const notArrived = fleet.to_x !== currentPos.x || fleet.to_y !== currentPos.y
+        if(notArrived) {
             const dx = fleet.to_x - currentPos.x;
             const dy = fleet.to_y - currentPos.y;
             const angle = Math.atan2(dx, dy) + Math.PI
 
-            fleetRef.current.rotation.y = MathUtils.lerp(fleetRef.current.rotation.y, angle, 0.0005)
+            fleetRef.current.rotation.y = MathUtils.lerp(fleetRef.current.rotation.y, angle, 0.05)
         }
-        fleetRef.current.position.set(currentPos.x, 0, currentPos.y)
+        fleetRef.current.position.set(currentPos.x*50, 0, currentPos.y*50)
     })
+    const [isHovering, setIsHovering] = useState(false)
+    useEffect(() => {
+        if(isHovering && decideMoving) {
+        if(fleet.owner !== userInfo.id) document.body.style.cursor = "url(/images/cursors/attack_cursor.png) 1 1, auto"
+        else if(!movingSelected) document.body.style.cursor = "url(/images/cursors/merge_cursor.png) 1 1, auto"
+        }
+        else document.body.style.cursor = "auto"
+    }, [isHovering])
     return (
-        <animated.mesh key={fleet.id} onClick={(e) => {setClicked(!clicked);mapOnClick(e)}} ref={fleetRef}>
+        <animated.mesh name="fleet" onPointerLeave={() => setIsHovering(false)} onPointerEnter={() => setIsHovering(true)}
+                        onClick={(e) => {
+                           if(!decideMoving) setClicked(!clicked)
+                            else onClick(e, fleet.id)
+                       }} ref={fleetRef}>
             <pointLight intensity={100} scale={2}/>
-            <Gltf src={"/3dmodels/ameaterasu.glb"} scale={0.1} receiveShadow />
+            <Gltf src={"/3dmodels/ameaterasu.glb"} scale={0.025} receiveShadow />
             {clicked &&
                 <Html>
                     <Box className="bg-black rounded-xl border border-white">
                         <List>
                             {fleet.owner === userInfo.id && <ListItemButton
-                                onClick={() => toggleMoveMode(fleet.id, fleetRef.current.position)}>{!isMoveMode() ? 'Move To' : "Cancel Move To"}</ListItemButton>}
+                                onClick={() => toggleMoveMode(fleet.id, fleetRef.current.position)}>{!movingSelected ? 'Move To' : "Cancel Move To"}</ListItemButton>}
                             <ListItemButton className="whitespace-nowrap" onClick={(e) => {
                                 setDetailsOpen(!detailsOpen);
                                 setAnchorEl(e.currentTarget)

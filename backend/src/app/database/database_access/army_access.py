@@ -349,6 +349,7 @@ class ArmyAccess(DatabaseAccess):
         attack_object = AttackArmy(army_id=attack_id, target_id=target_id)
         self.session.add(attack_object)
         await self.session.flush()
+        print("added attack army object:", attack_object)
 
     async def attack_city(self, attack_id: int, target_id: int):
         """
@@ -388,11 +389,11 @@ class ArmyAccess(DatabaseAccess):
         param: army_id: the id of the army that is planning to attack
         return: an SQL attackArmy, attackCity, mergeArmies, enterCity object or None in case we don't attack anything
         """
-
+        print("trying to get will on arrive", army_id)
         get_on_arrive = Select(OnArrive).where(OnArrive.army_id == army_id)
         results = await self.session.execute(get_on_arrive)
         result = results.scalar_one_or_none()
-
+        print("result: ", result)
         """
         In case the army does nothing special when it arrives
         """
@@ -533,8 +534,8 @@ class ArmyAccess(DatabaseAccess):
         get_planet = Select(Planet).where(Planet.id == army.planet_id)
         planet = await self.session.execute(get_planet)
         planet = planet.scalar_one()
-        new_x = planet.x+0.025
-        new_y = planet.y+0.025
+        new_x = planet.x-0.01
+        new_y = planet.y-0.01
         army.x = new_x
         army.y = new_y
         army.to_x = new_x
@@ -551,7 +552,7 @@ class ArmyAccess(DatabaseAccess):
 
 
 
-    async def enter_planet(self, planet_id: int, army_id: int, to_x: float, to_y: float):
+    async def enter_planet(self, planet_id: int, army_id: int):
         """
        let an army enter a planet
 
@@ -565,12 +566,13 @@ class ArmyAccess(DatabaseAccess):
         army = await self.session.execute(get_army)
         army = army.scalar_one()
         army.planet_id = planet_id
-        army.x = to_x
-        army.y = to_y
+        # to do maybe
+        army.x = 0.5
+        army.y = 0.5
         await self.session.commit()
         await self.session.refresh(army)
         await self.session.flush()
-        await self.change_army_direction(army.user_id, army.id, to_x, to_y)
+        await self.change_army_direction(army.user_id, army.id, 0.5, 0.5)
         await self.session.commit()
         await self.session.flush()
 
@@ -678,7 +680,7 @@ class ArmyAccess(DatabaseAccess):
         self.session.add(merge_object)
         await self.session.flush()
 
-    async def add_enter_planet(self, army_id: int, target_id: int, to_x: float, to_y: float):
+    async def add_enter_planet(self, army_id: int, target_id: int):
         """
         This function will make sure the database keeps in mind that an army has the intention to enter a planet
         when it arrives at its position
@@ -688,9 +690,14 @@ class ArmyAccess(DatabaseAccess):
         param: to_x: the x coordinate of the planet that the army will enter
         param: to_y: the y coordinate of the planet that the army will enter
         """
-        enter_object = EnterPlanet(army_id=army_id, target_id=target_id, x=to_x, y=to_y)
+        # change x and y later maybe?
+        enter_object = EnterPlanet(army_id=army_id, target_id=target_id, x=0.5, y=0.5)
         self.session.add(enter_object)
         await self.session.flush()
+        print("added ", enter_object)
+        select = Select(EnterPlanet).where(EnterPlanet.army_id == army_id)
+        result = await self.session.execute(select)
+        print(result.scalars())
 
     async def add_enter_city(self, army_id: int, target_id: int):
         """

@@ -62,7 +62,6 @@ class PlanetSocketActions:
         """
         Check that an army is not planning to attack/merge with itself
         """
-        print("change directions", data)
         if data.get("on_arrive", False) and \
                 (data["target_id"] != army_id or data["target_type"] in ("attack_city", "enter", "enter_planet")):
             """
@@ -93,7 +92,6 @@ class PlanetSocketActions:
                     self.check_army_combat(army_id, (army.arrival_time - datetime.datetime.utcnow()).total_seconds()))
 
         if changed:
-            print("send change direction")
             await self.connection_pool.broadcast({
                 "request_type": "change_direction",
                 "data": army.to_dict()

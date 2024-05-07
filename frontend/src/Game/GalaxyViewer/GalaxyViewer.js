@@ -10,10 +10,11 @@ import {ReactReduxContext} from "react-redux";
 
 import Fleet from './Fleet'
 import Planet from './Planet'
+import {PlanetListContext} from "../Context/PlanetListContext";
 
 function Scene(props) {
-    const [userInfo, setUserInfo] = useContext(UserInfoContext);
     const [socket, setSocket] = useContext(SocketContext)
+
 
     const [fleetsInSpace, setFleetsInSpace] = useState([])
 
@@ -85,7 +86,6 @@ function Scene(props) {
 
 
     useEffect(() => {
-        console.log("fetch useeffect")
         const fetchPublicPlanets = async() => {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/public`)
             setPublicPlanets(response.data)
@@ -123,26 +123,11 @@ function Scene(props) {
                 army_id: fleet.id,
             };
             const merged_data = {...data_json, ...action_json}
-            console.log("send", merged_data)
             await socket.send(JSON.stringify(merged_data))
         })
         setFleetsMoveMode([])
     }
-    const fleetOnClick = (e, fleetId) => {
-        e.stopPropagation()
-        if(fleetId !== userInfo.id) moveTo(e,
-            {
-                on_arrive: true,
-                target_type: "attack_army",
-                target_id: fleetId
-            })
-        else moveTo(e, {
-            on_arrive: true,
-            target_type: "merge",
-            target_id: fleetId
-        })
-    }
-    const ContextBridge = useContextBridge(SocketContext, UserInfoContext, PlanetIdContext, ReactReduxContext);
+    const ContextBridge = useContextBridge(SocketContext, UserInfoContext,  ReactReduxContext, PlanetListContext);
     return (
         <>
             <Stars/>
@@ -170,7 +155,7 @@ function Scene(props) {
                 {
                     fleetsInSpace.map((fleet,i) => {
                         return (
-                            <Fleet key={i} fleet={fleet} onClick={fleetOnClick} toggleMoveMode={toggleMoveMode} decideMoving={fleetsMoveMode.length > 0} movingSelected={isMoveMode(fleet.id)}/>
+                            <Fleet key={i} fleet={fleet} moveTo={moveTo} toggleMoveMode={toggleMoveMode} decideMoving={fleetsMoveMode.length > 0} movingSelected={isMoveMode(fleet.id)}/>
                         )
                     })
                 }
@@ -195,12 +180,12 @@ function Scene(props) {
 }
 
 function ForwardCanvas(props) {
-    const ContextBridge = useContextBridge(SocketContext, UserInfoContext, PlanetIdContext, ReactReduxContext);
+    const ContextBridge = useContextBridge(SocketContext, UserInfoContext,  ReactReduxContext, PlanetListContext);
     return (
         <Canvas
         flat shadows style={{position: "fixed", backgroundColor: "#0a0a0a"}} scene={{background: "black"}}>
             <ContextBridge>
-                <Scene setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}/>
+                <Scene planetListIndex={props.planetListIndex} setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}/>
             </ContextBridge>
       </Canvas>
     )
@@ -227,7 +212,7 @@ function GalaxyViewer(props) {
     return (
         <PlanetIdContext.Provider value={0}>
         <SocketContext.Provider value={[socket, setSocket]}>
-            <ForwardCanvas setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}/>
+            <ForwardCanvas planetListIndex={props.planetListIndex} setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}/>
         </SocketContext.Provider>
         </PlanetIdContext.Provider>
     )

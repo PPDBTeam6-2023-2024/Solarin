@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useRef, useCallback} from "react";
+import React, {useContext, useState, useEffect, useRef} from "react";
 import {UserInfoContext} from "../Context/UserInfoContext";
 import {Html, useContextBridge} from "@react-three/drei";
 import {SocketContext} from "../Context/SocketContext";
@@ -12,10 +12,11 @@ import {MathUtils} from "three"
 
 // spaceship model credit: "Ameaterasu" (https://skfb.ly/oTpuL) by gavinpgamer1
 
-const Fleet = ({onClick, fleet, decideMoving, movingSelected, toggleMoveMode}) => {
+const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) => {
     const fleetRef = useRef()
     const [clicked, setClicked] = useState(false)
     const [userInfo, setUserInfo] = useContext(UserInfoContext);
+
 
     const [detailsOpen, setDetailsOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
@@ -65,12 +66,26 @@ const Fleet = ({onClick, fleet, decideMoving, movingSelected, toggleMoveMode}) =
         }
         else document.body.style.cursor = "auto"
     }, [isHovering])
+    const fleetOnClick = (e) => {
+        e.stopPropagation()
+        if(!decideMoving) setClicked(!clicked)
+        else {
+            if (fleet.owner !== userInfo.id) moveTo(e,
+                {
+                    on_arrive: true,
+                    target_type: "attack_army",
+                    target_id: fleet.id
+                })
+            else moveTo(e, {
+                on_arrive: true,
+                target_type: "merge",
+                target_id: fleet.id
+            })
+        }
+    }
     return (
         <animated.mesh name="fleet" onPointerLeave={() => setIsHovering(false)} onPointerEnter={() => setIsHovering(true)}
-                        onClick={(e) => {
-                           if(!decideMoving) setClicked(!clicked)
-                            else onClick(e, fleet.id)
-                       }} ref={fleetRef}>
+                        onClick={fleetOnClick} ref={fleetRef}>
             <pointLight intensity={100} scale={2}/>
             <Gltf src={"/3dmodels/ameaterasu.glb"} scale={0.025} receiveShadow />
             {clicked &&

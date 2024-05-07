@@ -76,7 +76,6 @@ class ArriveCheck:
             """
             When army is already in planet, don't add again
             """
-            print("enter planet on arrive")
             armies_on_planet = await da.ArmyAccess.get_armies_on_planet(target.target_id)
             if army_id in armies_on_planet:
                 return

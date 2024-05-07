@@ -257,9 +257,17 @@ class BuildingAccess(DatabaseAccess):
 
         hours = delta.total_seconds()/3600
 
+        """
+        calculate and apply the political modifier
+        default value = 1
+        """
+
         stance = await UserAccess(self.session).get_politics(user_id)
-        production_modifier = ((stance.anarchism * 10) + (stance.democratic * 3) - (stance.theocracy * 10) - (stance.technocracy * 5) + (stance.corporate_state * 20)) /100
-        production_modifier += 1
+
+        production_modifier = 1
+        if stance:
+            production_modifier = ((stance.anarchism * 10) + (stance.democratic * 3) - (stance.theocracy * 10) - (stance.technocracy * 5) + (stance.corporate_state * 20)) /100
+            production_modifier += 1
         """
         Add the resources to user taking into account the max capacity
         """

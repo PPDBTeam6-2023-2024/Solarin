@@ -15,13 +15,14 @@ class CreateTuples:
         await self.create_region_types(types["regions"])
         await self.create_planet_types(types["planets"])
         await self.create_associations(types["associations"])
+        await self.create_stat_types(types["stats"])
         await self.create_troop_types(types["units"])
         await self.create_barracks_types(types["barracks"])
         await self.create_tower_types(types["towers"])
         await self.create_wall_types(types["walls"])
         await self.create_production_building_types(types["production-buildings"])
-        await self.__session.commit()
         await self.create_general_types(types["generals"])
+        await self.__session.commit()
 
     async def create_associations(self, associations: list[dict[str, Any]]):
         for association in associations:
@@ -100,9 +101,20 @@ class CreateTuples:
                                                          battle_stats.recovery, battle_stats.speed])
                 await self.__dev.set_troop_type_cost(troop_type["name"], [("SOL", base_cost)])
 
-    async def create_general_types(self, general_types: list[dict[str, str]]):
+    async def create_general_types(self, general_types: list):
         """
         Add general types to the database
         """
         for general_type in general_types:
             await self.__dev.create_general(general_type["name"])
+
+            for modifier in general_type["modifiers"]:
+                await self.__dev.create_general_modifier(general_type["name"], modifier["stat"],
+                                                         modifier["amount"], modifier["political_stance"])
+
+    async def create_stat_types(self, stats_types: list[str]):
+        """
+        Define the types of army stats
+        """
+        for s in stats_types:
+            await self.__dev.create_stat(s)

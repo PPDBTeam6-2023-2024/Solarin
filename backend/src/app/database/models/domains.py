@@ -37,6 +37,36 @@ class Decimal(TypeDecorator):
         return value
 
 
+class Percentage(TypeDecorator):
+
+    """
+    This class is a domain for values that are in the range of [0,1]
+    """
+
+    impl = Float(precision=53)
+    cache_ok = True
+
+    @property
+    def python_type(self) -> Type[Any]:
+        return FLOAT
+
+    def process_literal_param(self, value, dialect: Dialect) -> str:
+        return value
+
+    def process_bind_param(self, value, dialect):
+        """
+        SQL Alchemy has no native support for adding checks to Domains, so
+        we check manually if the value is between 0 and 1.
+        """
+        if not (-1 <= value <= 1):
+            raise DomainException("Percentage", "value in range [-1, 1]")
+
+        return value
+
+    def process_result_value(self, value, dialect):
+        return value
+
+
 class Coordinate(Decimal):
     """
     This class is a domain for values that are in the range of [0,1]

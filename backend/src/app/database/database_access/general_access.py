@@ -96,5 +96,18 @@ class GeneralAccess(DatabaseAccess):
         await self.session.execute(delete_general_assignment)
         await self.session.flush()
 
+    async def get_modifiers(self, general_name: str):
+        """
+        Get the modifiers corresponding to a specific general
+        :param: general_name: name of the general whose modifiers we want
+
+        :return: List of objects of 'GeneralModifier' object
+        """
+
+        get_modifiers = Select(GeneralModifier).where(GeneralModifier.general_name == general_name)
+        modifiers = await self.session.execute(get_modifiers)
+        modifiers = modifiers.scalars().all()
+
+        return modifiers
 
 

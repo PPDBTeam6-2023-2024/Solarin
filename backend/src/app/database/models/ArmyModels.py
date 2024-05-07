@@ -10,9 +10,39 @@ from ...routers.generalRouter.schemas import GeneralScheme
 from datetime import timedelta
 from ....logic.formula.compute_properties import *
 
-from .domains import Coordinate, PositiveInteger
+from .domains import Coordinate, PositiveInteger, Percentage
 
 from ..models import *
+
+
+class Stat(Base):
+    """
+    Table for all types of stats of an army
+    name: name of the stat
+    """
+
+    __tablename__ = 'stat'
+    name = Column(String, primary_key=True)
+
+
+class TroopHasStat(Base):
+    """
+    Association between stats and troop type
+
+    name: name of the stat
+    value: stat base value for this troop
+    troop_type: type troop associated with this stat
+    """
+
+    __tablename__ = 'troopHasStat'
+    stat = Column(String, ForeignKey("stat.name", deferrable=True, initially='DEFERRED',
+                                     ondelete="cascade"), primary_key=True)
+
+    value = Column(PositiveInteger, nullable=False)
+    troop_type = Column(String, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                        primary_key=True)
+
+    troop = relationship("TroopType", back_populates="stats", lazy='joined')
 
 
 class TrainingQueue(Base):
@@ -70,32 +100,25 @@ class TroopType(Base):
     speed: speed of a unit
     required_rank: rank of a building needed to train this unit
     """
+
     __tablename__ = 'troopType'
     type = Column(TEXT, primary_key=True)
     training_time = Column(PositiveInteger, nullable=False)
-    attack = Column(Integer, nullable=False)
-    defense = Column(Integer, nullable=False)
-    city_attack = Column(Integer, nullable=False)
-    city_defense = Column(Integer, nullable=False)
-    recovery = Column(Integer, nullable=False)
-    speed = Column(Integer, nullable=False)
     required_rank = Column(PositiveInteger)
 
+    stats = relationship("TroopHasStat", back_populates="troop", lazy='joined')
+    in_consist_of = relationship("ArmyConsistsOf", back_populates="troop", lazy='select')
+
     @classmethod
-    def withBattleStats(cls, type_name: str, training_time: timedelta, battle_stats: BattleStats,
-                        required_rank: int) -> "TroopType":
+    def withData(cls, type_name: str, training_time: timedelta, battle_stats: BattleStats,
+                 required_rank: int) -> "TroopType":
         """
         Create a troop type based on the battle stats
         """
+
         return cls(
             type=type_name,
             training_time=training_time.total_seconds(),
-            attack=battle_stats.attack,
-            defense=battle_stats.defense,
-            city_attack=battle_stats.city_attack,
-            city_defense=battle_stats.city_defense,
-            recovery=battle_stats.recovery,
-            speed=battle_stats.speed,
             required_rank=required_rank
         )
 
@@ -104,14 +127,12 @@ class TroopType(Base):
         Get the stats of this unit type based on the rank and the amount of this type
         'PropertyUtility.getUnitStatsRanked', makes sure the stats depend on the rank of the unit in question
         """
-        return {"attack": PropertyUtility.getUnitStatsRanked(self.attack, rank)*amount,
-                "defense": PropertyUtility.getUnitStatsRanked(self.defense, rank)*amount,
-                "city_attack": PropertyUtility.getUnitStatsRanked(self.city_attack, rank)*amount,
-                "city_defense": PropertyUtility.getUnitStatsRanked(self.city_defense, rank)*amount,
-                "recovery": PropertyUtility.getUnitStatsRanked(self.recovery, rank)*amount,
-                "speed": PropertyUtility.getUnitStatsRanked(self.speed, rank)*amount}
+        stats_dict = {}
 
-    in_consist_of = relationship("ArmyConsistsOf", back_populates="troop", lazy='select')
+        for s in self.stats:
+            stats_dict.update({s.stat: PropertyUtility.getUnitStatsRanked(s.value, rank) * amount})
+
+        return stats_dict
 
 
 class TroopRank(Base):
@@ -384,3 +405,21 @@ class ArmyHasGeneral(Base):
                                              ondelete="cascade"), nullable=False)
     army_id = Column(Integer, ForeignKey("army.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
+
+
+class GeneralModifier(Base):
+    """
+    Stores the modifier on certain stats based on a general
+    General stat values, will also depend on the political direction of the user
+    """
+    __tablename__ = 'generalModifier'
+
+    stat = Column(String, ForeignKey("stat.name", deferrable=True, initially='DEFERRED',
+                                     ondelete="cascade"), primary_key=True)
+
+    general_name = Column(String, ForeignKey("generals.name", deferrable=True, initially='DEFERRED',
+                                             ondelete="cascade"), primary_key=True)
+
+    amount = Column(Percentage, nullable=False)
+
+    political_stance = Column(String, nullable=False)

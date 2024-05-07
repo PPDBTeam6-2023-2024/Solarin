@@ -26,6 +26,13 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.create_resource_type("SOL")
         await da.DeveloperAccess.create_resource_type("TF")
 
+        await da.DeveloperAccess.create_stat("attack")
+        await da.DeveloperAccess.create_stat("defense")
+        await da.DeveloperAccess.create_stat("city_attack")
+        await da.DeveloperAccess.create_stat("city_defense")
+        await da.DeveloperAccess.create_stat("recovery")
+        await da.DeveloperAccess.create_stat("speed")
+
         """
         Creates 50 users
         """

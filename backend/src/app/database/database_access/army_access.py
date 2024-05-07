@@ -395,7 +395,7 @@ class ArmyAccess(DatabaseAccess):
             ArmyConsistsOf.army_id == army_id)
 
         results = await self.session.execute(get_troops)
-        army_troops = results.all()
+        army_troops = results.unique().all()
 
         """
         A dictionary that has all the stats of an army

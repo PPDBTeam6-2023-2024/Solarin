@@ -38,20 +38,30 @@ function GeneralView({armyId, generalInfo, onChangeGeneral}) {
         <>
             {!generalSelectorMenu &&
                 <div className="GeneralWindow" onClick={() => {setGeneralSelectorMenu(true)}}>
-                    <div style={{"width": "50%", "display": "inline-block"}}>
+
+
                     {/*Display the general*/}
-                    {generalInfo !== null &&
-                        <img src={(`/images/general_images/${generalsJson[generalInfo.general_data.name]["icon"]}`)}
-                             draggable={false}
-                             unselectable="on"/>
+                    {generalInfo.general_data !== null &&
+                        <>
+                            <span style={{"fontSize": "150%", "color": "gold"}}>General {generalInfo.general_data.name}</span>
+                            <div style={{"width": "50%", "display": "inline-block"}}>
+
+                            <img src={(`/images/general_images/${generalsJson[generalInfo.general_data.name]["icon"]}`)}
+                                 draggable={false}
+                                 unselectable="on"/>
+                            </div>
+                        </>
+
+
+
                     }
-                    {generalInfo === null &&
+                    {generalInfo.general_data === null &&
                         <div>
                             Click here to add a General
                         </div>
                     }
 
-                    </div>
+
                     {generalInfo.modifiers.map((modifier, index) =>
                         <div>
                             <GeneralViewStatEntry key={index} stat_name={modifier.stat} stat_value={modifier.modifier}

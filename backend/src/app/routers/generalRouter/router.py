@@ -1,10 +1,12 @@
+import typing
+
 from fastapi import APIRouter, Depends, Request
 
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, List
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
-
+from .schemas import GeneralScheme
 
 router = APIRouter(prefix="/general", tags=["General"])
 
@@ -25,7 +27,13 @@ async def get_cities(
 
     data_access = DataAccess(db)
     generals = await data_access.GeneralAccess.get_available_generals(user_id)
-    generals = [general.to_scheme() for general in generals]
+    generals = [general.to_scheme().dict() for general in generals]
+
+    for g in generals:
+        modifiers = await data_access.GeneralAccess.get_modifiers(g["name"])
+        modifiers = [m.to_scheme() for m in modifiers]
+        g.update({"modifiers": modifiers})
+
     return generals
 
 

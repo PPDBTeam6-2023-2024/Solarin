@@ -60,6 +60,11 @@ async def create_building(
 
     if not building_id:
         raise HTTPException(status_code=400, detail="Building could not be created.")
+    
+    if building_type == "space-dock":
+        planet = await data_access.PlanetAccess.get_planet_from_city_id(city_id)
+        planet.visible = True
+        await data_access.commit()
 
 
 @router.post("/collect/{building_id}", response_model=Confirmation)

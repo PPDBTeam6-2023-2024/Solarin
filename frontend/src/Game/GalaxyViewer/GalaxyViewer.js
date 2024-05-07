@@ -1,27 +1,106 @@
-import { useLoader, Canvas } from '@react-three/fiber'
+import { Canvas, useLoader} from '@react-three/fiber'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
-import { OrbitControls } from '@react-three/drei'
-import { useState} from 'react'
-import {useSpring, animated} from '@react-spring/three'
+import { OrbitControls, Bounds, useBounds, Stars, Html} from '@react-three/drei'
+import { useState, useRef, useEffect, Fragment } from 'react'
+import {animated} from '@react-spring/three'
+import { SelectiveBloom, EffectComposer } from '@react-three/postprocessing'
+import axios from 'axios'
+
 
 import {View} from "../Context/ViewModeContext"
 
+// inspiration: https://codesandbox.io/p/sandbox/bounds-and-makedefault-rz2g0?file=%2Fsrc%2FApp.js%3A38%2C1-45%2C2
+
+const SelectToZoom = ({ children, planetId, setPlanetSelected}) => {
+  const api = useBounds()
+  const pointerMissed = (e) => {
+    setPlanetSelected(null)
+    return e.button === 0 && api.refresh().fit()
+  }
+  return (
+    <group onClick={(e) => (setPlanetSelected(planetId), e.stopPropagation(), e.delta <= 2 && api.refresh(e.object).fit())} onPointerMissed={pointerMissed}>
+      {children}
+    </group>
+  )
+}
+
 
 function GalaxyViewer(props) {
-    const planetMap = useLoader(TextureLoader, '/images/Planets/example.png')
-    const [isHovering, setIsHovering] = useState(false)
-    const {scale} = useSpring({scale: (isHovering) ? [1.05,1.05,1.05]: [1,1,1]})
+    const [publicPlanets, setPublicPlanets] = useState([])
+    const [privatePlanets, setPrivatePlanets] = useState([])
+    const solarinRef = useRef(null)
+    useEffect(() => {
+        const fetchPublicPlanets = async() => {
+          const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/public`)
+          setPublicPlanets(response.data)
+        }
+        const fetchPrivatePlanets = async() => {
+          const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/private`)
+          console.log(response.data)
+          setPrivatePlanets(response.data)
+        }
+        fetchPublicPlanets()
+        fetchPrivatePlanets()
+
+    }, [])
+    const [isHovering, setIsHovering] = useState([])
+    const [planetSelected, setPlanetSelected] = useState(null)
+    const planetImages = {
+      "terrestrial": useLoader(TextureLoader, "/images/Planets/terrestrial.png"),
+      "tropical": useLoader(TextureLoader, "/images/Planets/tropical.png"),
+      "desert": useLoader(TextureLoader, "/images/Planets/desert.png"),
+      "arctic": useLoader(TextureLoader, "/images/Planets/arctic.png")
+    }
+    /*const getScale = (id) => {
+      const {scale} = useSpring({scale: (isHovering.find((id) => id == )) ? [1.05,1.05,1.05]: [1,1,1]})
+      return scale
+    }*/
     return (
-        <Canvas style={{position: "fixed"}}>
-        <ambientLight intensity={(isHovering) ? 1.1 : 1} />
-        <OrbitControls autoRotate autoRotateSpeed={0.1} enableZoom={false} enablePan={false} enableRotate/>
+      <>
+        <Canvas style={{position: "fixed", backgroundColor: "#0a0a0a"}} scene={{background: "black"}}>
+        <Stars/>
+        <ambientLight intensity={0.9}/>
 
-        <animated.mesh scale={scale} onPointerEnter={() => setIsHovering(true)} onPointerLeave={() => setIsHovering(false)} onDoubleClick={() => {props.setViewMode(View.PlanetView)}}>
-        <sphereGeometry args={[2]}/>
-        <meshStandardMaterial map={planetMap}/>
-        </animated.mesh>
-
+            {/*Display a sun in the center*/}
+        <mesh ref={solarinRef} position={[0,0,0]} scale={5}>
+        <EffectComposer multisampling={1} resolutionScale={0.1}>
+          <SelectiveBloom selection={solarinRef} intensity={0.3} luminanceThreshold={0.1} luminanceSmoothing={0.1} />
+        </EffectComposer>
+          <sphereGeometry args={[2]}/>
+          <meshStandardMaterial emissive="white" emissiveIntensity={1} toneMapped={false}/>
+          </mesh>
+        <Bounds fit clip observe margin={1.2}>
+            {/*Display the planets in the galaxy view*/}
+          { publicPlanets.map((planet) => {
+            return (
+              <Fragment key={planet.id}>
+              <SelectToZoom setPlanetSelected={setPlanetSelected} planetId={planet.id}>
+              <animated.mesh position={[50*planet.x,0, 50*planet.y]} onPointerEnter={() => setIsHovering([...isHovering, planet.id])} onPointerLeave={() => setIsHovering(isHovering.filter(id => id !== planet.id))} onDoubleClick={() => {if(privatePlanets.find((privatePlanet) => privatePlanet.id === planet.id)) {props.changePlanetId(planet.id); props.setViewMode(View.PlanetView)}}}>
+              <sphereGeometry args={[2]}/>
+              <meshStandardMaterial map={planetImages[planet.planet_type]}/>
+              { planetSelected === planet.id &&
+              <Html>
+                <div className="bg-black whitespace-nowrap p-2">
+                Name: {planet.name} <br></br>
+                Type: {planet.planet_type}
+                {
+                  !privatePlanets.find((privatePlanet) => privatePlanet.id === planet.id) ?
+                  <p className="text-red-500">You have no armies or cities here</p>
+                  : <p className="text-green-500">Double-click on planet to enter planet view</p>
+                }
+                </div>
+                </Html>
+              }
+              </animated.mesh>
+              </SelectToZoom>
+              </Fragment>
+            )
+          })
+          }
+        </Bounds>
+        <OrbitControls enablePan={false} makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 1.75} />
       </Canvas>
+      </>
     )
 
 }

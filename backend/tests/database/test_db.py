@@ -101,7 +101,7 @@ async def insert_test_data(connection_test):
         """
         sr_id = await da.PlanetAccess.create_space_region("the expansion region")
         await da.DeveloperAccess.create_planet_type("Shadow planet", "planet where it is hard to see")
-        p_id = await da.PlanetAccess.create_planet("Umbara", "Shadow planet", sr_id)
+        p_id = await da.PlanetAccess.create_planet("Umbara", "Shadow planet", sr_id, 1, 1)
         await da.DeveloperAccess.create_planet_region_type("valley of death", "Ooh.. very scary")
         r_id = await da.PlanetAccess.create_planet_region(p_id, "valley of death", 0, 0)
         c_id = await da.CityAccess.create_city(r_id, 20, 0.2, 0.8)

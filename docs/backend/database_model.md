@@ -110,11 +110,15 @@ An overview of each the tables in the database:
 <summary><strong>Resources</strong></summary>
 <p>
 
-|           Table           |  Type  | Purpose                                                                                 |
-|:-------------------------:|:------:|:----------------------------------------------------------------------------------------|
-|       ResourceType        | Lookup | Types of resources that are in the game                                                 |  
-|       HasResources        |  Data  | Store resources associated with a user (stores how many of the resources a user has)    |
+|     Table     |  Type  | Purpose                                                                                                           |
+|:-------------:|:------:|:------------------------------------------------------------------------------------------------------------------|
+| ResourceType  | Lookup | Types of resources that are in the game                                                                           |  
+| HasResources  |  Data  | Store resources associated with a user (stores how many of the resources a user has)                              |
+|  TradeOffer   |  Data  | Stores the currently active trading offers                                                                        |
+|  TradeGives   |  Data  | This table stores which resources a user will give to the trade offer setter when he/she accepts the trade offer. |
+| TradeReceives |  Data  | This table stores which resources a user will receive from the trade offer setter when he/she accepts the trade   |
 | ProductionRegionModifier  |  Data  | Stores the modifiers applied to resource production based on the planet's region type.  |
+
 
 </p>
 </details>

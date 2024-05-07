@@ -8,4 +8,12 @@
     bottom: 10.5vw;
     font-size: 1.4vw;
 
+    display: flex;
+    flex-flow: column;
+
+}
+
+.TradingMenuOffers{
+    overflow: scroll;
+    height: auto;
 }

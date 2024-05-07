@@ -41,7 +41,7 @@ function PlanetSwitcher({planetIndex}) {
                         setPlanetListIndex(new_id)
                     }}/>
                     {/*Displays the planet name*/}
-                    <h1>{planetList[planetListIndex][1]}</h1>
+                    <h1>{planetList[planetListIndex].name}</h1>
 
                     {/*Display next planet button*/}
                     <RiArrowRightSLine className="transition ease-in-out hover:scale-150" onClick={() => {

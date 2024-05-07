@@ -58,6 +58,22 @@ class GeneralAccess(DatabaseAccess):
 
         await self.session.flush()
 
+    async def get_general(self, army_id: int):
+        """
+        Retrieve the general that is part of the provided army
+
+        :param: army_id: the id of the army whose general we want to retrieve
+        :return: general object, or None when no general assigned to this army
+        """
+
+        get_general = Select(Generals).join(ArmyHasGeneral, ArmyHasGeneral.general_name == Generals.name).\
+            where(ArmyHasGeneral.army_id == army_id)
+
+        general = await self.session.execute(get_general)
+        general = general.scalar_one_or_none()
+
+        return general
+
 
 
 

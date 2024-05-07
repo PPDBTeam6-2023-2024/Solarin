@@ -6,7 +6,7 @@ import "./GeneralView.css"
 import SelectGeneralView from "./SelectGeneralView";
 
 
-function GeneralView(props) {
+function GeneralView({armyId}) {
     /*Display the general that is part of the army*/
 
     const [generalSelectorMenu, setGeneralSelectorMenu] = useState(false);
@@ -30,7 +30,7 @@ function GeneralView(props) {
             }
 
             {generalSelectorMenu &&
-                <SelectGeneralView/>
+                <SelectGeneralView armyId={armyId}/>
             }
 
         </>

@@ -45,7 +45,7 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
     """
     data_access = DataAccess(db)
     current_stance = await data_access.UserAccess.get_politics(user_id)
-    print(changes)
+
     cost = []
     for key, value in changes.Cost.items():
         cost.append((key, value))
@@ -63,10 +63,13 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
     current_stance_dict = model_to_dict(current_stance)
 
     updated_stance = {}
+    print(current_stance_dict)
     for key, value in changes.dict().items():
         if key == "Cost":
             continue
         attr = key.lower()
+        if attr == "corporate_state":
+            print(attr, value)
         change_percent = float(value.replace('%', '')) / 100
         if attr in current_stance_dict:
             updated_value = max(0, min(1, current_stance_dict[attr] + change_percent))

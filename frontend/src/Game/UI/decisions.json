@@ -3,10 +3,10 @@
         {
             "title": "Offer citizens more food",
             "impacts": {
-                "Democracy": "+3%",
+                "Democratic": "+3%",
                 "Theocracy": "+8%",
                 "Authoritarian": "-3%",
-                "CorporateState": "-6%"
+                "Corporate_State": "-6%"
             },
             "cost": {
                 "INF": 5
@@ -16,7 +16,7 @@
             "title": "Increase military spending",
             "impacts": {
                 "Authoritarian": "+5%",
-                "Democracy": "-2%",
+                "Democratic": "-2%",
                 "Theocracy": "+3%",
                 "Technocracy": "-1%"
             },
@@ -28,8 +28,8 @@
             "title": "Promote technological innovations",
             "impacts": {
                 "Technocracy": "+10%",
-                "CorporateState": "+4%",
-                "Democracy": "+2%",
+                "Corporate_State": "+50%",
+                "Democratic": "+2%",
                 "Theocracy": "-5%"
             },
             "cost": {
@@ -40,7 +40,7 @@
             "title": "Enhance religious teachings",
             "impacts": {
                 "Theocracy": "+8%",
-                "Democracy": "-4%",
+                "Democratic": "-4%",
                 "Technocracy": "-2%",
                 "Authoritarian": "+1%"
             },
@@ -51,8 +51,8 @@
         {
             "title": "Deregulate industries",
             "impacts": {
-                "CorporateState": "+7%",
-                "Democracy": "+1%",
+                "Corporate_State": "+7%",
+                "Democratic": "+1%",
                 "Theocracy": "-3%",
                 "Anarchism": "+5%"
             },
@@ -63,8 +63,8 @@
         {
             "title": "Promote free healthcare",
             "impacts": {
-                "Democracy": "+5%",
-                "CorporateState": "-4%",
+                "Democratic": "+5%",
+                "Corporate_State": "-4%",
                 "Theocracy": "+2%",
                 "Authoritarian": "-1%"
             },

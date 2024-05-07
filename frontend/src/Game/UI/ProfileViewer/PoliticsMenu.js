@@ -82,6 +82,7 @@ function PoliticsMenu() {
                 ...impacts,
                 Cost: cost
             };
+            console.log(payload);
             await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
             setStanceFetched(false)
         } catch (error) {
@@ -105,7 +106,7 @@ function PoliticsMenu() {
     }, [stanceFetched]);
 
     const modifiers = generateModifiers(stance);
-
+    console.log(stance)
     const data = {
         labels: ['Anarchism', 'Authoritarian', 'Democratic', 'Corporate state', 'Theocracy', 'Technocracy'],
         datasets: [
@@ -152,7 +153,7 @@ function PoliticsMenu() {
             {Object.entries(modifiers).map(([statName, statValue]) => (
                 <div key={statName} style={{width: "40%"}}>
                     <div style={{whiteSpace: "nowrap", display: "inline"}}>
-                        {statName}:
+                        {statName.replace(/([A-Z])/g, ' $1').trim()}:
                         <span style={{
                             color: statValue === 0 ? "#777" : (statValue > 0 ? "green" : "red"),
                             display: "inline"

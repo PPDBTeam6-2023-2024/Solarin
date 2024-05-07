@@ -10,7 +10,7 @@ from ..exceptions.not_found_exception import NotFoundException
 from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.permission_exception import PermissionException
 from .database_acess import DatabaseAccess
-
+from .user_access import UserAccess
 
 class BuildingAccess(DatabaseAccess):
     """
@@ -257,6 +257,9 @@ class BuildingAccess(DatabaseAccess):
 
         hours = delta.total_seconds()/3600
 
+        stance = await UserAccess(self.session).get_politics(user_id)
+        production_modifier = ((stance.anarchism * 10) + (stance.democratic * 3) - (stance.theocracy * 10) - (stance.technocracy * 5) + (stance.corporate_state * 20)) /100
+        production_modifier += 1
         """
         Add the resources to user taking into account the max capacity
         """
@@ -267,7 +270,7 @@ class BuildingAccess(DatabaseAccess):
             """
             production_rate = PropertyUtility.getGPR(1.0, p[0].base_production, p[1])
             max_capacity = PropertyUtility.getGPR(1.0, p[0].max_capacity, p[1])
-            await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours), max_capacity))
+            await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours*production_modifier), max_capacity))
 
         """
         Check the building, indicating that the last checked timer needs to be set to now

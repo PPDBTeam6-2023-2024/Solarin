@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from ...routers.authentication.schemas import BattleStats
 from ...routers.army.schemas import ArmySchema, ArmyConsistsOfSchema
 from ...routers.buildingManagement.schemas import TrainingQueueEntry
-from ...routers.generalRouter.schemas import GeneralScheme
+from ...routers.generalRouter.schemas import GeneralScheme, GeneralModifiersScheme
 from datetime import timedelta
 from ....logic.formula.compute_properties import *
 
@@ -423,3 +423,8 @@ class GeneralModifier(Base):
     amount = Column(Percentage, nullable=False)
 
     political_stance = Column(String, nullable=False)
+
+    def to_scheme(self):
+        scheme = GeneralModifiersScheme(stat=self.stat, modifier=self.amount,
+                                        political_stance=self.political_stance, political_stance_modifier=0)
+        return scheme

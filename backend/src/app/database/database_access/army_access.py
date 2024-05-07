@@ -10,6 +10,11 @@ from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
 
+"""
+Pre declaration of class because else circular import
+"""
+class GeneralAccess:
+    pass
 
 class ArmyAccess(DatabaseAccess):
     """
@@ -423,6 +428,19 @@ class ArmyAccess(DatabaseAccess):
                 army_stats[stat_name] = val
 
         """
+        Modify the army stats based on the general of the army
+        """
+        ga = GeneralAccess(self.session)
+        general = await ga.get_general(army_id)
+
+        modifiers = []
+        if general is not None:
+            modifiers = await ga.get_modifiers(general.name)
+
+        for m in modifiers:
+            army_stats[m.stat] *= (1+m.amount)
+
+        """
         Speed is expresses as a weighted average, In case no troops are present, our
         army will have a speed of 100
         """
@@ -689,3 +707,5 @@ class ArmyAccess(DatabaseAccess):
             curr_y = y_diff * (current_time_diff / total_time_diff) + curr_y
 
         return army.planet_id, curr_x, curr_y
+
+from .general_access import GeneralAccess

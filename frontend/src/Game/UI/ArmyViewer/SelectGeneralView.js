@@ -27,7 +27,6 @@ function SelectGeneralView({armyId, onChangeGeneral}) {
         getAvailableGenerals()
     }, [])
 
-    console.log(generals)
     return (
         <>
             {generals.map((general, index) => <GeneralListEntry key={general.name} generalInfo={general} armyId={armyId} onChangeGeneral={onChangeGeneral}/>)}

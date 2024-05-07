@@ -6,6 +6,7 @@ import "./GeneralView.css"
 import SelectGeneralView from "./SelectGeneralView";
 import generalsJson from "./generals.json"
 import axios from "axios";
+import GeneralViewStatEntry from "./GeneralViewStats";
 
 function GeneralView({armyId, generalInfo, onChangeGeneral}) {
     /*Display the general that is part of the army*/
@@ -33,22 +34,32 @@ function GeneralView({armyId, generalInfo, onChangeGeneral}) {
         /*Propagate change of general to parent*/
         onChangeGeneral();
     }
-
     return (
         <>
             {!generalSelectorMenu &&
                 <div className="GeneralWindow" onClick={() => {setGeneralSelectorMenu(true)}}>
                     <div style={{"width": "50%", "display": "inline-block"}}>
                     {/*Display the general*/}
-                    <img src={(`/images/general_images/${generalsJson[generalInfo.name]["icon"]}`)} draggable={false}
-                     unselectable="on"/>
+                    {generalInfo !== null &&
+                        <img src={(`/images/general_images/${generalsJson[generalInfo.general_data.name]["icon"]}`)}
+                             draggable={false}
+                             unselectable="on"/>
+                    }
+                    {generalInfo === null &&
+                        <div>
+                            Click here to add a General
+                        </div>
+                    }
+
                     </div>
-                    <div>
-                        attack: <span style={{"color": "green"}}>+5%</span>
-                    </div>
-                    <div>
-                        city defense: <span style={{"color": "green"}}>+11%</span>
-                    </div>
+                    {generalInfo.modifiers.map((modifier, index) =>
+                        <div>
+                            <GeneralViewStatEntry key={index} stat_name={modifier.stat} stat_value={modifier.modifier}
+                            political_stat_name={modifier.political_stance}
+                            political_stat_value={modifier.political_stance_modifier}/>
+                        </div>
+                    )}
+
                 </div>
             }
 

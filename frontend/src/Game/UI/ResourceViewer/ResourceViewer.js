@@ -12,6 +12,7 @@ export const initializeResources = async (dispatch) => {
     try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
         if (response.status === 200) {
+            console.log("setting resources: ", response.data)
             dispatch(setResources(response.data))
         }
     } catch (error) {

@@ -22,39 +22,39 @@ function clamp(value) {
 
 function generateModifiers(stance) {
     const resourceProduction = Math.round(
-        (stance.anarchism * 10) +   // Scale up by 10x
-        (stance.democratic * 3) -   // Scale up by 10x
-        (stance.theocracy * 10) -   // Scale up by 10x
-        (stance.technocracy * 5) +  // Scale up by 10x
-        (stance.corporate_state * 20)  // Scale up by 10x
+        (stance.anarchism * 10) +
+        (stance.democratic * 3) -
+        (stance.theocracy * 10) -
+        (stance.technocracy * 5) +
+        (stance.corporate_state * 20)
     );
 
     const upgradeSpeed = Math.round(
-        (stance.technocracy * 25) +  // Scale up by 10x
-        (stance.democratic * 20) -   // Scale up by 10x
-        (stance.authoritarian * 15) -  // Scale up by 10x
-        (stance.theocracy * 20) -    // Scale up by 10x
-        (stance.corporate_state * 10)  // Scale up by 10x
+        (stance.technocracy * 25) +
+        (stance.democratic * 20) -
+        (stance.authoritarian * 15) -
+        (stance.theocracy * 20) -
+        (stance.corporate_state * 10)
     );
 
     const armyStrength = Math.round(
-        (stance.authoritarian * 30) -  // Scale up by 10x
-        (stance.anarchism * 20) +    // Scale up by 10x
-        (stance.theocracy * 15) -    // Scale up by 10x
-        (stance.democratic * 10)    // Scale up by 10x
+        (stance.authoritarian * 30) -
+        (stance.anarchism * 20) +
+        (stance.theocracy * 15) -
+        (stance.democratic * 10)
     );
 
     const trainingTime = Math.round(
-        -(stance.authoritarian * 20) -  // Scale up by 10x
-        (stance.technocracy * 15) -     // Scale up by 10x
-        (stance.corporate_state * 10) +  // Scale up by 10x
-        (stance.theocracy * 10)    // Scale up by 10x
+        -(stance.authoritarian * 20) -
+        (stance.technocracy * 15) -
+        (stance.corporate_state * 10) +
+        (stance.theocracy * 10)
     );
 
     const armyMovementSpeed = Math.round(
-        (stance.anarchism * 10) -   // Scale up by 10x
-        (stance.corporate_state * 30) -  // Scale up by 10x
-        (stance.theocracy * 5)   // Scale up by 10x
+        (stance.anarchism * 10) -
+        (stance.corporate_state * 30) -
+        (stance.theocracy * 5)
     );
 
     return {
@@ -73,28 +73,28 @@ function formatModifier(value) {
 
 function PoliticsMenu() {
     const [stance, setStance] = useState({});
-    const [stanceFetched, setStanceFetched] = useState(false);
+    const [stanceFetched, setStanceFetched] = useState(false)
 
     const updateStance = async (impacts, cost) => {
-    console.log("updateStance");
-    setStanceFetched(false);
-    try {
-        const payload = {
-            ...impacts,
-            Cost: cost
-        };
-        await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
-    } catch (error) {
-        console.error('Failed to update political stance:', error);
-    }
-};
-
+        console.log("updateStance");
+        try {
+            const payload = {
+                ...impacts,
+                Cost: cost
+            };
+            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
+            setStanceFetched(false)
+        } catch (error) {
+            console.error('Failed to update political stance:', error);
+        }
+    };
 
     useEffect(() => {
         const fetchStance = async () => {
             try {
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/politics`);
                 setStance(response.data);
+                setStanceFetched(true)
             } catch (error) {
                 console.error('Error while fetching political stance:', error);
             }
@@ -102,7 +102,6 @@ function PoliticsMenu() {
 
         fetchStance();
         console.log("fetch Stance");
-        setStanceFetched(true);
     }, [stanceFetched]);
 
     const modifiers = generateModifiers(stance);

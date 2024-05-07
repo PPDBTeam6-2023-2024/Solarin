@@ -9,7 +9,6 @@
                 "CorporateState": "-6%"
             },
             "cost": {
-                "RA": 10,
                 "INF": 5
             }
         },
@@ -22,7 +21,6 @@
                 "Technocracy": "-1%"
             },
             "cost": {
-                "MI": 15,
                 "INF": 10
             }
         },
@@ -35,7 +33,6 @@
                 "Theocracy": "-5%"
             },
             "cost": {
-                "TF": 20,
                 "INF": 10
             }
         },
@@ -48,8 +45,7 @@
                 "Authoritarian": "+1%"
             },
             "cost": {
-                "INF": 5,
-                "POP": 10
+                "INF": 5
             }
         },
         {
@@ -61,8 +57,7 @@
                 "Anarchism": "+5%"
             },
             "cost": {
-                "INF": 10,
-                "OI": 5
+                "INF": 10
             }
         },
         {
@@ -74,8 +69,7 @@
                 "Authoritarian": "-1%"
             },
             "cost": {
-                "INF": 20,
-                "POP": 5
+                "INF": 20
             }
         }
     ]

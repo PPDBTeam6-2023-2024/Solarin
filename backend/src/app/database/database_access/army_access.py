@@ -577,6 +577,19 @@ class ArmyAccess(DatabaseAccess):
             await self.add_to_army(army_id, ac.troop_type, ac.rank, ac.size)
 
         """
+        If the removing army does have a general and the remaining not, we will also move the general
+        """
+        ga = GeneralAccess(self.session)
+
+        general_a = await ga.get_general(army_id)
+        general_b = await ga.get_general(from_army_id)
+
+        if general_a is None and general_b is not None:
+            army_owner = await self.get_army_owner(from_army_id)
+            await ga.remove_general(army_owner.id, from_army_id)
+            await ga.assign_general(army_owner.id, army_id, general_b.name)
+
+        """
         Remove original army
         """
         await self.remove_army(from_army_id)

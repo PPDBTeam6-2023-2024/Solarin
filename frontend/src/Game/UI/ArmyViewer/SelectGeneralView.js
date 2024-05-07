@@ -7,7 +7,7 @@ import axios from "axios";
 import GeneralListEntry from "./GeneralListEntry";
 
 
-function SelectGeneralView({armyId}) {
+function SelectGeneralView({armyId, onChangeGeneral}) {
     /*Display the list of generals that can be assigned to this army*/
 
     const [generals, setGenerals] = useState([]);
@@ -30,7 +30,7 @@ function SelectGeneralView({armyId}) {
     console.log(generals)
     return (
         <>
-            {generals.map((general, index) => <GeneralListEntry key={general.name} generalInfo={general} armyId={armyId}/>)}
+            {generals.map((general, index) => <GeneralListEntry key={general.name} generalInfo={general} armyId={armyId} onChangeGeneral={onChangeGeneral}/>)}
 
         </>
 

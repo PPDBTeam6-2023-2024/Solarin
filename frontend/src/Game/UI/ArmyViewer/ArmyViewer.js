@@ -9,27 +9,35 @@ import {SocketContext} from "../../Context/SocketContext";
 import GeneralView from "./GeneralView";
 import statsJson from "../stats.json";
 
+
 function ArmyViewer({armyId, onCityCreated, is_owner}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
+    const [general, setGeneral] = useState({});
     const [socket, setSocket] = useContext(SocketContext);
 
-    useEffect(() => {
-        const fetchTroops = async () => {
-            try {
+    const fetchTroops = async () => {
+        try {
 
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops/${armyId}`);
-                if (response.status === 200) {
-                    setTroops(response.data.troops);
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops/${armyId}`);
+            if (response.status === 200) {
+                setTroops(response.data.troops);
 
-                    setStats(response.data.stats);
-                }
-            } catch (error) {
-                console.error("Failed to fetch troops", error);
+                setStats(response.data.stats);
+
+                setGeneral(response.data.general);
             }
-        };
+        } catch (error) {
+            console.error("Failed to fetch troops", error);
+        }
+    };
+
+    useEffect(() => {
+        /*Update information like troop stats, general, ....*/
         fetchTroops();
     }, [armyId]);
+
+
 
     const createCity = async () => {
         /*Send a websocket message to create a city*/
@@ -76,7 +84,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
                     }
 
                     <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`general-${armyId}`} label={`General`}>
-                        <GeneralView armyId={armyId}/>
+                        <GeneralView armyId={armyId} generalInfo={general} onChangeGeneral={fetchTroops}/>
 
                     </TreeItem>
 

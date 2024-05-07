@@ -47,6 +47,11 @@ class GeneralAccess(DatabaseAccess):
         :param: general_name: name of the general that will be assigned to this army
         """
 
+        """
+        Remove general in case a general is already assigned
+        """
+        await self.remove_general(user_id, army_id)
+
         ac = ArmyAccess(self.session)
         army_owner = await ac.get_army_owner(army_id)
 
@@ -74,7 +79,22 @@ class GeneralAccess(DatabaseAccess):
 
         return general
 
+    async def remove_general(self, user_id: int, army_id: int):
+        """
+        unassign a general form an army
 
+        :param: army_id: the id of the army whose general we want to unassign
+        """
+
+        ac = ArmyAccess(self.session)
+        army_owner = await ac.get_army_owner(army_id)
+
+        if army_owner.id != user_id:
+            raise PermissionException(user_id, "change the assignment of generals of another user its armies")
+
+        delete_general_assignment = delete(ArmyHasGeneral).where(ArmyHasGeneral.army_id==army_id)
+        await self.session.execute(delete_general_assignment)
+        await self.session.flush()
 
 
 

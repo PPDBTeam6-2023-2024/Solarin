@@ -16,19 +16,21 @@ Router for managing communication about generals of an army
 
 
 @router.get("/available_generals")
-async def get_cities(
+async def get_available_generals(
         user_id: Annotated[str, Depends(get_my_id)],
         db=Depends(get_db)
 ):
     """
     Retrieve all generals a user cna still assign to its army
-
     """
 
     data_access = DataAccess(db)
     generals = await data_access.GeneralAccess.get_available_generals(user_id)
     generals = [general.to_scheme().dict() for general in generals]
 
+    """
+    Also provide the general modifiers
+    """
     for g in generals:
         modifiers = await data_access.GeneralAccess.get_modifiers(g["name"])
         modifiers = [m.to_scheme() for m in modifiers]

@@ -26,20 +26,21 @@ from an asynchronous function. Using the 'DataAccess' method, all the other Acce
 An overview of the current DataAccess categories:
 
 
-| Category        | Purpose                                    | Extra Info                                                                                                                                           |
-|:----------------|:-------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| AllianceAccess  | methods that manage alliances              |                                                                                                                                                      |
-| ArmyAccess      | methods that manage armies                 | Everything related to armies can be accessed from here                                                                                               |
-| BuildingAccess  | methods that manage buildings              | Everything with regards to a building can be managed from here, that also means all types of buildings                                               |
-| CityAccess      | methods that manage cities                 |                                                                                                                                                      |
-| DeveloperAccess | methods that manage developer only actions | Every table whose entries are changed from this access, are meant as lookup tables. Changing these tables from another Access is highly undesirable. |
-| MessageAccess   | methods that manage all message operations |                                                                                                                                                      |
-| PlanetAccess    | methods that manage Planets & Regions      | This Access method will mainly be used to create the surrounding environment of the game                                                             |
-| TrainingAccess  | methods that manage training units         | This Access method will only take care of training units                                                                                             |
-| UserAccess      | methods that manage User accounts          |                                                                                                                                                      |
-| RankingAccess   | methods that manage ranking information    | User rankings will be done with regards to the amount of Solarium a player has/produces                                                              |
-| ResourceAccess  | methods that manage resources of users     |                                                                                                                                                      |
-| TradeAccess     | methods that manage trading between        |                                                                                                                                                      |
+| Category        | Purpose                                                 | Extra Info                                                                                                                                           |
+|:----------------|:--------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| AllianceAccess  | methods that manage alliances                           |                                                                                                                                                      |
+| ArmyAccess      | methods that manage armies                              | Everything related to armies can be accessed from here                                                                                               |
+| BuildingAccess  | methods that manage buildings                           | Everything with regards to a building can be managed from here, that also means all types of buildings                                               |
+| CityAccess      | methods that manage cities                              |                                                                                                                                                      |
+| DeveloperAccess | methods that manage developer only actions              | Every table whose entries are changed from this access, are meant as lookup tables. Changing these tables from another Access is highly undesirable. |
+| MessageAccess   | methods that manage all message operations              |                                                                                                                                                      |
+| PlanetAccess    | methods that manage Planets & Regions                   | This Access method will mainly be used to create the surrounding environment of the game                                                             |
+| TrainingAccess  | methods that manage training units                      | This Access method will only take care of training units                                                                                             |
+| UserAccess      | methods that manage User accounts                       |                                                                                                                                                      |
+| RankingAccess   | methods that manage ranking information                 | User rankings will be done with regards to the amount of Solarium a player has/produces                                                              |
+| ResourceAccess  | methods that manage resources of users                  |                                                                                                                                                      |
+| TradeAccess     | methods that manage trading between users               |                                                                                                                                                      |
+| GeneralAccess   | methods that manage generals and its relation to armies |                                                                                                                                                      |
 
 ## To Verify
 The entire database (tables and sequences) need to be present.

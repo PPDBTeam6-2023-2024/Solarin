@@ -13,8 +13,11 @@ from .user_access import UserAccess
 """
 Pre declaration of class because else circular import
 """
+
+
 class GeneralAccess:
     pass
+
 
 class ArmyAccess(DatabaseAccess):
     """

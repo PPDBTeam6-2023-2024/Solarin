@@ -80,7 +80,8 @@ export const UpgradeButtonComponent = ({
 
     useEffect(() => {
         setTimer(timerDuration);
-        setIsButtonDisabled(true);
+
+        setIsButtonDisabled(timer > 0);
 
         const countdown = setInterval(() => {
             setTimer(prevTimer => {

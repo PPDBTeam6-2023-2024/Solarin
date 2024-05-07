@@ -58,3 +58,24 @@ async def add_general(
 
     return {"success": True}
 
+
+@router.post("/remove_general")
+async def remove_general(
+        request: Request,
+        user_id: Annotated[str, Depends(get_my_id)],
+        db=Depends(get_db)
+):
+    """
+    remove a general from the army
+    """
+
+    data = await request.json()
+
+    army_id = data["army_id"]
+
+    data_access = DataAccess(db)
+    await data_access.GeneralAccess.remove_general(user_id, army_id)
+    await data_access.commit()
+
+    return {"success": True}
+

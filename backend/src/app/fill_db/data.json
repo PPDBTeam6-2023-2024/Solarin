@@ -1,10 +1,9 @@
 {
-    "space regions": [
+    "planets":
         {
-            "name": "Region 1",
             "planet count": 5
         }
-    ],
+    ,
     "users": [
         {
             "userinfo": {

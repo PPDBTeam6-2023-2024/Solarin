@@ -17,8 +17,7 @@ async def test_get_cities(client, data_access: DataAccess):
         email="test@example.com"
     )
 
-    sregion_id = await data_access.PlanetAccess.create_space_region("test_region")
-    planet_id = await data_access.PlanetAccess.create_planet("test_planet", "arctic", sregion_id, 0.5, 0.5)
+    planet_id = await data_access.PlanetAccess.create_planet("test_planet", "arctic", 0.5, 0.5)
     await data_access.PlanetAccess.create_planet_region(planet_id, "arctic", 0,0)
 
     c_id = await data_access.CityAccess.create_city(planet_id, user_id, 0, 0)
@@ -61,8 +60,7 @@ async def test_upgrade_cities(client,  data_access: DataAccess):
         "accept": "application/json"
     }
 
-    sregion_id = await data_access.PlanetAccess.create_space_region("upgrade_test_region")
-    planet_id = await data_access.PlanetAccess.create_planet("upgrade_test_planet", "arctic", sregion_id, 0.5, 0.5)
+    planet_id = await data_access.PlanetAccess.create_planet("upgrade_test_planet", "arctic", 0.5, 0.5)
     await data_access.PlanetAccess.create_planet_region(planet_id, "arctic", 0, 0)
 
     initial_POP_resource_amount: int = 100000
@@ -139,8 +137,7 @@ async def test_get_resource_stocks(client, data_access: DataAccess):
     Create necessary city and planet for the test
     """
     user_id = await data_access.UserAccess.get_user_id_email(email="resource_test@example.com")
-    sregion_id = await data_access.PlanetAccess.create_space_region("resource_test_region")
-    planet_id = await data_access.PlanetAccess.create_planet("resource_test_planet", "arctic", sregion_id, 0.5, 0.5)
+    planet_id = await data_access.PlanetAccess.create_planet("resource_test_planet", "arctic", 0.5, 0.5)
     await data_access.PlanetAccess.create_planet_region(planet_id, "arctic", 0, 0)
     c_id = await data_access.CityAccess.create_city(planet_id, user_id, 0, 0)
     await data_access.commit()

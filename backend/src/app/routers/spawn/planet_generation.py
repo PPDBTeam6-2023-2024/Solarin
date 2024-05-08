@@ -37,7 +37,7 @@ def generate_regions(regions: list[str], row_col_count: int = 5) -> dict[str, li
     return regions_dict
 
 
-async def generate_random_planet(session: AsyncSession, space_region_id: int) -> int:
+async def generate_random_planet(session: AsyncSession) -> int:
     """
     Function we use to create a new planet (in a random manner)
     """
@@ -48,7 +48,7 @@ async def generate_random_planet(session: AsyncSession, space_region_id: int) ->
     Choose a random planet type
     """
     random_planet_type_row = await planet_access.get_random_planet_type()
-    new_index = await planet_access.get_planets_amount(space_region_id)
+    new_index = await planet_access.get_planets_amount()
     
     x, y = fibonacci_spiral_point(new_index + 1)
 
@@ -60,7 +60,6 @@ async def generate_random_planet(session: AsyncSession, space_region_id: int) ->
     planet_id = await planet_access.create_planet(
         planet_name=generate_planet_name(),
         planet_type=planet_type,
-        space_region_id=space_region_id,
         x=x,
         y=y
     )

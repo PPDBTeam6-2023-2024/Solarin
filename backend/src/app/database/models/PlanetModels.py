@@ -9,20 +9,6 @@ from .domains import Coordinate
 from ..models import *
 
 
-class SpaceRegion(Base):
-    """
-    Stores the regions in space
-
-    id: unique id of the space region
-    name: name of the region is space
-    """
-    __tablename__ = 'spaceRegion'
-    id = Column(Integer, Sequence('spaceRegion_id_seq'), primary_key=True)
-    name = Column(String, nullable=False, unique=True)
-
-    planets = relationship("Planet", back_populates="space_region", lazy='select')
-
-
 class Planet(Base):
     """
     Stores the planets in the game
@@ -30,7 +16,6 @@ class Planet(Base):
     id: unique id to identify the planet
     name: name of the planet
     planet_type: the type of the planet
-    space_region_id: the id of the space region the planet belongs to
     created_at: when the planet is created
     x, y: the position of the planet in space
     visible: if the planet is visible to all players
@@ -40,14 +25,11 @@ class Planet(Base):
     name = Column(TEXT, nullable=False)
     planet_type = Column(TEXT, ForeignKey("planetType.type", deferrable=True, initially='DEFERRED'),
                          nullable=False)
-    space_region_id = Column(Integer, ForeignKey("spaceRegion.id", deferrable=True, initially='DEFERRED'),
-                             nullable=False)
     created_at = Column(DateTime(), nullable=True, default=datetime.utcnow)
     x = Column(FLOAT, nullable=False)
     y = Column(FLOAT, nullable=False)
     visible = Column(Boolean, nullable=False, default=False)
 
-    space_region = relationship("SpaceRegion", back_populates="planets", lazy='select')
     armies = relationship("Army", back_populates="planet", lazy="select")
     regions = relationship("PlanetRegion", back_populates="planet", lazy='selectin')
 
@@ -60,7 +42,6 @@ class Planet(Base):
             "id": row.id,
             "name": row.name,
             "planet_type": row.planet_type,
-            "space_region_id": row.space_region_id,
             "created_at": row.created_at,
             "x": row.x,
             "y": row.y,

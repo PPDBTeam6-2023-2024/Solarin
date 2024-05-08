@@ -18,8 +18,7 @@ async def insert_users(data_access):
     for i in range(1, 6):
         await user_access.create_user(f"Test{i}", f"test{i}@test.test", f"test{i}")
     planet_access = data_access.PlanetAccess
-    await planet_access.create_space_region("Test Region")
-    await planet_access.create_planet("Test Planet", "arctic", 1, 1, 1)
+    await planet_access.create_planet("Test Planet", "arctic", 1, 1)
     await data_access.commit()
 
 async def test_create_army(army_access: ArmyAccess, session: AsyncSession):

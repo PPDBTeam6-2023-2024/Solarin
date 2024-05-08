@@ -156,3 +156,16 @@ This router will handle the communication about Armies and their actions
 
 </p>
 </details>
+
+<details>
+<summary><strong>GeneralRouter: '/general'</strong></summary>
+<p>
+
+|      Endpoint      | Method | Purpose                                                             |
+|:------------------:|:------:|:--------------------------------------------------------------------|
+| available_generals |  GET   | Retrieve the generals that are still able to be assigned to an army |
+|    add_general     |  POST  | Assign a general to an army                                         |
+|   remove_general   |  POST  | Un-assign a general from an army                                    |
+
+</p>
+</details>

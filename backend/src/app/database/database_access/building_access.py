@@ -228,6 +228,18 @@ class BuildingAccess(DatabaseAccess):
 
         return buildings_data
 
+    async def get_building_rank(self, building_id: int):
+        """
+        Get the rank of a building
+
+        :param: building_id: id of the building whose rank we want
+        return: int indicating the rank of the building
+        """
+        get_rank = Select(BuildingInstance.rank).where(BuildingInstance.id == building_id)
+        rank = await self.session.execute(get_rank)
+        rank = rank.scalar_one()
+        return rank
+
     async def get_region_controlled_by(self, region_id: int) -> int | None:
         """
         Get the controller of a region
@@ -248,7 +260,6 @@ class BuildingAccess(DatabaseAccess):
             return None
         else:
             return users.pop()
-
 
     async def get_resource_stocks(self, user_id: int, city_id: int):
         """
@@ -407,6 +418,7 @@ class BuildingAccess(DatabaseAccess):
             await self.session.commit()
 
         return updated_resource_stocks
+
 
     async def upgrade_building(self, user_id: int, building_id: int):
         """

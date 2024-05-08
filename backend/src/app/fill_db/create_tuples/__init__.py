@@ -4,6 +4,7 @@ from src.logic.formula.compute_properties import *
 from sqlalchemy import select
 import os
 
+
 class CreateTuples:
     async def create_all_tuples(self, session):
         self.__session: AsyncSession = session
@@ -16,11 +17,13 @@ class CreateTuples:
         await self.create_production_modifiers(types["production-modifiers"])
         await self.create_city_costs(types["city-costs"])
         await self.create_associations(types["associations"])
+        await self.create_stat_types(types["stats"])
         await self.create_troop_types(types["units"])
         await self.create_barracks_types(types["barracks"])
         await self.create_tower_types(types["towers"])
         await self.create_wall_types(types["walls"])
         await self.create_production_building_types(types["production-buildings"])
+        await self.create_general_types(types["generals"])
         await self.__session.commit()
 
     async def create_associations(self, associations: list[dict[str, Any]]):
@@ -120,3 +123,21 @@ class CreateTuples:
         for city_cost in city_costs:
                 await self.__dev.set_city_costs(city_cost["activity"],city_cost["resource-type"], city_cost["amount"], city_cost["time_cost"])
 
+
+    async def create_general_types(self, general_types: list):
+        """
+        Add general types to the database
+        """
+        for general_type in general_types:
+            await self.__dev.create_general(general_type["name"])
+
+            for modifier in general_type["modifiers"]:
+                await self.__dev.create_general_modifier(general_type["name"], modifier["stat"],
+                                                         modifier["amount"], modifier["political_stance"])
+
+    async def create_stat_types(self, stats_types: list[str]):
+        """
+        Define the types of army stats
+        """
+        for s in stats_types:
+            await self.__dev.create_stat(s)

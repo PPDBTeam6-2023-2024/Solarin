@@ -121,6 +121,7 @@
     }
   ],
   "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],
+  "stats": ["attack", "defense", "city_attack", "city_defense", "recovery", "speed"],
   "units": [
     {"name":  "soldier", "spec": "land", "base-points":
     {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250}
@@ -144,7 +145,62 @@
     {"AP":  0, "DP":  0, "CAP":  0, "CDP":  0, "PBR": 0, "MS": 0}
     }
   ],
-  "production-modifiers": [
+  "generals": [
+    {"name": "brave",
+      "modifiers":  [
+        {"stat":  "attack", "amount": 0.1, "political_stance":  "democratic"},
+        {"stat":  "city_attack", "amount": 0.05, "political_stance":  "authoritarian"},
+        {"stat":  "speed", "amount": 0.03, "political_stance":  "technocracy"}
+      ]},
+    {"name": "sad",
+      "modifiers":  [
+        {"stat":  "recovery", "amount": 0.15, "political_stance":  "theocracy"},
+        {"stat":  "speed", "amount": 0.1, "political_stance":  "authoritarian"},
+        {"stat":  "defense", "amount": -0.03, "political_stance":  "theocracy"},
+        {"stat":  "attack", "amount": 0.02, "political_stance":  "democratic"}
+      ]},
+    {"name": "angry",
+    "modifiers":  [
+        {"stat":  "attack", "amount": 0.1, "political_stance":  "authoritarian"},
+        {"stat":  "city_attack", "amount": 0.15, "political_stance":  "authoritarian"},
+        {"stat":  "city_defense", "amount": -0.02, "political_stance":  "democratic"},
+        {"stat": "recovery", "amount": -0.03, "political_stance":  "technocracy"}
+    ]},
+    {"name": "confused",
+      "modifiers":  [
+        {"stat":  "recovery", "amount": -0.04, "political_stance":  "anarchism"},
+        {"stat":  "speed", "amount": -0.04, "political_stance":  "democratic"},
+        {"stat":  "defense", "amount": 0.1, "political_stance":  "anarchism"}
+    ]},
+    {"name": "empathic",
+      "modifiers":  [
+        {"stat":  "recovery", "amount": 0.1, "political_stance":  "theocracy"},
+        {"stat":  "speed", "amount": -0.1, "political_stance":  "corporate_state"},
+        {"stat":  "city_defense", "amount": 0.15, "political_stance":  "theocracy"},
+        {"stat":  "attack", "amount": -0.05, "political_stance":  "technocracy"}
+    ]},
+    {"name": "afraid",
+    "modifiers":  [
+        {"stat":  "attack", "amount": -0.15, "political_stance":  "corporate_state"},
+        {"stat":  "defense", "amount": -0.1, "political_stance":  "democratic"},
+        {"stat":  "city_attack", "amount": 0.3, "political_stance":  "corporate_state"},
+        {"stat":  "city_defense", "amount": 0.3, "political_stance":  "theocracy"}
+    ]},
+    {"name": "calm",
+      "modifiers":  [
+        {"stat":  "recovery", "amount": 0.1, "political_stance":  "democratic"},
+        {"stat":  "defense", "amount": 0.05, "political_stance":  "anarchism"},
+        {"stat":  "attack", "amount": 0.02, "political_stance":  "theocracy"},
+        {"stat":  "city_defense", "amount":-0.05, "political_stance":  "anarchism"}
+    ]},
+    {"name": "emotionless",
+    "modifiers":  [
+        {"stat":  "recovery", "amount": -0.4, "political_stance":  "authoritarian"},
+        {"stat":  "speed", "amount": 0.05, "political_stance":  "corporate_state"},
+        {"stat":  "defense", "amount": 0.1, "political_stance":  "democratic"},
+        {"stat":  "attack", "amount":0.3, "political_stance":  "authoritarian"}
+    ]}
+  ],"production-modifiers": [
       {"region-type": "arctic", "resource-type": "CO", "modifier": 1.2},
       {"region-type": "arctic", "resource-type": "MI", "modifier": 1.3},
       {"region-type": "arctic", "resource-type": "OI", "modifier": 0.8},
@@ -158,6 +214,4 @@
       {"region-type": "plain", "resource-type": "CO", "modifier": 1.1},
       {"region-type": "plain", "resource-type": "TF", "modifier": 0.8}
   ]
-
-
 }

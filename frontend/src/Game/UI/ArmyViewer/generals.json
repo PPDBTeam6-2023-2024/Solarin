@@ -1,0 +1,11 @@
+{
+  "brave": {"icon": "general01.png"},
+  "sad": {"icon": "general02.png"},
+  "angry": {"icon": "general03.png"},
+  "confused": {"icon": "general04.png"},
+  "empathic": {"icon": "general05.png"},
+  "afraid": {"icon":  "general06.png"},
+  "calm": {"icon":  "general07.png"},
+  "emotionless": {"icon":  "general08.png"}
+
+}

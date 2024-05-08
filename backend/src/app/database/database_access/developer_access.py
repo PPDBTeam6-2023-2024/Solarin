@@ -126,8 +126,16 @@ class DeveloperAccess(DatabaseAccess):
         :param: required_rank: the rank a building is required to have to unlock the option to train this troop
         :return: nothing
         """
-        troop_type = TroopType.withBattleStats(type_name, training_time, battle_stats, required_rank)
+
+        troop_type = TroopType.withData(type_name, training_time, battle_stats, required_rank)
         self.session.add(troop_type)
+
+        self.session.add(TroopHasStat(stat="attack", value=battle_stats.attack, troop_type=type_name))
+        self.session.add(TroopHasStat(stat="defense", value=battle_stats.defense, troop_type=type_name))
+        self.session.add(TroopHasStat(stat="city_attack", value=battle_stats.city_attack, troop_type=type_name))
+        self.session.add(TroopHasStat(stat="city_defense", value=battle_stats.city_defense, troop_type=type_name))
+        self.session.add(TroopHasStat(stat="recovery", value=battle_stats.recovery, troop_type=type_name))
+        self.session.add(TroopHasStat(stat="speed", value=battle_stats.speed, troop_type=type_name))
 
     async def set_troop_type_cost(self, troop_name: str, resource_costs: List[Tuple[str, int]]):
         """
@@ -190,6 +198,21 @@ class DeveloperAccess(DatabaseAccess):
         """
 
         self.session.add(AssociatedWith(planet_type=planet_type, region_type=region_type))
+        await self.session.flush()
+
+    async def create_general(self, general_name: str):
+        general = Generals(name=general_name)
+        self.session.add(general)
+        await self.session.flush()
+
+    async def create_stat(self, stat_name: str):
+        stat = Stat(name=stat_name)
+        self.session.add(stat)
+        await self.session.flush()
+
+    async def create_general_modifier(self, general_name: str, stat: str, amount: float, political_stance: str):
+        gm = GeneralModifier(stat=stat, amount=amount, general_name=general_name, political_stance=political_stance)
+        self.session.add(gm)
         await self.session.flush()
 
     async def set_production_modifier(self, resource_type: str, region_type: str, modifier: float):

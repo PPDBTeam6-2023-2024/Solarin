@@ -24,6 +24,7 @@ class CitySchema(ConfigClass):
     region_type: str
     planet_name: str
     planet_id: int
+    population: int
 
 class Confirmation(BaseModel):
     confirmed: bool
@@ -46,12 +47,32 @@ class BuildingTypeSchema(ConfigClass):
 class CostSchema(ConfigClass):
     id: int
     costs: list[tuple[str, int]]
+    time_cost: int
     can_upgrade: bool
 
 class CityLocationSchema(BaseModel):
     x: float
     y: float
 
-
 class CreateCitySchema(BaseModel):
     army_id: int
+
+class ResourceStockSchema(BaseModel):
+    resource_name: str
+    amount_in_stock: int
+    max_amount: int
+
+class StockOverViewSchema(BaseModel):
+    overview: dict[int,list[ResourceStockSchema]]
+
+class CityInfoSchema(BaseModel):
+    population: int
+    rank: int
+    region_type: str
+    region_buffs: list[tuple[str,float]]
+    remaining_update_time: int
+
+class CityData(BaseModel):
+    city: CityInfoSchema
+    buildings: list[BuildingInstanceSchema]
+

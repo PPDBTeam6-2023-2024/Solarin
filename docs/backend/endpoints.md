@@ -64,13 +64,16 @@ general logic information needed
 <summary><strong>CityManagement: '/cityManager'</strong></summary>
 <p>
 
-|      Endpoint       | Method | Purpose                                                                       |
-|:-------------------:|:------:|:------------------------------------------------------------------------------|
-|      buildings      |  GET   | Get the building information of the buildings inside the city                 |
-|       cities        |  GET   | Get all cities on a specific planet                                           |
-| new_building_types  |  GET   | Retrieve types of buildings that we can build (We cannot build a type double) |
-|  get_upgrade_cost   |  GET   | Get the upgrade costs of the buildings inside a city                          |
-|     cities_user     |  GET   | Get all the cities owned by a specific user                                   |
+|      Endpoint       | Method | Purpose                                                                                                                     |
+|:-------------------:|:------:|:----------------------------------------------------------------------------------------------------------------------------|
+|    get_city_data    |  GET   | Get the city information (rank, upgrade time remaining, region,..) and information of the buildings inside the city         |
+|       cities        |  GET   | Get all cities on a specific planet                                                                                         |
+| new_building_types  |  GET   | Retrieve types of buildings that we can build (We cannot build a type double)                                               |
+|  get_upgrade_cost   |  GET   | Get the upgrade costs of the buildings inside a city                                                                        |
+|     cities_user     |  GET   | Get all the cities owned by a specific user                                                                                 |
+|    upgrade_city     |  POST  | upgrade the rank of a city by 1 and adjust user resources accordingly                                                       |
+| get_resource_stocks |  GET   | Get the amount of resources currently in storage and the max capacity of each production building in the city               |
+
 
 </p>
 </details>

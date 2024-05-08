@@ -3,12 +3,12 @@ from math import dist
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import *
-from .city_access import CityAccess
 from ..exceptions.permission_exception import PermissionException
 from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
+from .city_access import CityAccess
 
 class ArmyAccess(DatabaseAccess):
     """

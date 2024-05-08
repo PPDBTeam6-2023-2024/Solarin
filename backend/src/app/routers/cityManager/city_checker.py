@@ -23,6 +23,10 @@ class CityChecker:
 
         await self.check_training(buildings)
 
+        remaining_update_time = await self.da.CityAccess.get_remain_update_time(city_id=self.city_id)
+
+        return remaining_update_time
+
     async def check_training(self, buildings):
         """
         this function will check the training of units and its assignment to an army when they are trained

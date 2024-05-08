@@ -142,7 +142,7 @@
     {"AP":  250, "DP":  149, "CAP":  350, "CDP":  149, "PBR": 250, "MS": 350}
     },
     {"name":  "mothership", "spec": "space", "base-points":
-    {"AP":  0, "DP":  0, "CAP":  0, "CDP":  0, "PBR": 0, "MS": 0}
+    {"AP":  50, "DP":  50, "CAP":  50, "CDP":  50, "PBR": 50, "MS": 50}
     }
   ],
   "generals": [

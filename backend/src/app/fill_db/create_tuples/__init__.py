@@ -14,6 +14,8 @@ class CreateTuples:
         await self.create_resource_types(types["resources"])
         await self.create_region_types(types["regions"])
         await self.create_planet_types(types["planets"])
+        await self.create_production_modifiers(types["production-modifiers"])
+        await self.create_city_costs(types["city-costs"])
         await self.create_associations(types["associations"])
         await self.create_stat_types(types["stats"])
         await self.create_troop_types(types["units"])
@@ -74,6 +76,7 @@ class CreateTuples:
                 for resource_type in building_type["products"]:
                     await self.__dev.set_produces_resources(building_type["name"], resource_type["product-name"], resource_type["base-rate"], resource_type["base-cap"])
 
+
     async def create_resource_types(self, resource_types: list[str]):
         for resource_type in resource_types:
             if await self.__session.get(ResourceType, resource_type) is None:
@@ -100,6 +103,26 @@ class CreateTuples:
                                                          battle_stats.city_attack, battle_stats.city_defense,
                                                          battle_stats.recovery, battle_stats.speed])
                 await self.__dev.set_troop_type_cost(troop_type["name"], [("SOL", base_cost)])
+    async def create_production_modifiers(self, production_modifiers: list[dict[str, Any]]):
+        for coefficient in production_modifiers:
+            stmt = (
+                select(ProductionRegionModifier)
+                .where(ProductionRegionModifier.resource_type == coefficient["resource-type"])
+                .where(ProductionRegionModifier.region_type == coefficient["region-type"])
+            )
+            result = await self.__session.execute(stmt)
+            if result.scalar_one_or_none() is None:
+                resource_type = coefficient["resource-type"]
+                region_type = coefficient["region-type"]
+                modifier = coefficient["modifier"]
+
+                await self.__dev.set_production_modifier(resource_type=resource_type, region_type=region_type,
+                                                         modifier=modifier)
+
+    async def create_city_costs(self, city_costs: list[dict[str,Any]]):
+        for city_cost in city_costs:
+                await self.__dev.set_city_costs(city_cost["activity"],city_cost["resource-type"], city_cost["amount"], city_cost["time_cost"])
+
 
     async def create_general_types(self, general_types: list):
         """

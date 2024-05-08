@@ -8,10 +8,10 @@ function PoliticsDecision({ updateStance }) {
             {decisionsData.decisions.map((decision, index) => (
                 <div key={index} style={{"marginBottom": "2vw", "display": "inline-block", "width": "100%"}}>
                     <div style={{"width": "50%", "display": "inline-block"}}>
-                        <span style={{"color": "gold"}}>{decision.title}</span>
+                        <span style={{"color": "gold", "textAlign": "center"}}>{decision.title}</span>
                         <ul>
                             {Object.entries(decision.impacts).map(([govType, impact], idx) => (
-                                <li key={idx}>{govType.replace(/([A-Z])/g, ' $1').trim()}: {impact}</li>
+                                <li key={idx}>{govType.replace(/_/g, '').replace(/([A-Z])/g, ' $1').trim()}: {impact}</li>
                             ))}
                         </ul>
                     </div>
@@ -23,7 +23,7 @@ function PoliticsDecision({ updateStance }) {
                             </span>
                         ))}
                         <button
-                            onClick={() => updateStance(decision.impacts)}
+                            onClick={() => updateStance(decision.impacts, decision.cost)}
                             style={{"border": "0.2vw solid white", "borderRadius": "1vw 1vw 1vw 1vw"}}>
                             Do Decision
                         </button>

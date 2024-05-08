@@ -10,7 +10,8 @@ const GetCities = async (planetId) => {
                 x: city.x,
                 y: city.y,
                 controlled_by: city.controlled_by,
-                src: getCityImage(city.rank), // Assuming there's a 'type' field to determine the city image
+                rank : city.rank,
+                src: getCityImage(city.rank),
                 style: {
                     position: 'absolute',
                     left: `${city.x * 100}%`,

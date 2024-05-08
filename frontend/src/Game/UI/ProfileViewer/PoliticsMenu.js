@@ -12,14 +12,21 @@ import {
 import PoliticsDecision from "./PoliticsDecision";
 import axios from "axios";
 import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {setResources} from "../../../redux/slices/resourcesSlice";
 
 ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title, RadialLinearScale, Filler);
+
+// limiting function used to keep modifiers in a reasonable range [-30%, +30%]
+function clamp(value) {
+    return Math.min(Math.max(value, -30), 30);
+}
 
 function generateModifiers(stance) {
     const resourceProduction = Math.round(
         (stance.anarchism * 10) +
         (stance.democratic * 3) -
-        (stance.theocracy * 10) +
+        (stance.theocracy * 10) -
         (stance.technocracy * 5) +
         (stance.corporate_state * 20)
     );
@@ -28,7 +35,7 @@ function generateModifiers(stance) {
         (stance.technocracy * 25) +
         (stance.democratic * 20) -
         (stance.authoritarian * 15) -
-        (stance.theocracy * 20) +
+        (stance.theocracy * 20) -
         (stance.corporate_state * 10)
     );
 
@@ -53,11 +60,11 @@ function generateModifiers(stance) {
     );
 
     return {
-        resourceProduction: formatModifier(resourceProduction * 100),
-        upgradeSpeed: formatModifier(upgradeSpeed * 100),
-        armyStrength: formatModifier(armyStrength * 100),
-        trainingTime: formatModifier(trainingTime * 100),
-        armyMovementSpeed: formatModifier(armyMovementSpeed * 100)
+        resourceProduction: clamp(resourceProduction),
+        upgradeSpeed: clamp(upgradeSpeed),
+        armyStrength: clamp(armyStrength),
+        trainingTime: clamp(trainingTime),
+        armyMovementSpeed: clamp(armyMovementSpeed)
     };
 }
 
@@ -66,50 +73,52 @@ function formatModifier(value) {
     return `${value >= 0 ? '+' : ''}${value}%`;
 }
 
-
 function PoliticsMenu() {
-    const [stance, setStance] = useState({})
+    const [stance, setStance] = useState({});
+    const [stanceFetched, setStanceFetched] = useState(false)
 
-    const updateStance = async (changes) => {
-        const translation = {
-            "Technocracy": "technocracy",
-            "Democracy": "democratic",
-            "CorporateState": "corporate_state",
-            "Theocracy": "theocracy",
-            "Anarchism": "anarchism",
-            "Authoritarian": "authoritarian"
-        }
-        const newStance = {...stance};
-        for (let key in changes) {
-            const translatedKey = translation[key];
-            if (translatedKey && newStance.hasOwnProperty(translatedKey)) {
-                // Remove the '%' character and convert to integer
-                const changeValue = parseInt(changes[key], 10);
-                newStance[translatedKey] = Math.max(0, Math.min(1, newStance[translatedKey] + (changeValue / 100)));
-            }
-        }
+    const dispatch = useDispatch()
+
+    const updateStance = async (impacts, cost) => {
+        /*Update political information*/
         try {
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, newStance);
+            const payload = {
+                ...impacts,
+                Cost: cost
+            };
+            console.log(payload);
+            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
+            setStanceFetched(false)
+
+            /*Recalibrate the resources*/
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
+            if (response.status === 200) {
+                dispatch(setResources(response.data))
+            }
+            fetchStance();
+
         } catch (error) {
             console.error('Failed to update political stance:', error);
         }
     };
 
+    const fetchStance = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/politics`);
+            setStance(response.data);
+            setStanceFetched(true)
+        } catch (error) {
+            console.error('Error while fetching political stance:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchStance = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/politics`);
-                setStance(response.data);
-            } catch (error) {
-                console.error('Error while fetching political stance:', error);
-            }
-        };
 
         fetchStance();
     }, []);
 
     const modifiers = generateModifiers(stance);
-
+    console.log(stance)
     const data = {
         labels: ['Anarchism', 'Authoritarian', 'Democratic', 'Corporate state', 'Theocracy', 'Technocracy'],
         datasets: [
@@ -156,12 +165,12 @@ function PoliticsMenu() {
             {Object.entries(modifiers).map(([statName, statValue]) => (
                 <div key={statName} style={{width: "40%"}}>
                     <div style={{whiteSpace: "nowrap", display: "inline"}}>
-                        {statName}:
+                        {statName.replace(/([A-Z])/g, ' $1').trim()}:
                         <span style={{
-                            color: statValue === "+0%" ? "#777" : (statValue[0] === '+' ? "green" : "red"),
+                            color: statValue === 0 ? "#777" : (statValue > 0 ? "green" : "red"),
                             display: "inline"
                         }}>
-                        {statValue}
+                        {formatModifier(statValue)}
                     </span>
                     </div>
                 </div>
@@ -172,7 +181,6 @@ function PoliticsMenu() {
             </div>
         </>
     );
-
 }
 
 export default PoliticsMenu;

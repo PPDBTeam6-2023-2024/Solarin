@@ -214,3 +214,25 @@ class DeveloperAccess(DatabaseAccess):
         gm = GeneralModifier(stat=stat, amount=amount, general_name=general_name, political_stance=political_stance)
         self.session.add(gm)
         await self.session.flush()
+
+    async def set_production_modifier(self, resource_type: str, region_type: str, modifier: float):
+        """
+            Some resources are more equal than others... Or more prevalent based on the region type.
+
+        Set production modifier, i.e. a production boost or reduction based on
+        - the type of resource being produced
+        - the type of region it is produced in
+
+        :param: resource_type: type of the resource
+        :param: region_type: type of the planet region
+        :param: modifier: multiplier to apply to production rate
+        """
+
+        self.session.add(ProductionRegionModifier(resource_type=resource_type, region_type=region_type, modifier=modifier))
+        await self.session.flush()
+
+    async def set_city_costs(self, activity: str ,resource_type: str, cost_amount: int, time_cost: int):
+        """
+        Sets the costs related to cities, e.g. the creation cost of the city
+        """
+        self.session.add(CityCosts(activity=activity, resource_type=resource_type, cost_amount=cost_amount, time_cost=time_cost))

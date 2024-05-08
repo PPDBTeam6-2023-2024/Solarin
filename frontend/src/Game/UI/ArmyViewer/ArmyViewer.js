@@ -83,10 +83,12 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
                         </Button>
                     }
 
+                    {is_owner &&
                     <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`general-${armyId}`} label={`General`}>
                         <GeneralView armyId={armyId} generalInfo={general} onChangeGeneral={fetchTroops}/>
 
                     </TreeItem>
+                    }
 
                     <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`stats-${armyId}`} label={`Stats`}>
                         {statsOutput}

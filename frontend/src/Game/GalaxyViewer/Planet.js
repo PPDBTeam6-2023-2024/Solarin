@@ -59,7 +59,10 @@ function Planet({planet, fleetsMoveMode, privatePlanets, changePlanetId, setView
         "terrestrial": useLoader(TextureLoader, "/images/Planets/terrestrial.png"),
         "tropical": useLoader(TextureLoader, "/images/Planets/tropical.png"),
         "desert": useLoader(TextureLoader, "/images/Planets/desert.png"),
-        "arctic": useLoader(TextureLoader, "/images/Planets/arctic.png")
+        "arctic": useLoader(TextureLoader, "/images/Planets/arctic.png"),
+        "red": useLoader(TextureLoader, "/images/Planets/red_planet.jpg"),
+        "dry": useLoader(TextureLoader, "/images/Planets/dry.jpg"),
+        "shadow": useLoader(TextureLoader, "/images/Planets/shadow.png")
     }
 
     const [isHovering, setIsHovering] = useState(false)

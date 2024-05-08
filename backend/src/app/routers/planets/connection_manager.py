@@ -7,10 +7,11 @@ from ..core.connection_pool import ConnectionPool
 class ConnectionManager:
     def __init__(self):
         # dictionary like this -> planetId: connectionPool
-        self.planets: dict[int, ConnectionPool] = {}
+        self.planets: dict[int | None, ConnectionPool] = {}
 
-    async def connect_planet(self, planet_id: int, websocket: WebSocket, sub_protocol: Optional[str]=None) -> Tuple[ConnectionPool, bool]:
+    async def connect_planet(self, planet_id: int | None, websocket: WebSocket, sub_protocol: Optional[str]=None) -> Tuple[ConnectionPool, bool]:
         new_conn = False
+
 
         if planet_id not in self.planets:
             self.planets[planet_id] = ConnectionPool()

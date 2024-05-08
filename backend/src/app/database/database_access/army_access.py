@@ -8,6 +8,8 @@ from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
+from ..models.ArmyModels import Army
+
 from .city_access import CityAccess
 
 """
@@ -136,8 +138,46 @@ class ArmyAccess(DatabaseAccess):
         await self.session.flush()
         armies = armies.scalars().all()
         return armies
+    async def get_user_fleets_on_planet(self, user_id: int, planet_id: int ) -> list[Army]:
+        """
+       Get fleets on a planet
 
-    async def get_armies_on_planet(self, planet_id: int) -> list[Army]:
+       :param: planet_id: id of the planet whose fleets we want to retrieve
+       :param: user_id: id of the user whose fleets we want to retrieve
+       return: List of Army Objects
+       """
+        # Query to get all armies of a user with at least one mothership
+        armies_with_mothership = Select(Army).where(Army.planet_id == planet_id) \
+            .join(ArmyConsistsOf, ArmyConsistsOf.army_id == Army.id) \
+            .join(TroopType, TroopType.type == ArmyConsistsOf.troop_type) \
+            .filter(Army.user_id == user_id, TroopType.type == "mothership") \
+            .subquery()
+
+        # Query to get all armies of the user where each army has at least one mothership
+        user_armies_with_mothership = Select(Army) \
+            .join(armies_with_mothership, armies_with_mothership.c.id == Army.id)
+
+        armies = await self.session.execute(user_armies_with_mothership)
+        await self.session.flush()
+        armies = armies.scalars().all()
+        return armies
+
+
+
+
+    async def get_fleets_in_space(self) -> list[Army]:
+        """
+       Get fleets in space
+
+       return: List of Army Objects
+       """
+        get_entry = Select(Army).where(Army.planet_id.is_(null()))
+        armies = await self.session.execute(get_entry)
+        await self.session.flush()
+        armies = armies.scalars().all()
+        return armies
+
+    async def get_armies_on_planet(self, planet_id: Optional[int]) -> list[Army]:
         """
         Get armies on a planet, but make sure not do give the armies that are inside a city
 
@@ -148,7 +188,8 @@ class ArmyAccess(DatabaseAccess):
         """
         Get all the armies on the planet
         """
-        get_entry = Select(Army).where(Army.planet_id == planet_id)
+        cond = Army.planet_id == planet_id if planet_id is not None else Army.planet_id.is_(null())
+        get_entry = Select(Army).where(cond)
         armies = await self.session.execute(get_entry)
         armies = armies.scalars().all()
 
@@ -156,14 +197,14 @@ class ArmyAccess(DatabaseAccess):
         Get all the armies on the planet, that are in a city
         """
         get_entry_in_city = Select(Army).join(ArmyInCity, ArmyInCity.army_id == Army.id).where(
-            Army.planet_id == planet_id)
+            cond)
         city_armies = await self.session.execute(get_entry_in_city)
         city_armies = city_armies.scalars().all()
 
         """
         Return the armies that are on the planet, but not inside a city
         """
-        return list(set(armies) - set(city_armies))
+        return list(set(armies) - set(city_armies)) if planet_id is not None else armies
 
     async def get_army_time_delta(self, army_id: int, distance: float, developer_speed: int = None) -> timedelta:
         """
@@ -356,11 +397,9 @@ class ArmyAccess(DatabaseAccess):
         param: army_id: the id of the army that is planning to attack
         return: an SQL attackArmy, attackCity, mergeArmies, enterCity object or None in case we don't attack anything
         """
-
         get_on_arrive = Select(OnArrive).where(OnArrive.army_id == army_id)
         results = await self.session.execute(get_on_arrive)
         result = results.scalar_one_or_none()
-
         """
         In case the army does nothing special when it arrives
         """
@@ -523,6 +562,61 @@ class ArmyAccess(DatabaseAccess):
             result = army_id
 
         return result
+    async def leave_planet(self, army_id: int):
+        """
+       let an army exit a planet
+
+       param: army_id: the id of the army who wants to exit the planet
+       """
+        await self.session.flush()
+        get_army = Select(Army).where(Army.id == army_id)
+        army = await self.session.execute(get_army)
+        army = army.scalar_one()
+        get_planet = Select(Planet).where(Planet.id == army.planet_id)
+        planet = await self.session.execute(get_planet)
+        planet = planet.scalar_one()
+        new_x = planet.x+0.05
+        new_y = planet.y+0.05
+        army.x = new_x
+        army.y = new_y
+        army.to_x = new_x
+        army.to_y = new_y
+        army.planet_id = null()
+        await self.session.commit()
+        await self.session.refresh(army)
+        await self.session.flush()
+
+        delete_army_in_city = Delete(ArmyInCity).where(ArmyInCity.army_id == army.id)
+        await self.session.execute(delete_army_in_city)
+        await self.session.commit()
+        await self.session.flush()
+
+
+
+    async def enter_planet(self, planet_id: int, army_id: int):
+        """
+       let an army enter a planet
+
+       param: planet_id: the planet we want to enter
+       param: army_id: the id of the army who wants to enter the planet
+       param: to_x: the x coordinate of the planet that the army wants to enter
+       param: to_y: the y coordinate of the planet that the army wants to enter
+       """
+        await self.session.flush()
+        get_army = Select(Army).where(Army.id == army_id)
+        army = await self.session.execute(get_army)
+        army = army.scalar_one()
+        army.planet_id = planet_id
+        # to do maybe
+        army.x = 0.5
+        army.y = 0.5
+        await self.session.commit()
+        await self.session.refresh(army)
+        await self.session.flush()
+        await self.change_army_direction(army.user_id, army.id, 0.5, 0.5)
+        await self.session.commit()
+        await self.session.flush()
+
 
     async def enter_city(self, city_id: int, army_id: int):
         """
@@ -639,6 +733,23 @@ class ArmyAccess(DatabaseAccess):
         merge_object = MergeArmies(army_id=army_id, target_id=target_id)
         self.session.add(merge_object)
         await self.session.flush()
+
+    async def add_enter_planet(self, army_id: int, target_id: int):
+        """
+        This function will make sure the database keeps in mind that an army has the intention to enter a planet
+        when it arrives at its position
+
+        param: army_id: the id of the army that is planning to enter
+        param: target_id: the id of the planet that will be entered
+        param: to_x: the x coordinate of the planet that the army will enter
+        param: to_y: the y coordinate of the planet that the army will enter
+        """
+        # change x and y later maybe?
+        enter_object = EnterPlanet(army_id=army_id, target_id=target_id, x=0.5, y=0.5)
+        self.session.add(enter_object)
+        await self.session.flush()
+        select = Select(EnterPlanet).where(EnterPlanet.army_id == army_id)
+        result = await self.session.execute(select)
 
     async def add_enter_city(self, army_id: int, target_id: int):
         """

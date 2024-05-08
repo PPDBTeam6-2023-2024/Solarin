@@ -38,7 +38,6 @@ async def get_planets_private(
     planets = await data_access.PlanetAccess.get_planets_of_user(user_id=user_id)
     return [Planet.to_dict(planet) for planet in planets]
 
-
 @router.websocket("/ws/{planet_id}")
 async def planet_socket(
         websocket: WebSocket,
@@ -49,9 +48,8 @@ async def planet_socket(
     user_id = get_my_id(auth_token)
 
     data_access = DataAccess(db)
-
+    planet_id = planet_id if planet_id != 0 else None
     connection_pool, new_conn = await manager.connect_planet(planet_id=planet_id, websocket=websocket, sub_protocol=auth_token)
-
     """
     We will take pending attacks into account so we can directly update the data
     We only need to do this when a new connection is established
@@ -72,8 +70,9 @@ async def planet_socket(
             data_type_map = {"get_armies": planet_actions.get_armies,
                              "change_direction": planet_actions.change_directions,
                              "leave_city": planet_actions.leave_city,
-                             "create_city": planet_actions.create_city}
-
+                             "create_city": planet_actions.create_city,
+                             "leave_planet": planet_actions.leave_planet,
+                             }
             """
             Execute mapped planet socket action function
             """

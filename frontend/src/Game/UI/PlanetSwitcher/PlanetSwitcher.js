@@ -9,7 +9,6 @@ import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
 import {PlanetListContext} from "../../Context/PlanetListContext";
 
 
-
 function PlanetSwitcher({planetIndex}) {
     /*This component displays The planet in the top and makes it possible to switch between planets*/
 

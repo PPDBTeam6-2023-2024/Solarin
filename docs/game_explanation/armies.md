@@ -15,3 +15,6 @@ When the army arrives, it will calculate the combat results, and remove the defe
 When an army clicks on its own army it will move towards that army and when it arrives will merge both armies.
 When an army moves to its own city, it will enter the city.
 To indicate which action will be done, Cursor indications are given when hovering over another city/army
+
+<br>![alt text](../images/fleets.png)
+Fleets, which are armies with at least one mothership unit,  are just like armies in terms of combat, merging, moving, viewing stats, etc... However they can also enter and exit planets. 

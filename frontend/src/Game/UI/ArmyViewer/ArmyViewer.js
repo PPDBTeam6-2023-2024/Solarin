@@ -16,11 +16,9 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
     useEffect(() => {
         const fetchTroops = async () => {
             try {
-
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/troops/${armyId}`);
                 if (response.status === 200) {
                     setTroops(response.data.troops);
-
                     setStats(response.data.stats);
                 }
             } catch (error) {
@@ -38,7 +36,6 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
                 };
 
         await socket.send(JSON.stringify(data_json));
-
     };
 
     // for every troop type in the army create a TroopEntry

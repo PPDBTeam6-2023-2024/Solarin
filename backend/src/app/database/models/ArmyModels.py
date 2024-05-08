@@ -290,6 +290,28 @@ class AttackCity(OnArrive):
         'polymorphic_identity': 'city'
     }
 
+class EnterPlanet(OnArrive):
+    """
+        Stores which planet we might enter when our fleet arrives at its position
+        (This table is a child of an ISA/polymorphic relation OnArrive)
+
+        army_id: the army that has the OnArrive event (on arrival of this army we will check the event)
+        target_id: the id of the planet we will enter when we arrive
+        """
+    __tablename__ = 'enterPlanet'
+
+    army_id = Column(Integer, ForeignKey("onArrive.army_id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
+
+    target_id = Column(Integer, ForeignKey("planet.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                       primary_key=True)
+
+    x = Column(Coordinate, nullable=False)
+    y = Column(Coordinate, nullable=False)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'planet enter'
+    }
 
 class EnterCity(OnArrive):
     """

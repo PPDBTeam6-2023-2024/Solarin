@@ -102,7 +102,7 @@ An overview of each the tables in the database:
 |   EnterCity    |  Data  | Stores which city we might enter when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                       |
 |  MergeArmies   |  Data  | Stores which army we merge with when we arrive     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                                               |
 |   ArmyInCity   |  Data  | Stores the armies that are present inside a city                                                                                                                                                                        |
-
+|   EnterPlanet  |  Data  | Stores which planet we might enter when our fleet arrives at its position (This table is a child of an ISA/polymorphic relation with OnArrive)
 </p>
 </details>
 

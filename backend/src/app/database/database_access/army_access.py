@@ -421,12 +421,34 @@ class ArmyAccess(DatabaseAccess):
 
                 army_stats[stat_name] = val
 
+        getUser = Select(Army.user_id).where(Army.id==army_id)
+        user_id = await self.session.execute(getUser)
+        user_id = user_id.scalar_one_or_none()
+        stance = await UserAccess(self.session).get_politics(user_id)
+
+        """
+        calculate and apply the modifiers gotten through the political stance of the user
+        default value = 1
+        """
+
+        strength_modifier = 1
+        speed_modifier = 1
+        if stance:
+            strength_modifier = ((stance.authoritarian * 30) - (stance.anarchism * 20) + (stance.theocracy * 15) - (stance.democratic * 10))/100
+            strength_modifier += 1
+
+            army_stats["city_attack"] = army_stats["city_attack"] * strength_modifier
+            army_stats["attack"] = army_stats["attack"] * strength_modifier
+
+            speed_modifier = ((stance.anarchism * 10) - (stance.corporate_state * 30) - (stance.theocracy * 5)) / 100
+            speed_modifier += 1
+
         """
         Speed is expresses as a weighted average, In case no troops are present, our
         army will have a speed of 100
         """
 
-        army_stats["speed"] = army_stats.get("speed", 100) / max(total_troop_amount, 1)
+        army_stats["speed"] = (army_stats.get("speed", 100) / max(total_troop_amount, 1)) * speed_modifier
 
         return army_stats
 

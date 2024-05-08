@@ -25,14 +25,10 @@ async def add_user(user: UserCreate, db=Depends(get_db)):
     """
     Try making an account
     """
+    data_access = DataAccess(db)
     try:
-        db_user = User(
-            email=user.email,
-            username=user.username,
-            hashed_password=pwd_context.hash(user.password)
-        )
-        db.add(db_user)
-        await db.commit()
+        await data_access.UserAccess.create_user(user.username, user.email, pwd_context.hash(user.password))
+        print(f"user {user.username} created")
         return {
             "username": user.username,
             "email": user.email

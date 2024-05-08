@@ -12,6 +12,8 @@ from ..exceptions.not_found_exception import NotFoundException
 from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.permission_exception import PermissionException
 from .database_acess import DatabaseAccess
+from .user_access import UserAccess
+
 
 class BuildingAccess(DatabaseAccess):
     """
@@ -339,12 +341,24 @@ class BuildingAccess(DatabaseAccess):
         production_modifier = await self.session.execute(get_production_modifier)
         production_modifier = production_modifier.fetchall()
 
+        """
+        calculate and apply the political modifier
+        default value = 1
+        """
+
+        stance = await UserAccess(self.session).get_politics(user_id)
+
+        general_production_modifier = 1
+        if stance:
+            general_production_modifier += ((stance.anarchism * 10) + (stance.democratic * 3) - (stance.theocracy * 10) - (
+                        stance.technocracy * 5) + (stance.corporate_state * 20)) / 100
 
 
         modifier_dict = dict()
         for row_list in production_modifier:
             resource_type = row_list[0]
             modifier_dict[resource_type] = row_list[1]
+            modifier_dict[resource_type] += general_production_modifier
 
 
         """
@@ -513,6 +527,5 @@ class BuildingAccess(DatabaseAccess):
             return False
 
         return results == user_id
-
 
 

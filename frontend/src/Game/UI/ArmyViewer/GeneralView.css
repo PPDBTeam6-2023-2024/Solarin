@@ -1,0 +1,7 @@
+.GeneralWindow{
+    cursor: pointer;
+}
+
+.GeneralWindow *{
+    cursor: pointer;
+}

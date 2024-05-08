@@ -103,7 +103,14 @@ async def get_troops(
             t.size = -1
             troops_schema[i] = t
 
-    return {"troops": troops_schema, "stats": army_stats}
+    general = await data_access.GeneralAccess.get_general(army_id)
+    if general is not None:
+        modifiers = await data_access.GeneralAccess.get_modifiers(general.name)
+        modifiers = [m.to_scheme() for m in modifiers]
+        general = general.to_scheme().dict()
+        general.update({"modifiers": modifiers})
+
+    return {"troops": troops_schema, "stats": army_stats, "general": general}
 
 
 @router.get("/armies_user")

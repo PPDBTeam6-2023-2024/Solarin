@@ -51,9 +51,11 @@ Our Endpoints are structured into multiple routers:
 <p>
 general logic information needed
 
-| Endpoint  | Method | Purpose                                      |
-|:---------:|:------:|:---------------------------------------------|
-| resources |  GET   | Get the current resources of a specific user |
+|    Endpoint     | Method | Purpose                                             |
+|:---------------:|:------:|:----------------------------------------------------|
+|    resources    |  GET   | Get the current resources of a specific user        |
+|    politics     |  GET   | Get the current political stance of a specific user |
+| update_politics |  POST  | update the political stance of a user               |
 
 </p>
 </details>
@@ -62,13 +64,16 @@ general logic information needed
 <summary><strong>CityManagement: '/cityManager'</strong></summary>
 <p>
 
-|      Endpoint       | Method | Purpose                                                                       |
-|:-------------------:|:------:|:------------------------------------------------------------------------------|
-|      buildings      |  GET   | Get the building information of the buildings inside the city                 |
-|       cities        |  GET   | Get all cities on a specific planet                                           |
-| new_building_types  |  GET   | Retrieve types of buildings that we can build (We cannot build a type double) |
-|  get_upgrade_cost   |  GET   | Get the upgrade costs of the buildings inside a city                          |
-|     cities_user     |  GET   | Get all the cities owned by a specific user                                   |
+|      Endpoint       | Method | Purpose                                                                                                                     |
+|:-------------------:|:------:|:----------------------------------------------------------------------------------------------------------------------------|
+|    get_city_data    |  GET   | Get the city information (rank, upgrade time remaining, region,..) and information of the buildings inside the city         |
+|       cities        |  GET   | Get all cities on a specific planet                                                                                         |
+| new_building_types  |  GET   | Retrieve types of buildings that we can build (We cannot build a type double)                                               |
+|  get_upgrade_cost   |  GET   | Get the upgrade costs of the buildings inside a city                                                                        |
+|     cities_user     |  GET   | Get all the cities owned by a specific user                                                                                 |
+|    upgrade_city     |  POST  | upgrade the rank of a city by 1 and adjust user resources accordingly                                                       |
+| get_resource_stocks |  GET   | Get the amount of resources currently in storage and the max capacity of each production building in the city               |
+
 
 </p>
 </details>
@@ -148,6 +153,19 @@ This router will handle the communication about Armies and their actions
 | Endpoint |  Method   | Purpose                         |
 |:--------:|:---------:|:--------------------------------|
 |    WS    | WEBSOCKET | Websocket for handeling trading |
+
+</p>
+</details>
+
+<details>
+<summary><strong>GeneralRouter: '/general'</strong></summary>
+<p>
+
+|      Endpoint      | Method | Purpose                                                             |
+|:------------------:|:------:|:--------------------------------------------------------------------|
+| available_generals |  GET   | Retrieve the generals that are still able to be assigned to an army |
+|    add_general     |  POST  | Assign a general to an army                                         |
+|   remove_general   |  POST  | Un-assign a general from an army                                    |
 
 </p>
 </details>

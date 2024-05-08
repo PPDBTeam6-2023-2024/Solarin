@@ -4,8 +4,8 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
 import {
     getArmyInCity,
-    getBuildings,
-    getNewBuildingTypes,
+    getCityData,
+    getNewBuildingTypes, getResourcesInStorage,
     getUpgradeCost
 } from './BuildingManager';
 import NewBuildingGrid from './Grids/NewBuildingGrid';
@@ -16,6 +16,8 @@ import ArmyGrid from "./Grids/ArmyGrid";
 import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer/EntityViewer";
 import {initializeResources} from "../../UI/ResourceViewer/ResourceViewer"
 import {useDispatch} from 'react-redux'
+import CityInfoGrid from "./Grids/CityInfoGrid";
+import {getCityImage} from "./GetCityImage";
 
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
@@ -27,8 +29,12 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
     /*List of the buildings inside the city*/
     const [buildings, setBuildings] = useState([]);
+    const [resourcesInStorage, setResourcesInStorage] = useState([])
+    const [cityUpgradeTimer, setCityUpgradeTimer] = useState([])
 
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
+    const [cityUpgradeInfo, setCityUpgradeInfo] = useState([]);
+    const [cityInfo, setCityInfo] = useState([])
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
     const [troops, setTroops] = useState([]); // State for troops
 
@@ -53,21 +59,33 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
         /* Refresh buildings and types, by loading its current information from the backend*/
 
         /*Get information about the current buildings inside the city*/
-        getBuildings(cityId).then(buildings => {
-                setBuildings(buildings)
+        getCityData(cityId).then(cityData => {
+                setBuildings(cityData?.buildings)
+                setCityUpgradeTimer(cityData?.city?.remaining_update_time)
+                setCityInfo(cityData?.city)
             });
 
         /*Get information about the upgrade cost of a building*/
         getUpgradeCost(cityId).then(buildings => {
-            const costMap = buildings.reduce((acc, building) => {
+                const building_costs = buildings?.[0];
+            if (!Array.isArray(building_costs)) {
+                console.error("Invalid or no data for building costs:", building_costs);
+                return;
+            }
+            const costMap = building_costs?.reduce((acc, building) => {
                 acc[building.id] = building;
                 return acc;
             }, {});
+            setCityUpgradeInfo(buildings?.[1]);
             setUpgradeCostMap(costMap);
         });
         getNewBuildingTypes(cityId).then(newBuildingTypes => {
             setNewBuildingTypes(newBuildingTypes)
         });
+        getResourcesInStorage(cityId).then(resourcesInStorage=> {
+            setResourcesInStorage(resourcesInStorage.overview);
+        }
+    )
     };
 
     const onRowMouseOver = event => {
@@ -108,6 +126,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         <button onClick={() => setSelectedTab('currentBuildings')}>Current Buildings</button>
                         <button onClick={() => setSelectedTab('newBuildings')}>New Buildings</button>
                         <button onClick={() => setSelectedTab('Army')}>Army</button>
+                        <button onClick={() => setSelectedTab('City')}>City</button>
                     </div>
 
                     {selectedTab === 'currentBuildings' && <CurrentBuildingGrid
@@ -121,6 +140,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         setUpgradeCostMap={setUpgradeCostMap}
                         setBuildings={setBuildings}
                         refreshResources={() => initializeResources(dispatch)}
+                        resourcesInStorage={resourcesInStorage}
+                        setResourcesInStorage={setResourcesInStorage}
+                        setCityInfo={setCityInfo}
                     />}
                     {selectedTab === 'newBuildings' &&
                               <NewBuildingGrid
@@ -141,6 +163,24 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         selectedImage={selectedImage}
                         refresh={cityContextLoader}
                     />
+                    }
+
+                    {selectedTab === 'City' && <CityInfoGrid
+                        cityUpgradeInfo={cityUpgradeInfo}
+                        onRowMouseOver={onRowMouseOver}
+                        refresh={cityContextLoader}
+                        setBuildings={setBuildings}
+                        refreshResources={() => initializeResources(dispatch)}
+                        setUpgradeCostMap={setUpgradeCostMap}
+                        cityId = {cityId}
+                        setCityUpgradeInfo={setCityUpgradeInfo}
+                        upgradeCost={cityUpgradeInfo}
+                        cityInfo = {cityInfo}
+                        setCityInfo = {setCityInfo}
+                        cityUpgradeTimer={cityUpgradeTimer}
+                        setCityUpgradeTimer={setCityUpgradeTimer}
+                    />
+
                     }
 
 

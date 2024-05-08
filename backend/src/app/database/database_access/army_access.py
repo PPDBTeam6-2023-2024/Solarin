@@ -3,13 +3,22 @@ from math import dist
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import *
-from .city_access import CityAccess
 from ..exceptions.permission_exception import PermissionException
 from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
 from ..models.ArmyModels import Army
+
+from .city_access import CityAccess
+
+"""
+Pre declaration of class because else circular import
+"""
+
+
+class GeneralAccess:
+    pass
 
 
 class ArmyAccess(DatabaseAccess):
@@ -433,7 +442,7 @@ class ArmyAccess(DatabaseAccess):
             ArmyConsistsOf.army_id == army_id)
 
         results = await self.session.execute(get_troops)
-        army_troops = results.all()
+        army_troops = results.unique().all()
 
         """
         A dictionary that has all the stats of an army
@@ -460,12 +469,47 @@ class ArmyAccess(DatabaseAccess):
 
                 army_stats[stat_name] = val
 
+        getUser = Select(Army.user_id).where(Army.id==army_id)
+        user_id = await self.session.execute(getUser)
+        user_id = user_id.scalar_one_or_none()
+        stance = await UserAccess(self.session).get_politics(user_id)
+
+        """
+        calculate and apply the modifiers gotten through the political stance of the user
+        default value = 1
+        """
+
+        strength_modifier = 1
+        speed_modifier = 1
+        if stance:
+            strength_modifier = ((stance.authoritarian * 30) - (stance.anarchism * 20) + (stance.theocracy * 15) - (stance.democratic * 10))/100
+            strength_modifier += 1
+
+            army_stats["city_attack"] = army_stats["city_attack"] * strength_modifier
+            army_stats["attack"] = army_stats["attack"] * strength_modifier
+
+            speed_modifier = ((stance.anarchism * 10) - (stance.corporate_state * 30) - (stance.theocracy * 5)) / 100
+            speed_modifier += 1
+
+        """
+        Modify the army stats based on the general of the army
+        """
+        ga = GeneralAccess(self.session)
+        general = await ga.get_general(army_id)
+
+        modifiers = []
+        if general is not None:
+            modifiers = await ga.get_modifiers(general.name)
+
+        for m in modifiers:
+            army_stats[m.stat] *= (1+m.amount)
+
         """
         Speed is expresses as a weighted average, In case no troops are present, our
         army will have a speed of 100
         """
 
-        army_stats["speed"] = army_stats.get("speed", 100) / max(total_troop_amount, 1)
+        army_stats["speed"] = (army_stats.get("speed", 100) / max(total_troop_amount, 1)) * speed_modifier
 
         return army_stats
 
@@ -649,6 +693,19 @@ class ArmyAccess(DatabaseAccess):
             await self.add_to_army(army_id, ac.troop_type, ac.rank, ac.size)
 
         """
+        If the removing army does have a general and the remaining not, we will also move the general
+        """
+        ga = GeneralAccess(self.session)
+
+        general_a = await ga.get_general(army_id)
+        general_b = await ga.get_general(from_army_id)
+
+        if general_a is None and general_b is not None:
+            army_owner = await self.get_army_owner(from_army_id)
+            await ga.remove_general(army_owner.id, from_army_id)
+            await ga.assign_general(army_owner.id, army_id, general_b.name)
+
+        """
         Remove original army
         """
         await self.remove_army(from_army_id)
@@ -799,3 +856,5 @@ class ArmyAccess(DatabaseAccess):
             curr_y = y_diff * (current_time_diff / total_time_diff) + curr_y
 
         return army.planet_id, curr_x, curr_y
+
+from .general_access import GeneralAccess

@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import *
 from sqlalchemy import select, not_, or_, join
+
+from ..models.SettlementModels import BuildingType
 from ....logic.formula.compute_properties import *
 from .resource_access import ResourceAccess
 from .city_access import CityAccess
@@ -10,6 +12,7 @@ from ..exceptions.not_found_exception import NotFoundException
 from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.permission_exception import PermissionException
 from .database_acess import DatabaseAccess
+from .user_access import UserAccess
 
 
 class BuildingAccess(DatabaseAccess):
@@ -225,9 +228,73 @@ class BuildingAccess(DatabaseAccess):
 
         return buildings_data
 
-    async def collect_resources(self, user_id: int, building_id: int):
+    async def get_building_rank(self, building_id: int):
         """
-        Collect resources from a production building
+        Get the rank of a building
+
+        :param: building_id: id of the building whose rank we want
+        return: int indicating the rank of the building
+        """
+        get_rank = Select(BuildingInstance.rank).where(BuildingInstance.id == building_id)
+        rank = await self.session.execute(get_rank)
+        rank = rank.scalar_one()
+        return rank
+
+    async def get_region_controlled_by(self, region_id: int) -> int | None:
+        """
+        Get the controller of a region
+
+        :param: region_id: id of the region we want to check
+        :return: user_id of controller of the region, returns None if there is no controller of the region,
+        meaning at least two different users have cities in the region
+        """
+
+        get_cities = Select(City).where(City.region_id == region_id)
+        cities = await self.session.execute(get_cities)
+        cities = set(cities.scalars().all())
+        users = set()
+        for city in cities:
+            city: City
+            users.add(city.controlled_by)
+        if len(users) != 1:
+            return None
+        else:
+            return users.pop()
+
+    async def get_resource_stocks(self, user_id: int, city_id: int):
+        """
+        Get the dict with resources for each building in a city
+
+        :param: user_id: the id of the user who is collecting the resources
+        :param: city_id: id of the target city
+        """
+
+        ba = BuildingAccess(self.session)
+        building_list = await BuildingAccess.get_city_buildings(ba,city_id)
+
+        get_production_building_list = select(ProductionBuildingType)
+        production_building_list = await self.session.execute(get_production_building_list)
+        production_building_list = production_building_list.all()
+
+
+        production_building_set = set()
+        for building in production_building_list:
+            production_building_set.add(building[0])
+
+        overview_dict = dict()
+
+        for building_instance in building_list:
+            building_instance: BuildingInstance
+            if building_instance.type in production_building_set:
+                temp = await self.collect_resources(user_id, building_instance.id, False)
+                overview_dict[building_instance.id] = temp
+
+        return overview_dict
+
+    async def collect_resources(self, user_id: int, building_id: int, collect_resources: bool):
+        """
+        Get the resources stocks for a building and
+        collect resources from a production building ( by setting collect_resources=True )
 
         :param: user_id: the id of the user who is collecting the resources
         :param: building_id: id of the building whose resources we will collect
@@ -258,25 +325,100 @@ class BuildingAccess(DatabaseAccess):
         hours = delta.total_seconds()/3600
 
         """
+        Get planet_region building is located in
+        """
+        get_building = select(BuildingInstance).where(BuildingInstance.id==building_id)
+        building = await self.session.execute(get_building)
+        building: BuildingInstance = building.first()[0]
+
+        get_planet_region_id = select(City.region_id).where(building.city_id == City.id)
+        planet_region_id = await self.session.execute(get_planet_region_id)
+        planet_region_id = planet_region_id.scalar_one_or_none()
+
+        region_controller = await self.get_region_controlled_by(planet_region_id)
+
+        region_control = False
+        if region_controller == user_id:
+            region_control = True
+
+        """
+        Get production bonuses based on region type and store as dict
+        """
+        get_production_modifier = select(ProductionRegionModifier.resource_type, ProductionRegionModifier.modifier) \
+            .join(City, City.id == building.city_id) \
+            .join(PlanetRegion, City.region_id == PlanetRegion.id).where(ProductionRegionModifier.region_type == PlanetRegion.region_type)
+
+
+        production_modifier = await self.session.execute(get_production_modifier)
+        production_modifier = production_modifier.fetchall()
+
+        """
+        calculate and apply the political modifier
+        default value = 1
+        """
+
+        stance = await UserAccess(self.session).get_politics(user_id)
+
+        general_production_modifier = 1
+        if stance:
+            general_production_modifier += ((stance.anarchism * 10) + (stance.democratic * 3) - (stance.theocracy * 10) - (
+                        stance.technocracy * 5) + (stance.corporate_state * 20)) / 100
+
+
+        modifier_dict = dict()
+        for row_list in production_modifier:
+            resource_type = row_list[0]
+            modifier_dict[resource_type] = row_list[1]
+            modifier_dict[resource_type] += general_production_modifier
+
+
+        """
+        Store new amount to list
+        """
+        updated_resource_stocks = []
+
+        """
         Add the resources to user taking into account the max capacity
         """
         ra = ResourceAccess(self.session)
         for p in production:
             """
-            Apply the bonus for higher levels of buildings
+            if regional modifier exists, apply
+            else set regional modifier to 1.0
             """
-            production_rate = PropertyUtility.getGPR(1.0, p[0].base_production, p[1])
-            max_capacity = PropertyUtility.getGPR(1.0, p[0].max_capacity, p[1])
-            await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours), max_capacity))
+            modifier_ = modifier_dict.get(p[0].resource_name)
+            if modifier_ is None:
+                modifier_ = 1.0
+
+            """
+            Calculate production rate using following modifiers:
+            - bonus for higher levels of buildings
+            - regional modifiers (for higher yields in certain regions)
+            - control modifier (higher production rate if in control of region)
+            """
+            production_rate = PropertyUtility.getGPR(modifier_, p[0].base_production, p[1], region_control)
+
+            max_capacity = PropertyUtility.getGPR(modifier_, p[0].max_capacity, p[1], False)
+
+            # add increased resource to list
+            updated_resource_stocks.append((p[0].resource_name, min(int(production_rate*hours),max_capacity), max_capacity ))
+
+            # if flag "increase_resources" is on, increase resources
+            if collect_resources:
+                await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours), max_capacity))
+
 
         """
-        Check the building, indicating that the last checked timer needs to be set to now
+        If flag "increase_resources" is on,
+        check the building, indicating that the last checked timer needs to be set to now
         """
-        await self.checked(building_id)
+        if collect_resources:
+            await self.checked(building_id)
 
-        await self.session.commit()
+            await self.session.commit()
 
-        return True
+        return updated_resource_stocks
+
 
     async def upgrade_building(self, user_id: int, building_id: int):
         """

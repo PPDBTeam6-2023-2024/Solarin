@@ -33,7 +33,18 @@ class ResourceType(Base):
     __tablename__ = 'resourceType'
     name = Column(String, primary_key=True)
 
+class ProductionRegionModifier(Base):
+    """
+    Stores the modifiers applied to resource production based on the planet's region type.
 
+    resource_type: Identifier for the type of resource.
+    region_type: Type of the planetary region affecting production.
+    production_modifier: Multiplier for base production rates, indicating boosts or reductions.
+    """
+    __tablename__ = 'ProductionRegionModifier'
+    resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
+    region_type = Column(String, ForeignKey('planetRegionType.region_type'), primary_key=True)
+    modifier = Column(Float(precision=53))
 class TradeOffer(Base):
     """
     Trading Offers need to be stored, for storing the offer, we use the Trade Offer Table
@@ -55,7 +66,7 @@ class TradeOffer(Base):
     receives = relationship("TradeReceives", back_populates="offer", lazy='joined')
 
     def toSchema(self):
-        return TradeOfferSchema(user_id=self.offer_owner, offer_id=self.id, 
+        return TradeOfferSchema(user_id=self.offer_owner, offer_id=self.id,
                                 gives=[(g.resource_type, g.amount) for g in self.gives],
                                 receives=[(r.resource_type, r.amount) for r in self.receives])
 

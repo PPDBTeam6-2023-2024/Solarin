@@ -5,6 +5,8 @@ from ..database import Base
 from ...routers.authentication.schemas import MessageToken
 from ...routers.chat.schemas import MessageOut
 
+from .domains import Decimal
+
 from ..models import *
 
 
@@ -137,3 +139,20 @@ class AllianceRequest(Base):
                      primary_key=True)
     alliance_name = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED',
                                               ondelete="cascade"), nullable=False)
+
+
+class PoliticalStance(Base):
+    """
+    Stores how much a user leans into the different types of societies in ranges of [0,1]
+
+    """
+    __tablename__ = "politicalStance"
+    user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     primary_key=True)
+
+    anarchism = Column(Decimal, nullable=False)
+    authoritarian = Column(Decimal, nullable=False)
+    democratic = Column(Decimal, nullable=False)
+    corporate_state = Column(Decimal, nullable=False)
+    theocracy = Column(Decimal, nullable=False)
+    technocracy = Column(Decimal, nullable=False)

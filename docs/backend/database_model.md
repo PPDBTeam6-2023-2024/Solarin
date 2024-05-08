@@ -39,7 +39,7 @@ An overview of each the tables in the database:
 |    FriendsOf    | Data | Store which users are friends with each other                                                                                                            |
 |  FriendRequest  | Data | Stores which users have pending friend requests                                                                                                          |
 | AllianceRequest | Data | Stores which users have pending alliance requests to join an alliance (needs to be accepted by someone in the alliance)                                  |
-
+| PoliticalStance | Data | Stores information about the political direction of the user                                                                                             |
 </p>
 </details>
 
@@ -77,6 +77,8 @@ An overview of each the tables in the database:
 | ProductionBuildingType | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
 |   ProducesResources    | Lookup | Stores which resources a production building produces                                                                     |   
 |      CreationCost      | Lookup | Stores the cost to create/upgrade certain buildings                                                                       |
+|       CityCosts        | Lookup | Stores the base cost to create/upgrade a city                                                                             |
+|    CityUpdateQueue     | Lookup | Stores the cities being upgraded                                                                                          |
 
 
 </p>
@@ -86,21 +88,27 @@ An overview of each the tables in the database:
 <summary><strong>Armies</strong></summary>
 <p>
 
-|     Table      |  Type  | Purpose                                                                                                                                                                                                                 |
-|:--------------:|:------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TrainingQueue  |  Data  | One entry stores the training data of 1 Entry in a trainingQueue,<br/>The table keeps track of which units need to be trained and in which order                                                                        |  
-|   TroopType    | Lookup | Types of troops that are in the game                                                                                                                                                                                    |
-| TroopTypeCost  | Lookup | Stores which resources and how much of them it costs to train a unit                                                                                                                                                    |
-|      Army      |  Data  | Stores data about an army                                                                                                                                                                                               |
-| ArmyConsistsOf |  Data  | The relation indication which types of units are part of the army and in what quantities                                                                                                                                |
-|   TroopRank    |  Data  | Stores the rank of the unit for a specific user (if no entry, the rank is 1)                                                                                                                                            |
-| AttackOnArrive |  Data  | To handle actions when an army arrives in an IDLE manner we use this table to keep track of events that need to occur when an army arrives at its destination (This table is the parent of an ISA/polymorphic relation) |
-|   AttackArmy   |  Data  | Stores which other army we might attack when our army arrives at its position  (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                   |
-|   AttackCity   |  Data  | Stores which city we might attack when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                      |
-|   EnterCity    |  Data  | Stores which city we might enter when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                       |
-|  MergeArmies   |  Data  | Stores which army we merge with when we arrive     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                                               |
-|   ArmyInCity   |  Data  | Stores the armies that are present inside a city                                                                                                                                                                        |
-|   EnterPlanet  |  Data  | Stores which planet we might enter when our fleet arrives at its position (This table is a child of an ISA/polymorphic relation with OnArrive)
+|      Table      |  Type  | Purpose                                                                                                                                                                                                                 |
+|:---------------:|:------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  TrainingQueue  |  Data  | One entry stores the training data of 1 Entry in a trainingQueue,<br/>The table keeps track of which units need to be trained and in which order                                                                        |  
+|    TroopType    | Lookup | Types of troops that are in the game                                                                                                                                                                                    |
+|  TroopTypeCost  | Lookup | Stores which resources and how much of them it costs to train a unit                                                                                                                                                    |
+|      Army       |  Data  | Stores data about an army                                                                                                                                                                                               |
+| ArmyConsistsOf  |  Data  | The relation indication which types of units are part of the army and in what quantities                                                                                                                                |
+|    TroopRank    |  Data  | Stores the rank of the unit for a specific user (if no entry, the rank is 1)                                                                                                                                            |
+| AttackOnArrive  |  Data  | To handle actions when an army arrives in an IDLE manner we use this table to keep track of events that need to occur when an army arrives at its destination (This table is the parent of an ISA/polymorphic relation) |
+|   AttackArmy    |  Data  | Stores which other army we might attack when our army arrives at its position  (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                   |
+|   AttackCity    |  Data  | Stores which city we might attack when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                      |
+|    EnterCity    |  Data  | Stores which city we might enter when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                       |
+|   MergeArmies   |  Data  | Stores which army we merge with when we arrive     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                                               |
+|   ArmyInCity    |  Data  | Stores the armies that are present inside a city                                                                                                                                                                        |
+|      Stat       | Lookup | Table for all types of stats of an army                                                                                                                                                                                 |
+|  TroopHasStat   | Lookup | Association between stats and troop type                                                                                                                                                                                |
+|    Generals     | Lookup | Stores all the general types                                                                                                                                                                                            |
+| ArmyHasGeneral  |  Data  | Stores whether a general is assigned to a specific army                                                                                                                                                                 |
+| GeneralModifier | Lookup | Stores which modifiers this general provide when the general is in the army                                                                                                                                             |
+|   EnterPlanet   |  Data  | Stores which planet we might enter when our fleet arrives at its position (This table is a child of an ISA/polymorphic relation with OnArrive)                                                                          |
+
 </p>
 </details>
 
@@ -108,13 +116,14 @@ An overview of each the tables in the database:
 <summary><strong>Resources</strong></summary>
 <p>
 
-|     Table     |  Type  | Purpose                                                                                                           |
-|:-------------:|:------:|:------------------------------------------------------------------------------------------------------------------|
-| ResourceType  | Lookup | Types of resources that are in the game                                                                           |  
-| HasResources  |  Data  | Store resources associated with a user (stores how many of the resources a user has)                              |
-|  TradeOffer   |  Data  | Stores the currently active trading offers                                                                        |
-|  TradeGives   |  Data  | This table stores which resources a user will give to the trade offer setter when he/she accepts the trade offer. |
-| TradeReceives |  Data  | This table stores which resources a user will receive from the trade offer setter when he/she accepts the trade   |
+|          Table           |  Type  | Purpose                                                                                                           |
+|:------------------------:|:------:|:------------------------------------------------------------------------------------------------------------------|
+|       ResourceType       | Lookup | Types of resources that are in the game                                                                           |  
+|       HasResources       |  Data  | Store resources associated with a user (stores how many of the resources a user has)                              |
+|        TradeOffer        |  Data  | Stores the currently active trading offers                                                                        |
+|        TradeGives        |  Data  | This table stores which resources a user will give to the trade offer setter when he/she accepts the trade offer. |
+|      TradeReceives       |  Data  | This table stores which resources a user will receive from the trade offer setter when he/she accepts the trade   |
+| ProductionRegionModifier |  Data  | Stores the modifiers applied to resource production based on the planet's region type.                            |
 
 
 </p>
@@ -140,6 +149,7 @@ The following domains are used:
 |:---------------:|:------------------------------------------------|
 |   Coordinate    | Domain for coordinates that are in range [0, 1] |  
 | PositiveInteger | Domain for integers that need to be positive    |  
+|   Percentage    | Value in range between [-1, 1]                  |  
 
 </p>
 </details>

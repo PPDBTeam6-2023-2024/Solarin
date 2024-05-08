@@ -77,10 +77,11 @@ async def collect_resource(
     Collect resources from specific building
     """
     data_access = DataAccess(db)
-    confirmed = await data_access.BuildingAccess.collect_resources(user_id, building_id)
-    if not confirmed:
+    updated_stock: list = await data_access.BuildingAccess.collect_resources(user_id, building_id, True)
+
+    if len(updated_stock) == 0:
         raise HTTPException(status_code=400, detail="Resources could not be updated or created.")
-    return Confirmation(confirmed=confirmed)
+    return Confirmation(confirmed=True)
 
 
 @router.post("/upgrade_building/{building_id}", response_model=Confirmation)

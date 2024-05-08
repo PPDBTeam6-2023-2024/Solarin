@@ -10,7 +10,7 @@
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
     height: 80%; /* Take % height of the cell */
-    transform: translateY(10%);
+    transform: translateY(30%);
 }
 
 
@@ -38,6 +38,7 @@
     height: 10%;
     width: 100%;
     top: 5%;
+    transform: translateY(-150%);
     /*transform: translateY(350%) translateX(-20%);*/
 }
 
@@ -63,4 +64,19 @@
     height: 10%;
     width: 100%;
     top: 5%;
+}
+
+.resource-details table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.resource-details th, .resource-details td {
+    border: 1px solid red;
+    padding: 8px;
+    text-align: left;
+}
+
+.resource-details th {
+    background-color: transparent;
 }

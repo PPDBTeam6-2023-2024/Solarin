@@ -32,6 +32,8 @@ class City(Base):
 
     region = relationship("PlanetRegion", back_populates="cities", lazy='joined')
 
+    population = Column(Integer, default= 1024)
+
     def to_city_schema(self):
         """
         Convert the City object to a CitySchema (scheme)
@@ -45,7 +47,8 @@ class City(Base):
                           rank=self.rank,
                           region_type=self.region.region_type,
                           planet_name=self.region.planet.name,
-                          planet_id=self.region.planet_id)
+                          planet_id=self.region.planet_id,
+                          population=self.population)
 
 
 class BuildingInstance(Base):
@@ -252,3 +255,29 @@ class CreationCost(Base):
     cost_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
     cost_amount = Column(PositiveInteger, nullable=False)
 
+class CityCosts(Base):
+    """
+    Stores the costs related to city-related activities.
+
+    activity: The type of activity the cost is associated with, such as 'construction' or 'upgrade'.
+    resource_type: The type of resource required, linked via foreign key to a 'resourceType' table.
+    cost_amount: The amount of the resource required to complete the activity.
+    time_cost: The time required to complete the activity, measured in seconds.
+    """
+    __tablename__ = "CityCosts"
+    activity = Column(String, primary_key=True)
+    resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
+    time_cost = Column(Integer, nullable=True)
+    cost_amount = Column(Integer, nullable=False)
+
+class CityUpdateQueue(Base):
+    """
+    Queue that holds cities being updated
+    city_id: the id number of a city
+    start_time: the time at which the update started
+    duration: the duration of the update in seconds
+    """
+    __tablename__ = "CityUpdateQueue"
+    city_id = Column(ForeignKey("city.id"), primary_key=True)
+    start_time = Column(DateTime, nullable=False)
+    duration = Column(Integer)

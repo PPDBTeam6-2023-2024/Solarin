@@ -2,10 +2,10 @@ import axios from "axios";
 import Records from "./../../UI/buildingImages.json"
 
 // get all the buildings inside a given city
-export const getBuildings = async (cityId) => {
+export const getCityData = async (cityId) => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/buildings/${cityId}`);
-        if (response.status === 200 && Array.isArray(response.data)) {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_city_data/${cityId}`);
+        if (response.status === 200) {
             return response.data;
         }
         return [];
@@ -110,5 +110,30 @@ export const getImageForBuildingType = (buildingType) => {
         return `${process.env.PUBLIC_URL}/Images/building_images/${Records[buildingType].icon}`;
     }
     return null;
+}
+
+export const upgradeCity = async (cityId) => {
+    try {
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/upgrade_city/${cityId}`);
+        if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error) {
+        console.error('Error upgrading city', error);
+        return null;
+    }
+    return null;
+}
+
+export const getResourcesInStorage = async (cityId) =>{
+    try{
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_resource_stocks/${cityId}`);
+        if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error){
+        console.error('Error retrieving resources in storage', error);
+        return null;
+    }
 }
 

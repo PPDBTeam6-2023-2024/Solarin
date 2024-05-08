@@ -64,16 +64,15 @@ class PropertyUtility:
     def getGUC(creation_cost: int, level: int) -> int:
         """
         Calculate the general upgrade cost, based on the base creation cost and the level
-
         """
         return int((creation_cost * (level+1)) / 2)
 
     @staticmethod
-    def getGPR(modifier: float, base_rate: int, level: int) -> int:
+    def getGPR(modifier: float, base_rate: int, level: int, region_control: bool) -> int:
         """
         General production rate, decides how fast resources are produced
         """
-        return int(floor(modifier * base_rate * (level ** 2)))
+        return int(floor(modifier * base_rate * (level ** 2) * (1.0 + 0.25* int(region_control))))
 
     @staticmethod
     def getArmyStrength(army_stats: dict[str, int], city_weight) -> float:
@@ -161,3 +160,23 @@ class PropertyUtility:
         """
         map_cross_time = 1000 / army_speed * 3600
         return map_cross_time
+
+    @staticmethod
+    def get_upgrade_city_costs(upgrade_time: int, upgrade_cost: list[tuple[int,int]],level: int):
+        """
+        Calculate the resource cost and the time (in seconds) needed to upgrade a city
+
+        upgrade_cost: list with base cost to upgrade a city of the form [(resource_type, amount_required),...]
+        upgrade_time: base time required to upgrade a city
+        level: current level of the city
+        """
+
+
+
+        resource_cost=[(cost[0],PropertyUtility.getGUC(cost[1], level)) for cost in upgrade_cost]
+
+        time_cost = floor(upgrade_time * pow(1.15,level+1))
+
+        return resource_cost, time_cost
+
+

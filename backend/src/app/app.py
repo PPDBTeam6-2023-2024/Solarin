@@ -15,7 +15,7 @@ from .routers.trading.router import router as trade_router
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
 from .database.models import *
-
+from .routers.generalRouter.router import router as general_router
 
 def init_app(config: APIConfig) -> FastAPI:
     app = FastAPI(title="SolarinAPI", root_path="/api")
@@ -41,6 +41,7 @@ def init_app(config: APIConfig) -> FastAPI:
     app.include_router(unit_router)
     app.include_router(spawn_router)
     app.include_router(trade_router)
+    app.include_router(general_router)
 
     if config.db:
         sessionmanager.init(config.db.get_connection_string().get_secret_value())

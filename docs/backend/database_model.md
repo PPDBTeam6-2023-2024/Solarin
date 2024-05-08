@@ -107,7 +107,7 @@ An overview of each the tables in the database:
 |    Generals     | Lookup | Stores all the general types                                                                                                                                                                                            |
 | ArmyHasGeneral  |  Data  | Stores whether a general is assigned to a specific army                                                                                                                                                                 |
 | GeneralModifier | Lookup | Stores which modifiers this general provide when the general is in the army                                                                                                                                             |
-|   EnterPlanet  |  Data  | Stores which planet we might enter when our fleet arrives at its position (This table is a child of an ISA/polymorphic relation with OnArrive) |
+|   EnterPlanet   |  Data  | Stores which planet we might enter when our fleet arrives at its position (This table is a child of an ISA/polymorphic relation with OnArrive)                                                                          |
 
 </p>
 </details>

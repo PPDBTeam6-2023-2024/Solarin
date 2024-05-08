@@ -4,6 +4,7 @@
 
 .ResourceFilterIcon{
     width: 4vw;
+    height: 4vw;
     display: inline-block;
     padding: 0.3vw;
     border: 0.1vw solid var(--tertiaryColor);
@@ -14,4 +15,10 @@
 
 .ResourceFilterIcon:hover{
     transform: scale(110%);
+}
+
+.ResourceFilterAddTradeCross{
+    background-image: linear-gradient(5deg, var(--tertiaryColor), var(--secundaryColor));
+    clip-path: polygon(0 35%, 35% 35%, 35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65%);
+
 }

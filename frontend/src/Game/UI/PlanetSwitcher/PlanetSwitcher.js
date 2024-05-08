@@ -9,7 +9,6 @@ import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
 import {PlanetListContext} from "../../Context/PlanetListContext";
 
 
-
 function PlanetSwitcher({planetIndex}) {
     /*This component displays The planet in the top and makes it possible to switch between planets*/
 
@@ -41,7 +40,7 @@ function PlanetSwitcher({planetIndex}) {
                         setPlanetListIndex(new_id)
                     }}/>
                     {/*Displays the planet name*/}
-                    <h1>{planetList[planetListIndex][1]}</h1>
+                    <h1>{planetList[planetListIndex].name}</h1>
 
                     {/*Display next planet button*/}
                     <RiArrowRightSLine className="transition ease-in-out hover:scale-150" onClick={() => {

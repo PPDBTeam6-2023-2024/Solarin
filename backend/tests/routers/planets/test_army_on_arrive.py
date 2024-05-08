@@ -16,7 +16,7 @@ async def test_attack_army(client, data_access: DataAccess):
     )
 
     sregion_id = await data_access.PlanetAccess.create_space_region("test")
-    planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", sregion_id)
+    planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", sregion_id, 1, 1)
     await data_access.PlanetAccess.create_planet_region(planet_id, "arctic", 0, 0)
 
     army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)

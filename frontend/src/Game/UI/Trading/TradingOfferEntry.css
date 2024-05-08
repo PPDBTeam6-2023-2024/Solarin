@@ -3,15 +3,17 @@
     margin-right: auto;
     margin-top: 1vw;
     width: 95%;
-    height: 7vw;
     border: 0.1vw solid var(--tertiaryColor);
     border-radius: 2vw 2vw 2vw 2vw;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
 }
 
 .TradingOfferEntryResourceSide{
     display: inline-block;
     font-size: 0.8vw;
-    vertical-align: bottom;
+    vertical-align: top;
 }
 
 .offer_button:hover{

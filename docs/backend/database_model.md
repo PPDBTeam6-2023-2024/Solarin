@@ -100,7 +100,7 @@ An overview of each the tables in the database:
 |   EnterCity    |  Data  | Stores which city we might enter when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                       |
 |  MergeArmies   |  Data  | Stores which army we merge with when we arrive     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                                               |
 |   ArmyInCity   |  Data  | Stores the armies that are present inside a city                                                                                                                                                                        |
-
+|   EnterPlanet  |  Data  | Stores which planet we might enter when our fleet arrives at its position (This table is a child of an ISA/polymorphic relation with OnArrive)
 </p>
 </details>
 
@@ -108,10 +108,14 @@ An overview of each the tables in the database:
 <summary><strong>Resources</strong></summary>
 <p>
 
-|    Table     |  Type  | Purpose                                                                              |
-|:------------:|:------:|:-------------------------------------------------------------------------------------|
-| ResourceType | Lookup | Types of resources that are in the game                                              |  
-| HasResources |  Data  | Store resources associated with a user (stores how many of the resources a user has) |
+|     Table     |  Type  | Purpose                                                                                                           |
+|:-------------:|:------:|:------------------------------------------------------------------------------------------------------------------|
+| ResourceType  | Lookup | Types of resources that are in the game                                                                           |  
+| HasResources  |  Data  | Store resources associated with a user (stores how many of the resources a user has)                              |
+|  TradeOffer   |  Data  | Stores the currently active trading offers                                                                        |
+|  TradeGives   |  Data  | This table stores which resources a user will give to the trade offer setter when he/she accepts the trade offer. |
+| TradeReceives |  Data  | This table stores which resources a user will receive from the trade offer setter when he/she accepts the trade   |
+
 
 </p>
 </details>

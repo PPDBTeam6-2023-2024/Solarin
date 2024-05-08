@@ -15,7 +15,7 @@ const Game = () => {
     const [isAuth, setIsAuth] = useState(false)
     const [userInfo, setUserInfo] = useState(null)
     const [viewMode, setViewMode] = useState(View.PlanetView)
-    const [planetList, setPlanetList] = useState([[1, "Terra"]])
+    const [planetList, setPlanetList] = useState([{"id": 1, "name": "Terra"}])
     const [planetListIndex, setPlanetListIndex] = useState(0)
 
     const authenticate = async () => {
@@ -32,7 +32,7 @@ const Game = () => {
     }
 
     const setPlanetListToDefault = async () => {
-        setPlanetList([[1, "Terra"]])
+        setPlanetList([{"id": 1, "name": "Terra"}])
     }
 
     const getAllPlanets = async () => {
@@ -41,13 +41,12 @@ const Game = () => {
             /*Make sure the user sees the right planets*/
             const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
 
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets`)
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/private`)
             if (response.data.length > 0) setPlanetList(response.data)
             else await setPlanetListToDefault()
 
-            changePlanetId(response2.data.planet_id)
-
-            setPlanetListIndex(response.data.findIndex(planet => planet[0] === response2.data.planet_id))
+            changePlanetId(response2.data.planet_id);
+            console.log("current planet: ", planetList[planetListIndex]);
 
         } catch (error) {
             await setPlanetListToDefault()
@@ -55,7 +54,7 @@ const Game = () => {
     }
 
     const changePlanetId = (planetId) => {
-        const newIndex = planetList.findIndex(planet => planet[0] === planetId);
+        const newIndex = planetList.findIndex(planet => planet.id === planetId);
         if (newIndex !== -1) {
             setPlanetListIndex(newIndex);
         } else {
@@ -82,15 +81,15 @@ const Game = () => {
                                     <RiArrowLeftSLine className="basis-1/4"/>
                                     <IoMdPlanet/>
                                 </div>
-                                <PlanetViewer key={planetList[planetListIndex][0]}
-                                              planetName={planetList[planetListIndex][1]}
-                                              planetId={planetList[planetListIndex][0]}
+                                <PlanetViewer key={planetList[planetListIndex].id}
+                                              planetName={planetList[planetListIndex].name}
+                                              planetId={planetList[planetListIndex].id}
                                               planetListIndex={[planetListIndex, setPlanetListIndex]}/>
                             </>
                         }
 
                         {viewMode === View.GalaxyView &&
-                            <GalaxyViewer setViewMode={setViewMode}/>
+                            <GalaxyViewer setViewMode={setViewMode} planetListIndex={[planetListIndex, setPlanetListIndex]} changePlanetId={changePlanetId}/>
                         }
 
                         {viewMode === View.ProfileView &&

@@ -307,7 +307,6 @@ function PlanetViewer(props) {
                 on_arrive: true,
                 target_type: target,
                 target_id: index
-
             }
         }
 
@@ -328,6 +327,7 @@ function PlanetViewer(props) {
             await socket.send(JSON.stringify(merged_data));
             /*Make sure that the army is not in movement mode anymore*/
             toggleMoveMode(armyId)
+            console.log("planet sent", merged_data)
         })
     }
     return (

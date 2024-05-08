@@ -97,6 +97,8 @@ This router will handle the communication about Armies and their actions
 |    troops    |  GET   | Get all troops and stats of an army                     |
 | armies_user  |  GET   | Get all the armies that are owned by the accessing user |
 | army_in_city |  GET   | Retrieve the army that is inside the city               |
+| fleets_in_space |  GET   | Retrieve the fleets that are in space               |
+| fleets  |  GET   | Retrieve the fleets of a user on a specific planet               |
 
 </p>
 </details>
@@ -134,6 +136,18 @@ This router will handle the communication about Armies and their actions
 | Endpoint | Method | Purpose                                                                    |
 |:--------:|:------:|:---------------------------------------------------------------------------|
 |          |  GET   | Give information, on what the user needs to see when he/she opens the game |
+
+</p>
+</details>
+
+
+<details>
+<summary><strong>Spawn: '/trading'</strong></summary>
+<p>
+
+| Endpoint |  Method   | Purpose                         |
+|:--------:|:---------:|:--------------------------------|
+|    WS    | WEBSOCKET | Websocket for handeling trading |
 
 </p>
 </details>

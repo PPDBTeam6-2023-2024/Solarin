@@ -2,7 +2,6 @@ import datetime
 import math
 from ..models import *
 from ..database import AsyncSession
-from .army_access import ArmyAccess
 from ....logic.formula.compute_properties import *
 from typing import Tuple, List
 from .database_acess import DatabaseAccess
@@ -24,7 +23,7 @@ class ResourceAccess(DatabaseAccess):
         """
         for resource in resource_check:
             """
-            This costs None of this resoruce, so we don't have to check this
+            This costs None of this resource, so we don't have to check this
             """
             if resource[1] == 0:
                 continue

@@ -138,3 +138,31 @@ def test_alliance(client):
     data = response.json()
     assert len(data) == 1
     assert data[0][0] == "insert2"
+
+def test_alliance_kick(client):
+    headers, headers2, token, token2 = insert_test_data(client)
+
+    """
+    let 'insert' create an alliance
+    """
+    data = {
+        "alliance_name": "abc"
+    }
+    response = client.post("/chat/create_alliance", headers=headers, json=data)
+    data = response.json()
+    assert data["success"]
+    assert data["message"] == "Alliance is created"
+
+    """
+    kick yourself from the alliance
+    """
+
+    response = client.post("/chat/kick_user", headers=headers, json={"user_id": 1})
+    print(response)
+
+    data = {
+        "alliance_name": "abc"
+    }
+    response = client.post("/chat/alliance_messageboard", headers=headers2, json=data)
+    data = response.json()
+    assert data["detail"] == "Method Not Allowed"

@@ -1,10 +1,12 @@
-import React, {useEffect, useState, useContext} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import MessageBoard from "../MessageBoard";
 import axios from "axios";
 import AllianceRequestEntry from "./AllianceRequestEntry";
 import {UserInfoContext} from "../../../Context/UserInfoContext"
 import "./AllianceTab.css"
 import "../Requests/RequestButtons.css"
+import AllianceMemberEntry from "./AllianceMemberEntry";
+
 
 const AllianceTab = (props) => {
     const [chatOpen, setChatOpen] = useState(false)
@@ -20,6 +22,32 @@ const AllianceTab = (props) => {
 
     /*store the message board number*/
     const [messageBoard, setMessageBoard] = useState(-1);
+
+    /*store the message board number*/
+    const [allianceMembers, setAllianceMembers] = useState([]);
+
+    const sendLeaveUser = async (user_id) => {
+        /*
+        * when we accept or reject an alliance join request we need to communicate that to the backend
+        * */
+        try {
+            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/chat/kick_user`,
+                JSON.stringify({
+                    "user_id": user_id
+                }),
+                {
+                    headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json',
+                    },
+                }
+            )
+
+        } catch (e) {
+        }
+
+    }
+
 
     /*
     * This function will create/try to join an alliance
@@ -83,6 +111,16 @@ const AllianceTab = (props) => {
         }
     }
 
+    const getAllianceMembers = async () => {
+        /*get all members that are part of the alliance*/
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/chat/get_alliance_members`)
+            return response.data
+        } catch (e) {
+            return -1
+        }
+    }
+
     useEffect(() => {
         async function makeOverviewEntries() {
             let data = await getAllianceRequests()
@@ -91,12 +129,14 @@ const AllianceTab = (props) => {
             if (userInfo.alliance !== null) {
                 data = await getMessageBoard()
                 setMessageBoard(data)
+
+                data = await getAllianceMembers()
+                setAllianceMembers(data)
             }
         }
 
         makeOverviewEntries()
     }, [userInfo.alliance])
-
     return (
         <>
             {/*when the chat is not yet open*/}
@@ -128,17 +168,36 @@ const AllianceTab = (props) => {
                             {/*visualize all alliance join requests*/}
                             <div style={{"overflowY": "scroll", "height": "85%", "scrollbarWidth:": "none"}}>
                                 {
-                                    /*display all friend requests*/
-                                    allianceRequests.map((elem, index) => <AllianceRequestEntry user={elem[0]}
-                                                                                                user_id={elem[1]}
-                                                                                                key={index}
-                                                                                                onEntryChose={
-                                                                                                    () => setAllianceRequests(allianceRequests.slice(0, index).concat(allianceRequests.slice(index + 1)))
-                                                                                                }/>)
+                                /*display all friend requests*/
+                                allianceRequests.map((elem, index) =>
+                                    <AllianceRequestEntry user={elem[0]}
+                                    user_id={elem[1]}
+                                    key={index}
+                                    onEntryChose={
+                                        () => setAllianceRequests(allianceRequests.slice(0, index).concat(allianceRequests.slice(index + 1)))
+                                    }/>)
+                                }
+                                {
+                                /*display all friend requests*/
+                                allianceMembers.map((elem, index) =>
+                                    <AllianceMemberEntry user={elem.name}
+                                    user_id={elem.id}
+                                    key={index}
+                                    onEntryChose={
+                                        () => setAllianceMembers(allianceMembers.slice(0, index).concat(allianceMembers.slice(index + 1)))
+                                    }/>)
                                 }
 
 
+
                             </div>
+                            {/*Display the leave button*/}
+                            <button className="RequestButton" onClick={() => {
+                                sendLeaveUser(userInfo.id);
+                                const newUserInfo = {...userInfo, alliance: null};
+                                setUserInfo(newUserInfo);
+                            }}> Leave Alliance
+                            </button>
 
                             {/*button to open the alliance chat*/}
                             <button className="RequestButton" onClick={() => {
@@ -146,7 +205,6 @@ const AllianceTab = (props) => {
                             }}> Open Chat
                             </button>
                         </>
-
 
                     }
                 </div>

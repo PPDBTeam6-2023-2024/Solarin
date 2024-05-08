@@ -86,7 +86,7 @@ const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) =>
     return (
         <animated.mesh name="fleet" onPointerLeave={() => setIsHovering(false)} onPointerEnter={() => setIsHovering(true)}
                         onClick={fleetOnClick} ref={fleetRef}>
-            <pointLight intensity={100} scale={2}/>
+            <spotLight target={fleetRef.current} distance={2} position={[0,0.75,0]} intensity={1} scale={1}/>
             <Gltf src={"/3dmodels/ameaterasu.glb"} scale={0.025} receiveShadow />
             {clicked &&
                 <Html>

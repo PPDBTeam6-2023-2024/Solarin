@@ -53,7 +53,6 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
     has_resources: bool = await data_access.ResourceAccess.has_resources(user_id, cost)
 
     if not has_resources:
-        print("exception occurred")
         raise InvalidActionException("The user does not have enough resources")
 
     for cost_type in cost:
@@ -63,13 +62,10 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
     current_stance_dict = model_to_dict(current_stance)
 
     updated_stance = {}
-    print(current_stance_dict)
     for key, value in changes.dict().items():
         if key == "Cost":
             continue
         attr = key.lower()
-        if attr == "corporate_state":
-            print(attr, value)
         change_percent = float(value.replace('%', '')) / 100
         if attr in current_stance_dict:
             updated_value = max(0, min(1, current_stance_dict[attr] + change_percent))

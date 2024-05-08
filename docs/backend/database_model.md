@@ -39,7 +39,7 @@ An overview of each the tables in the database:
 |    FriendsOf    | Data | Store which users are friends with each other                                                                                                            |
 |  FriendRequest  | Data | Stores which users have pending friend requests                                                                                                          |
 | AllianceRequest | Data | Stores which users have pending alliance requests to join an alliance (needs to be accepted by someone in the alliance)                                  |
-
+| PoliticalStance | Data | Stores information about the political direction of the user                                                                                             |
 </p>
 </details>
 

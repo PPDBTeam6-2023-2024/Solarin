@@ -12,6 +12,8 @@ import {
 import PoliticsDecision from "./PoliticsDecision";
 import axios from "axios";
 import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {setResources} from "../../../redux/slices/resourcesSlice";
 
 ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title, RadialLinearScale, Filler);
 
@@ -75,8 +77,10 @@ function PoliticsMenu() {
     const [stance, setStance] = useState({});
     const [stanceFetched, setStanceFetched] = useState(false)
 
+    const dispatch = useDispatch()
+
     const updateStance = async (impacts, cost) => {
-        console.log("updateStance");
+        /*Update political information*/
         try {
             const payload = {
                 ...impacts,
@@ -85,25 +89,33 @@ function PoliticsMenu() {
             console.log(payload);
             await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
             setStanceFetched(false)
+
+            /*Recalibrate the resources*/
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
+            if (response.status === 200) {
+                dispatch(setResources(response.data))
+            }
+            fetchStance();
+
         } catch (error) {
             console.error('Failed to update political stance:', error);
         }
     };
 
+    const fetchStance = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/politics`);
+            setStance(response.data);
+            setStanceFetched(true)
+        } catch (error) {
+            console.error('Error while fetching political stance:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchStance = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/politics`);
-                setStance(response.data);
-                setStanceFetched(true)
-            } catch (error) {
-                console.error('Error while fetching political stance:', error);
-            }
-        };
 
         fetchStance();
-        console.log("fetch Stance");
-    }, [stanceFetched]);
+    }, []);
 
     const modifiers = generateModifiers(stance);
     console.log(stance)

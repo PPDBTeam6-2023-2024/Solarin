@@ -291,11 +291,10 @@ class BuildingAccess(DatabaseAccess):
 
         return overview_dict
 
-    async def collect_resources(self, user_id: int, building_id: int):
+    async def collect_resources(self, user_id: int, building_id: int, collect_resources: bool):
         """
         Get the resources stocks for a building and
         collect resources from a production building ( by setting collect_resources=True )
-
 
         :param: user_id: the id of the user who is collecting the resources
         :param: building_id: id of the building whose resources we will collect
@@ -419,6 +418,7 @@ class BuildingAccess(DatabaseAccess):
             await self.session.commit()
 
         return updated_resource_stocks
+
 
     async def upgrade_building(self, user_id: int, building_id: int):
         """

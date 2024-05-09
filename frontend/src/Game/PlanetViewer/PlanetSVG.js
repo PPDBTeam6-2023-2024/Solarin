@@ -80,12 +80,22 @@ function PlanetSVG(props) {
             );
         });
     };
-
+    const [mousePos, setMousePos] = useState([0,0]);
     return (
-        <svg style={{width: "100vw", height: "auto"}} viewBox={'0 0 ' + width + ' ' + height}
+        <svg onPointerMove={(e) =>
+            setMousePos([e.pageX / props.screenSize.current?.clientWidth,
+                e.pageY / props.screenSize.current?.clientHeight])}
+             style={{width: "100vw", height: "auto"}} viewBox={'0 0 ' + width + ' ' + height}
              preserveAspectRatio="none">
             {renderClippedImages()}
             <path key="voronoi-total" d={voronoi.render()} stroke="black" strokeWidth={2}/>
+            {/* For the help lines when in move mode*/}
+            {
+                props.armiesMoveMode.map((army, i) => {
+                    const armyImage = props.armyImages.find((elem) => elem.id === army);
+                    return <line stroke={"blue"} strokeWidth={2} key={i} x1={armyImage.curr_x*width} y1={armyImage.curr_y*height} x2={mousePos[0]*width} y2={mousePos[1]*height}/>
+                })
+            }
         </svg>
     );
 }

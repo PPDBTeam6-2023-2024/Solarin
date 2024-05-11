@@ -121,3 +121,34 @@ class TradeReceives(Base):
     """
     offer = relationship("TradeOffer", back_populates="receives", lazy='joined')
 
+
+class MaintenanceTroop(Base):
+    """
+    This table stores maintenance costs for each troop type
+    """
+
+    __tablename__ = 'maintenanceTroop'
+
+    troop_type = Column(TEXT, ForeignKey("troopType.type", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                        primary_key=True)
+    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED',
+                                            ondelete="cascade"),
+                           primary_key=True)
+
+    amount = Column(PositiveInteger, nullable=False)
+
+
+class MaintenanceBuilding(Base):
+    """
+    This table stores maintenance costs for each building type
+    """
+
+    __tablename__ = 'maintenanceBuilding'
+
+    building_type = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'),
+                           primary_key=True)
+    resource_type = Column(TEXT, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED',
+                                            ondelete="cascade"),
+                           primary_key=True)
+
+    amount = Column(PositiveInteger, nullable=False)

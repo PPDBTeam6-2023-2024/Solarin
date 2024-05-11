@@ -312,6 +312,7 @@ class AttackCity(OnArrive):
         'polymorphic_identity': 'city'
     }
 
+
 class EnterPlanet(OnArrive):
     """
         Stores which planet we might enter when our fleet arrives at its position
@@ -334,6 +335,7 @@ class EnterPlanet(OnArrive):
     __mapper_args__ = {
         'polymorphic_identity': 'planet enter'
     }
+
 
 class EnterCity(OnArrive):
     """

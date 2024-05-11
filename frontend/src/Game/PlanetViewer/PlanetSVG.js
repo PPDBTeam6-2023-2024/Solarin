@@ -1,4 +1,4 @@
-import {useState, useEffect, useMemo} from 'react';
+import {useState, useEffect, useMemo, Fragment} from 'react';
 import {Delaunay} from 'd3';
 import axios from 'axios';
 
@@ -98,26 +98,26 @@ function PlanetSVG(props) {
             {
                 props.armiesMoveMode.map((army, i) => {
                     const armyImage = props.armyImages.find((elem) => elem.id === army);
-                    return <>
+                    return <Fragment key={i}>
                     <line stroke={"red"} strokeWidth={3} key={i} x1={armyImage.curr_x*width} y1={armyImage.curr_y*height} x2={mousePos[0]*width} y2={mousePos[1]*height}/>
                     <circle cx={mousePos[0]*width} cy={mousePos[1]*height} r={10} fill={"red"}/>
                     <text fill="white" x={(mousePos[0]+armyImage.curr_x)*width/2} y={(mousePos[1]+armyImage.curr_y)*height/2-20}>
                         {getTravelTime([armyImage.curr_x, armyImage.curr_y], mousePos)} seconds
                     </text>
-                    </>
+                    </Fragment>
                 })
             }
             {
                 props.armyImages.map((army, i) => {
-                        return  !(army.curr_x === army.to_x && army.curr_y === army.to_y) ? <>
-                            <line stroke={"lightblue"} strokeWidth={3} key={i} x1={army.curr_x * width}
+                        return !(army.curr_x === army.to_x && army.curr_y === army.to_y) ? <Fragment key={i}>
+                            <line stroke={"lightblue"} strokeWidth={3} x1={army.curr_x * width}
                                   y1={army.curr_y * height} x2={army.to_x * width} y2={army.to_y * height}/>
                             <circle cx={army.to_x * width} cy={army.to_y * height} r={10} fill={"lightblue"}/>
                             <text fill="white" x={(army.to_x + army.curr_x) * width / 2}
                                   y={(army.to_y + army.curr_y) * height / 2-20}>
                                 {getTravelTime([army.curr_x, army.curr_y], [army.to_x, army.to_y])} seconds
                             </text>
-                        </> : <></>
+                        </Fragment> : <></>
                 })
             }
         </svg>

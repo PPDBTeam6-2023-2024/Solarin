@@ -6,6 +6,7 @@ from ...database.database_access.army_access import *
 from ..authentication.router import get_my_id
 from .schemas import *
 from ...database.database_access.data_access import DataAccess
+from ..cityManager.city_checker import CityChecker
 
 from ..cityManager.city_checker import CityChecker
 
@@ -139,11 +140,15 @@ async def get_armies_in_city(
     Get detailed information about the army in a city, including their troops.
     """
     data_access = DataAccess(db)
+
+
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
 
     """
     do the city check, checking all the idle mechanics
     """
+    ch = CityChecker(city_id, data_access)
+    await ch.check_all()
 
     troops = await get_troops(user_id, army_id, db)
 
@@ -151,4 +156,7 @@ async def get_armies_in_city(
     Add the army_id, because this is useful information, for army actions
     """
     troops.update({"army_id": army_id})
+
+    await data_access.commit()
+
     return troops

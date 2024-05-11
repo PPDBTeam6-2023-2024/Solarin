@@ -158,7 +158,6 @@ def test_alliance_kick(client):
     """
 
     response = client.post("/chat/kick_user", headers=headers, json={"user_id": 1})
-    print(response)
 
     data = {
         "alliance_name": "abc"

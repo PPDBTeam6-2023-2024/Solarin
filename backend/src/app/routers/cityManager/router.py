@@ -17,6 +17,8 @@ async def get_city_and_building_info(
         db=Depends(get_db)
 ) -> CityData:
     data_access = DataAccess(db)
+
+
     buildings = await data_access.BuildingAccess.get_city_buildings(city_id)
 
     """
@@ -31,11 +33,14 @@ async def get_city_and_building_info(
     if user_id != city_owner.id:
         return []
 
+
     """
     do the city check, checking all the idle mechanics
     """
     city_checker = CityChecker(city_id, data_access)
-    remaining_time_update_time = await city_checker.check_all()
+    remaining_time_update_time = await city_checker.check_upgrade_time()
+
+
 
     """
     Iterate through each building, creating a BuildingInstanceSchema for each one
@@ -53,6 +58,9 @@ async def get_city_and_building_info(
     """
     Return the city data, consisting of the building_schemas info and the city_info_schema
     """
+
+
+    await data_access.commit()
     return CityData(city = city_info_schema, buildings = buildings_schemas)
 
 
@@ -155,6 +163,8 @@ async def upgrade_city(
     """
     data_access = DataAccess(db)
     data = await data_access.CityAccess.upgrade_city(user_id, city_id)
+
+    await data_access.commit()
     return Confirmation(confirmed=data)
 
 @router.get("/get_resource_stocks/{city_id}", response_model=StockOverViewSchema)

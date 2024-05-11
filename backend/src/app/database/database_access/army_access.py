@@ -81,6 +81,7 @@ class ArmyAccess(DatabaseAccess):
         """
         verify whether the entry (giving the specific relation) existed
         """
+
         if result is None:
             """
             In case no entry is yet present:

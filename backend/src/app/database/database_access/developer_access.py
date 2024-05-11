@@ -236,3 +236,12 @@ class DeveloperAccess(DatabaseAccess):
         Sets the costs related to cities, e.g. the creation cost of the city
         """
         self.session.add(CityCosts(activity=activity, resource_type=resource_type, cost_amount=cost_amount, time_cost=time_cost))
+
+    async def create_political_stance(self, stance_name: str):
+        """
+        Create a political stance
+        :param: stance_name:name of the stance we create
+        """
+
+        self.session.add(PoliticalStance(name=stance_name))
+        await self.session.flush()

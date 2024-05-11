@@ -123,5 +123,5 @@ async def me(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
     """
 
     result = await db.execute(select(User).where(User.id == user_id))
-    scalar = result.scalars().all()[0]
+    scalar = result.unique().scalars().all()[0]
     return {"username": scalar.username, "id": scalar.id, "email": scalar.email, "alliance": scalar.alliance}

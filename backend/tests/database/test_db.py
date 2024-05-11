@@ -33,6 +33,13 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.create_stat("recovery")
         await da.DeveloperAccess.create_stat("speed")
 
+        await da.DeveloperAccess.create_political_stance("anarchism")
+        await da.DeveloperAccess.create_political_stance("authoritarian")
+        await da.DeveloperAccess.create_political_stance("democratic")
+        await da.DeveloperAccess.create_political_stance("corporate_state")
+        await da.DeveloperAccess.create_political_stance("theocracy")
+        await da.DeveloperAccess.create_political_stance("technocracy")
+
         """
         Creates 50 users
         """

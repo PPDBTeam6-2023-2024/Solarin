@@ -11,6 +11,7 @@ import "./GenerallistEntry.css"
 
 function GeneralListEntry({generalInfo, armyId, onChangeGeneral}) {
     /*Display the general that is part of the army*/
+
     return (
         <div className="GeneralListEntry" onClick={() => {onChangeGeneral(armyId, generalInfo.name)}}>
             <span style={{"fontSize": "150%", "color": "gold"}}>General {generalInfo.name}</span>

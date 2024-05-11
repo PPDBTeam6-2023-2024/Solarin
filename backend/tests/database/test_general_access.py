@@ -67,5 +67,5 @@ async def test_get_general(data_access, general_access):
 
 async def test_get_modifiers(data_access, general_access):
     await test_general_assign(data_access, general_access)
-    modifiers = await general_access.get_modifiers("brave")
+    modifiers = await general_access.get_modifiers(1, "brave")
     assert len(modifiers) == 3

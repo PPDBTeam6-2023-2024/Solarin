@@ -24,6 +24,7 @@ class CreateTuples:
         await self.create_wall_types(types["walls"])
         await self.create_production_building_types(types["production-buildings"])
         await self.create_general_types(types["generals"])
+        await self.create_political_stances(types["political-stance"])
         await self.__session.commit()
 
     async def create_associations(self, associations: list[dict[str, Any]]):
@@ -141,3 +142,10 @@ class CreateTuples:
         """
         for s in stats_types:
             await self.__dev.create_stat(s)
+
+    async def create_political_stances(self, stances: list[str]):
+        """
+        Define the types of army stats
+        """
+        for s in stances:
+            await self.__dev.create_political_stance(s)

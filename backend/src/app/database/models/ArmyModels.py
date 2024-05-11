@@ -444,9 +444,13 @@ class GeneralModifier(Base):
 
     amount = Column(Percentage, nullable=False)
 
-    political_stance = Column(String, nullable=False)
+    political_stance = Column(String, ForeignKey("politicalStance.name", deferrable=True, initially='DEFERRED',
+                                                 ondelete="cascade"),
+                              nullable=False)
 
-    def to_scheme(self):
+    def to_scheme(self, political_stance_modifier: float):
+
         scheme = GeneralModifiersScheme(stat=self.stat, modifier=self.amount,
-                                        political_stance=self.political_stance, political_stance_modifier=0)
+                                        political_stance=self.political_stance,
+                                        political_stance_modifier=political_stance_modifier)
         return scheme

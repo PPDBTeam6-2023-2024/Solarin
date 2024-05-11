@@ -1,6 +1,6 @@
 from sqlalchemy import *
 from datetime import datetime
-
+from sqlalchemy.orm import relationship
 from ..database import Base
 from ...routers.authentication.schemas import MessageToken
 from ...routers.chat.schemas import MessageOut
@@ -28,6 +28,8 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED', ondelete='SET NULL'))
     faction_name = Column(String)
+
+    stances = relationship("HasPoliticalStance", back_populates="user", lazy='select')
 
 
 class Alliance(Base):
@@ -143,16 +145,27 @@ class AllianceRequest(Base):
 
 class PoliticalStance(Base):
     """
-    Stores how much a user leans into the different types of societies in ranges of [0,1]
-
+    Stores which political Ideologies there are
     """
     __tablename__ = "politicalStance"
+
+    name = Column(String, primary_key=True)
+
+
+class HasPoliticalStance(Base):
+    """
+    Relation between the user and the political stance
+
+    """
+    __tablename__ = "hasPoliticalStance"
     user_id = Column(Integer, ForeignKey("user.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
                      primary_key=True)
 
-    anarchism = Column(Decimal, nullable=False)
-    authoritarian = Column(Decimal, nullable=False)
-    democratic = Column(Decimal, nullable=False)
-    corporate_state = Column(Decimal, nullable=False)
-    theocracy = Column(Decimal, nullable=False)
-    technocracy = Column(Decimal, nullable=False)
+    value = Column(Decimal, nullable=False, default=0)
+
+    stance_name = Column(String, ForeignKey("politicalStance.name",
+                                            deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                         primary_key=True)
+
+    user = relationship("User", back_populates="stances", lazy='select')
+

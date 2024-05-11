@@ -9,7 +9,7 @@ from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
 from ..models.ArmyModels import Army
-
+from ....logic.formula.compute_properties import PoliticalModifiers
 from .city_access import CityAccess
 
 """
@@ -478,18 +478,13 @@ class ArmyAccess(DatabaseAccess):
         calculate and apply the modifiers gotten through the political stance of the user
         default value = 1
         """
+        strength_modifier = PoliticalModifiers.strength_modifier(stance)
 
-        strength_modifier = 1
-        speed_modifier = 1
-        if stance:
-            strength_modifier = ((stance.authoritarian * 30) - (stance.anarchism * 20) + (stance.theocracy * 15) - (stance.democratic * 10))/100
-            strength_modifier += 1
 
-            army_stats["city_attack"] = army_stats["city_attack"] * strength_modifier
-            army_stats["attack"] = army_stats["attack"] * strength_modifier
+        army_stats["city_attack"] = army_stats["city_attack"] * strength_modifier
+        army_stats["attack"] = army_stats["attack"] * strength_modifier
 
-            speed_modifier = ((stance.anarchism * 10) - (stance.corporate_state * 30) - (stance.theocracy * 5)) / 100
-            speed_modifier += 1
+        speed_modifier = PoliticalModifiers.speed_modifier(stance)
 
         """
         Modify the army stats based on the general of the army
@@ -499,10 +494,10 @@ class ArmyAccess(DatabaseAccess):
 
         modifiers = []
         if general is not None:
-            modifiers = await ga.get_modifiers(general.name)
+            modifiers = await ga.get_modifiers(user_id, general.name)
 
         for m in modifiers:
-            army_stats[m.stat] *= (1+m.amount)
+            army_stats[m[0].stat] *= (1+m[0].amount)*(1+m[1])
 
         """
         Speed is expresses as a weighted average, In case no troops are present, our

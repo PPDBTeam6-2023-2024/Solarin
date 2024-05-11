@@ -105,8 +105,8 @@ async def get_troops(
 
     general = await data_access.GeneralAccess.get_general(army_id)
     if general is not None:
-        modifiers = await data_access.GeneralAccess.get_modifiers(general.name)
-        modifiers = [m.to_scheme() for m in modifiers]
+        modifiers = await data_access.GeneralAccess.get_modifiers(user_id, general.name)
+        modifiers = [m[0].to_scheme(m[1]) for m in modifiers]
         general = general.to_scheme().dict()
         general.update({"modifiers": modifiers})
 

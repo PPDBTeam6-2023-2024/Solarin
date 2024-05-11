@@ -128,6 +128,11 @@ function Scene(props) {
         setFleetsMoveMode([])
     }
     const ContextBridge = useContextBridge(SocketContext, UserInfoContext,  ReactReduxContext, PlanetListContext);
+    /* calculate travel time to a coordinate in seconds */
+    const getTravelTime = (from, to) => {
+        // to change when army speed is taken into account
+        return Math.round(Math.hypot(to[0]-from[0], to[1]-from[1])*(100000/3600))
+    }
     return (
         <>
             <Stars/>
@@ -141,7 +146,7 @@ function Scene(props) {
             {
                 fleetsMoveMode.map((obj, i) => {
                     return (
-                        <Line key={i} color={"red"} name="line" points={[obj.pos, hoverPos]} lineWidth={2}/>
+                        <Line color={"red"} key={i} name="line" points={[obj.pos, hoverPos]} lineWidth={2}/>
                     )
                 })
             }

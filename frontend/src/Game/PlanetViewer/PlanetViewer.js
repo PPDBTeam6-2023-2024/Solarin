@@ -215,13 +215,10 @@ function PlanetViewer(props) {
         socket.onmessage = async (event) => {
             let response = JSON.parse(event.data)
             /*Websocket cases depending on the type of request we receive from the abckend websockets*/
-            console.log(response.request_type)
             switch (response.request_type) {
                 case "get_armies":
-                    console.log(response.data)
                     const armies = await handleGetArmies(response.data)
                     setArmyImages(armies);
-
                     break
                 case "change_direction":
                     const newArmies = handleChangeDirection(response.data)

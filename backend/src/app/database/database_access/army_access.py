@@ -162,9 +162,6 @@ class ArmyAccess(DatabaseAccess):
         armies = armies.scalars().all()
         return armies
 
-
-
-
     async def get_fleets_in_space(self) -> list[Army]:
         """
        Get fleets in space

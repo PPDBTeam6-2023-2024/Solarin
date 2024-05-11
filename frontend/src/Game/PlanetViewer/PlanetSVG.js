@@ -80,6 +80,11 @@ function PlanetSVG(props) {
             );
         });
     };
+    /* calculate travel time to a coordinate in seconds */
+    const getTravelTime = (from, to) => {
+        // to change when army speed is taken into account
+        return Math.round(Math.hypot(to[0]-from[0], to[1]-from[1])*(100000/3600))
+    }
     const [mousePos, setMousePos] = useState([0,0]);
     return (
         <svg onPointerMove={(e) =>
@@ -93,7 +98,26 @@ function PlanetSVG(props) {
             {
                 props.armiesMoveMode.map((army, i) => {
                     const armyImage = props.armyImages.find((elem) => elem.id === army);
-                    return <line stroke={"blue"} strokeWidth={2} key={i} x1={armyImage.curr_x*width} y1={armyImage.curr_y*height} x2={mousePos[0]*width} y2={mousePos[1]*height}/>
+                    return <>
+                    <line stroke={"red"} strokeWidth={3} key={i} x1={armyImage.curr_x*width} y1={armyImage.curr_y*height} x2={mousePos[0]*width} y2={mousePos[1]*height}/>
+                    <circle cx={mousePos[0]*width} cy={mousePos[1]*height} r={10} fill={"red"}/>
+                    <text fill="white" x={(mousePos[0]+armyImage.curr_x)*width/2} y={(mousePos[1]+armyImage.curr_y)*height/2-20}>
+                        {getTravelTime([armyImage.curr_x, armyImage.curr_y], mousePos)} seconds
+                    </text>
+                    </>
+                })
+            }
+            {
+                props.armyImages.map((army, i) => {
+                        return  !(army.curr_x === army.to_x && army.curr_y === army.to_y) ? <>
+                            <line stroke={"lightblue"} strokeWidth={3} key={i} x1={army.curr_x * width}
+                                  y1={army.curr_y * height} x2={army.to_x * width} y2={army.to_y * height}/>
+                            <circle cx={army.to_x * width} cy={army.to_y * height} r={10} fill={"lightblue"}/>
+                            <text fill="white" x={(army.to_x + army.curr_x) * width / 2}
+                                  y={(army.to_y + army.curr_y) * height / 2-20}>
+                                {getTravelTime([army.curr_x, army.curr_y], [army.to_x, army.to_y])} seconds
+                            </text>
+                        </> : <></>
                 })
             }
         </svg>

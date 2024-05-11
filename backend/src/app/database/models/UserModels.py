@@ -29,6 +29,11 @@ class User(Base):
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED', ondelete='SET NULL'))
     faction_name = Column(String)
 
+    """
+    Stores when the last maintenance check of this user occurred
+    """
+    last_maintenance_check = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+
     stances = relationship("HasPoliticalStance", back_populates="user", lazy='select')
 
 

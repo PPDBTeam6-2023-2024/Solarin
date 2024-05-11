@@ -245,3 +245,29 @@ class DeveloperAccess(DatabaseAccess):
 
         self.session.add(PoliticalStance(name=stance_name))
         await self.session.flush()
+
+    async def create_maintenance_building(self, building_name: str, maintenance_cost: list[tuple[str, int]]):
+        """
+        Create the base maintenance cost for a building type
+
+        :param: building_name: name of the building type
+        :param: maintenance_cost: list of the cost [resource type, amount]
+        """
+
+        for cost in maintenance_cost:
+            self.session.add(MaintenanceBuilding(building_type=building_name, resource_type=cost[0], amount=cost[1]))
+
+        await self.session.flush()
+
+    async def create_maintenance_troop(self, troop_name: str, maintenance_cost: list[tuple[str, int]]):
+        """
+        Create the base maintenance cost for a troop type
+
+        :param: troop_name: name of the troop type
+        :param: maintenance_cost: list of the cost [resource type, amount]
+        """
+
+        for cost in maintenance_cost:
+            self.session.add(MaintenanceTroop(troop_type=troop_name, resource_type=cost[0], amount=cost[1]))
+
+        await self.session.flush()

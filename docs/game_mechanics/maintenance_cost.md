@@ -1,6 +1,6 @@
 # Maintenance Cost
 Both Cities and armies will have maintenance cost.
-The end user will never directly receive information about the maintenence cost,
+The end user will never directly receive information about the maintenance cost,
 but we will calculate the maintenance cost based on the buildings (and also increases when buildings are upgraded).
 
 Each building will have the following base maintenance cost:
@@ -49,12 +49,15 @@ Each building will have the following base maintenance cost:
 * Solar Lab
     * Rations: 5/h
 
+For cities we will also add an additional Ration cost:(Population of the city/10) per hour.
+
+
 For troops:
 * Soldier Unit
     * Rations: 25/h
   
 * Tank Unit
-    * Rations: 40/h
+    * Rations: 30/h
 
 * Assassin Unit
     * Rations: 20/h
@@ -71,4 +74,6 @@ For troops:
     * Oil: 10/h
   
 * MotherShip Unit
-    * Rations: 60/h
+    * Rations: 50/h
+
+

@@ -44,6 +44,9 @@ class CreateTuples:
                 await self.__dev.set_creation_cost(barracks_type["name"],
                                                    [("TF", PropertyUtility.getGUC(barracks_type["creation-cost"], 1))])
 
+                maintenance = [(m["product-name"], m["amount"]) for m in barracks_type["maintenance"]]
+                await self.__dev.create_maintenance_building(barracks_type["name"], maintenance)
+
     async def create_tower_types(self, tower_types: list[dict[str, Any]]):
         for tower_type in tower_types:
             if await self.__session.get(TowerType, tower_type["name"]) is None:
@@ -77,6 +80,10 @@ class CreateTuples:
                 for resource_type in building_type["products"]:
                     await self.__dev.set_produces_resources(building_type["name"], resource_type["product-name"], resource_type["base-rate"], resource_type["base-cap"])
 
+                maintenance = [(m["product-name"], m["amount"]) for m in building_type["maintenance"]]
+                await self.__dev.create_maintenance_building(building_type["name"], maintenance)
+
+
 
     async def create_resource_types(self, resource_types: list[str]):
         for resource_type in resource_types:
@@ -104,6 +111,9 @@ class CreateTuples:
                                                          battle_stats.city_attack, battle_stats.city_defense,
                                                          battle_stats.recovery, battle_stats.speed])
                 await self.__dev.set_troop_type_cost(troop_type["name"], [("SOL", base_cost)])
+
+                maintenance = [(m["product-name"], m["amount"]) for m in troop_type["maintenance"]]
+                await self.__dev.create_maintenance_troop(troop_type["name"], maintenance)
     async def create_production_modifiers(self, production_modifiers: list[dict[str, Any]]):
         for coefficient in production_modifiers:
             stmt = (

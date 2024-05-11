@@ -97,6 +97,7 @@ class PlanetSocketActions:
                 "request_type": "change_direction",
                 "data": army.to_dict() | {"alliance": army.alliance, "username": army.username}
             })
+
     async def leave_planet(self, data: json):
         army_id = data["army_id"]
         owner = await self.data_access.ArmyAccess.get_army_owner(army_id)
@@ -162,3 +163,52 @@ class PlanetSocketActions:
 
         await self.data_access.commit()
         await self.connection_pool.broadcast({"request_type": "reload"})
+
+    async def maintenance_request(self, data: json):
+        """
+        Update maintenance information
+        """
+        cost_dict = await self.check_maintenance()
+
+        await self.connection_pool.send_personal_message(self.websocket, {"request_type": "maintenance_cost",
+                                                                          "maintenance": cost_dict})
+
+    async def check_maintenance(self,):
+        """
+        Update the maintenance information
+
+        """
+        cities = await self.data_access.CityAccess.get_cities_by_controller(self.user_id)
+        for city in cities:
+            await self.data_access.ResourceAccess.check_maintenance_city(self.user_id, city.id)
+
+        armies = await self.data_access.ArmyAccess.get_user_armies(self.user_id)
+        for army in armies:
+            await self.data_access.ResourceAccess.check_maintenance_army(self.user_id, army.id)
+
+        """
+        Update last checked timer
+        """
+        self.data_access.ResourceAccess.maintenance_checked(self.user_id)
+
+        await self.data_access.commit()
+
+        """
+        Calculate total remaining maintenance cost
+        """
+        cost_dict = {}
+
+        cities = await self.data_access.CityAccess.get_cities_by_controller(self.user_id)
+        for city in cities:
+            temp_dict = await self.data_access.ResourceAccess.get_maintenance_city(city.id)
+            for k, v in temp_dict.items():
+                cost_dict[k] = cost_dict.get(k, 0)+v
+
+        armies = await self.data_access.ArmyAccess.get_user_armies(self.user_id)
+        for army in armies:
+            temp_dict = await self.data_access.ResourceAccess.get_maintenance_army(army.id)
+            for k, v in temp_dict.items():
+                cost_dict[k] = cost_dict.get(k, 0) + v
+
+        return cost_dict
+

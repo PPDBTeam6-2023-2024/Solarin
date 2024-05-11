@@ -15,6 +15,7 @@ from .database_acess import DatabaseAccess
 from .user_access import UserAccess
 from ....logic.formula.compute_properties import PoliticalModifiers
 
+
 class BuildingAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of buildings

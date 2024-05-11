@@ -3,10 +3,11 @@ from sqlalchemy import *
 from ..database import Base
 
 from .domains import PositiveInteger
-
+from datetime import datetime
 from ..models import *
 from sqlalchemy.orm import relationship
 from ...routers.trading.schemas import TradeOfferSchema
+
 
 class HasResources(Base):
     """
@@ -33,6 +34,7 @@ class ResourceType(Base):
     __tablename__ = 'resourceType'
     name = Column(String, primary_key=True)
 
+
 class ProductionRegionModifier(Base):
     """
     Stores the modifiers applied to resource production based on the planet's region type.
@@ -45,6 +47,8 @@ class ProductionRegionModifier(Base):
     resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
     region_type = Column(String, ForeignKey('planetRegionType.region_type'), primary_key=True)
     modifier = Column(Float(precision=53))
+
+
 class TradeOffer(Base):
     """
     Trading Offers need to be stored, for storing the offer, we use the Trade Offer Table
@@ -152,3 +156,4 @@ class MaintenanceBuilding(Base):
                            primary_key=True)
 
     amount = Column(PositiveInteger, nullable=False)
+

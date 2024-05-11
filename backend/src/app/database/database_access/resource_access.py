@@ -133,3 +133,176 @@ class ResourceAccess(DatabaseAccess):
             result[resource.name] = 0 if not result.get(resource.name, False) else result[resource.name]
 
         return result
+
+    async def get_maintenance_city(self, city_id: int):
+        """
+        Get the maintenance cost for a specific city
+
+        :param: city_id: id corresponding to the city
+        """
+
+        get_costs = Select(MaintenanceBuilding, BuildingInstance.rank).\
+            join(BuildingType, BuildingType.name == MaintenanceBuilding.building_type).\
+            join(BuildingInstance, BuildingInstance.building_type == BuildingType.name).\
+            where(BuildingInstance.city_id == city_id)
+
+        maintenance_costs = await self.session.execute(get_costs)
+        maintenance_costs = maintenance_costs.all()
+
+        cost_dict = {}
+        for m, rank in maintenance_costs:
+            """
+            Calculate maintenance cost for the city, taking into account the rank of the buildings
+            """
+            cost_dict[m.resource_type] = cost_dict.get(m.resource_type, 0)+PropertyUtility.getGPR(1.0, m.amount,
+                                                                                                  rank, False)
+
+        """
+        Let city population also affect the maintenance
+        """
+        get_city_population = Select(City.population).where(City.id == city_id)
+        population = await self.session.execute(get_city_population)
+        population = population.scalar_one_or_none()
+
+        cost_dict["RA"] = cost_dict.get("RA", 1)+floor(population/10)
+        return cost_dict
+
+    async def check_maintenance_city(self, user_id: int, city_id: int, delta_time: int = None):
+        """
+        Check the maintenance of a city
+        :param: user_id: id corresponding to the user that is being checked
+        :param: city_id: id corresponding to the city
+        """
+
+        if delta_time is None:
+            delta_time = await self.maintenance_delta_time(user_id)
+
+        maintenance = await self.get_maintenance_city(city_id)
+        m_list = []
+        for k, m in maintenance.items():
+            m_list.append((k, m*math.floor(delta_time/3600)))
+
+        """
+        We Will now check whether we have sufficient resources
+        """
+
+        has_enough = await self.has_resources(user_id, m_list)
+        if has_enough:
+            """
+            Remove the resources
+            """
+            for r in m_list:
+                await self.remove_resource(user_id, r[0], r[1])
+
+            return
+
+        """
+        In case a user does not have enough resources, the user will, lose the city (it will be removed)
+        """
+
+        d = delete(City).where(City.id == city_id)
+        await self.session.execute(d)
+        await self.session.flush()
+
+    async def maintenance_delta_time(self, user_id):
+        """
+        Get the time between now and the last maintenance check
+        """
+
+        get_last_checked = Select(User.last_maintenance_check).where(User.id == user_id)
+        last_time = await self.session.execute(get_last_checked)
+        last_time = last_time.scalar_one()
+
+        delta_time = datetime.utcnow()-last_time
+
+        return delta_time
+
+    async def maintenance_checked(self, user_id: int):
+        """
+        Set the last checked maintenance timer to now
+        """
+        delta_time = await self.maintenance_delta_time(user_id)
+        """
+        We only want to remove 1 hour, because some checks work every hour
+        """
+
+        remaining = delta_time % 3600
+
+        u = Update(User).values({"last_maintenance_check": datetime.utcnow()-remaining}).where(User.id == user_id)
+        await self.session.execute(u)
+        await self.session.flush()
+
+    async def get_maintenance_army(self, army_id: int):
+        """
+        Get the maintenance cost for a specific army
+
+        :param: army_id: id corresponding to the army
+        """
+
+        get_costs = Select(MaintenanceTroop, ArmyConsistsOf.rank, ArmyConsistsOf.size).\
+            join(TroopType, MaintenanceTroop.troop_type == TroopType.type).\
+            join(ArmyConsistsOf, ArmyConsistsOf.troop_type == TroopType.type).\
+            where(ArmyConsistsOf.army_id == army_id)
+
+        maintenance_costs = await self.session.execute(get_costs)
+        maintenance_costs = maintenance_costs.all()
+
+        cost_dict = {}
+        for m, rank, size in maintenance_costs:
+            """
+            Calculate maintenance cost for the city, taking into account the rank of the buildings
+            """
+            cost_dict[m.resource_type] = floor(cost_dict.get(m.resource_type, 0) \
+                                         + PropertyUtility.getUnitTrainCost(1.0, rank)*m.amount*size)
+
+        return cost_dict
+
+    async def check_maintenance_army(self, user_id: int, army_id: int, delta_time: int = None):
+        """
+        Check the maintenance of a city
+        :param: user_id: id corresponding to the user that is being checked
+        :param: city_id: id corresponding to the city
+        """
+
+        if delta_time is None:
+            delta_time = await self.maintenance_delta_time(user_id)
+
+        maintenance = await self.get_maintenance_army(army_id)
+        m_list = []
+        for k, m in maintenance.items():
+            m_list.append((k, m*math.floor(delta_time/3600)))
+
+        """
+        In case a user does not have enough resources,  we lose part of its troops
+        We will do the following formula: we set the resource to 0, and every hour we kill 20% of the remaining army 
+        that uses this resource.
+        """
+        hours_passed = math.floor(delta_time/3600)
+
+        army_remaining = 0.8**hours_passed
+
+        for r in m_list:
+            """
+            We Will now check whether we have sufficient resources
+            """
+            has_enough = await self.has_resources(user_id, [r])
+            if has_enough:
+                await self.remove_resource(user_id, r[0], r[1])
+                continue
+
+            """
+            Retrieve troops that use the resources that are in shortage
+            """
+            get_losing_troops = Select(ArmyConsistsOf).\
+                join(TroopType, ArmyConsistsOf.troop_type == TroopType.type).\
+                join(MaintenanceTroop, TroopType.type == MaintenanceTroop.troop_type).\
+                where(MaintenanceTroop.resource_type == r[0])
+
+            losing_troops = await self.session.execute(get_losing_troops)
+            losing_troops = losing_troops.scalars().all()
+            for t in losing_troops:
+                t.size = math.ceil(t.size*army_remaining)
+
+        await self.session.flush()
+
+

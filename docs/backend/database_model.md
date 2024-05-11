@@ -125,6 +125,8 @@ An overview of each the tables in the database:
 |        TradeGives        |  Data  | This table stores which resources a user will give to the trade offer setter when he/she accepts the trade offer. |
 |      TradeReceives       |  Data  | This table stores which resources a user will receive from the trade offer setter when he/she accepts the trade   |
 | ProductionRegionModifier |  Data  | Stores the modifiers applied to resource production based on the planet's region type.                            |
+|     MaintenanceTroop     | Lookup | Stores The maintenance cost for a specific troop type                                                             |
+|   MaintenanceBuilding    | Lookup | Stores The maintenance cost for a specific building type                                                          |
 
 
 </p>
@@ -146,11 +148,12 @@ Cities, Armies and regions have coordinates to keep track of their location.
 <p>
 The following domains are used:
 
-|     Domain      | Purpose                                         |
-|:---------------:|:------------------------------------------------|
-|   Coordinate    | Domain for coordinates that are in range [0, 1] |  
-| PositiveInteger | Domain for integers that need to be positive    |  
-|   Percentage    | Value in range between [-1, 1]                  |  
+|     Domain      | Purpose                                      |
+|:---------------:|:---------------------------------------------|
+|   Coordinate    | Domain for coordinates                       |  
+| PositiveInteger | Domain for integers that need to be positive |  
+|   Percentage    | Value in range between [-1, 1]               |  
+|     Decimal     | Value in range between [0, 1]                |  
 
 </p>
 </details>

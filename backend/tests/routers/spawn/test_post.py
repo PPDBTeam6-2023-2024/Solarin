@@ -12,7 +12,6 @@ async def insert_test_data(data_access: DataAccess):
     await data_access.DeveloperAccess.create_planet_type("test_planet_type")
     await data_access.DeveloperAccess.create_planet_region_type("test_planet_region")
     await data_access.DeveloperAccess.create_associated_with("test_planet_type", "test_planet_region")
-    await data_access.PlanetAccess.create_space_region("test_region")
     await data_access.commit()
 
 async def test_1(client):
@@ -82,7 +81,7 @@ async def test_2(client):
 async def test_3(client):
     async with sessionmanager.session() as session:
         data_access = DataAccess(session)
-        planet_id = await data_access.PlanetAccess.create_planet("test", "test_planet_type", 1, 1, 1)
+        planet_id = await data_access.PlanetAccess.create_planet("test", "test_planet_type", 1, 1)
         await session.commit()
 
     data = {
@@ -160,7 +159,7 @@ async def test_fibonacci_1(client, data_access: DataAccess):
     assert planet.y == y
 
 async def test_fibonacci_2(client, data_access: DataAccess):
-    await data_access.PlanetAccess.create_planet("test", "test_planet_type", 1, 1, 1)
+    await data_access.PlanetAccess.create_planet("test", "test_planet_type", 1, 1)
     await data_access.commit()
 
     stmt = update(Planet).where(Planet.id == 1).values(created_at=datetime.utcnow() + timedelta(hours=2))

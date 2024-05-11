@@ -14,30 +14,17 @@ class PlanetAccess(DatabaseAccess):
     """
     def __init__(self, session: AsyncSession):
         super().__init__(session)
-        
-    async def create_space_region(self, region_name: str):
-        """
-        Creates space region and returns the id generated
 
-        :param: region_name: name of the space region we want to create
-        :return: region_id of the space region we just created
-        """
-        sp = SpaceRegion(name=region_name)
-        self.session.add(sp)
-        await self.session.flush()
-        region_id = sp.id
-        return region_id
 
-    async def create_planet(self, planet_name: str, planet_type: str, space_region_id: int, x: float, y: float):
+    async def create_planet(self, planet_name: str, planet_type: str, x: float, y: float):
         """
         Creates a new planet
 
         :param: planet_name: name of the planet we want to create
         :param: planet_type: type of the planet
-        :param: space_region_id: space region this planet belongs too
         :return: planet_id of the planet we just created
         """
-        planet = Planet(name=planet_name, planet_type=planet_type, space_region_id=space_region_id, x=x, y=y)
+        planet = Planet(name=planet_name, planet_type=planet_type, x=x, y=y)
         self.session.add(planet)
         await self.session.flush()
         planet_id = planet.id
@@ -209,8 +196,8 @@ class PlanetAccess(DatabaseAccess):
                 closest_distance = distance
                 closest_region = region
         return closest_region
-    
-    async def get_planets_amount(self, region_id: int) -> int:
+
+    async def get_planets_amount(self) -> int:
         """
         Get the amount of planets in a region
 
@@ -219,7 +206,6 @@ class PlanetAccess(DatabaseAccess):
         """
         stmt = (
             Select(func.count(Planet.id))
-            .where(Planet.space_region_id == region_id)
         )
         result = await self.session.execute(stmt)
         return result.scalar_one()

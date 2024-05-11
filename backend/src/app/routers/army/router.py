@@ -43,6 +43,8 @@ async def get_user_fleets(user_id: int, planet_id: int, db: AsyncSession = Depen
         armies_schema.append(temp)
 
     return armies_schema
+
+
 @router.get("/armies", response_model=List[ArmySchema])
 async def get_armies(
         planet_id: int,

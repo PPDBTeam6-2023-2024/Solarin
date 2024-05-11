@@ -50,7 +50,6 @@ An overview of each the tables in the database:
 
 |      Table       |  Type  | Purpose                                                                     |
 |:----------------:|:------:|:----------------------------------------------------------------------------|
-|   SpaceRegion    |  Data  | Stores the regions in space                                                 |     
 |      Planet      |  Data  | Stores the planets in the game                                              |     
 |    PlanetType    | Lookup | Stores which types of planets are in the game <br/>(each planet has a type) |     
 |   PlanetRegion   |  Data  | Stores the region corresponding to a planet                                 |     

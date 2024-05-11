@@ -17,10 +17,16 @@ function CityMapEntry(props) {
             cursorStyleClass = 'CityMapEntryEnter'
         }
     }
-
-
+    const cityOnClick = (e) => {
+        props.onClick(e, {
+            on_arrive: true,
+            target_type: (isOwner) ? "enter" : "attack_city",
+            target_id: props.city.id
+        })
+    }
     return (
-        <img className={`${cursorStyleClass}`} key={props.index} src={props.city.src} alt="city" style={props.city.style} onClick={props.onClick} index={props.city.id} image_type={"city"} is_owner={isOwner}/>
+        <img className={`${cursorStyleClass}`} key={props.index} src={props.city.src} alt="city" style={props.city.style}
+             onClick={cityOnClick}/>
     )
 }
 export default CityMapEntry

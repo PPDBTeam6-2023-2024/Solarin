@@ -46,7 +46,6 @@ const Game = () => {
             else await setPlanetListToDefault()
 
             changePlanetId(response2.data.planet_id);
-            console.log("current planet: ", planetList[planetListIndex]);
 
         } catch (error) {
             await setPlanetListToDefault()

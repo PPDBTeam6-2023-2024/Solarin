@@ -163,9 +163,6 @@ class ArmyAccess(DatabaseAccess):
         armies = armies.scalars().all()
         return armies
 
-
-
-
     async def get_fleets_in_space(self) -> list[Army]:
         """
        Get fleets in space
@@ -177,6 +174,46 @@ class ArmyAccess(DatabaseAccess):
         await self.session.flush()
         armies = armies.scalars().all()
         return armies
+    async def get_army_extra(self, army_id: int):
+        """
+        Get also alliance name and username of the owner of the army
+        """
+        get_entry = Select(Army, Alliance.name, User.username).where(Army.id == army_id) \
+        .join(User, User.id == Army.user_id) \
+        .join(Alliance, Alliance.name == User.alliance, isouter=True)
+        army = await self.session.execute(get_entry)
+        army = army.fetchone()
+        army[0].alliance = army[1]
+        army[0].username = army[2]
+        return army[0]
+    async def get_armies_on_planet_extra(self, planet_id: Optional[int]) -> list[Army]:
+        """
+        Get armies on a planet with additional relational info between the given user,
+        but make sure not do give the armies that are inside a city
+
+        :param: planet_id: id of the planet whose armies we want to retrieve
+        return: List of Army Objects
+        """
+        # Get all the armies on the planet
+        cond = Army.planet_id == planet_id if planet_id is not None else Army.planet_id.is_(None)
+        get_entry = Select(Army, Alliance.name.label("alliance"), User.username.label("username")).where(cond) \
+                     .join(User, User.id == Army.user_id) \
+                     .join(Alliance, Alliance.name == User.alliance, isouter=True)
+        armies = await self.session.execute(get_entry)
+        armies_fetched = armies.fetchall()
+        armies = []
+        for army in armies_fetched:
+            army[0].alliance = army[1]
+            army[0].username = army[2]
+            armies.append(army[0])
+
+        # Get all the armies on the planet that are in a city
+        get_entry_in_city = Select(Army).join(ArmyInCity, ArmyInCity.army_id == Army.id).where(cond)
+        city_armies = await self.session.execute(get_entry_in_city)
+        city_armies = city_armies.scalars().all()
+
+        # Filter out armies inside cities
+        return [army for army in armies if army not in city_armies] if planet_id is not None else armies
 
     async def get_armies_on_planet(self, planet_id: Optional[int]) -> list[Army]:
         """
@@ -253,12 +290,9 @@ class ArmyAccess(DatabaseAccess):
         """
         Retrieve the army object
         """
-        stmt = (
-            select(Army).where(Army.id == army_id)
-        )
 
-        result = await self.session.execute(stmt)
-        army: Optional[Army] = result.scalar_one_or_none()
+
+        army = await self.get_army_extra(army_id)
 
         """
         When the user is not the owner of the army, throw an exception

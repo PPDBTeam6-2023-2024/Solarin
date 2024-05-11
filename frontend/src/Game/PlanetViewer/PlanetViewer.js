@@ -16,6 +16,7 @@ import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
 import {SocketContext} from "../Context/SocketContext";
 import {PlanetIdContext} from "../Context/PlanetIdContext";
 import PlanetSwitcher from "../UI/PlanetSwitcher/PlanetSwitcher";
+import zIndex from "@mui/material/styles/zIndex";
 
 function PlanetViewer(props) {
     /*
@@ -134,14 +135,15 @@ function PlanetViewer(props) {
                 to_x: army.to_x,
                 to_y: army.to_y,
                 owner: army.owner,
+                alliance: army.alliance,
+                username: army.username,
                 arrivalTime: arrivalTime,
                 departureTime: departureTime,
-                src: '/images/troop_images/Assassin.png',
                 style: {
                     position: 'absolute',
                     left: `${currentPos.x * 100}%`,
                     top: `${currentPos.y * 100}%`,
-                    transform: 'translate(-50%, -50%)',
+                    transform: "translate(-50%, -50%)",
                     maxWidth: '10%',
                     maxHeight: '10%',
                     zIndex: 15,
@@ -217,7 +219,6 @@ function PlanetViewer(props) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
                     setArmyImages(armies);
-
                     break
                 case "change_direction":
                     const newArmies = handleChangeDirection(response.data)
@@ -263,56 +264,16 @@ function PlanetViewer(props) {
 
     const screenSize = useRef();
 
-    const mapOnClick = (e) => {
+    const mapOnClick = (e, action_json={}) => {
         /*
         * When we click on a map, we will move all our armies that are in MoveMode to the provided position
         * */
-        let action_json = {}
-
-        /*
-        * In case we want to trigger an onArrive event, we need to detect if
-        * we clicked on an army/city on
-        * Depending whether we are the owner of the clicked army/city we will attack, enter or merge.
-        * */
-        const imageType = e.target.getAttribute("image_type")
-        if (imageType !== null) {
-            const clickedArmy = imageType === "army";
-            const clickedCity = imageType === "city";
-
-            const index = parseInt(e.target.getAttribute("index"));
-            const isOwner = Boolean(parseInt(e.target.getAttribute("is_owner")));
-
-            /*Decide which target action to do*/
-            let target = ""
-
-            if (clickedCity) {
-                /*In case city clicked*/
-                if (!isOwner) {
-                    target = "attack_city"
-                } else {
-                    target = "enter"
-                }
-
-            } else if (clickedArmy) {
-                /*In case army clicked*/
-                if (!isOwner) {
-                    target = "attack_army"
-                } else {
-                    target = "merge"
-                }
-            }
-
-            /*Create an action json providing the on Arrive action details*/
-            action_json = {
-                on_arrive: true,
-                target_type: target,
-                target_id: index
-            }
-        }
 
         /*
         * Let the armies change direction (movement) to the provided position
         * */
+        e.stopPropagation()
+        console.log(action_json)
         armiesMoveMode.forEach(async (armyId) => {
             const data_json = {
                 type: "change_direction",
@@ -325,9 +286,7 @@ function PlanetViewer(props) {
 
             /*Send websocket message about movement change*/
             await socket.send(JSON.stringify(merged_data));
-            /*Make sure that the army is not in movement mode anymore*/
             toggleMoveMode(armyId)
-            console.log("planet sent", merged_data)
         })
     }
     return (
@@ -372,19 +331,19 @@ function PlanetViewer(props) {
                             yMax: 0,
                         }}
                     >
-                        <div ref={screenSize} style={{"width": "100%", "height": "100%"}} onClick={mapOnClick}>
+                        <div ref={screenSize} style={{"width": "100%", "height": "100%"}} onClick={(e) => {
+                            if(armiesMoveMode.length > 0) mapOnClick(e)
+                        }}>
                             {/*Display planet on the map*/}
-                            <PlanetSVG planetId={props.planetId}/>
+                            <PlanetSVG armyImages={armyImages} armiesMoveMode={armiesMoveMode} planetId={props.planetId} screenSize={screenSize}/>
 
                             {/*Display cities on the map*/}
                             {/*decide_moving, just passed whether a moving is selected, to change the cursor icon accordingly*/}
                             {showCities && cityImages.map((city, index) => (
-                                <CityMapEntry key={index} city={city} onClick={() => {
-                                    if (armiesMoveMode.length === 0) {
-                                        city.onClick();
-                                    }
-                                }}
-                                              decide_moving={armiesMoveMode.length > 0}/>
+                                <CityMapEntry key={index} city={city} onClick={(e, action_json) => {
+                                    if(armiesMoveMode.length > 0) mapOnClick(e, action_json)
+                                    else handleCityClick(city.id, city.controlled_by)
+                                }} decide_moving={armiesMoveMode.length > 0}/>
                             ))}
 
 
@@ -393,16 +352,16 @@ function PlanetViewer(props) {
                             moving selected, just states whether the army is planning to move
                             */}
                             {armyImages.map((army, index) => (
-                                <ArmyMapEntry key={army.id} army={army} onClick={(e) => {
+                                <ArmyMapEntry key={army.id} army={army} onClick={(e, action_json) => {
                                     if (armiesMoveMode.length === 0) {
                                         toggleArmyViewer(e, army, setActiveArmyViewers);
                                     }
+                                    else mapOnClick(e, action_json)
                                 }}
+                                              toggleArmyViewer={toggleArmyViewer}
                                               decide_moving={armiesMoveMode.length > 0}
                                               moving_Selected={isMoveMode(army.id)}/>
                             ))}
-
-
                         </div>
 
                     </MapInteractionCSS>

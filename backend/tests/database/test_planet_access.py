@@ -9,9 +9,8 @@ async def insert_users(data_access):
     for i in range(1, 6):
         await user_access.create_user(f"Test{i}", f"test{i}@test.test", f"test{i}")
     planet_access = data_access.PlanetAccess
-    await planet_access.create_space_region("Test Region")
     for i in range(1, 6):
-        await planet_access.create_planet(f"Test Planet{i}", "arctic", 1, 1, 1)
+        await planet_access.create_planet(f"Test Planet{i}", "arctic", 1, 1)
         await planet_access.create_planet_region(i, "arctic", 0.5, 0.5)
     await data_access.commit()
 
@@ -51,20 +50,6 @@ async def test_get_planets_of_user_4(data_access, planet_access):
     planets = await planet_access.get_planets_of_user(1)
     assert len(planets) == 5
 
-async def test_get_panet_count_1(planet_access):
-    region_id = await planet_access.create_space_region("Test Region 2")
-
-    count = await planet_access.get_planets_amount(region_id)
-    assert count == 0
-
-async def test_get_panet_count_2(planet_access):
-    region_id = await planet_access.create_space_region("Test Region 2")
-    for i in range(1, 6):
-        await planet_access.create_planet(f"Test Planet{i}", "arctic", region_id, 1, 1)
-
-    count = await planet_access.get_planets_amount(region_id)
-    assert count == 5
-
 async def test_get_planets_global_1(planet_access: PlanetAccess):
     planets = await planet_access.get_planets_global(1)
     assert len(planets) == 0
@@ -83,7 +68,7 @@ async def test_get_planets_global_3(planet_access, data_access, session):
 
 
     for i in range(1, 6):
-        p_id = await planet_access.create_planet(f"Test Planet{i}", "arctic", 1, 1, 1)
+        p_id = await planet_access.create_planet(f"Test Planet{i}", "arctic", 1, 1)
         await planet_access.create_planet_region(p_id, "arctic", 0.5, 0.5)
         stmt = update(Planet).where(Planet.id == p_id).values(visible=True)
         await planet_access.session.execute(stmt)

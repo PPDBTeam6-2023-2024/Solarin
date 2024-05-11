@@ -9,14 +9,12 @@ function ArmyManageView({id, owner, anchorEl, toggleMoveMode, isMoveMode, onCity
 
     return (
         <Fragment key={`army-viewer-${id}`}>
-            <Popper open={true} anchorEl={anchorEl} placement='left-start'>
+            <Popper open={true} anchorEl={anchorEl} placement='left-start' className={"transition-all ease-linear"}>
                 <Box className="bg-black rounded-3xl">
                     <List>
-
                         {owner === userInfo.id && <ListItemButton
                             onClick={() => toggleMoveMode(id)}>{isMoveMode(id) ? 'Cancel Move To' : 'Move To'}</ListItemButton>}
                         <ListItemButton onClick={() => setDetailsOpen(!detailsOpen)}>Details</ListItemButton>
-
                     </List>
                 </Box>
             </Popper>

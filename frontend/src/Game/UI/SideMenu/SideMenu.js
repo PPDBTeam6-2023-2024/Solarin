@@ -26,7 +26,7 @@ function SideMenu(props) {
                 }
                 <>
                     <div
-                        className={`border-2 border-white bg-gray-800 transition-all duration-300 ease-out ${(menuOpen) ? "opacity-100" : "opacity-0"} h-full p-5 text-center`}>
+                        className={`border-2 border-white bg-gray-800 transition-all duration-300 ease-out ${(menuOpen) ? "" : "hidden"} h-full p-5 text-center`}>
                         <RiArrowRightSLine className="transition-all ease-in-out hover:scale-110 m-0 absolute"
                                            onClick={() => setMenuOpen(!menuOpen)}/>
                         <br/>

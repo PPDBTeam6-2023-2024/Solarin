@@ -1,6 +1,7 @@
 import resourcesJson from "./../ResourceViewer/resources.json"
 
 import './ResourceCostEntry.css'
+import Tooltip from "@mui/material/Tooltip";
 
 
 function ResourceCostEntry(props) {
@@ -11,6 +12,7 @@ function ResourceCostEntry(props) {
     }
 
     return (
+        <Tooltip title={`${resourcesJson[props.resource]["description"]}`}>
         <div className="ResourceCostEntry" style={{"display": "inline-block"}}>
 
             <div style={{"height": "60%", "width": "60%", "margin": "auto"}}>
@@ -32,6 +34,7 @@ function ResourceCostEntry(props) {
             </div>
 
         </div>
+        </Tooltip>
     )
 }
 

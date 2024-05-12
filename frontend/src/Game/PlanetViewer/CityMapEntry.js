@@ -29,7 +29,7 @@ function CityMapEntry(props) {
         })
     }
     return (
-        <>
+        <div className={`${cursorStyleClass}`} onClick={cityOnClick}>
             <div className="z-20 absolute opacity-80"
                  style={{transform: 'translate(-50%, -50%)',
                      left: `${props.city.x * 100}%`, top: `${props.city.y * 100}%`}}>
@@ -40,9 +40,8 @@ function CityMapEntry(props) {
                 <IoMdFlag className={"bg-blue-800 p-2 text-5xl border border-white rounded-3xl"}/>
             }
             </div>
-        <img className={`${cursorStyleClass}`} key={props.index} src={props.city.src} alt="city" style={props.city.style}
-             onClick={cityOnClick}/>
-        </>
+            <img  key={props.index} src={props.city.src} alt="city" style={props.city.style}/>
+        </div>
     )
 }
 export default CityMapEntry

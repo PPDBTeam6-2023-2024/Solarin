@@ -6,7 +6,6 @@ import {IoMdClose} from 'react-icons/io';
 
 import {Resources} from '../ResourceViewer/ResourceViewer';
 
-
 const ProfileElement = (props) => {
     /**
      * create the visuals for the profile button

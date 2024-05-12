@@ -171,20 +171,25 @@ class PlanetSocketActions:
         cost_dict = await self.check_maintenance()
 
         await self.connection_pool.send_personal_message(self.websocket, {"request_type": "maintenance_cost",
-                                                                          "maintenance": cost_dict})
+                                                                          "maintenance": cost_dict, "wait_time": 0})
 
     async def check_maintenance(self,):
         """
         Update the maintenance information
 
         """
+        change_occurred = False
         cities = await self.data_access.CityAccess.get_cities_by_controller(self.user_id)
         for city in cities:
-            await self.data_access.ResourceAccess.check_maintenance_city(self.user_id, city.id)
+            changed = await self.data_access.ResourceAccess.check_maintenance_city(self.user_id, city.id)
+            if changed:
+                change_occurred = True
 
         armies = await self.data_access.ArmyAccess.get_user_armies(self.user_id)
         for army in armies:
-            await self.data_access.ResourceAccess.check_maintenance_army(self.user_id, army.id)
+            changed = await self.data_access.ResourceAccess.check_maintenance_army(self.user_id, army.id)
+            if changed:
+                change_occurred = True
 
         """
         Update last checked timer
@@ -209,6 +214,9 @@ class PlanetSocketActions:
             temp_dict = await self.data_access.ResourceAccess.get_maintenance_army(army.id)
             for k, v in temp_dict.items():
                 cost_dict[k] = cost_dict.get(k, 0) + v
+
+        if change_occurred:
+            await self.connection_pool.broadcast({"request_type": "reload"})
 
         return cost_dict
 

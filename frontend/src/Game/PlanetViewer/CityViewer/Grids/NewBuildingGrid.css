@@ -80,3 +80,8 @@
 .resource-details th {
     background-color: transparent;
 }
+
+.FontSizer *{
+    font-size: 1.4vw;
+    text-align: center;
+}

@@ -10,6 +10,7 @@ from .city_checker import CityChecker
 
 router = APIRouter(prefix="/cityManager", tags=["City"])
 
+
 @router.get("/get_city_data/{city_id}", response_model=CityData)
 async def get_city_and_building_info(
         user_id: Annotated[int, Depends(get_my_id)],
@@ -49,11 +50,17 @@ async def get_city_and_building_info(
         schema = building.to_schema(building.type.type)
         buildings_schemas.append(schema)
 
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_city(city_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
+
     """
     Get city info
     """
     city_info = await data_access.CityAccess.get_city_info(city_id)
-    city_info_schema = CityInfoSchema(population=city_info[0], region_type=city_info[1], region_buffs=city_info[2], rank=city_info[3], remaining_update_time=remaining_time_update_time)
+    city_info_schema = CityInfoSchema(population=city_info[0], region_type=city_info[1],
+                                      region_buffs=city_info[2], rank=city_info[3],
+                                      remaining_update_time=remaining_time_update_time,
+                                      maintenance_cost=maintenance_cost)
 
     """
     Return the city data, consisting of the building_schemas info and the city_info_schema

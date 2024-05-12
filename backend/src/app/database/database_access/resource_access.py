@@ -172,6 +172,7 @@ class ResourceAccess(DatabaseAccess):
         Check the maintenance of a city
         :param: user_id: id corresponding to the user that is being checked
         :param: city_id: id corresponding to the city
+        :return: boolean if true, maintenance has removed a city
         """
 
         if delta_time is None:
@@ -194,7 +195,7 @@ class ResourceAccess(DatabaseAccess):
             for r in m_list:
                 await self.remove_resource(user_id, r[0], r[1])
 
-            return
+            return False
 
         """
         In case a user does not have enough resources, the user will, lose the city (it will be removed)
@@ -203,6 +204,8 @@ class ResourceAccess(DatabaseAccess):
         d = delete(City).where(City.id == city_id)
         await self.session.execute(d)
         await self.session.flush()
+
+        return True
 
     async def maintenance_delta_time(self, user_id):
         """
@@ -237,6 +240,8 @@ class ResourceAccess(DatabaseAccess):
         Get the maintenance cost for a specific army
 
         :param: army_id: id corresponding to the army
+
+        :return: boolean if true, maintenance has removed some troops
         """
 
         get_costs = Select(MaintenanceTroop, ArmyConsistsOf.rank, ArmyConsistsOf.size).\
@@ -281,6 +286,7 @@ class ResourceAccess(DatabaseAccess):
 
         army_remaining = 0.8**hours_passed
 
+        changed = False
         for r in m_list:
             """
             We Will now check whether we have sufficient resources
@@ -293,6 +299,7 @@ class ResourceAccess(DatabaseAccess):
             """
             Retrieve troops that use the resources that are in shortage
             """
+
             get_losing_troops = Select(ArmyConsistsOf).\
                 join(TroopType, ArmyConsistsOf.troop_type == TroopType.type).\
                 join(MaintenanceTroop, TroopType.type == MaintenanceTroop.troop_type).\
@@ -303,6 +310,9 @@ class ResourceAccess(DatabaseAccess):
             for t in losing_troops:
                 t.size = math.ceil(t.size*army_remaining)
 
+            changed = True
+
         await self.session.flush()
+        return changed
 
 

@@ -113,7 +113,10 @@ async def get_troops(
         general = general.to_scheme().dict()
         general.update({"modifiers": modifiers})
 
-    return {"troops": troops_schema, "stats": army_stats, "general": general}
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_army(army_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
+
+    return {"troops": troops_schema, "stats": army_stats, "general": general, "maintenance": maintenance_cost}
 
 
 @router.get("/armies_user")

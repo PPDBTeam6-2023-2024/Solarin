@@ -127,12 +127,7 @@ function Scene(props) {
         })
         setFleetsMoveMode([])
     }
-    const ContextBridge = useContextBridge(SocketContext, UserInfoContext,  ReactReduxContext, PlanetListContext);
-    /* calculate travel time to a coordinate in seconds */
-    const getTravelTime = (from, to) => {
-        // to change when army speed is taken into account
-        return Math.round(Math.hypot(to[0]-from[0], to[1]-from[1])*(100000/3600))
-    }
+    const ContextBridge = useContextBridge(SocketContext, UserInfoContext,  ReactReduxContext, PlanetListContext)
     return (
         <>
             <Stars/>

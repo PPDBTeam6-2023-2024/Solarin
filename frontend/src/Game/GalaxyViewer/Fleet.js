@@ -13,16 +13,6 @@ import {MathUtils} from "three"
 // spaceship model credit: "Ameaterasu" (https://skfb.ly/oTpuL) by gavinpgamer1
 
 const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) => {
-    const fleetRef = useRef()
-    const [clicked, setClicked] = useState(false)
-    const [userInfo, setUserInfo] = useContext(UserInfoContext);
-
-
-    const [detailsOpen, setDetailsOpen] = useState(false)
-    const [anchorEl, setAnchorEl] = useState(null)
-
-    const ContextBridge = useContextBridge(SocketContext, ReactReduxContext)
-
     // calculate position based on source- and target position and how much time has elapsed
     const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
         let date = new Date()
@@ -35,11 +25,22 @@ const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) =>
         const currentY = sourcePosition.y + (targetPosition.y - sourcePosition.y) * percentComplete
         return {x: currentX, y: currentY}
     }
+
+    const fleetRef = useRef()
+    const [clicked, setClicked] = useState(false)
+    const [userInfo] = useContext(UserInfoContext);
+
+
+    const [detailsOpen, setDetailsOpen] = useState(false)
+    const [anchorEl, setAnchorEl] = useState(null)
+
+    const ContextBridge = useContextBridge(SocketContext, ReactReduxContext)
+    const [currentPos, setCurrentPos] = useState(lerp({
+        sourcePosition: {x: fleet.x, y: fleet.y}, targetPosition: {x: fleet.to_x, y: fleet.to_y},
+        arrivalTime:  new Date(fleet.arrivalTime).getTime(), departureTime: new Date(fleet.departureTime).getTime()
+    }))
+
     useEffect(() => {
-        const currentPos = lerp({
-            sourcePosition: {x: fleet.x, y: fleet.y}, targetPosition: {x: fleet.to_x, y: fleet.to_y},
-            arrivalTime:  new Date(fleet.arrivalTime).getTime(), departureTime: new Date(fleet.departureTime).getTime()
-        })
         fleetRef.current.rotation.y = Math.atan2(fleet.to_x - currentPos.x, fleet.to_y - currentPos.y) + Math.PI
     }, [])
 

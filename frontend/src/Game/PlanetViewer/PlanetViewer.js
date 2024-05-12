@@ -273,7 +273,6 @@ function PlanetViewer(props) {
         * Let the armies change direction (movement) to the provided position
         * */
         e.stopPropagation()
-        console.log(action_json)
         armiesMoveMode.forEach(async (armyId) => {
             const data_json = {
                 type: "change_direction",

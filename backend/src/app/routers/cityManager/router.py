@@ -71,19 +71,22 @@ async def get_city_and_building_info(
     return CityData(city = city_info_schema, buildings = buildings_schemas)
 
 
-@router.get("/cities/{planet_id}", response_model=List[CitySchema])
+@router.get("/cities/{planet_id}")
 async def get_cities(
         planet_id: int,
         db=Depends(get_db)
-) -> List[CitySchema]:
+):
     data_access = DataAccess(db)
     cities = await data_access.PlanetAccess.get_planet_cities(planet_id)
 
     """
     Iterate through each building, creating a BuildingInstanceSchema for each one
     """
-    cities_schemas = [city.to_city_schema() for city in cities]
-
+    cities_schemas = []
+    for city in cities:
+        schema = city.to_city_schema().dict()
+        schema["alliance"] = city.alliance
+        cities_schemas.append(schema)
     """
     Return the list of BuildingInstanceSchema instances
     """

@@ -64,12 +64,18 @@ class PlanetAccess(DatabaseAccess):
         :param planet_id: id of the planet we want to check
         :return: a list of all cities that are on this planet
         """
-        select_cities = select(City).options(joinedload(City.region)).join(
+        select_cities = (select(City, User.alliance).options(joinedload(City.region)).join(
             PlanetRegion, City.region_id == PlanetRegion.id
-        ).where(PlanetRegion.planet_id == planet_id)
+        ).join(User, User.id == City.controlled_by, isouter=True)
+        .where(PlanetRegion.planet_id == planet_id))
 
         results = await self.session.execute(select_cities)
-        return list(results.scalars().all())
+        results = results.fetchall()
+        return_result = []
+        for result in results:
+            result[0].alliance = result[1]
+            return_result.append(result[0])
+        return return_result
 
     async def get_region_cities(self, region_id: int) -> list[City]:
         """

@@ -9,7 +9,7 @@ function ArmyManageView({id, owner, anchorEl, toggleMoveMode, isMoveMode, onCity
 
     return (
         <Fragment key={`army-viewer-${id}`}>
-            <Popper open={true} anchorEl={anchorEl} placement='left-start' className={"transition-all ease-linear"}>
+            <Popper open={true} anchorEl={anchorEl} placement='left-start'>
                 <Box className="bg-black rounded-3xl">
                     <List>
                         {owner === userInfo.id && <ListItemButton

@@ -75,9 +75,9 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
     return {"message": "Political stance updated successfully", "new_stance": updated_stance}
 
 
-@router.websocket("/ws/maintenance")
+@router.websocket("/maintenance")
 async def websocket_endpoint(
-        websocket: WebSocket, board_id: int, db: AsyncSession = Depends(get_db)
+        websocket: WebSocket, db: AsyncSession = Depends(get_db)
 ):
     auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
     user_id = get_my_id(auth_token)

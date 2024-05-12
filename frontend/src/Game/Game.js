@@ -1,4 +1,4 @@
-import {useEffect, useState, Suspense} from "react"
+import {useEffect, useState, Suspense, useRef} from "react"
 import axios from 'axios'
 import PlanetViewer from "./PlanetViewer/PlanetViewer"
 import GalaxyViewer from "./GalaxyViewer/GalaxyViewer"
@@ -10,6 +10,7 @@ import {IoMdPlanet} from "react-icons/io";
 import {UserInfoContext} from "./Context/UserInfoContext"
 
 import {PlanetListContext} from "./Context/PlanetListContext"
+import {useSelector, useDispatch} from 'react-redux'
 
 const Game = () => {
     const [isAuth, setIsAuth] = useState(false)
@@ -17,6 +18,87 @@ const Game = () => {
     const [viewMode, setViewMode] = useState(View.PlanetView)
     const [planetList, setPlanetList] = useState([{"id": 1, "name": "Terra"}])
     const [planetListIndex, setPlanetListIndex] = useState(0)
+
+    const resources = useSelector((state) => state.resources.resources)
+
+    /*
+    * Use a websocket to realtime update information about the maintenance of an army
+    * */
+    const [maintenanceWebsocket, setMaintenanceWebsocket] = useState(null);
+    const isConnected = useRef(false);
+
+    /*
+    * To be able to simulate the change of maintenance live, will retrieve the maintenance rate and
+    * mimic this on the frontend
+    * */
+    const [maintenanceCost, setMaintenanceCost] = useState([]);
+    const [maintenanceCheckable, setMaintenanceCheckable] = useState(false);
+    useEffect(() => {
+        if (isConnected.current) return
+
+        isConnected.current = true;
+
+        const webSocket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/logic/maintenance`,
+            `${localStorage.getItem('access-token')}`);
+        setMaintenanceWebsocket(webSocket);
+
+        webSocket.onopen = () => {
+            webSocket.send(
+                JSON.stringify(
+                    {
+                        type: "get_maintenance_cost",
+                    }))
+        }
+
+    }, []);
+
+    /*make sure we wait a given time before being able to check the maintenance (to prevent high traffic usage)*/
+    const checkable_maintenance = async(delay) => {
+        await new Promise((resolve) => setTimeout(resolve, delay))
+        setMaintenanceCheckable(true)
+        check_maintenance()
+    }
+
+    const check_maintenance = async() =>{
+        if (!maintenanceCheckable){return}
+
+        let enough = true;
+        maintenanceCost.forEach((element) => {
+            if (resources[element[0]] <= 0){
+                enough = false
+            }
+        })
+
+        if (enough){return}
+        maintenanceWebsocket.send(
+        JSON.stringify(
+            {
+                type: "get_maintenance_cost",
+        }))
+
+    }
+
+    /*
+    * Handle maintenance websocket actions
+    * */
+    useEffect(() => {
+        if (!maintenanceWebsocket) return;
+
+        if (!isConnected.current) return
+
+        maintenanceWebsocket.onmessage = (event) => {
+            let data = JSON.parse(event.data)
+            if (data.type === "update_cost") {
+                setMaintenanceCost(data.maintenance_cost)
+                checkable_maintenance(data.checkin)
+            }
+
+        };
+
+        return () => {
+            maintenanceWebsocket.close();
+        };
+    }, [maintenanceWebsocket]);
 
     const authenticate = async () => {
         try {

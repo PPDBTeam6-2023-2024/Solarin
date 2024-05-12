@@ -1,7 +1,6 @@
 import './ChatIcon.css'
 import {IoMdClose} from "react-icons/io";
 
-
 import React, {useState} from "react";
 import ChatMenu from "./ChatMenu";
 import WindowUI from '../WindowUI/WindowUI';

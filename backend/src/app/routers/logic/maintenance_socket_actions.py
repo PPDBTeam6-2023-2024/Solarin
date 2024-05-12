@@ -26,12 +26,13 @@ class MaintenanceSocketActions:
         delta_time = await self.data_access.ResourceAccess.maintenance_delta_time(self.user_id)
 
         cost_dict = await self.check_maintenance()
-
+        cost_dict = [(k, v) for k, v in cost_dict.items()]
         """
         checkin, gives information to the user, that calibration with the backend is no use for at least
         the amount provided in the checkin
         """
-        await self.websocket.send_json({"maintenance_cost": cost_dict, "checkin": 3600-(delta_time % 3600)})
+        await self.websocket.send_json({"type": "update_cost",
+                                        "maintenance_cost": cost_dict, "checkin": 3600-(delta_time % 3600)})
 
     async def check_maintenance(self,):
         """

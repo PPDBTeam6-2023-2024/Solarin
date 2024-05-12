@@ -21,7 +21,6 @@ async def spawn_user(
     Spawns a user on a planet.
     If the user already has a planet, the most recent planet is returned.
     If the user does not have a planet, a planet which was created within the last hour is returned.
-    If no such planet exists, a new planet is generated in space region 1.
     """
 
     data_access = DataAccess(db)
@@ -40,7 +39,7 @@ async def spawn_user(
     if recent_planets:
         planet_id = recent_planets[0].id
     else:
-        planet_id = await generate_random_planet(db, 1)
+        planet_id = await generate_random_planet(db)
 
     await data_access.ArmyAccess.create_army(user_id, planet_id, random.uniform(0, 1), random.uniform(0, 1))
     await db.commit()

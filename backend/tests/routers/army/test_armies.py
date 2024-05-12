@@ -23,9 +23,7 @@ async def test_get_armies(client):
         await data_access.DeveloperAccess.create_associated_with("test_planet_type", "test_region_type")
         await session.commit()
 
-        space_region_id = await data_access.PlanetAccess.create_space_region("test_space_region")
-        region_id = await data_access.PlanetAccess.create_space_region("test_region")
-        planet_id = await data_access.PlanetAccess.create_planet("test_planet", "test_planet_type", space_region_id, 1, 1)
+        planet_id = await data_access.PlanetAccess.create_planet("test_planet", "test_planet_type", 1, 1)
 
         user_id = await data_access.UserAccess.get_user_id_email(
             email="test@example.com"
@@ -55,9 +53,7 @@ async def test_get_troops(client):
         await data_access.DeveloperAccess.create_associated_with("test_planet_type", "test_region_type")
         await session.commit()
 
-        space_region_id = await data_access.PlanetAccess.create_space_region("test_space_region")
-        region_id = await data_access.PlanetAccess.create_space_region("test_region")
-        planet_id = await data_access.PlanetAccess.create_planet("test_planet", "test_planet_type", space_region_id, 1, 1)
+        planet_id = await data_access.PlanetAccess.create_planet("test_planet", "test_planet_type", 1, 1)
 
 
 

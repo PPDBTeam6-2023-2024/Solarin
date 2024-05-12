@@ -77,8 +77,8 @@ class Coordinate(Decimal):
         we check manually if the value of a coordinate is between 0 and 1.
         """
         # overwrite the base class here, so we can throw a different exception
-        if not (0 <= value <= 1):
-            raise DomainException("Coordinate", "value in range [0, 1]")
+        '''if not (0 <= value <= 1):
+            raise DomainException("Coordinate", "value in range [0, 1]")'''
 
         return value
 

@@ -10,9 +10,9 @@
 	* Stationary cannons that fire enormous amounts of charged plasma energy to decimate the enemy. Provides decent attack.
 	* 100 base AP
 	* Creation Cost
- 		* 2500 TF
-   		* 100 Solarium
-     		* 200 Minerals  
+		* 2500 TF
+		* 100 Solarium
+		* 200 Minerals
 * Directed Antiprotonic Annihilation System (*D.A.A.S*)
 	* A system that directs projectiles to the enemy, releasing antimatter on impact and causing annihilation of all nearby matter. Provides formidable attack.
  	* 150 base AP

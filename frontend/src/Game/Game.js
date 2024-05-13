@@ -11,6 +11,7 @@ import {UserInfoContext} from "./Context/UserInfoContext"
 
 import {PlanetListContext} from "./Context/PlanetListContext"
 import {useSelector, useDispatch} from 'react-redux'
+import {setResource, setDecreaseResource} from "../redux/slices/resourcesSlice";
 
 const Game = () => {
     const [isAuth, setIsAuth] = useState(false)
@@ -19,6 +20,7 @@ const Game = () => {
     const [planetList, setPlanetList] = useState([{"id": 1, "name": "Terra"}])
     const [planetListIndex, setPlanetListIndex] = useState(0)
 
+    const dispatch = useDispatch()
     const resources = useSelector((state) => state.resources.resources)
 
     /*
@@ -78,6 +80,8 @@ const Game = () => {
 
     }
 
+    const isIntervalSet = useRef(false);
+
     /*
     * Handle maintenance websocket actions
     * */
@@ -91,6 +95,7 @@ const Game = () => {
             if (data.type === "update_cost") {
                 setMaintenanceCost(data.maintenance_cost)
                 checkable_maintenance(data.checkin)
+                isIntervalSet.current = false;
             }
 
         };
@@ -98,8 +103,33 @@ const Game = () => {
         return () => {
             maintenanceWebsocket.close();
         };
+
     }, [maintenanceWebsocket]);
 
+
+    useEffect(() => {
+
+        let intervals = []
+
+        maintenanceCost.forEach((element) => {
+            if (element[1] != 0){
+                let interval = setInterval(() => {
+                    dispatch(setDecreaseResource({"resource": element[0]}))
+                }, 1000*3600/element[1])
+                intervals.push(interval)
+            }
+
+        });
+
+        return () => {
+            intervals.forEach((interval) => {
+                clearInterval(interval)
+            })
+            intervals = []
+
+        };
+
+    }, [maintenanceCost]);
     const authenticate = async () => {
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}

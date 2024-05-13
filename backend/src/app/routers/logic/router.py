@@ -79,7 +79,12 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
 async def websocket_endpoint(
         websocket: WebSocket, db: AsyncSession = Depends(get_db)
 ):
+
+
     auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
+
+    await websocket.accept(subprotocol=auth_token)
+
     user_id = get_my_id(auth_token)
 
     """

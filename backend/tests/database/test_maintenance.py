@@ -13,6 +13,9 @@ async def insert_users(data_access):
     await planet_access.create_planet_region(1, "arctic", 0.5, 0.5)
 
     await data_access.CityAccess.create_city(1, 1, 0.5, 0.5)
+    await data_access.BuildingAccess.create_building(1, 1, "barracks", True)
+    await data_access.BuildingAccess.create_building(1, 1, "farmpod", True)
+
     await data_access.ArmyAccess.create_army(1, 1, 0.5, 0.5)
 
     await data_access.ArmyAccess.add_to_army(1, "soldier", 1, 1000)
@@ -40,7 +43,7 @@ async def army_access(data_access):
 
 async def test_city_modifiers_1(data_access, resource_access, building_access):
     modifiers = await resource_access.get_maintenance_city(1)
-    assert len(modifiers.values()) == 1
+    assert len(modifiers.values()) == 2
 
 
 async def test_city_modifiers_2(data_access, resource_access, building_access):
@@ -48,8 +51,8 @@ async def test_city_modifiers_2(data_access, resource_access, building_access):
 
     modifiers = await resource_access.get_maintenance_city(1)
 
-    assert len(modifiers.values()) == 3
-    assert modifiers["RA"] == 112
+    assert len(modifiers.values()) == 4
+    assert modifiers["RA"] == 132
 
 
 async def test_lose_city(data_access, resource_access, building_access, city_access):
@@ -61,7 +64,9 @@ async def test_lose_city(data_access, resource_access, building_access, city_acc
 
     await resource_access.check_maintenance_city(1, 1, 3600)
     cities = await city_access.get_cities_by_controller(1)
-    assert len(cities) == 0
+    assert len(cities) == 1
+    b = await building_access.get_city_buildings(1)
+    assert len(b) == 1
 
 
 async def test_lose_city_2(data_access, resource_access, building_access, city_access):
@@ -71,11 +76,17 @@ async def test_lose_city_2(data_access, resource_access, building_access, city_a
     cities = await city_access.get_cities_by_controller(1)
     assert len(cities) == 1
 
+    b = await building_access.get_city_buildings(1)
+    assert len(b) == 2
+
     await resource_access.add_resource(1, "RA", 102)
 
     await resource_access.check_maintenance_city(1, 1, 3600)
     cities = await city_access.get_cities_by_controller(1)
-    assert len(cities) == 0
+    assert len(cities) == 1
+
+    b = await building_access.get_city_buildings(1)
+    assert len(b) == 1
 
 
 async def test_keep_city(data_access, resource_access, building_access, city_access):
@@ -85,11 +96,20 @@ async def test_keep_city(data_access, resource_access, building_access, city_acc
     cities = await city_access.get_cities_by_controller(1)
     assert len(cities) == 1
 
-    await resource_access.add_resource(1, "RA", 103)
+    b = await building_access.get_city_buildings(1)
+    assert len(b) == 2
+
+    await resource_access.add_resource(1, "RA", 132)
+    await resource_access.add_resource(1, "OI", 25)
+    await resource_access.add_resource(1, "UR", 25)
+    await resource_access.add_resource(1, "SOL", 25)
 
     await resource_access.check_maintenance_city(1, 1, 3600)
     cities = await city_access.get_cities_by_controller(1)
     assert len(cities) == 1
+
+    b = await building_access.get_city_buildings(1)
+    assert len(b) == 2
 
 
 async def test_keep_city_2(data_access, resource_access, building_access, city_access):
@@ -99,11 +119,21 @@ async def test_keep_city_2(data_access, resource_access, building_access, city_a
     cities = await city_access.get_cities_by_controller(1)
     assert len(cities) == 1
 
-    await resource_access.add_resource(1, "RA", 103)
+    b = await building_access.get_city_buildings(1)
+    assert len(b) == 2
+
+    await resource_access.add_resource(1, "RA", 132)
+    await resource_access.add_resource(1, "OI", 25)
+    await resource_access.add_resource(1, "UR", 25)
+    await resource_access.add_resource(1, "SOL", 25)
 
     await resource_access.check_maintenance_city(1, 1, 3600)
     cities = await city_access.get_cities_by_controller(1)
     assert len(cities) == 1
+
+    b = await building_access.get_city_buildings(1)
+    assert len(b) == 2
+
 
 async def test_keep_army(data_access, resource_access, building_access, army_access):
     """

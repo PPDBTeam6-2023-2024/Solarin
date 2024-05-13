@@ -55,7 +55,8 @@ class MaintenanceSocketActions:
         """
         Update last checked timer
         """
-        self.data_access.ResourceAccess.maintenance_checked(self.user_id)
+        await self.data_access.flush()
+        await self.data_access.ResourceAccess.maintenance_checked(self.user_id)
 
         await self.data_access.commit()
 
@@ -77,7 +78,6 @@ class MaintenanceSocketActions:
                 cost_dict[k] = cost_dict.get(k, 0) + v
 
         if change_occurred:
-            #TODO sent to right pools
             await self.websocket.send_json({"request_type": "reload"})
 
         return cost_dict

@@ -181,7 +181,7 @@ class ResourceAccess(DatabaseAccess):
         maintenance = await self.get_maintenance_city(city_id)
         m_list = []
         for k, m in maintenance.items():
-            m_list.append((k, m*math.floor(delta_time/3600)))
+            m_list.append((k, math.floor(m*delta_time/3600)))
 
         """
         We Will now check whether we have sufficient resources
@@ -198,11 +198,22 @@ class ResourceAccess(DatabaseAccess):
             return False
 
         """
-        In case a user does not have enough resources, the user will, lose the city (it will be removed)
+        In case a user does not have enough resources, the user will, lose some buildings in the city
         """
 
-        d = delete(City).where(City.id == city_id)
-        await self.session.execute(d)
+        hours_passed = math.floor(delta_time / 3600)
+
+        get_deleted_buildings = Select(BuildingInstance).join(City, City.id == BuildingInstance.city_id).\
+            where(City.id == city_id).\
+            order_by(func.random()).limit(hours_passed)
+
+        deleted_buildings = await self.session.execute(get_deleted_buildings)
+        deleted_buildings = deleted_buildings.scalars().all()
+
+        for del_b in deleted_buildings:
+            d = delete(BuildingInstance).where(BuildingInstance.id == del_b.id)
+            await self.session.execute(d)
+
         await self.session.flush()
 
         return True
@@ -218,7 +229,7 @@ class ResourceAccess(DatabaseAccess):
 
         delta_time = datetime.utcnow()-last_time
 
-        return delta_time
+        return delta_time.total_seconds()
 
     async def maintenance_checked(self, user_id: int):
         """
@@ -229,9 +240,7 @@ class ResourceAccess(DatabaseAccess):
         We only want to remove 1 hour, because some checks work every hour
         """
 
-        remaining = delta_time % 3600
-
-        u = Update(User).values({"last_maintenance_check": datetime.utcnow()-remaining}).where(User.id == user_id)
+        u = Update(User).values({"last_maintenance_check": datetime.utcnow()}).where(User.id == user_id)
         await self.session.execute(u)
         await self.session.flush()
 
@@ -274,8 +283,9 @@ class ResourceAccess(DatabaseAccess):
 
         maintenance = await self.get_maintenance_army(army_id)
         m_list = []
+
         for k, m in maintenance.items():
-            m_list.append((k, m*math.floor(delta_time/3600)))
+            m_list.append((k, math.floor(m*delta_time/3600)))
 
         """
         In case a user does not have enough resources,  we lose part of its troops

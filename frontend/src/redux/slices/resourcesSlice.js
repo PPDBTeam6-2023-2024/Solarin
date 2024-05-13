@@ -10,10 +10,20 @@ const resourcesSlice = createSlice({
         state.resources = action.payload
       },
       setResource(state, action) {
-        state.resources[action.payload.resource] = action.payload.value
+          state.resources[action.payload.resource] = action.payload.value
+      },
+      setDecreaseResource(state, action) {
+
+          let resources = state.resources
+
+
+          let state_copy = {...state, "resources": {...resources, [action.payload.resource]: resources[action.payload.resource]-1}}
+
+          return state_copy
       }
+
   },
 })
 
-export const {setResources, setResource} = resourcesSlice.actions
+export const {setResources, setResource, setDecreaseResource} = resourcesSlice.actions
 export default resourcesSlice.reducer

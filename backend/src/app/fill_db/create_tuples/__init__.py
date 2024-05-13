@@ -106,7 +106,8 @@ class CreateTuples:
                                                         [battle_stats.attack, battle_stats.defense,
                                                          battle_stats.city_attack, battle_stats.city_defense,
                                                          battle_stats.recovery, battle_stats.speed])
-                await self.__dev.set_troop_type_cost(troop_type["name"], [("SOL", base_cost)])
+                creation_cost = [(extra_cost, troop_type["extra_cost"][extra_cost]) for extra_cost in troop_type["extra_cost"]]+[("SOL", base_cost)]
+                await self.__dev.set_troop_type_cost(troop_type["name"], creation_cost)
     async def create_production_modifiers(self, production_modifiers: list[dict[str, Any]]):
         for coefficient in production_modifiers:
             stmt = (

@@ -125,25 +125,25 @@
   "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],
   "stats": ["attack", "defense", "city_attack", "city_defense", "recovery", "speed"],
   "units": [
-    {"name":  "soldier", "spec": "land", "base-points":
+    {"name":  "soldier", "extra_cost": {"TF": 50},"spec": "land", "base-points":
     {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250}
     },
-    {"name":  "tank", "spec": "land", "base-points":
+    {"name":  "tank", "extra_cost": {"TF": 50, "CO": 50} ,"spec": "land", "base-points":
     {"AP":  149, "DP":  350, "CAP":  149, "CDP":  300, "PBR": 250, "MS": 149}
     },
-    {"name":  "assassin", "spec": "land", "base-points":
+    {"name":  "assassin", "extra_cost": {"TF": 75}, "spec": "land", "base-points":
     {"AP":  350, "DP":  149, "CAP":  250, "CDP":  149, "PBR": 250, "MS": 350}
     },
-    {"name":  "medic", "spec": "land", "base-points":
+    {"name":  "medic", "extra_cost": {"MI": 50, "TF": 50} ,"spec": "land", "base-points":
     {"AP":  200, "DP":  200, "CAP":  200, "CDP":  200, "PBR": 350, "MS": 250}
     },
-    {"name":  "fighter", "spec": "space", "base-points":
+    {"name":  "fighter", "extra_cost": {"OI": 50, "CO":  50},"spec": "space", "base-points":
     {"AP":  350, "DP":  200, "CAP":  149, "CDP":  200, "PBR": 250, "MS": 350}
     },
-    {"name":  "bomber", "spec": "space", "base-points":
+    {"name":  "bomber", "extra_cost": {"CO": 50, "OI": 50, "MI":  25} ,"spec": "space", "base-points":
     {"AP":  250, "DP":  149, "CAP":  350, "CDP":  149, "PBR": 250, "MS": 350}
     },
-    {"name":  "mothership", "spec": "space", "base-points":
+    {"name":  "mothership", "extra_cost": {"CO": 100, "OI": 50},  "spec": "space", "base-points":
     {"AP":  0, "DP":  0, "CAP":  0, "CDP":  0, "PBR": 0, "MS": 0}
     }
   ],

@@ -191,6 +191,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                                         buildingId={selectedClick[0]}
                                         onClose={() => { selectedClick[0] = -1; selectedClick[1] = null}}
                                         refreshResources={() => initializeResources(dispatch)}
+                                        buildingType={selectedClick[2]}
 
                         />}
 

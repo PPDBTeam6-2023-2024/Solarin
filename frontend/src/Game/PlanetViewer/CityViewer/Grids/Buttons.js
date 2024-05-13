@@ -129,13 +129,14 @@ export const UpgradeButtonComponent = ({
 
     let costData = cityUpgradeBool ? upgradeCost : upgradeCost[data.id];
     const isCostAvailable = costData && costData.costs.length > 0;
-    const buttonStyle = isCostAvailable && costData.can_upgrade && !isButtonDisabled
+    const buttonStyle = isCostAvailable && costData.can_upgrade && !isButtonDisabled && !(cityUpgradeBool && (data.rank === 5))
         ? "wide-button"
         : "wide-button disabled";
     const formattedTime = formatTime(timer);
     const buttonText = isButtonDisabled
         ? `Please wait ${formattedTime}`
-        : (isCostAvailable ? `Upgrade: ${costData.costs.map(cost => `${cost[1]} ${cost[0]}`).join(', ')}` : 'Loading...');
+        : (isCostAvailable ? `Upgrade: ${costData.costs.map(cost => `${cost[1]} ${cost[0]}`).join(', ')}` : 'Loading...'
+        : cityUpgradeBool && (data.rank === 5) 'max';
 
     return (
         <button className={buttonStyle} onClick={UpgradeBuildingHelper}

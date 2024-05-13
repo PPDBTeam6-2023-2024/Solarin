@@ -217,11 +217,18 @@ class CityAccess(DatabaseAccess):
 
         get_city = select(City).where(City.id == city_id)
         city = await self.session.execute(get_city)
+
         city : City= city.first()[0]
 
         resource_cost = upgrade_tuple[0]
         time_cost = upgrade_tuple[1]
         can_upgrade = upgrade_tuple[2]
+
+        """
+        The max rank of a city is 5, return False if the current rank is 5
+        """
+        if city.rank == 5:
+            return False
 
         """
         Check if there's an existing upgrade entry for this city

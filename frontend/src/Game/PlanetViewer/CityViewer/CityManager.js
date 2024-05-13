@@ -5,7 +5,7 @@ import './CityManager.css';
 import {
     getArmyInCity,
     getCityData,
-    getNewBuildingTypes, getResourcesInStorage,
+    getNewBuildingTypes, getProductionBuildingRates, getResourcesInStorage,
     getUpgradeCost
 } from './BuildingManager';
 import NewBuildingGrid from './Grids/NewBuildingGrid';

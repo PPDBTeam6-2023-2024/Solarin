@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import './NewBuildingGrid.css';
 import { ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent } from "./Buttons";
+import {getProductionBuildingRates} from "../BuildingManager";
 
 const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
@@ -11,14 +12,13 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         { headerName: "Building Rank", field: "buildingRank" },
         { headerName: "Function", field: "type", autoHeight: true },
     ], [cityId]);
-
-    const rowData = useMemo(() => buildings.map((building) => ({
+    const rowData = useMemo( () => buildings.map( (building) => ({
         buildingType: building.building_type,
         buildingRank: building.rank,
         id: building.id,
         type: building.type,
+        rates: building.rates
     })), [buildings]);
-
     return (
         <>
             <div className="ag-theme-alpine-dark buildings_grid">
@@ -28,8 +28,10 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     domLayout='normal'
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
-                    onCellMouseOver={event => {
-                        setSelectedBuilding(event.data);
+                    onCellMouseOver={async (event)=> {
+                        let building = event.data
+                        if(building.rates === undefined) building.rates = await getProductionBuildingRates(building.id)
+                        setSelectedBuilding(building);
                         onRowMouseOver(event);
                     }}
                     onGridReady={params => params.api.sizeColumnsToFit()}
@@ -49,7 +51,8 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                 <tbody>
                                     {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
                                         <tr key={index}>
-                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name}</td>
+                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {<small>{String(selectedBuilding.rates[res.resource_name])}/hr</small>}</td>
+
                                         </tr>
                                     ))}
                                 </tbody>

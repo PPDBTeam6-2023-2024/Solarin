@@ -66,6 +66,13 @@ async def create_building(
         planet.visible = True
         await data_access.commit()
 
+@router.get("/get_rates/{building_id}")
+async def get_rates( user_id: Annotated[int, Depends(get_my_id)],
+        building_id: int,
+        db=Depends(get_db)):
+    data_access = DataAccess(db)
+    stats = await data_access.BuildingAccess.get_production_building_stats(user_id, building_id)
+    return stats
 
 @router.post("/collect/{building_id}", response_model=Confirmation)
 async def collect_resource(

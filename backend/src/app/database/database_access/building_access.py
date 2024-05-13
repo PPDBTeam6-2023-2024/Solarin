@@ -291,6 +291,101 @@ class BuildingAccess(DatabaseAccess):
 
         return overview_dict
 
+    async def get_production_building_stats(self, user_id: int, building_id: int):
+        """
+        Get the production rate stats for a particular building
+
+        :param: building_id: id of the building whose stats we want
+        """
+        """
+             Check if the user is also the owner of the provided city
+             """
+        is_owner = await self.is_owner(user_id, building_id)
+        if not is_owner:
+            raise PermissionException(user_id, "cannot get building stats from another user")
+
+        """
+        retrieve the resource production
+        """
+        get_production = Select(ProducesResources, BuildingInstance.rank). \
+            join(BuildingInstance, BuildingInstance.building_type == ProducesResources.building_name). \
+            where(BuildingInstance.id == building_id)
+
+        production = await self.session.execute(get_production)
+        production = production.all()
+
+        """
+        Get planet_region building is located in
+        """
+        get_building = select(BuildingInstance).where(BuildingInstance.id == building_id)
+        building = await self.session.execute(get_building)
+        building: BuildingInstance = building.first()[0]
+
+        get_planet_region_id = select(City.region_id).where(building.city_id == City.id)
+        planet_region_id = await self.session.execute(get_planet_region_id)
+        planet_region_id = planet_region_id.scalar_one_or_none()
+
+        region_controller = await self.get_region_controlled_by(planet_region_id)
+
+        region_control = False
+        if region_controller == user_id:
+            region_control = True
+
+        """
+        Get production bonuses based on region type and store as dict
+        """
+        get_production_modifier = select(ProductionRegionModifier.resource_type, ProductionRegionModifier.modifier) \
+            .join(City, City.id == building.city_id) \
+            .join(PlanetRegion, City.region_id == PlanetRegion.id).where(
+            ProductionRegionModifier.region_type == PlanetRegion.region_type)
+
+        production_modifier = await self.session.execute(get_production_modifier)
+        production_modifier = production_modifier.fetchall()
+
+        """
+        calculate and apply the political modifier
+        default value = 1
+        """
+
+        stance = await UserAccess(self.session).get_politics(user_id)
+
+        general_production_modifier = 1
+        if stance:
+            general_production_modifier += ((stance.anarchism * 10) + (stance.democratic * 3) - (
+                        stance.theocracy * 10) - (
+                                                    stance.technocracy * 5) + (stance.corporate_state * 20)) / 100
+
+        modifier_dict = dict()
+        for row_list in production_modifier:
+            resource_type = row_list[0]
+            modifier_dict[resource_type] = row_list[1]
+            modifier_dict[resource_type] += general_production_modifier
+
+
+        rates = dict()
+        for p in production:
+            """
+            if regional modifier exists, apply
+            else set regional modifier to 1.0
+            """
+            modifier_ = modifier_dict.get(p[0].resource_name)
+            if modifier_ is None:
+                modifier_ = 1.0
+
+            """
+            Calculate production rate using following modifiers:
+            - bonus for higher levels of buildings
+            - regional modifiers (for higher yields in certain regions)
+            - control modifier (higher production rate if in control of region)
+            """
+            production_rate = PropertyUtility.getGPR(modifier_, p[0].base_production, p[1], region_control)
+            rates[p[0].resource_name] = production_rate
+        return rates
+
+
+
+
+
     async def collect_resources(self, user_id: int, building_id: int, collect_resources: bool):
         """
         Get the resources stocks for a building and

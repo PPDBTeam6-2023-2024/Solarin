@@ -521,7 +521,6 @@ class BuildingAccess(DatabaseAccess):
         :param user_id: id of the user who wants to upgrade the building
         :param building_id: id of building we want to upgrade
         """
-
         if not await self.is_owner(user_id, building_id):
             raise PermissionException(user_id, "upgrading someone else their building is not allowed")
 

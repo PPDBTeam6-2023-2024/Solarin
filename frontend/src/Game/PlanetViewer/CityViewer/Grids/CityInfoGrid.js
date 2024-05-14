@@ -8,13 +8,6 @@ import {getCityImage} from "../GetCityImage";
 
 
 const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildings, refreshResources, setCityUpgradeInfo,cityId, refresh, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo }) => {
-    // const columns = useMemo(() => [
-    //     { headerName: "", field: "label" },
-    //     { headerName: "", field: "value", cellStyle: params => ({
-    //         fontWeight: params.data.label === 'Region buffs' ? 'bold' : 'normal',
-    //         color: params.data.label === 'Region buffs' ? 'red' : 'black'
-    //     }) }
-    // ], []);
 
     const RegionBuffsCellRenderer = ({ value }) => {
           return (
@@ -76,6 +69,7 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
                     </div>
                 {cityUpgradeInfo &&
                     <UpgradeButtonComponent
+                                            data = {cityInfo}
                                             cityId={cityId}
                                             upgradeCost={upgradeCost}
                                             setUpgradeCostMap={setUpgradeCostMap}

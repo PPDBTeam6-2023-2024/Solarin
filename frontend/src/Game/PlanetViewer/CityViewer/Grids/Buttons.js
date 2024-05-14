@@ -22,23 +22,21 @@ function formatTime(seconds) {
     return parts.join(':');
 }
 
-
 export const ResourceButtonComponent = ({data, cityId, refreshResources, resourcesInStorage, setResourcesInStorage}) => {
     const buttonStyle = "wide-button";
-
-
 
     const collectResourcesHelper = async (cityId, buildingId) => {
         try {
             await collectResources(cityId, buildingId);
             refreshResources();
-            getResourcesInStorage(cityId).then(resourcesInStorage=> {
-            setResourcesInStorage(resourcesInStorage.overview)
-            })
+            getResourcesInStorage(cityId).then(resourcesInStorage => {
+                setResourcesInStorage(resourcesInStorage.overview);
+            });
         } catch (error) {
             console.error("Failed to collect resources:", error);
         }
     };
+
     if (data.type === "productionBuilding") {
         return (
             <button className={buttonStyle} onClick={() => collectResourcesHelper(cityId, data.id)}>
@@ -48,6 +46,7 @@ export const ResourceButtonComponent = ({data, cityId, refreshResources, resourc
     }
     return null;
 };
+
 export const TrainButtonComponent = ({data, setSelectedClick}) => {
     return (
         <button
@@ -117,9 +116,16 @@ export const UpgradeButtonComponent = ({
                 setCityUpgradeInfo(buildings[1]);
                 const cityData = await getCityData(cityId);
                 setBuildings(cityData.buildings);
-                setCityInfo(cityData.city)
+                setCityInfo(cityData.city);
+
                 if (cityUpgradeBool){
-                    setTimeDuration(buildings[1].time_cost)
+                    setTimeDuration(buildings[1].time_cost);
+                    setTimer(buildings[1].time_cost);
+                    setIsButtonDisabled(true);
+                } else {
+                    setTimeDuration(buildings[0].time_cost);
+                    setTimer(buildings[0].time_cost);
+                    setIsButtonDisabled(true);
                 }
             }
         } catch (error) {
@@ -135,8 +141,11 @@ export const UpgradeButtonComponent = ({
     const formattedTime = formatTime(timer);
     const buttonText = isButtonDisabled
         ? `Please wait ${formattedTime}`
-        : (isCostAvailable ? `Upgrade: ${costData.costs.map(cost => `${cost[1]} ${cost[0]}`).join(', ')}` : 'Loading...'
-        : cityUpgradeBool && (data.rank === 5) 'max';
+        : (cityUpgradeBool && (data.rank === 5))
+            ? 'Max City Rank: 5'
+            : isCostAvailable
+                ? `Upgrade: ${costData.costs.map(cost => `${cost[1]} ${cost[0]}`).join(', ')}`
+                : 'Loading...';
 
     return (
         <button className={buttonStyle} onClick={UpgradeBuildingHelper}

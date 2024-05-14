@@ -17,6 +17,14 @@ async def get_city_and_building_info(
         db=Depends(get_db)
 ) -> CityData:
     data_access = DataAccess(db)
+
+    """
+    do the city check, checking all the idle mechanics
+    """
+    city_checker = CityChecker(city_id, data_access)
+    remaining_time_update_time = await city_checker.check_all()
+
+
     buildings = await data_access.BuildingAccess.get_city_buildings(city_id)
 
     """
@@ -30,12 +38,6 @@ async def get_city_and_building_info(
     city_owner = await data_access.CityAccess.get_city_controller(city_id) 
     if user_id != city_owner.id:
         return []
-
-    """
-    do the city check, checking all the idle mechanics
-    """
-    city_checker = CityChecker(city_id, data_access)
-    remaining_time_update_time = await city_checker.check_all()
 
     """
     Iterate through each building, creating a BuildingInstanceSchema for each one
@@ -109,24 +111,23 @@ async def get_upgrade_cost(
         city_id: int,
         db=Depends(get_db)
 ):
+    data_access = DataAccess(db)
+    """
+    Get the city upgrade cost
+    """
+
+    city_cost_tuple = await data_access.CityAccess.get_city_upgrade_cost(city_id)
+    city_upgrade_cost = CostSchema(id=city_id, costs=city_cost_tuple[0], time_cost=city_cost_tuple[1], can_upgrade=city_cost_tuple[2])
+
     """
     Get the upgrade costs of the buildings inside the city
     """
-
-    data_access = DataAccess(db)
     buildings = await data_access.BuildingAccess.get_city_buildings(city_id)
     result = []
 
     for building in buildings:
         cost = await data_access.BuildingAccess.get_upgrade_cost(user_id, building.id)
         result.append(CostSchema(id=cost[0], costs=cost[1], time_cost=0, can_upgrade=cost[2]))
-
-    """
-    Add city upgrade cost to result
-    """
-
-    city_cost_tuple = await data_access.CityAccess.get_city_upgrade_cost(city_id)
-    city_upgrade_cost = CostSchema(id=city_id, costs=city_cost_tuple[0], time_cost=city_cost_tuple[1], can_upgrade=city_cost_tuple[2])
 
     return result,city_upgrade_cost
 

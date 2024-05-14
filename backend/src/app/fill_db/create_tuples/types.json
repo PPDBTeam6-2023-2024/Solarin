@@ -209,7 +209,7 @@
     {"region-type": "polar", "resource-type": "MI", "modifier": 1.4},
     {"region-type": "polar", "resource-type": "OI", "modifier": 0.5},
     {"region-type": "polar", "resource-type": "RA", "modifier": 0.8},
-    {"region-type": "desert", "resource-type": "SO", "modifier": 1.1},
+    {"region-type": "desert", "resource-type": "SOL", "modifier": 1.1},
     {"region-type": "desert", "resource-type": "OI", "modifier": 1.4},
     {"region-type": "desert", "resource-type": "UR", "modifier": 1.2},
     {"region-type": "desert", "resource-type": "TF", "modifier": 0.8},

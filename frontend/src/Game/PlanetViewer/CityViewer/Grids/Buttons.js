@@ -103,28 +103,30 @@ export const UpgradeButtonComponent = ({
                 UpgradeSuccessful = await upgradeBuilding(cityId, data.id);
             } else {
                 UpgradeSuccessful = await upgradeCity(cityId);
+                console.log("should be confirmed here: ", UpgradeSuccessful)
             }
             if (UpgradeSuccessful.confirmed === true) {
                 const buildings = await getUpgradeCost(cityId);
                 const building_costs = buildings[0];
-                const costMap = building_costs.reduce((acc, building) => {
-                    acc[building.id] = building;
+                const costMap = building_costs?.reduce((acc, building) => {
+                    acc[building?.id] = building;
                     return acc;
                 }, {});
                 setUpgradeCostMap(costMap);
                 refreshResources();
-                setCityUpgradeInfo(buildings[1]);
+                setCityUpgradeInfo(buildings?.[1]);
                 const cityData = await getCityData(cityId);
-                setBuildings(cityData.buildings);
-                setCityInfo(cityData.city);
+                setBuildings(cityData?.buildings);
+                setCityInfo(cityData?.city);
+                console.log("city info : ", cityData)
 
                 if (cityUpgradeBool){
-                    setTimeDuration(buildings[1].time_cost);
-                    setTimer(buildings[1].time_cost);
+                    setTimeDuration(buildings[1]?.time_cost);
+                    setTimer(buildings[1]?.time_cost);
                     setIsButtonDisabled(true);
                 } else {
-                    setTimeDuration(buildings[0].time_cost);
-                    setTimer(buildings[0].time_cost);
+                    setTimeDuration(buildings[0]?.time_cost);
+                    setTimer(buildings[0]?.time_cost);
                     setIsButtonDisabled(true);
                 }
             }

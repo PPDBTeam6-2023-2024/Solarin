@@ -37,13 +37,13 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
 
     const rowData = useMemo(() => [
         // Example data preparation (similar to previous transformations)
-        { category: "Region type", info: cityInfo.region_type , autoHeight: true},
-        { category: "Region buffs", info: cityInfo.region_buffs.map(buff => ({
+        { category: "Region type", info: cityInfo?.region_type , autoHeight: true},
+        { category: "Region buffs", info: cityInfo?.region_buffs.map(buff => ({
             type: buff[0],
             modifier: parseFloat(buff[1]) - 1,
             percentage: `${(parseFloat(buff[1]) - 1) >= 0 ? '+' : ''}${((parseFloat(buff[1]) - 1) * 100).toFixed(0)}%`
         })) , autoHeight: true, autoWidth: true},
-        { category: "Population size", info: cityInfo.population , autoHeight: true},
+        { category: "Population size", info: cityInfo?.population , autoHeight: true},
     ], [cityInfo]);
 
     const onGridReady = (params) => {
@@ -65,7 +65,7 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
                 </div>
                 <div className="right-screen-city-info">
                     <div className="building_image">
-                        <img src={getCityImage(cityInfo.rank)} alt="City" className="selected-image shadow-2xl"/>
+                        <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
                     </div>
                 {cityUpgradeInfo &&
                     <UpgradeButtonComponent

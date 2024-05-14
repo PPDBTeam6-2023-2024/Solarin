@@ -227,7 +227,7 @@ class CityAccess(DatabaseAccess):
         """
         The max rank of a city is 5, return False if the current rank is 5
         """
-        if city.rank == 5:
+        if city.rank > 4:
             return False
 
         """
@@ -320,7 +320,7 @@ class CityAccess(DatabaseAccess):
             """
             for resource_type, resource_cost in resource_cost:
                 if resource_type == "POP":
-                    await self.update_population_and_rank(city_id, resource_cost, city.rank+1)
+                    await self.update_population_and_rank(city_id, resource_cost, 1)
                     break
 
             """

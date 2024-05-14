@@ -25,6 +25,7 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.create_resource_type("Energon")
         await da.DeveloperAccess.create_resource_type("SOL")
         await da.DeveloperAccess.create_resource_type("TF")
+        await da.DeveloperAccess.create_resource_type("RA")
 
         await da.DeveloperAccess.create_stat("attack")
         await da.DeveloperAccess.create_stat("defense")

@@ -32,7 +32,7 @@ class City(Base):
 
     region = relationship("PlanetRegion", back_populates="cities", lazy='joined')
 
-    population = Column(Integer, default= 1024)
+    population = Column(PositiveInteger, default= 1024)
 
     def to_city_schema(self):
         """
@@ -105,7 +105,7 @@ class BuildingType(Base):
     name = Column(String, Sequence("buildingType_name_seq"), primary_key=True)
 
     type = Column(String, nullable=False)
-    required_rank = Column(Integer)
+    required_rank = Column(PositiveInteger)
     __mapper_args__ = {
         'polymorphic_on': type
     }
@@ -156,7 +156,7 @@ class WallType(BuildingType):
     """
     __tablename__ = 'wallType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    defense = Column(Integer, nullable=False)
+    defense = Column(PositiveInteger, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'wall'
@@ -171,7 +171,7 @@ class TowerType(BuildingType):
     """
     __tablename__ = 'towerType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    attack = Column(Integer, nullable=False)
+    attack = Column(PositiveInteger, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'tower'
@@ -186,7 +186,7 @@ class HouseType(BuildingType):
     """
     __tablename__ = 'houseType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    residents = Column(Integer, nullable=False)
+    residents = Column(PositiveInteger, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'house'
@@ -255,6 +255,7 @@ class CreationCost(Base):
     cost_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
     cost_amount = Column(PositiveInteger, nullable=False)
 
+
 class CityCosts(Base):
     """
     Stores the costs related to city-related activities.
@@ -267,8 +268,9 @@ class CityCosts(Base):
     __tablename__ = "CityCosts"
     activity = Column(String, primary_key=True)
     resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
-    time_cost = Column(Integer, nullable=True)
-    cost_amount = Column(Integer, nullable=False)
+    time_cost = Column(PositiveInteger, nullable=True)
+    cost_amount = Column(PositiveInteger, nullable=False)
+
 
 class CityUpdateQueue(Base):
     """
@@ -280,4 +282,4 @@ class CityUpdateQueue(Base):
     __tablename__ = "CityUpdateQueue"
     city_id = Column(ForeignKey("city.id"), primary_key=True)
     start_time = Column(DateTime, nullable=False)
-    duration = Column(Integer)
+    duration = Column(PositiveInteger)

@@ -80,6 +80,8 @@ class Coordinate(Decimal):
         '''if not (0 <= value <= 1):
             raise DomainException("Coordinate", "value in range [0, 1]")'''
 
+        value = min(value, (2 ** 31) - 1)
+
         return value
 
 
@@ -102,6 +104,8 @@ class PositiveInteger(TypeDecorator):
         SQL Alchemy has no native support for adding checks to Domains, so
         we check manually if the value of the Integer is greater or equal to 0
         """
+        value = min(value, (2 ** 31) - 1)
+
         if value is not None and not (0 <= value):
             raise DomainException("PositiveInteger", "value is negative")
 

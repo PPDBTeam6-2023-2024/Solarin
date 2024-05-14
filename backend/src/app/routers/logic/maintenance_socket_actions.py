@@ -9,7 +9,7 @@ class MaintenanceSocketActions:
     This class gives structure to the socket action methods
     """
 
-    def __init__(self, user_id: int, data_access: DataAccess, websocket: WebSocket):
+    def __init__(self, user_id: int, data_access: DataAccess, websocket: WebSocket=None):
         """
         The provided parameters are parameters that stay the same for the entire lifetime of this Object
         """
@@ -31,10 +31,11 @@ class MaintenanceSocketActions:
         checkin, gives information to the user, that calibration with the backend is no use for at least
         the amount provided in the checkin
         """
-        await self.websocket.send_json({"type": "update_cost",
-                                        "maintenance_cost": cost_dict, "checkin": 3610-(delta_time % 3600)})
+        if self.websocket is not None:
+            await self.websocket.send_json({"type": "update_cost",
+                                            "maintenance_cost": cost_dict, "checkin": 3610-(delta_time % 3600)})
 
-    async def check_maintenance(self,):
+    async def check_maintenance(self, commit=True):
         """
         Update the maintenance information
 
@@ -58,7 +59,10 @@ class MaintenanceSocketActions:
         await self.data_access.flush()
         await self.data_access.ResourceAccess.maintenance_checked(self.user_id)
 
-        await self.data_access.commit()
+        if commit:
+            await self.data_access.commit()
+        else:
+            await self.data_access.flush()
 
         """
         Calculate total remaining maintenance cost
@@ -77,7 +81,7 @@ class MaintenanceSocketActions:
             for k, v in temp_dict.items():
                 cost_dict[k] = cost_dict.get(k, 0) + v
 
-        if change_occurred:
+        if change_occurred and self.websocket is not None:
             await self.websocket.send_json({"request_type": "reload"})
 
         return cost_dict

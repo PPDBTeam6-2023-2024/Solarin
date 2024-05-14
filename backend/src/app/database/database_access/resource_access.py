@@ -188,6 +188,12 @@ class ResourceAccess(DatabaseAccess):
 
             m_list.append((k, math.floor(m*delta_time/3600)))
 
+            if remaining_resources < math.floor(m*delta_time/3600):
+                """
+                When not enough resources set the resource amount to 0
+                """
+                await self.remove_resource(user_id, k, await self.get_resource_amount(user_id, k))
+
         """
         We Will now check whether we have sufficient resources
         """
@@ -201,9 +207,6 @@ class ResourceAccess(DatabaseAccess):
                 await self.remove_resource(user_id, r[0], r[1])
 
             return False
-
-        for r in m_list:
-            await self.remove_resource(user_id, r[0], await self.get_resource_amount(user_id, r[0]))
 
         """
         In case a user does not have enough resources, the user will, lose some buildings in the city

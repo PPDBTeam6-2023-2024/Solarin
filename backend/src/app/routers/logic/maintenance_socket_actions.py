@@ -41,6 +41,7 @@ class MaintenanceSocketActions:
 
         """
         change_occurred = False
+
         cities = await self.data_access.CityAccess.get_cities_by_controller(self.user_id)
         for city in cities:
             changed = await self.data_access.ResourceAccess.check_maintenance_city(self.user_id, city.id)

@@ -52,11 +52,12 @@ Our Endpoints are structured into multiple routers:
 <p>
 general logic information needed
 
-|    Endpoint     | Method | Purpose                                             |
-|:---------------:|:------:|:----------------------------------------------------|
-|    resources    |  GET   | Get the current resources of a specific user        |
-|    politics     |  GET   | Get the current political stance of a specific user |
-| update_politics |  POST  | update the political stance of a user               |
+|    Endpoint     |  Method   | Purpose                                             |
+|:---------------:|:---------:|:----------------------------------------------------|
+|    resources    |    GET    | Get the current resources of a specific user        |
+|    politics     |    GET    | Get the current political stance of a specific user |
+| update_politics |   POST    | update the political stance of a user               |
+|   maintenance   | WEBSOCKET | websocket to handle communication about maintenance |
 
 </p>
 </details>

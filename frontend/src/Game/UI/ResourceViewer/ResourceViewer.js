@@ -10,6 +10,7 @@ import {setResources} from "../../../redux/slices/resourcesSlice";
 
 export const initializeResources = async (dispatch) => {
     try {
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
         if (response.status === 200) {
             dispatch(setResources(response.data))

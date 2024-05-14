@@ -12,6 +12,7 @@ import {UserInfoContext} from "./Context/UserInfoContext"
 import {PlanetListContext} from "./Context/PlanetListContext"
 import {useSelector, useDispatch} from 'react-redux'
 import {setResource, setDecreaseResource} from "../redux/slices/resourcesSlice";
+import {initializeResources} from "./UI/ResourceViewer/ResourceViewer"
 
 const Game = () => {
     const [isAuth, setIsAuth] = useState(false)
@@ -49,36 +50,19 @@ const Game = () => {
                 JSON.stringify(
                     {
                         type: "get_maintenance_cost",
-                    }))
+            }))
         }
+        initializeResources(dispatch)
 
     }, []);
 
     /*make sure we wait a given time before being able to check the maintenance (to prevent high traffic usage)*/
     const checkable_maintenance = async(delay) => {
-        await new Promise((resolve) => setTimeout(resolve, delay))
+        setMaintenanceCheckable(false)
+        await new Promise((resolve) => setTimeout(resolve, delay*1000))
         setMaintenanceCheckable(true)
-        check_maintenance()
     }
 
-    const check_maintenance = async() =>{
-        if (!maintenanceCheckable){return}
-
-        let enough = true;
-        maintenanceCost.forEach((element) => {
-            if (resources[element[0]] <= 0){
-                enough = false
-            }
-        })
-
-        if (enough){return}
-        maintenanceWebsocket.send(
-        JSON.stringify(
-            {
-                type: "get_maintenance_cost",
-        }))
-
-    }
 
     const isIntervalSet = useRef(false);
 
@@ -94,8 +78,11 @@ const Game = () => {
             let data = JSON.parse(event.data)
             if (data.type === "update_cost") {
                 setMaintenanceCost(data.maintenance_cost)
-                checkable_maintenance(data.checkin)
                 isIntervalSet.current = false;
+                initializeResources(dispatch)
+
+                checkable_maintenance(data.checkin)
+
             }
 
         };
@@ -106,16 +93,32 @@ const Game = () => {
 
     }, [maintenanceWebsocket]);
 
+    /*Check if resources <= 0, if so calibrate with backend*/
+    useEffect(() => {
+        if (!maintenanceCheckable){return}
+        Object.entries(resources).forEach((resource) => {
+            if (resource[1] <= 0){
+
+                maintenanceWebsocket.send(
+                JSON.stringify(
+                    {
+                        type: "get_maintenance_cost",
+                }))
+
+            }
+
+        })
+    }, [resources])
+
 
     useEffect(() => {
 
         let intervals = []
-
         maintenanceCost.forEach((element) => {
             if (element[1] != 0){
-                let interval = setInterval(() => {
+                const interval = setInterval(() => {
                     dispatch(setDecreaseResource({"resource": element[0]}))
-                }, 1000*3600/element[1])
+                }, Math.floor(1000*3600/element[1]))
                 intervals.push(interval)
             }
 
@@ -129,7 +132,7 @@ const Game = () => {
 
         };
 
-    }, [maintenanceCost]);
+    }, []);
     const authenticate = async () => {
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}

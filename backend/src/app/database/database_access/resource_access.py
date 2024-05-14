@@ -180,7 +180,12 @@ class ResourceAccess(DatabaseAccess):
 
         maintenance = await self.get_maintenance_city(city_id)
         m_list = []
+
+        min_time = 1
         for k, m in maintenance.items():
+            remaining_resources = await self.get_resource_amount(user_id, k)
+            min_time = min(math.floor(remaining_resources/m), min_time)
+
             m_list.append((k, math.floor(m*delta_time/3600)))
 
         """
@@ -197,11 +202,14 @@ class ResourceAccess(DatabaseAccess):
 
             return False
 
+        for r in m_list:
+            await self.remove_resource(user_id, r[0], await self.get_resource_amount(user_id, r[0]))
+
         """
         In case a user does not have enough resources, the user will, lose some buildings in the city
         """
 
-        hours_passed = math.floor(delta_time / 3600)
+        hours_passed = max(math.floor(delta_time/3600-min_time), 0)
 
         get_deleted_buildings = Select(BuildingInstance).join(City, City.id == BuildingInstance.city_id).\
             where(City.id == city_id).\
@@ -273,7 +281,7 @@ class ResourceAccess(DatabaseAccess):
 
     async def check_maintenance_army(self, user_id: int, army_id: int, delta_time: int = None):
         """
-        Check the maintenance of a city
+        Check the maintenance of an army
         :param: user_id: id corresponding to the user that is being checked
         :param: city_id: id corresponding to the city
         """
@@ -284,7 +292,10 @@ class ResourceAccess(DatabaseAccess):
         maintenance = await self.get_maintenance_army(army_id)
         m_list = []
 
+        min_time = 1
         for k, m in maintenance.items():
+            remaining_resources = await self.get_resource_amount(user_id, k)
+            min_time = min(math.floor(remaining_resources / m), min_time)
             m_list.append((k, math.floor(m*delta_time/3600)))
 
         """
@@ -292,9 +303,8 @@ class ResourceAccess(DatabaseAccess):
         We will do the following formula: we set the resource to 0, and every hour we kill 20% of the remaining army 
         that uses this resource.
         """
-        hours_passed = math.floor(delta_time/3600)
-
-        army_remaining = 0.8**hours_passed
+        hours_passed = max(math.floor(delta_time/3600-min_time), 0)
+        army_remaining = 0.9**hours_passed
 
         changed = False
         for r in m_list:
@@ -305,6 +315,11 @@ class ResourceAccess(DatabaseAccess):
             if has_enough:
                 await self.remove_resource(user_id, r[0], r[1])
                 continue
+
+            """
+            Set remaining resources to 0
+            """
+            await self.remove_resource(user_id, r[0], await self.get_resource_amount(user_id, r[0]))
 
             """
             Retrieve troops that use the resources that are in shortage

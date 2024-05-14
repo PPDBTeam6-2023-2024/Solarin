@@ -32,7 +32,7 @@ class MaintenanceSocketActions:
         the amount provided in the checkin
         """
         await self.websocket.send_json({"type": "update_cost",
-                                        "maintenance_cost": cost_dict, "checkin": 3600-(delta_time % 3600)})
+                                        "maintenance_cost": cost_dict, "checkin": 3610-(delta_time % 3600)})
 
     async def check_maintenance(self,):
         """

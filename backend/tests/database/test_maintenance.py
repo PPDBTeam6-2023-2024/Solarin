@@ -174,7 +174,7 @@ async def test_lose_troops(data_access, resource_access, building_access, army_a
     """
     Loses 20% of its army
     """
-    assert troops[0].size == 800
+    assert troops[0].size == 900
 
 
 async def test_lose_troops_2(data_access, resource_access, building_access, army_access):
@@ -192,7 +192,8 @@ async def test_lose_troops_2(data_access, resource_access, building_access, army
 
     troops = await army_access.get_troops(1)
 
-    assert troops[0].size == 513
+    assert troops[0].size == 730
+
 
 async def test_lose_troops_3(data_access, resource_access, building_access, army_access):
     """
@@ -215,6 +216,6 @@ async def test_lose_troops_3(data_access, resource_access, building_access, army
     The fighters lose troops, because not enough oil, while the troops remain
     """
     assert troops[0].size == 1000
-    assert troops[1].size == 800
+    assert troops[1].size == 900
 
 

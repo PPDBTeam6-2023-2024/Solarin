@@ -80,7 +80,6 @@ async def websocket_endpoint(
         websocket: WebSocket, db: AsyncSession = Depends(get_db)
 ):
 
-
     auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
 
     await websocket.accept(subprotocol=auth_token)
@@ -99,7 +98,9 @@ async def websocket_endpoint(
             data = await websocket.receive_json()
             if data["type"] == "get_maintenance_cost":
                 await maintenance_actions.maintenance_request(data)
-            print('action here')
 
     except WebSocketDisconnect:
-        await websocket.close()
+        try:
+            await websocket.close()
+        except Exception as e:
+            pass

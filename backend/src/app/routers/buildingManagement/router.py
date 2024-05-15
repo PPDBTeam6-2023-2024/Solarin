@@ -104,8 +104,6 @@ async def upgrade_building(
 async def get_tower_wall_stats(db=Depends(get_db)):
     """
     get the base stats of all the different types of walls and towers
-    :param db:
-    :return:
     """
     data_access = DataAccess(db)
     result = await data_access.BuildingAccess.get_base_stats()

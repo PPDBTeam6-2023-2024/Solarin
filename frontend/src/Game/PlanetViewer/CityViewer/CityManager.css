@@ -135,3 +135,12 @@
 .right-screen th {
     background-color: transparent;
 }
+
+.building-stats {
+    align-items: center;
+    max-width: 2.5vw;
+    max-height: 2.5vw;
+    width: auto;
+    height: auto;
+    display: inline-flex;
+}

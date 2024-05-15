@@ -26,7 +26,7 @@ const addTrainingQueue = async (buildingId, trainJson) => {
     catch(e) {return []}
 }
 
-function TrainingViewer({buildingId, onClose, refreshResources}) {
+function TrainingViewer({buildingId, onClose, refreshResources, buildingType}) {
     const [trainingQueueList, setTrainingQueueList] = useState([])
     const scrollBar = React.useRef(null);
     const [errorMessage, setErrorMessage] = useState("");
@@ -100,7 +100,7 @@ function TrainingViewer({buildingId, onClose, refreshResources}) {
 
             </div>
 
-            <TrainingOptionBar onTrain={(trainJson) => addTrainingData(trainJson)}/>
+            <TrainingOptionBar onTrain={(trainJson) => addTrainingData(trainJson)} buildingType={buildingType}/>
             {errorMessage}
         </div>
     )

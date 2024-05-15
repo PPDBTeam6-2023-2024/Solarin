@@ -304,6 +304,9 @@ class ResourceAccess(DatabaseAccess):
 
         min_time = 1
         for k, m in maintenance.items():
+            if m == 0:
+                continue
+
             remaining_resources = await self.get_resource_amount(user_id, k)
             min_time = min(math.floor(remaining_resources / m), min_time)
             m_list.append((k, math.floor(m*delta_time/3600)))
@@ -344,6 +347,8 @@ class ResourceAccess(DatabaseAccess):
             losing_troops = losing_troops.scalars().all()
             for t in losing_troops:
                 t.size = math.ceil(t.size*army_remaining)
+                if t.size == 0:
+                    t.size = 1
 
             changed = True
 

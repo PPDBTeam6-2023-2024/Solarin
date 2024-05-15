@@ -304,3 +304,26 @@ class UserAccess(DatabaseAccess):
             s.value = valid_updates.get(s.stance_name)
 
         await self.session.commit()
+
+    async def get_color_preferences(self, user_id: int) -> ColorCodes:
+        get_colors = Select(ColorCodes).where(ColorCodes.user_id == user_id)
+        color_codes = await self.session.execute(get_colors)
+        color_codes = color_codes.scalar_one_or_none()
+        return color_codes
+
+    async def update_color_preferences(self, user_id: int, primary: str, secondary: str, tertiary: str,
+                                       text_color: str):
+        color_code: ColorCodes = await self.get_color_preferences(user_id)
+        if color_code is None:
+            self.session.add(ColorCodes(user_id=user_id,
+                                        primary_color=primary,
+                                        secondary_color=secondary,
+                                        tertiary_color=tertiary,
+                                        text_color=text_color))
+        else:
+            color_code.primary_color = primary
+            color_code.secondary_color = secondary
+            color_code.tertiary_color = tertiary
+            color_code.text_color = text_color
+
+        await self.session.flush()

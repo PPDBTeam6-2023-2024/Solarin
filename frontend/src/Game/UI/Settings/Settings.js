@@ -4,6 +4,7 @@ import "./Settings.css"
 import { SketchPicker } from 'react-color'
 import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../../Context/ThemeContext";
 import Tooltip from "@mui/material/Tooltip";
+import axios from "axios";
 
 function Settings(props) {
 
@@ -22,6 +23,29 @@ function Settings(props) {
     const [secondaryColor, setSecondaryColor] = useContext(SecondaryContext);
     const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
     const [textColor, setTextColor] = useContext(TextColorContext);
+
+    const sendColorUpdate = async () => {
+        try {
+            /*send a post request to try and create or join the alliance*/
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/colors`,
+                JSON.stringify({
+                    "primary": primaryColor,
+                    "secondary": secondaryColor,
+                    "tertiary": tertiaryColor,
+                    "text_color": textColor
+                }),
+                {
+                    headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json',
+                    },
+                }
+            )
+
+        } catch (e) {
+            return ""
+        }
+    }
 
     return (
         <>
@@ -77,7 +101,7 @@ function Settings(props) {
                         <div style={{"marginTop": "2vw", "display": "flex", "flexDirection": "row", "alignItems": "center",
                             "justifyContent": "center"}}>
                             <Tooltip title={`Keep the changes the next time you open the game`}>
-                            <button> Apply Changes Permanently</button>
+                            <button onClick={() => {sendColorUpdate()}} > Apply Changes Permanently</button>
                             </Tooltip>
                         </div>
 

@@ -39,8 +39,10 @@ An overview of each the tables in the database:
 |     FriendsOf      |  Data  | Store which users are friends with each other                                                                                                            |
 |   FriendRequest    |  Data  | Stores which users have pending friend requests                                                                                                          |
 |  AllianceRequest   |  Data  | Stores which users have pending alliance requests to join an alliance (needs to be accepted by someone in the alliance)                                  |
-|  PoliticalStance   | LOOKUP | Stores all the political ideologies in our game                                                                                                          |
+|  PoliticalStance   | Lookup | Stores all the political ideologies in our game                                                                                                          |
 | HasPoliticalStance |  Data  | Stores information about the political direction of the user                                                                                             |
+|     ColorCodes     |  Data  | Stores which color themes the user has selected                                                                                                          |
+
 
 </p>
 </details>

@@ -65,6 +65,20 @@ const Game = () => {
 
     }, []);
 
+    useEffect(() => {
+        const getColors = async() => {
+            axios.defaults.headers.common = await {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/colors`)
+            if (response.data === undefined){return}
+            setPrimaryColor(response.data.primary_color);
+            setSecondaryColor(response.data.secondary_color);
+            setTertiaryColor(response.data.tertiary_color);
+            setTextColor(response.data.text_color);
+        }
+
+        getColors();
+    }, []);
+
     /*make sure we wait a given time before being able to check the maintenance (to prevent high traffic usage)*/
     const checkable_maintenance = async(delay) => {
         setMaintenanceCheckable(false)

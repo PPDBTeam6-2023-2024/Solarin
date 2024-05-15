@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import coalesce
@@ -104,3 +104,30 @@ async def websocket_endpoint(
             await websocket.close()
         except Exception as e:
             pass
+
+
+@router.get("/colors")
+async def get_colors(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
+    """
+    get the political values of a user
+    """
+    data_access = DataAccess(db)
+    color_codes = await data_access.UserAccess.get_color_preferences(user_id)
+
+    if color_codes is not None:
+        color_codes = color_codes.toScheme()
+    return color_codes
+
+
+@router.post("/colors")
+async def set_colors(request: Request,
+                     user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
+    """
+    get the political values of a user
+    """
+    data = await request.json()
+    data_access = DataAccess(db)
+    await data_access.UserAccess.update_color_preferences(user_id, data["primary"], data["secondary"],
+                                                          data["tertiary"], data["text_color"])
+
+    await data_access.commit()

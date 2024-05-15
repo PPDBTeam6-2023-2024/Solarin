@@ -212,7 +212,7 @@ class ResourceAccess(DatabaseAccess):
         In case a user does not have enough resources, the user will, lose some buildings in the city
         """
 
-        hours_passed = max(math.floor(delta_time/3600-min_time), 0)
+        hours_passed = max(delta_time/3600-min_time, 0)
 
         get_deleted_buildings = Select(BuildingInstance).join(City, City.id == BuildingInstance.city_id).\
             where(City.id == city_id).\
@@ -306,7 +306,7 @@ class ResourceAccess(DatabaseAccess):
         We will do the following formula: we set the resource to 0, and every hour we kill 20% of the remaining army 
         that uses this resource.
         """
-        hours_passed = max(math.floor(delta_time/3600-min_time), 0)
+        hours_passed = max(delta_time/3600-min_time, 0)
         army_remaining = 0.9**hours_passed
 
         changed = False

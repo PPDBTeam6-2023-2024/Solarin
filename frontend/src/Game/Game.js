@@ -97,14 +97,22 @@ const Game = () => {
     useEffect(() => {
         if (!maintenanceCheckable){return}
         Object.entries(resources).forEach((resource) => {
+            if (maintenanceCost[resource[0]] === undefined){return}
+
             if (resource[1] <= 0){
 
-                maintenanceWebsocket.send(
-                JSON.stringify(
-                    {
-                        type: "get_maintenance_cost",
-                }))
+                const sendCheck = async() => {
 
+
+                    await new Promise((resolve) => setTimeout(resolve, Math.ceil(3600/maintenanceCost[resource[0]])*1000))
+                    maintenanceWebsocket.send(
+                    JSON.stringify(
+                        {
+                            type: "get_maintenance_cost",
+                    }))
+                }
+
+                sendCheck()
             }
 
         })
@@ -115,6 +123,7 @@ const Game = () => {
 
         let intervals = []
         maintenanceCost.forEach((element) => {
+            console.log("bii", element[1], element[0])
             if (element[1] != 0){
                 const interval = setInterval(() => {
                     dispatch(setDecreaseResource({"resource": element[0]}))

@@ -1,0 +1,10 @@
+.SettingsMenu{
+    width: 80vw;
+    height: 35vw;
+    background-image: inherit;
+    display: inline-block;
+    position: fixed;
+    left: 10vw;
+    top: 10vw;
+    border-radius: 2vw 2vw 2vw 2vw;
+}

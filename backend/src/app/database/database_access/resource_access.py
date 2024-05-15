@@ -212,16 +212,23 @@ class ResourceAccess(DatabaseAccess):
         In case a user does not have enough resources, the user will, lose some buildings in the city
         """
 
-        hours_passed = max(delta_time/3600-min_time, 0)
+        hours_passed = math.floor(max(delta_time/3600-min_time, 0))
 
-        get_deleted_buildings = Select(BuildingInstance).join(City, City.id == BuildingInstance.city_id).\
+        get_deleted_buildings = Select(BuildingInstance, MaintenanceBuilding).\
+            join(City, City.id == BuildingInstance.city_id).\
+            join(MaintenanceBuilding, MaintenanceBuilding.building_type == BuildingInstance.building_type).\
             where(City.id == city_id).\
             order_by(func.random()).limit(hours_passed)
 
         deleted_buildings = await self.session.execute(get_deleted_buildings)
-        deleted_buildings = deleted_buildings.scalars().all()
+        deleted_buildings = deleted_buildings.all()
 
-        for del_b in deleted_buildings:
+        for del_b, maintenance in deleted_buildings:
+
+            r_amount = await self.get_resource_amount(user_id, maintenance.resource_type)
+            if r_amount > 0:
+                continue
+
             d = delete(BuildingInstance).where(BuildingInstance.id == del_b.id)
             await self.session.execute(d)
 

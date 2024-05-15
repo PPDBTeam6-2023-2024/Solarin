@@ -72,7 +72,7 @@
     ], "maintenance":  [{"product-name":  "RA", "amount":  20}]},
     {"name":  "farmpod", "creation-cost": 1200,"products":  [
       {"product-name":  "RA", "base-rate":  300, "base-cap":  5000}
-    ], "maintenance":  [{"product-name":  "SOL", "amount":  10}]},
+    ], "maintenance":  []},
     {"name":  "cloning-chamber", "creation-cost": 1500,"products":  [
       {"product-name":  "POP", "base-rate":  150, "base-cap":  1000}
     ], "maintenance":  [{"product-name":  "RA", "amount":  40}]},

@@ -17,7 +17,7 @@ Each building will have the following base maintenance cost:
     * Rations: 20/h
 
 * Farmpod
-    * Solarium: 10/h
+   * nothing
 
 * Cloning Chamber
    * Rations: 40/h

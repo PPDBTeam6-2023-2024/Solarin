@@ -14,7 +14,7 @@ async def insert_users(data_access):
 
     await data_access.CityAccess.create_city(1, 1, 0.5, 0.5)
     await data_access.BuildingAccess.create_building(1, 1, "barracks", True)
-    await data_access.BuildingAccess.create_building(1, 1, "farmpod", True)
+    await data_access.BuildingAccess.create_building(1, 1, "space-dock", True)
 
     await data_access.ArmyAccess.create_army(1, 1, 0.5, 0.5)
 
@@ -43,7 +43,7 @@ async def army_access(data_access):
 
 async def test_city_modifiers_1(data_access, resource_access, building_access):
     modifiers = await resource_access.get_maintenance_city(1)
-    assert len(modifiers.values()) == 2
+    assert len(modifiers.values()) == 3
 
 
 async def test_city_modifiers_2(data_access, resource_access, building_access):
@@ -51,8 +51,8 @@ async def test_city_modifiers_2(data_access, resource_access, building_access):
 
     modifiers = await resource_access.get_maintenance_city(1)
 
-    assert len(modifiers.values()) == 4
-    assert modifiers["RA"] == 132
+    assert len(modifiers.values()) == 3
+    assert modifiers["RA"] == 142
 
 
 async def test_lose_city(data_access, resource_access, building_access, city_access):

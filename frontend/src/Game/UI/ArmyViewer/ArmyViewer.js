@@ -9,6 +9,7 @@ import {SocketContext} from "../../Context/SocketContext";
 import GeneralView from "./GeneralView";
 import statsJson from "../stats.json";
 import ResourceCostEntry from "../ResourceViewer/ResourceCostEntry";
+import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../../Context/ThemeContext";
 
 function ArmyViewer({armyId, onCityCreated, is_owner}) {
     const [troops, setTroops] = useState([]);
@@ -78,17 +79,34 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
 
     let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);
 
+    const [primaryColor, setPrimaryColor] = useContext(PrimaryContext);
+    const [secondaryColor, setSecondaryColor] = useContext(SecondaryContext);
+    const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
+    const [textColor, setTextColor] = useContext(TextColorContext);
+
+
     return (
         <WindowUI>
-            <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto',
-                maxHeight: "60vh", "overflow": "scroll"}}>
+            <div className="UI"
+                 style={{
+                 padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto',
+                 maxHeight: "60vh", "overflow": "scroll",
+                 '--primaryColor': primaryColor,
+                 '--secundaryColor': secondaryColor,
+                 "--tertiaryColor": tertiaryColor,
+                 "--textColor": textColor,
+                 "border": "0.4vw solid var(--tertiaryColor)"}}>
                 <TreeView aria-label="file system navigator">
 
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
 
                     {/*Only display the create city button when the user is the owner of that army*/}
                     {is_owner &&
-                        <Button variant="contained" onClick={createCity} sx={{margin: "10px"}}>
+                        <Button variant="contained" onClick={createCity} sx={{margin: "10px",
+                            backgroundColor: primaryColor, '&:hover': {
+                            backgroundColor: secondaryColor,
+                            boxShadow: 'none',
+                          }}}>
                         Create City
                         </Button>
                     }

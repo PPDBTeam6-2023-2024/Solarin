@@ -13,15 +13,16 @@ import {PlanetListContext} from "./Context/PlanetListContext"
 import {useSelector, useDispatch} from 'react-redux'
 import {setResource, setDecreaseResource} from "../redux/slices/resourcesSlice";
 import {initializeResources} from "./UI/ResourceViewer/ResourceViewer"
-import {PrimaryContext, SecondaryContext, TertiaryContext} from "./Context/ThemeContext";
+import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "./Context/ThemeContext";
 
 const Game = () => {
     /**
      * these 2 states exist to be able to change the UI colors
      * */
-    const [primaryColor, setPrimaryColor] = useState("#ce1c75")
-    const [secondaryColor, setSecondaryColor] = useState("#d57d11")
-    const [tertiaryColor, setTertiaryColor] = useState("#e1b812")
+    const [primaryColor, setPrimaryColor] = useState("#1F2937")
+    const [secondaryColor, setSecondaryColor] = useState("#1F2937")
+    const [tertiaryColor, setTertiaryColor] = useState("#ffffff")
+    const [textColor, setTextColor] = useState("#ffffff")
 
     const [isAuth, setIsAuth] = useState(false)
     const [userInfo, setUserInfo] = useState(null)
@@ -201,18 +202,26 @@ const Game = () => {
         authenticate()
         getAllPlanets()
     }, [])
-    return (<div className="h-screen bg-gray-900">
+    return (<div className="h-screen bg-gray-900"
+            style={{
+                '--primaryColor': primaryColor,
+                '--secundaryColor': secondaryColor,
+                "--tertiaryColor": tertiaryColor,
+                "--textColor": textColor,
+            }}
+    >
         <UserInfoContext.Provider value={[userInfo, setUserInfo]}>
             <ViewModeContext.Provider value={[viewMode, setViewMode]}>
                 <PrimaryContext.Provider value={[primaryColor, setPrimaryColor]}>
                 <SecondaryContext.Provider value={[secondaryColor, setSecondaryColor]}>
                 <TertiaryContext.Provider value={[tertiaryColor, setTertiaryColor]}>
+                <TextColorContext.Provider value={[textColor, setTextColor]}>
                 <PlanetListContext.Provider value={[planetList, setPlanetList]}>
 
                     {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
                         <UI/>
                         {viewMode === View.PlanetView &&
-                            <>
+                            <div>
                                 <div onClick={() => setViewMode(View.GalaxyView)}
                                      className="fixed text-5xl z-10 transition ease-in-out hover:scale-150 hover:translate-x-5 hover:translate-y-1 duration-300 flex">
                                     <RiArrowLeftSLine className="basis-1/4"/>
@@ -222,7 +231,7 @@ const Game = () => {
                                               planetName={planetList[planetListIndex].name}
                                               planetId={planetList[planetListIndex].id}
                                               planetListIndex={[planetListIndex, setPlanetListIndex]}/>
-                            </>
+                            </div>
                         }
 
                         {viewMode === View.GalaxyView &&
@@ -240,6 +249,7 @@ const Game = () => {
                     {!userInfo && !isAuth && <h1>Not authenticated</h1>}
 
                 </PlanetListContext.Provider>
+                </TextColorContext.Provider>
                 </TertiaryContext.Provider>
                 </SecondaryContext.Provider>
                 </PrimaryContext.Provider>

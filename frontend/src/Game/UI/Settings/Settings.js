@@ -2,7 +2,7 @@ import WindowUI from "../WindowUI/WindowUI"
 import {useContext, useState} from "react";
 import "./Settings.css"
 import { SketchPicker } from 'react-color'
-import {PrimaryContext, SecondaryContext, TertiaryContext} from "../../Context/ThemeContext";
+import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../../Context/ThemeContext";
 import Tooltip from "@mui/material/Tooltip";
 
 function Settings(props) {
@@ -21,6 +21,7 @@ function Settings(props) {
     const [primaryColor, setPrimaryColor] = useContext(PrimaryContext);
     const [secondaryColor, setSecondaryColor] = useContext(SecondaryContext);
     const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
+    const [textColor, setTextColor] = useContext(TextColorContext);
 
     return (
         <>
@@ -60,12 +61,26 @@ function Settings(props) {
                             />
                         </div>
 
-                        {/*Display the button to make the changes permanent*/}
-                        <Tooltip title={`Keep the changes the next time you open the game`}>
-                        <div style={{"display": "inline-block"}}>
-                            <button> Apply Changes Permanently</button>
+                        {/*Give option for Text color*/}
+                        <div className={"ColorSelector"}>
+                            Text Color
+                            <SketchPicker styles={pickerStyles}
+                            onChange={(color) => {setTextColor(color.hex);}}
+                            presetColors={[]}
+                            color={textColor}
+                            disableAlpha={true}
+                            />
                         </div>
-                        </Tooltip>
+
+                        {/*Display the button to make the changes permanent*/}
+
+                        <div style={{"marginTop": "2vw", "display": "flex", "flexDirection": "row", "alignItems": "center",
+                            "justifyContent": "center"}}>
+                            <Tooltip title={`Keep the changes the next time you open the game`}>
+                            <button> Apply Changes Permanently</button>
+                            </Tooltip>
+                        </div>
+
                     </div>
 
 

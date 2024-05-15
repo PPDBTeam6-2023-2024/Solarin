@@ -1,7 +1,12 @@
 .ResourceCostEntry {
-    border: 0.1vw solid gold;
+    border: 0.1vw solid var(--tertiaryColor);
     border-radius: 0.5vw;
     width: 20%;
     margin-left: 2.5%;
     font-size: 1vw;
+
+}
+
+.ResourceCostEntry * {
+    color: var(--textColor);
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import './NewBuildingGrid.css';
 import {getCityData, getUpgradeCost, upgradeBuilding} from "../BuildingManager";
@@ -6,6 +6,7 @@ import {getCityData, getUpgradeCost, upgradeBuilding} from "../BuildingManager";
 import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
+import {TertiaryContext, TextColorContext} from "../../../Context/ThemeContext";
 const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCityUpgradeInfo,cityId, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo}) => {
 
     const RegionBuffsCellRenderer = ({ value }) => {
@@ -49,16 +50,19 @@ const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCity
         params.api.sizeColumnsToFit();
     };
 
+    const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
+    const [textColor, setTextColor] = useContext(TextColorContext);
+
     return (
         <>
 
             <div className={"FontSizer"} style={{"width": "50%", "display": "inline-block"}}>
                 <div>
-                    Region type: <span style={{"color": "gold"}}>{cityInfo.region_type}</span>
+                    Region type: <span style={{"color": textColor}}>{cityInfo.region_type}</span>
                 </div>
 
                 <div>
-                    City Population: <span style={{"color": "gold"}}>{cityInfo.population}</span>
+                    City Population: <span style={{"color": textColor}}>{cityInfo.population}</span>
                 </div>
 
                 {/*Div to display the Region buffs*/}

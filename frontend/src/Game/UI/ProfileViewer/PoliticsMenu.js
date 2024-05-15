@@ -118,7 +118,6 @@ function PoliticsMenu() {
     }, []);
 
     const modifiers = generateModifiers(stance);
-    console.log(stance)
     const data = {
         labels: ['Anarchism', 'Authoritarian', 'Democratic', 'Corporate state', 'Theocracy', 'Technocracy'],
         datasets: [
@@ -152,8 +151,7 @@ function PoliticsMenu() {
                     color: 'white',
                     lineWidth: 0.3
                 }
-            },
-            maintainAspectRatio: true
+            }
         }
     };
 

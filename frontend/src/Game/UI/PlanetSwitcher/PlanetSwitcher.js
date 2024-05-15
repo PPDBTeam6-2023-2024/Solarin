@@ -7,7 +7,8 @@ import {IoMdClose} from 'react-icons/io';
 
 import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
 import {PlanetListContext} from "../../Context/PlanetListContext";
-
+import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../../Context/ThemeContext";
+import "./PlanetSwitcher.css"
 
 function PlanetSwitcher({planetIndex}) {
     /*This component displays The planet in the top and makes it possible to switch between planets*/
@@ -16,10 +17,24 @@ function PlanetSwitcher({planetIndex}) {
 
     const [hidePlanetSwitcherWindow, setHidePlanetSwitcherWindow] = useState(false)
     const [planetListIndex, setPlanetListIndex] = planetIndex
+
+    const [primaryColor, setPrimaryColor] = useContext(PrimaryContext);
+    const [secondaryColor, setSecondaryColor] = useContext(SecondaryContext);
+    const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
+    const [textColor, setTextColor] = useContext(TextColorContext);
+
     return (
         <WindowUI hideState={hidePlanetSwitcherWindow} windowName="Planet Switcher">
             {/*Give the switcher a nice border*/}
-            <div className='bg-gray-800 mx-auto w-3/12 py-3 fixed inset-x-0 top-5 z-10 border-2 border-white md:text-3xl'>
+
+            <div className={`UI mx-auto w-3/12 py-3 fixed inset-x-0 top-5 z-10 md:text-3xl`}
+            style={{
+                '--primaryColor': primaryColor,
+                '--secundaryColor': secondaryColor,
+                "--tertiaryColor": tertiaryColor,
+                "--textColor": textColor,
+                "border": "0.2vw solid var(--tertiaryColor)"
+            }}>
 
                 {/*Make it possible to hide the component*/}
                 <IoMdClose className="top-0 text-sm ml-1 absolute mt-1 left-0"

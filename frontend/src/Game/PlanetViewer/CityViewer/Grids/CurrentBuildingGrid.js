@@ -7,7 +7,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
     const [selectedBuilding, setSelectedBuilding] = useState(null);
 
     const columns = useMemo(() => [
-        { headerName: "Building Type", field: "buildingType" },
+        { headerName: "Building Type", field: "buildingType"},
         { headerName: "Building Rank", field: "buildingRank" },
         { headerName: "Function", field: "type", autoHeight: true },
     ], [cityId]);

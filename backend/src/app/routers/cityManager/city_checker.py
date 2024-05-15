@@ -17,16 +17,18 @@ class CityChecker:
 
     async def check_all(self):
         """
-        this function will do all checks
+        this function will do all checks for idle mechanics in cities
+        retuns: (remaining update time city, remaining update time building)
         """
-        remaining_update_time = await self.da.CityAccess.get_remain_update_time(city_id=self.city_id)
+        remaining_update_time_city = await self.da.CityAccess.get_remain_update_time(city_id=self.city_id)
+        remaining_update_time_buildings = await self.da.BuildingAccess.update_building_upgrade_queue(city_id=self.city_id)
 
         buildings = await self.da.BuildingAccess.get_city_buildings(self.city_id)
 
         await self.check_training(buildings)
 
 
-        return remaining_update_time
+        return remaining_update_time_city, remaining_update_time_buildings
 
     async def check_training(self, buildings):
         """

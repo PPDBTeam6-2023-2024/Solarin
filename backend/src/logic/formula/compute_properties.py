@@ -179,4 +179,10 @@ class PropertyUtility:
 
         return resource_cost, time_cost
 
+    @staticmethod
+    def get_building_upgrade_time(tech_forge_cost: int, level: int) -> int:
+        """
+        Calculate the general upgrade Time, based on the base creation cost and the level
+        """
+        return floor(tech_forge_cost * pow(1.15, level + 1))
 

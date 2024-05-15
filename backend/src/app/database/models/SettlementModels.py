@@ -79,7 +79,7 @@ class BuildingInstance(Base):
     """
     type = relationship("BuildingType", back_populates="instances", lazy='joined')
 
-    def to_schema(self, type_category) -> BuildingInstanceSchema:
+    def to_schema(self, type_category, remaining_update_time) -> BuildingInstanceSchema:
         """
         Convert the buildinginstance Object to a scheme
         """
@@ -89,10 +89,24 @@ class BuildingInstance(Base):
             building_type=self.building_type,
             rank=self.rank,
             type=type_category,
+            remaining_update_time=remaining_update_time
         )
 
         return b
 
+class BuildingUpgradeQueue(Base):
+    """
+    Stores the buildings currently being upgraded
+    id: id of the building
+    start_time: datetime when the upgrade was started
+    duration: duration of the upgrade
+    """
+    __tablename__ = 'BuildingUpgradeQueue'
+    id = Column(Integer, ForeignKey("buildingInstance.id"), primary_key=True)
+    city_id = Column(Integer, ForeignKey("city.id"), nullable=False)
+    start_time = Column(DateTime, nullable=False)
+    duration = Column(Integer, nullable=False)
+    current_rank = Column(Integer, nullable=False)
 
 class BuildingType(Base):
     """
@@ -280,4 +294,4 @@ class CityUpdateQueue(Base):
     __tablename__ = "CityUpdateQueue"
     city_id = Column(ForeignKey("city.id"), primary_key=True)
     start_time = Column(DateTime, nullable=False)
-    duration = Column(Integer)
+    duration = Column(Integer, nullable=False)

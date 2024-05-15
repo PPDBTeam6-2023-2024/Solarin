@@ -450,7 +450,6 @@ class BuildingAccess(DatabaseAccess):
         """
         get upgrade cost
         """
-        self.session.query(self.session).with_for_update()
         upgrade_cost = await self.__get_building_cost(current_type, current_rank+1)
 
         ra = ResourceAccess(self.session)
@@ -460,9 +459,22 @@ class BuildingAccess(DatabaseAccess):
             raise InvalidActionException("insufficient resources to upgrade this building")
 
         """
-        Increase the building rank
+        Get TF cost from cost list
         """
-        building_instance.rank += 1
+        TF_cost = None
+        for cost_type, cost_amount in upgrade_cost:
+            if cost_type == "TF":
+                TF_cost = cost_amount
+                break
+
+
+        """
+        Add building to the upgrade queue
+        """
+        building_upgrade = BuildingUpgradeQueue(id=building_id, city_id=building_instance.city_id, start_time=datetime.utcnow(), duration=PropertyUtility.get_building_upgrade_time(TF_cost, building_instance.rank), current_rank=building_instance.rank)
+
+        self.session.add(building_upgrade)
+
 
         """
         Remove the resources form the user their account
@@ -540,5 +552,55 @@ class BuildingAccess(DatabaseAccess):
             return False
 
         return results == user_id
+
+    async def update_building_upgrade_queue(self, city_id: int):
+        """
+        Update the building upgrade queue and remove buildings that are done
+        """
+
+        get_upgrade_list = select(BuildingUpgradeQueue).where(BuildingUpgradeQueue.city_id == city_id)
+        upgrade_list = await self.session.execute(get_upgrade_list)
+
+        upgrade_list = upgrade_list.all()
+
+        remaining_update_dict = dict()
+
+        for upgrade in upgrade_list:
+            upgrade_queue_entry = upgrade[0]
+            """
+            Calculate the remaining time
+            """
+            remaining_time = (upgrade_queue_entry.start_time + timedelta(
+                seconds=upgrade_queue_entry.duration)) - datetime.utcnow()
+
+            get_building_instance = select(BuildingInstance).where(city_id==BuildingInstance.city_id)
+            get_building_instance = await self.session.execute(get_building_instance)
+
+            """
+            Increase the building rank
+            """
+            building_instance: BuildingInstance = get_building_instance.first()[0]
+
+            if remaining_time.total_seconds() <= 0:
+
+                building_instance.rank += 1
+
+                """
+                If the remaining time is zero or negative, remove the update queue entry
+                """
+                await self.session.delete(upgrade_queue_entry)
+
+            else:
+                """
+                Add the remaining time in seconds to the upgrade time dict
+                """
+                remaining_update_dict[building_instance.id] = floor(remaining_time.total_seconds())
+
+        await self.session.flush()
+        await self.session.commit()
+
+
+
+        return remaining_update_dict
 
 

@@ -83,6 +83,9 @@ This overview will also show a list of all players who want to join the alliance
 We can accept or reject users. These components are called 'AllianceRequestEntry', and behave similary to friend request entries,
 but has as backend endpoint /chat/alliance_requests
 
+Below the list of alliance join requests a list of current alliance members will also be provided
+and also the option to leave this alliance
+
 <br>![alt text](../images/alliance_menu_in.png)
 
 </details>

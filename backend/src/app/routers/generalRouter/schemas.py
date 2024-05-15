@@ -9,4 +9,4 @@ class GeneralModifiersScheme(BaseModel):
     stat: str
     modifier: float
     political_stance: str
-    political_stance_modifier: int
+    political_stance_modifier: float

@@ -185,3 +185,18 @@ async def test_get_alliance(alliance_access: AllianceAccess):
 async def test_get_alliance_2(alliance_access: AllianceAccess):
     alliance = await alliance_access.get_alliance(1)
     assert alliance is None
+
+
+async def test_kick_alliance(alliance_access: AllianceAccess):
+    await alliance_access.create_alliance("Test Alliance")
+    await alliance_access.set_alliance(1, "Test Alliance")
+    await alliance_access.set_alliance(2, "Test Alliance")
+    await alliance_access.commit()
+
+    m = await alliance_access.get_alliance_members("Test Alliance")
+    assert len(m) == 2
+
+    await alliance_access.kick_user(1, 2)
+
+    m = await alliance_access.get_alliance_members("Test Alliance")
+    assert len(m) == 1

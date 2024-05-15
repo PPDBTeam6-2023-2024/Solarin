@@ -42,7 +42,7 @@ function GeneralViewStatEntry(props) {
 
             <Tooltip title={`${political_value}% ${props.political_stat_name} bonus`}>
             <div style={{"width": "30%", "display": "inline-block", "textAlign": "right",
-                "fontSize": "150%", "color": political_color}}>
+                "fontSize": "150%", "color": political_color, "marginLeft": "5%"}}>
                 {political_value}%
             </div>
             </Tooltip>

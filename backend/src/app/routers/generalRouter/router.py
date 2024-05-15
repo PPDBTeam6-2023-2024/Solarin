@@ -32,8 +32,8 @@ async def get_available_generals(
     Also provide the general modifiers
     """
     for g in generals:
-        modifiers = await data_access.GeneralAccess.get_modifiers(g["name"])
-        modifiers = [m.to_scheme() for m in modifiers]
+        modifiers = await data_access.GeneralAccess.get_modifiers(user_id, g["name"])
+        modifiers = [m[0].to_scheme(m[1]) for m in modifiers]
         g.update({"modifiers": modifiers})
 
     return generals

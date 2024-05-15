@@ -41,6 +41,7 @@ Our Endpoints are structured into multiple routers:
 |   alliance_requests   |   POST    | Accept/Reject an alliance request                                                    |
 | alliance_messageboard |    GET    | Get the message board corresponding to the user his alliance                         |
 |        ranking        |    GET    | Get the player ranking (based on amount of Solarium a user has)                      |
+|       kick_user       |   POST    | Kick a user from the alliance (when leaving the alliance, kick yourself)             |
 
 
 </p>
@@ -51,11 +52,12 @@ Our Endpoints are structured into multiple routers:
 <p>
 general logic information needed
 
-|    Endpoint     | Method | Purpose                                             |
-|:---------------:|:------:|:----------------------------------------------------|
-|    resources    |  GET   | Get the current resources of a specific user        |
-|    politics     |  GET   | Get the current political stance of a specific user |
-| update_politics |  POST  | update the political stance of a user               |
+|    Endpoint     |  Method   | Purpose                                             |
+|:---------------:|:---------:|:----------------------------------------------------|
+|    resources    |    GET    | Get the current resources of a specific user        |
+|    politics     |    GET    | Get the current political stance of a specific user |
+| update_politics |   POST    | update the political stance of a user               |
+|   maintenance   | WEBSOCKET | websocket to handle communication about maintenance |
 
 </p>
 </details>
@@ -96,14 +98,14 @@ general logic information needed
 <p>
 This router will handle the communication about Armies and their actions
 
-|   Endpoint   | Method | Purpose                                                 |
-|:------------:|:------:|:--------------------------------------------------------|
-|    armies    |  GET   | Get all the armies on a specific planet                 |
-|    troops    |  GET   | Get all troops and stats of an army                     |
-| armies_user  |  GET   | Get all the armies that are owned by the accessing user |
-| army_in_city |  GET   | Retrieve the army that is inside the city               |
-| fleets_in_space |  GET   | Retrieve the fleets that are in space               |
-| fleets  |  GET   | Retrieve the fleets of a user on a specific planet               |
+|    Endpoint     | Method | Purpose                                                 |
+|:---------------:|:------:|:--------------------------------------------------------|
+|     armies      |  GET   | Get all the armies on a specific planet                 |
+|     troops      |  GET   | Get all troops and stats of an army                     |
+|   armies_user   |  GET   | Get all the armies that are owned by the accessing user |
+|  army_in_city   |  GET   | Retrieve the army that is inside the city               |
+| fleets_in_space |  GET   | Retrieve the fleets that are in space                   |
+|     fleets      |  GET   | Retrieve the fleets of a user on a specific planet      |
 
 </p>
 </details>

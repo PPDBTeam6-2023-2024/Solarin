@@ -13,7 +13,7 @@ function TradingIcon() {
         <WindowUI windowName="tradingMenu" hideState={hideMenu}>
             <>
             <div id={"trading_icon"} className="bottom-0 fixed transition ease-in-out" onClick={() => setTradeMenuOpen(!tradeMenuOpen)}>
-                <IoMdClose className='text-7xl' onClick={() => setHideMenu(!hideMenu)}/>
+                <IoMdClose className='text-5xl' onClick={() => setHideMenu(!hideMenu)}/>
 
                 <img src={(`/images/icons/trade_icon.png`)} className="bottom-0 absolute" draggable={false}
                      unselectable="on"/>

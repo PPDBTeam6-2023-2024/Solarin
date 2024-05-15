@@ -1,0 +1,40 @@
+.AllianceMemberEntry{
+    border-bottom: 0.2vw solid var(--tertiaryColor);
+    margin-left: auto;
+    margin-right: auto;
+
+    width: 100%;
+    height: 5vw;
+
+    padding-left: 10%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+
+}
+
+.AllianceMemberEntry:hover {
+    --scaleIndex: 110%;
+    transform: scale(var(--scaleIndex));
+    border-top: 0.2vw solid var(--tertiaryColor);
+    z-index: 21;
+}
+
+.AllianceMemberEntry button {
+
+    bottom: 0;
+    padding: 0.5vw;
+    font-size: 150%;
+    border-radius: 10% 10% 10% 10%;
+    transform: scale(70%);
+    border: 0.2vw solid var(--tertiaryColor);
+}
+
+.AllianceMemberEntry button:hover {
+    --scaleIndex: 95%;
+    transform: scale(var(--scaleIndex));
+    z-index: 21;
+
+}

@@ -96,17 +96,19 @@ class GeneralAccess(DatabaseAccess):
         await self.session.execute(delete_general_assignment)
         await self.session.flush()
 
-    async def get_modifiers(self, general_name: str):
+    async def get_modifiers(self, user_id: int, general_name: str):
         """
         Get the modifiers corresponding to a specific general
         :param: general_name: name of the general whose modifiers we want
 
-        :return: List of objects of 'GeneralModifier' object
+        :return: List of tuple objects of ('GeneralModifier', polital stance value) object
         """
 
-        get_modifiers = Select(GeneralModifier).where(GeneralModifier.general_name == general_name)
+        get_modifiers = Select(GeneralModifier, HasPoliticalStance.value).\
+            join(HasPoliticalStance, (GeneralModifier.political_stance == HasPoliticalStance.stance_name)). \
+            where((GeneralModifier.general_name == general_name) & (user_id == HasPoliticalStance.user_id))
         modifiers = await self.session.execute(get_modifiers)
-        modifiers = modifiers.scalars().all()
+        modifiers = modifiers.all()
 
         return modifiers
 

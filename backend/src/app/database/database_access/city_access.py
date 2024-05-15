@@ -327,7 +327,7 @@ class CityAccess(DatabaseAccess):
             If the remaining time is zero or negative, remove the update queue entry
             """
             await self.session.delete(update_queue_entry)
-            await self.session.commit()
+            await self.session.flush()
             return 0
         else:
             """

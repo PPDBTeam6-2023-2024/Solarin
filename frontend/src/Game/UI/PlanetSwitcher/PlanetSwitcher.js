@@ -4,7 +4,7 @@ import {ViewModeContext, View} from "../../Context/ViewModeContext"
 import WindowUI from '../WindowUI/WindowUI';
 import {IoMdClose} from 'react-icons/io';
 
-import {Resources} from '../ResourceViewer/ResourceViewer';
+
 import {RiArrowLeftSLine, RiArrowRightSLine} from "react-icons/ri";
 import {PlanetListContext} from "../../Context/PlanetListContext";
 

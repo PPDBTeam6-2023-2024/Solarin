@@ -15,6 +15,8 @@ function SideMenu(props) {
         navigate("/")
     }
     const buttonStyle = "flex items-center mt-3 transition-all ease-in-out hover:scale-110"
+
+
     return (
         <>
             <Settings viewSettings={settingsOpen}/>

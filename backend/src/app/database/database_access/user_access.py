@@ -1,3 +1,5 @@
+from sqlalchemy.orm import joinedload
+
 from ..models import *
 from ..database import AsyncSession
 from ..exceptions.not_found_exception import NotFoundException
@@ -254,16 +256,13 @@ class UserAccess(DatabaseAccess):
         initialize the value for each political stance to 0
         :param new_user_id: the id of the user we are creating
         """
-        query = Select(PoliticalStance).where(PoliticalStance.user_id == new_user_id)
-        existing_entry = await self.session.execute(query)
-        if existing_entry.first() is not None:
-            # there already is an entry for some reason
-            update_query = update(PoliticalStance).where(PoliticalStance.user_id == new_user_id).values(anarchism=0, authoritarian=0, democratic=0, corporate_state=0, theocracy=0, technocracy=0)
-            await self.session.execute(update_query)
-        else:
-            # create a new entry
-            insert_query = insert(PoliticalStance).values(user_id=new_user_id, anarchism=0, authoritarian=0, democratic=0, corporate_state=0, theocracy=0, technocracy=0)
-            await self.session.execute(insert_query)
+        query = Select(PoliticalStance)
+        stances = await self.session.execute(query)
+        stances = stances.scalars().all()
+        for s in stances:
+            self.session.add(HasPoliticalStance(stance_name=s.name, user_id=new_user_id))
+
+        await self.session.flush()
 
     async def get_politics(self, user_id: int):
         """
@@ -272,10 +271,15 @@ class UserAccess(DatabaseAccess):
         :return: a values between 0 and 1 for each type of society
         """
 
-        get_query = Select(PoliticalStance).where(PoliticalStance.user_id == user_id)
+        get_query = Select(HasPoliticalStance).where(HasPoliticalStance.user_id == user_id)
         result = await self.session.execute(get_query)
-        result = result.scalars().first()
-        return result
+        result = result.unique().scalars().all()
+
+        political_dict = {}
+        for r in result:
+            political_dict.update({r.stance_name: r.value})
+
+        return political_dict
 
     async def update_politics(self, user_id: int, stance: dict):
         """
@@ -291,6 +295,12 @@ class UserAccess(DatabaseAccess):
         if not valid_updates:
             raise ValueError("No valid fields provided for update.")
 
-        update_query = update(PoliticalStance).where(PoliticalStance.user_id == user_id).values(**valid_updates)
-        await self.session.execute(update_query)
+        get_user = Select(User).where(User.id == user_id).options(joinedload('*'))
+        user = await self.session.execute(get_user)
+
+        user = user.unique().scalar_one()
+
+        for s in user.stances:
+            s.value = valid_updates.get(s.stance_name)
+
         await self.session.commit()

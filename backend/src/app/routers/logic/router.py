@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import coalesce
 from typing import Union, Annotated
 
@@ -8,7 +9,7 @@ from .schemas import PoliticalStanceInput, PoliticalStanceChange
 from ....app.routers.authentication.router import get_my_id, get_db
 from ....app.database.database_access.data_access import DataAccess
 from ....app.database.exceptions.invalid_action_exception import InvalidActionException
-
+from .maintenance_socket_actions import MaintenanceSocketActions
 router = APIRouter(prefix="/logic")
 
 
@@ -29,10 +30,8 @@ async def get_political_stance(user_id: Annotated[int, Depends(get_my_id)], db=D
     """
     data_access = DataAccess(db)
     result = await data_access.UserAccess.get_politics(user_id)
-    return result
 
-def model_to_dict(instance):
-    return {key: value for key, value in instance.__dict__.items() if not key.startswith('_')}
+    return result
 
 
 @router.post("/update_politics")
@@ -59,7 +58,7 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
         await data_access.ResourceAccess.remove_resource(user_id, cost_type[0], cost_type[1])
 
     # convert to dict using helper function
-    current_stance_dict = model_to_dict(current_stance)
+    current_stance_dict = current_stance
 
     updated_stance = {}
     for key, value in changes.dict().items():
@@ -74,3 +73,34 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
     await data_access.UserAccess.update_politics(user_id, updated_stance)
 
     return {"message": "Political stance updated successfully", "new_stance": updated_stance}
+
+
+@router.websocket("/maintenance")
+async def websocket_endpoint(
+        websocket: WebSocket, db: AsyncSession = Depends(get_db)
+):
+
+    auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
+
+    await websocket.accept(subprotocol=auth_token)
+
+    user_id = get_my_id(auth_token)
+
+    """
+    start receiving new requests
+    """
+    data_access = DataAccess(db)
+
+    maintenance_actions = MaintenanceSocketActions(user_id, data_access, websocket)
+
+    try:
+        while True:
+            data = await websocket.receive_json()
+            if data["type"] == "get_maintenance_cost":
+                await maintenance_actions.maintenance_request(data)
+
+    except WebSocketDisconnect:
+        try:
+            await websocket.close()
+        except Exception as e:
+            pass

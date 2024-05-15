@@ -10,6 +10,7 @@ from ...database.models.PlanetModels import Planet
 from .connection_manager import ConnectionManager
 from .schemas import PlanetOut, Region
 from .planet_socket_actions import PlanetSocketActions
+
 router = APIRouter(prefix="/planet", tags=["Planet"])
 manager = ConnectionManager()
 
@@ -37,6 +38,7 @@ async def get_planets_private(
     data_access = DataAccess(db)
     planets = await data_access.PlanetAccess.get_planets_of_user(user_id=user_id)
     return [Planet.to_dict(planet) for planet in planets]
+
 
 @router.websocket("/ws/{planet_id}")
 async def planet_socket(

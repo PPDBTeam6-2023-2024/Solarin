@@ -447,6 +447,7 @@ class BuildingAccess(DatabaseAccess):
         """
         get upgrade cost
         """
+        self.session.query(self.session).with_for_update()
         upgrade_cost = await self.__get_building_cost(current_type, current_rank+1)
 
         ra = ResourceAccess(self.session)

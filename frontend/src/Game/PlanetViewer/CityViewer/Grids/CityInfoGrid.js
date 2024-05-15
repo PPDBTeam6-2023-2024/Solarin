@@ -6,7 +6,9 @@ import {getCityData, getUpgradeCost, upgradeBuilding} from "../BuildingManager";
 import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
-const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCityUpgradeInfo,cityId, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo}) => {
+
+
+const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildings, refreshResources, setCityUpgradeInfo,cityId, refresh, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo }) => {
 
     const RegionBuffsCellRenderer = ({ value }) => {
           return (
@@ -90,10 +92,11 @@ const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCity
 
             <div className="right-screen-city-info">
                 <div className="building_image">
-                    <img src={getCityImage(cityInfo.rank)} alt="City" className="selected-image"/>
-                </div>
+                        <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
+                    </div>
                 {cityUpgradeInfo &&
                     <UpgradeButtonComponent
+                                            data = {cityInfo}
                                             cityId={cityId}
                                             upgradeCost={upgradeCost}
                                             setUpgradeCostMap={setUpgradeCostMap}

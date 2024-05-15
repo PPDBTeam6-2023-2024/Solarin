@@ -11,7 +11,7 @@
   "farmpod": {
     "icon": "Farmpod.png"
   },
-  "generator": {
+  "reactor": {
     "icon": "Generator.png"
   },
   "nexus": {
@@ -37,6 +37,27 @@
   },
   "Sentry Tower": {
       "icon": "Towers/Sentry-Tower.png"
+  },
+  "oil-pump": {
+      "icon": "Oil-Pump.png"
+  },
+  "parlement": {
+      "icon": "Parliament.png"
+  },
+  "solar-generator": {
+      "icon": "Solar-Generator.png"
+  },
+  "material-lab": {
+      "icon": "Material-Lab.png"
+  },
+  "plant-growth-accelerator": {
+      "icon": "Plant-Growth-Accelerator.png"
+  },
+  "electric-mine": {
+      "icon": "Electric-Mine.png"
+  },
+  "solar-lab": {
+      "icon": "Solar-Lab.png"
   }
 
 }

@@ -12,6 +12,7 @@ from .routers.cityManager.router import router as city_router
 from .routers.buildingManagement.router import router as building_router
 from .routers.unitManagement.router import router as unit_router
 from .routers.trading.router import router as trade_router
+from .routers.globalws.router import router as globalws_router
 from .config import APIConfig
 from .customize_logger import CustomizeLogger
 from .database.models import *
@@ -42,6 +43,7 @@ def init_app(config: APIConfig) -> FastAPI:
     app.include_router(spawn_router)
     app.include_router(trade_router)
     app.include_router(general_router)
+    app.include_router(globalws_router)
 
     if config.db:
         sessionmanager.init(config.db.get_connection_string().get_secret_value())

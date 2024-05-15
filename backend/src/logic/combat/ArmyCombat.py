@@ -12,7 +12,7 @@ class ArmyCombat:
         """
         Handle the death of a user
         """
-        if da.UserAccess.is_dead(user_id):
+        if await da.UserAccess.is_dead(user_id):
             await global_queue.put({"target": user_id, "type": "death"})
 
     @staticmethod
@@ -33,6 +33,7 @@ class ArmyCombat:
         """
         remove lost army, and give combat losses to winning army
         """
+        loser_id = (await da.ArmyAccess.get_army_owner(loser)).id
         await da.ArmyAccess.remove_army(loser)
 
         army_troops = await da.ArmyAccess.get_troops(winner)
@@ -44,7 +45,7 @@ class ArmyCombat:
             army_troop.size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio, army_troop.size)
         await da.commit()
 
-        await ArmyCombat.handle_death(loser, da)
+        await ArmyCombat.handle_death(loser_id, da)
 
     @staticmethod
     async def computeCityBattle(army_1: int, city_id: int, da: DataAccess):
@@ -68,6 +69,7 @@ class ArmyCombat:
             """
             Remove the army inside a city if the city defense loses
             """
+            loser_id = (await da.ArmyAccess.get_army_owner(c_army_id)).id
             await da.ArmyAccess.remove_army(c_army_id)
 
             """
@@ -82,6 +84,7 @@ class ArmyCombat:
             await da.ArmyAccess.enter_city(city_id, army_1)
 
         else:
+            loser_id = (await da.ArmyAccess.get_army_owner(army_1)).id
             await da.ArmyAccess.remove_army(army_1)
             loss_army = c_army_id
 
@@ -98,5 +101,4 @@ class ArmyCombat:
                                                                      army_troop.size)
 
         await da.commit()
-        owner = await da.ArmyAccess.get_army_owner(army_1)
-        await ArmyCombat.handle_death(owner.id, da)
+        await ArmyCombat.handle_death(loser_id, da)

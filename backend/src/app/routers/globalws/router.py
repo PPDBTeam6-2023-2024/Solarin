@@ -17,7 +17,8 @@ async def global_ws(websocket: WebSocket, db=Depends(get_db)):
 
     pool[user_id] = websocket
 
-    await pool.connect(websocket)
+    await websocket.accept(subprotocol=auth_token)
+
     try:
         while True:
             msg = await global_queue.get()
@@ -25,7 +26,7 @@ async def global_ws(websocket: WebSocket, db=Depends(get_db)):
             if target in pool:
                 del msg["target"]
                 await pool[target].send_json(msg)
-    except Exception as e:
+    except:
         ...
     finally:
         del pool[user_id]

@@ -57,6 +57,7 @@ async def planet_socket(
 
     planet_actions = PlanetSocketActions(user_id, planet_id, data_access, connection_pool, websocket)
 
+    pending_tasks = []
     if new_conn:
         pending_tasks = await planet_actions.load_on_arrive()
 

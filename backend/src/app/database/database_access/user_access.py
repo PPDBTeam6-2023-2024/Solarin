@@ -309,11 +309,11 @@ class UserAccess(DatabaseAccess):
         if user is None:
             raise NotFoundException(user_id, "User")
 
-        query = select(City).where(City.owner_id == user_id)
+        query = select(City).where(City.controlled_by == user_id)
         city = await self.session.execute(query)
         city = city.scalars().first()
 
-        query = select(Army).where(Army.owner_id == user_id)
+        query = select(Army).where(Army.user_id == user_id)
         army = await self.session.execute(query)
         army = army.scalars().first()
 

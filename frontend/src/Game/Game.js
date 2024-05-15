@@ -72,7 +72,8 @@ const Game = () => {
         };
 
         ws.current.onmessage = function (event) {
-            if (event.type === 'dead') {
+            const data = JSON.parse(event.data)
+            if (data.type === 'death') {
                 navigate('/game-over')
             }
         };

@@ -1,0 +1,11 @@
+{
+  "fighter": {
+    "icon": "Fighter.png"
+  },
+  "bomber": {
+    "icon": "Bomber.png"
+  },
+  "mothership": {
+    "icon": "Mothership.png"
+  }
+}

@@ -71,6 +71,7 @@ class CityInfoSchema(BaseModel):
     region_type: str
     region_buffs: list[tuple[str,float]]
     remaining_update_time: int
+    maintenance_cost: list[tuple[str,int]]
 
 class CityData(BaseModel):
     city: CityInfoSchema

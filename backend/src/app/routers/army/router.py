@@ -6,6 +6,7 @@ from ...database.database_access.army_access import *
 from ..authentication.router import get_my_id
 from .schemas import *
 from ...database.database_access.data_access import DataAccess
+from ..cityManager.city_checker import CityChecker
 
 from ..cityManager.city_checker import CityChecker
 
@@ -107,12 +108,15 @@ async def get_troops(
 
     general = await data_access.GeneralAccess.get_general(army_id)
     if general is not None:
-        modifiers = await data_access.GeneralAccess.get_modifiers(general.name)
-        modifiers = [m.to_scheme() for m in modifiers]
+        modifiers = await data_access.GeneralAccess.get_modifiers(user_id, general.name)
+        modifiers = [m[0].to_scheme(m[1]) for m in modifiers]
         general = general.to_scheme().dict()
         general.update({"modifiers": modifiers})
 
-    return {"troops": troops_schema, "stats": army_stats, "general": general}
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_army(army_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
+
+    return {"troops": troops_schema, "stats": army_stats, "general": general, "maintenance": maintenance_cost}
 
 
 @router.get("/armies_user")
@@ -141,11 +145,15 @@ async def get_armies_in_city(
     Get detailed information about the army in a city, including their troops.
     """
     data_access = DataAccess(db)
+
+
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
 
     """
     do the city check, checking all the idle mechanics
     """
+    ch = CityChecker(city_id, data_access)
+    await ch.check_all()
 
     troops = await get_troops(user_id, army_id, db)
 
@@ -153,4 +161,7 @@ async def get_armies_in_city(
     Add the army_id, because this is useful information, for army actions
     """
     troops.update({"army_id": army_id})
+
+    await data_access.commit()
+
     return troops

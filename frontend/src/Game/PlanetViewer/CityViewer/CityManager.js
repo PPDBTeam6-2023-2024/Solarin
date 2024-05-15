@@ -60,9 +60,10 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
         /*Get information about the current buildings inside the city*/
         getCityData(cityId).then(cityData => {
-                setBuildings(cityData?.buildings)
-                setCityUpgradeTimer(cityData?.city?.remaining_update_time)
-                setCityInfo(cityData?.city)
+                setBuildings(cityData?.buildings);
+                setCityUpgradeTimer(cityData?.city?.remaining_update_time);
+                setCityInfo(cityData?.city);
+
             });
 
         /*Get information about the upgrade cost of a building*/
@@ -168,7 +169,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                     {selectedTab === 'City' && <CityInfoGrid
                         cityUpgradeInfo={cityUpgradeInfo}
                         onRowMouseOver={onRowMouseOver}
-                        refresh={cityContextLoader}
                         setBuildings={setBuildings}
                         refreshResources={() => initializeResources(dispatch)}
                         setUpgradeCostMap={setUpgradeCostMap}

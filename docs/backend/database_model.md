@@ -30,16 +30,18 @@ An overview of each the tables in the database:
 <summary><strong>User and Communication</strong></summary>
 <p>
 
-|      Table      | Type | Purpose                                                                                                                                                  |
-|:---------------:|:----:|:---------------------------------------------------------------------------------------------------------------------------------------------------------|
-|      User       | Data | Store data of a user their account                                                                                                                       |
-|    Alliance     | Data | Store the alliances                                                                                                                                      |
-|     Message     | Data | Store the messages                                                                                                                                       |
-|  MessageBoard   | Data | Each message corresponds to a message board<br/> This table makes it possible to request sequences <br/>of messages from an alliance or between players. |
-|    FriendsOf    | Data | Store which users are friends with each other                                                                                                            |
-|  FriendRequest  | Data | Stores which users have pending friend requests                                                                                                          |
-| AllianceRequest | Data | Stores which users have pending alliance requests to join an alliance (needs to be accepted by someone in the alliance)                                  |
-| PoliticalStance | Data | Stores information about the political direction of the user                                                                                             |
+|       Table        |  Type  | Purpose                                                                                                                                                  |
+|:------------------:|:------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        User        |  Data  | Store data of a user their account                                                                                                                       |
+|      Alliance      |  Data  | Store the alliances                                                                                                                                      |
+|      Message       |  Data  | Store the messages                                                                                                                                       |
+|    MessageBoard    |  Data  | Each message corresponds to a message board<br/> This table makes it possible to request sequences <br/>of messages from an alliance or between players. |
+|     FriendsOf      |  Data  | Store which users are friends with each other                                                                                                            |
+|   FriendRequest    |  Data  | Stores which users have pending friend requests                                                                                                          |
+|  AllianceRequest   |  Data  | Stores which users have pending alliance requests to join an alliance (needs to be accepted by someone in the alliance)                                  |
+|  PoliticalStance   | LOOKUP | Stores all the political ideologies in our game                                                                                                          |
+| HasPoliticalStance |  Data  | Stores information about the political direction of the user                                                                                             |
+
 </p>
 </details>
 
@@ -123,6 +125,8 @@ An overview of each the tables in the database:
 |        TradeGives        |  Data  | This table stores which resources a user will give to the trade offer setter when he/she accepts the trade offer. |
 |      TradeReceives       |  Data  | This table stores which resources a user will receive from the trade offer setter when he/she accepts the trade   |
 | ProductionRegionModifier |  Data  | Stores the modifiers applied to resource production based on the planet's region type.                            |
+|     MaintenanceTroop     | Lookup | Stores The maintenance cost for a specific troop type                                                             |
+|   MaintenanceBuilding    | Lookup | Stores The maintenance cost for a specific building type                                                          |
 
 
 </p>
@@ -144,11 +148,12 @@ Cities, Armies and regions have coordinates to keep track of their location.
 <p>
 The following domains are used:
 
-|     Domain      | Purpose                                         |
-|:---------------:|:------------------------------------------------|
-|   Coordinate    | Domain for coordinates that are in range [0, 1] |  
-| PositiveInteger | Domain for integers that need to be positive    |  
-|   Percentage    | Value in range between [-1, 1]                  |  
+|     Domain      | Purpose                                      |
+|:---------------:|:---------------------------------------------|
+|   Coordinate    | Domain for coordinates                       |  
+| PositiveInteger | Domain for integers that need to be positive |  
+|   Percentage    | Value in range between [-1, 1]               |  
+|     Decimal     | Value in range between [0, 1]                |  
 
 </p>
 </details>

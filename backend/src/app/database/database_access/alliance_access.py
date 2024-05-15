@@ -3,6 +3,7 @@ from sqlalchemy.orm import aliased
 
 from ..models import *
 from .database_acess import DatabaseAccess
+from ..exceptions.permission_exception import PermissionException
 
 
 class AllianceAccess(DatabaseAccess):
@@ -142,3 +143,23 @@ class AllianceAccess(DatabaseAccess):
             return None
 
         return result
+
+    async def kick_user(self, user_id: int, kicked_user: int):
+        """
+        Kick a user from the alliance
+
+        :param: user_id: id of the user who does the kick
+        :param: kicked_user: id of hte user that will be kicked
+        """
+
+        """
+        Check if users are in same alliance
+        """
+        alliance_a = await self.get_alliance(user_id)
+        alliance_b = await self.get_alliance(kicked_user)
+
+        if alliance_a != alliance_b:
+            raise PermissionException(user_id, "kick users from an alliance he/she is not even part of")
+
+        update_alliance = Update(User).values({"alliance": None}).where(User.id == kicked_user)
+        await self.session.execute(update_alliance)

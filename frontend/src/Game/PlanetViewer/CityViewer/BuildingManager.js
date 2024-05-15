@@ -14,7 +14,18 @@ export const getCityData = async (cityId) => {
         return [];
     }
 };
-
+export const getProductionBuildingRates = async (buildingId) => {
+    try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/building/get_rates/${buildingId}`);
+        if (response.status === 200) {
+            return response.data;
+        }
+        return [];
+    } catch(e) {
+        console.error('Error fetching production building rates:', e);
+        return []
+    }
+}
 export const getNewBuildingTypes = async (cityId) => {
     try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/new_building_types/${cityId}`);

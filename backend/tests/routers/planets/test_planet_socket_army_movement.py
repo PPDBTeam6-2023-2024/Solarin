@@ -15,8 +15,7 @@ async def test_get_armies(client, data_access: DataAccess):
         email="insert@example.com"
     )
 
-    region_id = await data_access.PlanetAccess.create_space_region("test")
-    planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", region_id, 1, 1)
+    planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", 1, 1)
 
     await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
     await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
@@ -58,8 +57,7 @@ async def test_move_army(client, data_access: DataAccess):
         email="insert@example.com"
     )
 
-    region_id = await data_access.PlanetAccess.create_space_region("test")
-    planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", region_id, 1, 1)
+    planet_id = await data_access.PlanetAccess.create_planet("test", "arctic", 1, 1)
 
     army_id = await data_access.ArmyAccess.create_army(user_id, planet_id, 0, 0)
     await data_access.commit()

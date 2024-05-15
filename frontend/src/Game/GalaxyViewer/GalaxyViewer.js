@@ -127,7 +127,7 @@ function Scene(props) {
         })
         setFleetsMoveMode([])
     }
-    const ContextBridge = useContextBridge(SocketContext, UserInfoContext,  ReactReduxContext, PlanetListContext);
+    const ContextBridge = useContextBridge(SocketContext, UserInfoContext,  ReactReduxContext, PlanetListContext)
     return (
         <>
             <Stars/>
@@ -141,7 +141,7 @@ function Scene(props) {
             {
                 fleetsMoveMode.map((obj, i) => {
                     return (
-                        <Line key={i} color={"red"} name="line" points={[obj.pos, hoverPos]} lineWidth={2}/>
+                        <Line color={"red"} key={i} name="line" points={[obj.pos, hoverPos]} lineWidth={2}/>
                     )
                 })
             }

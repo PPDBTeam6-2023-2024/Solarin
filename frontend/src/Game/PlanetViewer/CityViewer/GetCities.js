@@ -12,6 +12,7 @@ const GetCities = async (planetId) => {
                 controlled_by: city.controlled_by,
                 rank : city.rank,
                 src: getCityImage(city.rank),
+                alliance: city.alliance,
                 style: {
                     position: 'absolute',
                     left: `${city.x * 100}%`,
@@ -19,7 +20,7 @@ const GetCities = async (planetId) => {
                     transform: 'translate(-50%, -50%)',
                     maxWidth: '15%',
                     maxHeight: '15%',
-                    zIndex: 15
+                    zIndex: 15,
                 },
                 onClick: () => {
                     console.log("handling click", city.id);

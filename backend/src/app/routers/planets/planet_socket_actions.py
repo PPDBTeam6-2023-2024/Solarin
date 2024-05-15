@@ -23,6 +23,7 @@ class PlanetSocketActions:
         self.planet_id = planet_id
         self.data_access = data_access
         self.connection_pool = connection_pool
+
         self.websocket = websocket
 
     async def get_armies(self, data: json):
@@ -30,11 +31,10 @@ class PlanetSocketActions:
         handle the 'get_armies' request from the websocket
         -> Return the armies that are on the planet (at least those not inside a city)
         """
-        armies = await self.data_access.ArmyAccess.get_armies_on_planet(planet_id=self.planet_id)
-
+        armies = await self.data_access.ArmyAccess.get_armies_on_planet_extra(planet_id=self.planet_id)
         data = {
             "request_type": data["type"],
-            "data": [army.to_dict() for army in armies]
+            "data": [army.to_dict() | {"alliance": army.alliance, "username": army.username} for army in armies]
         }
         await self.connection_pool.send_personal_message(self.websocket, data)
 
@@ -75,6 +75,7 @@ class PlanetSocketActions:
 
             arrive_func = target_type_dict.get(data["target_type"])
 
+
             if arrive_func is not None:
                 """
                 When the action is invalid we will just not do the action
@@ -94,7 +95,7 @@ class PlanetSocketActions:
         if changed:
             await self.connection_pool.broadcast({
                 "request_type": "change_direction",
-                "data": army.to_dict()
+                "data": army.to_dict() | {"alliance": army.alliance, "username": army.username}
             })
     async def leave_planet(self, data: json):
         army_id = data["army_id"]

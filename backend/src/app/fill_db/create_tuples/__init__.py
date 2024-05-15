@@ -40,22 +40,25 @@ class CreateTuples:
         for barracks_type in barracks_types:
             if await self.__session.get(BarracksType, barracks_type["name"]) is None:
                 await self.__dev.create_barracks_type(barracks_type["name"])
-                await self.__dev.set_creation_cost(barracks_type["name"],
-                                                   [("TF", PropertyUtility.getGUC(barracks_type["creation-cost"], 1))])
+                creation_cost: list[tuple[str, int]] = [(cc, barracks_type["creation-cost"][cc]) for cc in barracks_type["creation-cost"]]
+                await self.__dev.set_creation_cost(barracks_type["name"], creation_cost)
 
     async def create_tower_types(self, tower_types: list[dict[str, Any]]):
         for tower_type in tower_types:
             if await self.__session.get(TowerType, tower_type["name"]) is None:
                 await self.__dev.create_tower_type(tower_type["name"], tower_type["attack"])
-                await self.__dev.set_creation_cost(tower_type["name"],
-                                                   [("TF", PropertyUtility.getGUC(tower_type["creation-cost"], 1))])
+                creation_cost: list[tuple[str, int]] = [(cc, tower_type["creation-cost"][cc]) for cc in
+                                                        tower_type["creation-cost"]]
+                await self.__dev.set_creation_cost(tower_type["name"],creation_cost)
 
     async def create_wall_types(self, wall_types: list[dict[str, Any]]):
         for wall_type in wall_types:
             if await self.__session.get(WallType, wall_type["name"]) is None:
                 await self.__dev.create_wall_type(wall_type["name"], wall_type["defense"])
+                creation_cost: list[tuple[str, int]] = [(cc, wall_type["creation-cost"][cc]) for cc in
+                                                        wall_type["creation-cost"]]
                 await self.__dev.set_creation_cost(wall_type["name"],
-                                                   [("TF", PropertyUtility.getGUC(wall_type["creation-cost"], 1))])
+                                                   creation_cost)
 
     async def create_planet_types(self, planet_types: list[dict[str, Any]]):
         for planet_type in planet_types:
@@ -71,8 +74,9 @@ class CreateTuples:
         for building_type in building_types:
             if await self.__session.get(ProductionBuildingType, building_type["name"]) is None:
                 await self.__dev.create_production_building_type(building_type["name"])
-                await self.__dev.set_creation_cost(building_type["name"],
-                                                   [("TF", PropertyUtility.getGUC(building_type["creation-cost"], 1))])
+                creation_cost: list[tuple[str, int]] = [(cc, building_type["creation-cost"][cc]) for cc in
+                                                        building_type["creation-cost"]]
+                await self.__dev.set_creation_cost(building_type["name"],creation_cost)
                 for resource_type in building_type["products"]:
                     await self.__dev.set_produces_resources(building_type["name"], resource_type["product-name"], resource_type["base-rate"], resource_type["base-cap"])
 
@@ -102,7 +106,8 @@ class CreateTuples:
                                                         [battle_stats.attack, battle_stats.defense,
                                                          battle_stats.city_attack, battle_stats.city_defense,
                                                          battle_stats.recovery, battle_stats.speed])
-                await self.__dev.set_troop_type_cost(troop_type["name"], [("SOL", base_cost)])
+                creation_cost = [(extra_cost, troop_type["extra_cost"][extra_cost]) for extra_cost in troop_type["extra_cost"]]+[("SOL", base_cost)]
+                await self.__dev.set_troop_type_cost(troop_type["name"], creation_cost)
     async def create_production_modifiers(self, production_modifiers: list[dict[str, Any]]):
         for coefficient in production_modifiers:
             stmt = (

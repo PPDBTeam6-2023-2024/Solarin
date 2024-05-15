@@ -24,30 +24,21 @@ async def fill_db(data: dict):
 
     async with sessionmanager.session() as session:
         await CreateTuples().create_all_tuples(session)
-        await create_space_regions(data["space regions"], session)
+        await create_planets(data["planets"], session)
         await create_users(data["users"], session)
         await create_alliances(data["alliances"], session)
         await create_friendships(data["friendships"], session)
         await session.commit()
 
 
-async def create_space_region(data: dict, session: AsyncSession):
+async def create_planets(data: dict, session: AsyncSession):
     """
     Create a data space region
     """
-    region_id = await DataAccess(session=session).PlanetAccess.create_space_region(data["name"])
     for _ in range(data["planet count"]):
-        await generate_random_planet(session, region_id)
+        await generate_random_planet(session)
     await session.flush()
 
-
-async def create_space_regions(data: list[dict], session: AsyncSession):
-    """
-    Create all the data space regions
-    """
-    for region in data:
-        await create_space_region(region, session)
-    await session.flush()    
 
 
 async def create_user(data: dict, session: AsyncSession):

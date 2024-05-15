@@ -98,3 +98,15 @@ async def upgrade_building(
     if not confirmed:
         raise HTTPException(status_code=400, detail="Building could not be upgraded.")
     return Confirmation(confirmed=confirmed)
+
+
+@router.get("/get_stats/")
+async def get_tower_wall_stats(db=Depends(get_db)):
+    """
+    get the base stats of all the different types of walls and towers
+    :param db:
+    :return:
+    """
+    data_access = DataAccess(db)
+    result = await data_access.BuildingAccess.get_base_stats()
+    return result

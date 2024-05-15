@@ -1,10 +1,12 @@
-import React, { useMemo, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { AgGridReact } from "ag-grid-react";
 import './NewBuildingGrid.css';
 import { ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent } from "./Buttons";
+import axios from "axios";
 
 const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
+    const [baseStats, setBaseStats] = useState({})
 
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType" },
@@ -18,6 +20,16 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         id: building.id,
         type: building.type,
     })), [buildings]);
+
+    useEffect(() => {
+
+        const getStats = async () => {
+            // get the base stats of the towers/walls
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/building/get_stats/`);
+            setBaseStats(response.data);
+        }
+        getStats()
+    }, []);
 
     return (
         <>

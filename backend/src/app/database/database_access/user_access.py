@@ -294,3 +294,27 @@ class UserAccess(DatabaseAccess):
         update_query = update(PoliticalStance).where(PoliticalStance.user_id == user_id).values(**valid_updates)
         await self.session.execute(update_query)
         await self.session.commit()
+
+    async def is_dead(self, user_id: int) -> bool:
+        """
+        Check if the user is dead (no armies and no cities)
+
+        :param user_id: user id of the user we are checking
+        :return: True if the user is dead, False otherwise
+        """  
+        query = select(User).where(User.id == user_id)
+        user = await self.session.execute(query)
+        user = user.scalars().first()
+
+        if user is None:
+            raise NotFoundException(user_id, "User")
+
+        query = select(City).where(City.owner_id == user_id)
+        city = await self.session.execute(query)
+        city = city.scalars().first()
+
+        query = select(Army).where(Army.owner_id == user_id)
+        army = await self.session.execute(query)
+        army = army.scalars().first()
+
+        return city is None and army is None

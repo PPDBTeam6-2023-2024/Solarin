@@ -1,11 +1,19 @@
 from ..formula.compute_properties import *
 from ...app.database.database_access.data_access import DataAccess
 
+from ...app.routers.globalws.router import global_queue
 
 class ArmyCombat:
     """
     This class will make sure that combat between 2 armies occurs correctly
     """
+    @staticmethod
+    async def handle_death(user_id: int, da: DataAccess):
+        """
+        Handle the death of a user
+        """
+        if da.UserAccess.is_dead(user_id):
+            await global_queue.put({"target": user_id, "type": "death"})
 
     @staticmethod
     async def computeBattle(army_1: int, army_2: int, da: DataAccess):
@@ -35,6 +43,8 @@ class ArmyCombat:
         for army_troop in army_troops:
             army_troop.size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio, army_troop.size)
         await da.commit()
+
+        await ArmyCombat.handle_death(loser, da)
 
     @staticmethod
     async def computeCityBattle(army_1: int, city_id: int, da: DataAccess):
@@ -88,3 +98,5 @@ class ArmyCombat:
                                                                      army_troop.size)
 
         await da.commit()
+        owner = await da.ArmyAccess.get_army_owner(army_1)
+        await ArmyCombat.handle_death(owner.id, da)

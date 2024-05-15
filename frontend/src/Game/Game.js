@@ -13,8 +13,16 @@ import {PlanetListContext} from "./Context/PlanetListContext"
 import {useSelector, useDispatch} from 'react-redux'
 import {setResource, setDecreaseResource} from "../redux/slices/resourcesSlice";
 import {initializeResources} from "./UI/ResourceViewer/ResourceViewer"
+import {PrimaryContext, SecondaryContext, TertiaryContext} from "./Context/ThemeContext";
 
 const Game = () => {
+    /**
+     * these 2 states exist to be able to change the UI colors
+     * */
+    const [primaryColor, setPrimaryColor] = useState("#ce1c75")
+    const [secondaryColor, setSecondaryColor] = useState("#d57d11")
+    const [tertiaryColor, setTertiaryColor] = useState("#e1b812")
+
     const [isAuth, setIsAuth] = useState(false)
     const [userInfo, setUserInfo] = useState(null)
     const [viewMode, setViewMode] = useState(View.PlanetView)
@@ -196,6 +204,9 @@ const Game = () => {
     return (<div className="h-screen bg-gray-900">
         <UserInfoContext.Provider value={[userInfo, setUserInfo]}>
             <ViewModeContext.Provider value={[viewMode, setViewMode]}>
+                <PrimaryContext.Provider value={[primaryColor, setPrimaryColor]}>
+                <SecondaryContext.Provider value={[secondaryColor, setSecondaryColor]}>
+                <TertiaryContext.Provider value={[tertiaryColor, setTertiaryColor]}>
                 <PlanetListContext.Provider value={[planetList, setPlanetList]}>
 
                     {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
@@ -229,6 +240,10 @@ const Game = () => {
                     {!userInfo && !isAuth && <h1>Not authenticated</h1>}
 
                 </PlanetListContext.Provider>
+                </TertiaryContext.Provider>
+                </SecondaryContext.Provider>
+                </PrimaryContext.Provider>
+
             </ViewModeContext.Provider>
         </UserInfoContext.Provider>
     </div>)

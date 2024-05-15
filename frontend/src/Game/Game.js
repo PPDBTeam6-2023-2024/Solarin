@@ -102,9 +102,6 @@ const Game = () => {
             if (resource[1] <= 0){
 
                 const sendCheck = async() => {
-
-
-                    await new Promise((resolve) => setTimeout(resolve, Math.ceil(3600/maintenanceCost[resource[0]])*1000))
                     maintenanceWebsocket.send(
                     JSON.stringify(
                         {
@@ -122,13 +119,19 @@ const Game = () => {
     useEffect(() => {
 
         let intervals = []
+
         maintenanceCost.forEach((element) => {
-            console.log("bii", element[1], element[0])
             if (element[1] != 0){
-                const interval = setInterval(() => {
-                    dispatch(setDecreaseResource({"resource": element[0]}))
-                }, Math.floor(1000*3600/element[1]))
-                intervals.push(interval)
+                const makeInterval = async() => {
+                    await new Promise((resolve) => setTimeout(resolve, Math.floor(1000*3600/element[1])))
+                    const interval = setInterval(() => {
+                        dispatch(setDecreaseResource({"resource": element[0]}))
+                    }, Math.floor(1000*3600/element[1]))
+                    intervals.push(interval)
+                }
+                makeInterval()
+
+
             }
 
         });
@@ -141,7 +144,7 @@ const Game = () => {
 
         };
 
-    }, []);
+    }, [maintenanceCost]);
     const authenticate = async () => {
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}

@@ -19,9 +19,9 @@ const Game = () => {
     /**
      * these 2 states exist to be able to change the UI colors
      * */
-    const [primaryColor, setPrimaryColor] = useState("#1F2937")
-    const [secondaryColor, setSecondaryColor] = useState("#1F2937")
-    const [tertiaryColor, setTertiaryColor] = useState("#ffffff")
+    const [primaryColor, setPrimaryColor] = useState("#c88018")
+    const [secondaryColor, setSecondaryColor] = useState("#c53520")
+    const [tertiaryColor, setTertiaryColor] = useState("#fbfbfb")
     const [textColor, setTextColor] = useState("#ffffff")
 
     const [isAuth, setIsAuth] = useState(false)
@@ -69,7 +69,7 @@ const Game = () => {
         const getColors = async() => {
             axios.defaults.headers.common = await {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/colors`)
-            if (response.data === undefined){return}
+            if (response.data === null){return}
             setPrimaryColor(response.data.primary_color);
             setSecondaryColor(response.data.secondary_color);
             setTertiaryColor(response.data.tertiary_color);

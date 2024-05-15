@@ -64,7 +64,7 @@ function AddTradeEntry(props) {
     * Add a resource to the list of resources we want to receive
     * */
     const addToReceive= (resource) => {
-        setReceives(r => [...r, [resource, 1]]);
+        setReceives(r => [...r, [resource, 0]]);
     }
 
     /*
@@ -112,7 +112,7 @@ function AddTradeEntry(props) {
                         {/*For each resource display an input place to modify the amount of this resource for
                         this trade*/}
                         <input type="number" name="resourceAmount" value={resource[1]}
-                               min="1"
+                               min="0"
                                max={`${resourceAmount[resource[0]]}`}
                                className="AddResourceAmountInput" style={{"color": textColor}}
                            onChange={(event) => { onChange(event, index, resource) }}></input>

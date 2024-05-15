@@ -2,6 +2,7 @@ import React, {useContext, useMemo} from "react";
 import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
+import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 
 const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, refresh}) => {
     const columns = useMemo(() => [
@@ -56,6 +57,17 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
                         }
                     }}
                 />
+
+                <div>
+                <h2 style={{"textAlign": "center"}}>Army Maintenance Cost /hour</h2>
+                <div style={{"display": "flex", "flexDirection": "row", "alignItems": "center",
+                    "justifyContent": "center", "overflow": "scroll"}}>
+                    {troops.maintenance.map((element, index) => <ResourceCostEntry resource={element[0]}
+                                                                                      cost={element[1]}
+                                                                                      percentage={false}/>)}
+                </div>
+                </div>
+
             </div>
             <div style={{"width": "27%"}} className="right-screen">
                 {selectedImage &&

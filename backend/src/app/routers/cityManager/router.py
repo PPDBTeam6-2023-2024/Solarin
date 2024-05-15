@@ -66,7 +66,6 @@ async def get_city_and_building_info(
     Return the city data, consisting of the building_schemas info and the city_info_schema
     """
 
-
     await data_access.commit()
     return CityData(city = city_info_schema, buildings = buildings_schemas)
 
@@ -176,6 +175,7 @@ async def upgrade_city(
 
     await data_access.commit()
     return Confirmation(confirmed=data)
+
 
 @router.get("/get_resource_stocks/{city_id}", response_model=StockOverViewSchema)
 async def get_resource_stocks(

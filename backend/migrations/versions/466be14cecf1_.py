@@ -1,8 +1,8 @@
 """
 
-Revision ID: 6f87fd8f97b6
+Revision ID: 466be14cecf1
 Revises: 
-Create Date: 2024-05-14 00:29:42.405168
+Create Date: 2024-05-15 12:03:16.976471
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '6f87fd8f97b6'
+revision: str = '466be14cecf1'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -45,10 +45,6 @@ def upgrade() -> None:
     sa.Column('type', sa.TEXT(), nullable=False),
     sa.Column('description', sa.TEXT(), nullable=True),
     sa.PrimaryKeyConstraint('type')
-    )
-    op.create_table('politicalStance',
-    sa.Column('name', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('name')
     )
     op.create_table('resourceType',
     sa.Column('name', sa.String(), nullable=False),
@@ -112,7 +108,6 @@ def upgrade() -> None:
     sa.Column('amount', src.app.database.models.domains.Percentage(precision=53), nullable=False),
     sa.Column('political_stance', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['general_name'], ['generals.name'], ondelete='cascade', initially='DEFERRED', deferrable=True),
-    sa.ForeignKeyConstraint(['political_stance'], ['politicalStance.name'], ondelete='cascade', initially='DEFERRED', deferrable=True),
     sa.ForeignKeyConstraint(['stat'], ['stat.name'], ondelete='cascade', initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('stat', 'general_name')
     )
@@ -121,22 +116,6 @@ def upgrade() -> None:
     sa.Column('residents', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['name'], ['buildingType.name'], initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('name')
-    )
-    op.create_table('maintenanceBuilding',
-    sa.Column('building_type', sa.String(), nullable=False),
-    sa.Column('resource_type', sa.TEXT(), nullable=False),
-    sa.Column('amount', src.app.database.models.domains.PositiveInteger(), nullable=False),
-    sa.ForeignKeyConstraint(['building_type'], ['buildingType.name'], initially='DEFERRED', deferrable=True),
-    sa.ForeignKeyConstraint(['resource_type'], ['resourceType.name'], ondelete='cascade', initially='DEFERRED', deferrable=True),
-    sa.PrimaryKeyConstraint('building_type', 'resource_type')
-    )
-    op.create_table('maintenanceTroop',
-    sa.Column('troop_type', sa.TEXT(), nullable=False),
-    sa.Column('resource_type', sa.TEXT(), nullable=False),
-    sa.Column('amount', src.app.database.models.domains.PositiveInteger(), nullable=False),
-    sa.ForeignKeyConstraint(['resource_type'], ['resourceType.name'], ondelete='cascade', initially='DEFERRED', deferrable=True),
-    sa.ForeignKeyConstraint(['troop_type'], ['troopType.type'], ondelete='cascade', initially='DEFERRED', deferrable=True),
-    sa.PrimaryKeyConstraint('troop_type', 'resource_type')
     )
     op.create_table('planet',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -208,7 +187,6 @@ def upgrade() -> None:
     sa.Column('hashed_password', sa.String(), nullable=False),
     sa.Column('alliance', sa.String(), nullable=True),
     sa.Column('faction_name', sa.String(), nullable=True),
-    sa.Column('last_maintenance_check', sa.TIMESTAMP(), nullable=False),
     sa.ForeignKeyConstraint(['alliance'], ['alliance.name'], ondelete='SET NULL', initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
@@ -264,14 +242,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user2_id'], ['user.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('user1_id', 'user2_id')
     )
-    op.create_table('hasPoliticalStance',
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('value', src.app.database.models.domains.Decimal(precision=53), nullable=False),
-    sa.Column('stance_name', sa.String(), nullable=False),
-    sa.ForeignKeyConstraint(['stance_name'], ['politicalStance.name'], ondelete='cascade', initially='DEFERRED', deferrable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
-    sa.PrimaryKeyConstraint('user_id', 'stance_name')
-    )
     op.create_table('hasResources',
     sa.Column('owner_id', sa.Integer(), nullable=False),
     sa.Column('resource_type', sa.String(), nullable=False),
@@ -289,6 +259,17 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['message_board'], ['messageBoard.bid'], ondelete='cascade', initially='DEFERRED', deferrable=True),
     sa.ForeignKeyConstraint(['sender_id'], ['user.id'], ondelete='SET NULL', initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('mid')
+    )
+    op.create_table('politicalStance',
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('anarchism', src.app.database.models.domains.Decimal(precision=53), nullable=False),
+    sa.Column('authoritarian', src.app.database.models.domains.Decimal(precision=53), nullable=False),
+    sa.Column('democratic', src.app.database.models.domains.Decimal(precision=53), nullable=False),
+    sa.Column('corporate_state', src.app.database.models.domains.Decimal(precision=53), nullable=False),
+    sa.Column('theocracy', src.app.database.models.domains.Decimal(precision=53), nullable=False),
+    sa.Column('technocracy', src.app.database.models.domains.Decimal(precision=53), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.PrimaryKeyConstraint('user_id')
     )
     op.create_table('tradeOffer',
     sa.Column('alliance_name', sa.String(), nullable=False),
@@ -441,9 +422,9 @@ def downgrade() -> None:
     op.drop_table('troopRank')
     op.drop_index(op.f('ix_tradeOffer_id'), table_name='tradeOffer')
     op.drop_table('tradeOffer')
+    op.drop_table('politicalStance')
     op.drop_table('message')
     op.drop_table('hasResources')
-    op.drop_table('hasPoliticalStance')
     op.drop_table('friendsOf')
     op.drop_table('city')
     op.drop_table('army')
@@ -459,8 +440,6 @@ def downgrade() -> None:
     op.drop_table('towerType')
     op.drop_table('productionBuildingType')
     op.drop_table('planet')
-    op.drop_table('maintenanceTroop')
-    op.drop_table('maintenanceBuilding')
     op.drop_table('houseType')
     op.drop_table('generalModifier')
     op.drop_table('barracksType')
@@ -472,7 +451,6 @@ def downgrade() -> None:
     op.drop_table('troopType')
     op.drop_table('stat')
     op.drop_table('resourceType')
-    op.drop_table('politicalStance')
     op.drop_table('planetType')
     op.drop_table('planetRegionType')
     op.drop_table('messageBoard')

@@ -139,11 +139,12 @@ class PlanetSocketActions:
         """
 
         pending_on_arrives = await self.data_access.ArmyAccess.get_pending_attacks(self.planet_id)
-
+        tasks = []
         for pending_on_arrive in pending_on_arrives:
-            asyncio.create_task(
+            tasks.append(asyncio.create_task(
                 self.check_army_combat(pending_on_arrive[0],
-                                       (pending_on_arrive[1] - datetime.datetime.utcnow()).total_seconds()))
+                                       (pending_on_arrive[1] - datetime.datetime.utcnow()).total_seconds())))
+        return tasks
 
     async def create_city(self, data: json):
         """

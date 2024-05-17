@@ -8,6 +8,7 @@ import ProfileViewer from "./UI/ProfileViewer/ProfileViewer";
 import {RiArrowLeftSLine} from "react-icons/ri";
 import {IoMdPlanet} from "react-icons/io";
 import {UserInfoContext} from "./Context/UserInfoContext"
+import { useNavigate } from "react-router-dom"
 
 import {PlanetListContext} from "./Context/PlanetListContext"
 import {useSelector, useDispatch} from 'react-redux'
@@ -29,6 +30,8 @@ const Game = () => {
     const [viewMode, setViewMode] = useState(View.PlanetView)
     const [planetList, setPlanetList] = useState([{"id": 1, "name": "Terra"}])
     const [planetListIndex, setPlanetListIndex] = useState(0)
+    const ws = useRef(null)
+    const navigate = useNavigate()
 
     const dispatch = useDispatch()
     const resources = useSelector((state) => state.resources.resources)
@@ -211,6 +214,32 @@ const Game = () => {
         }
     };
 
+    useEffect(() => {
+        ws.current = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/globalws/ws`, `${localStorage.getItem('access-token')}`);
+
+        ws.current.onopen = function (event) {
+            console.log('WebSocket is open now.');
+        };
+
+        ws.current.onmessage = function (event) {
+            const data = JSON.parse(event.data)
+            if (data.type === 'death') {
+                navigate('/game-over')
+            }
+        };
+
+        ws.current.onclose = function (event) {
+            console.log('WebSocket is closed now.');
+        };
+
+        ws.current.onerror = function (event) {
+            console.error('WebSocket error observed:', event);
+        };
+
+        return () => {
+            ws.current.close();
+        };
+    }, []);
 
     useEffect(() => {
         authenticate()

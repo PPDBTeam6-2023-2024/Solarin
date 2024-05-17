@@ -6,6 +6,7 @@ from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from ....logic.formula.compute_properties import *
 from .database_acess import DatabaseAccess
+from ...config import APIConfig
 
 
 class TrainingAccess(DatabaseAccess):
@@ -61,9 +62,13 @@ class TrainingAccess(DatabaseAccess):
         """
         create queue
         """
-        training_time: int = await self.__getTrainingTime(troop_type)
+        config = APIConfig()
+        if config.idle_time is not None:
+            training_time = config.idle_time
+        else:
+            training_time: int = await self.__getTrainingTime(troop_type) * amount
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,
-                           training_size=amount, train_remaining=training_time*amount)
+                           training_size=amount, train_remaining=training_time)
 
         self.session.add(tq)
         await self.session.flush()

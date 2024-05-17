@@ -1,9 +1,8 @@
 import uvicorn
-from confz import FileSource
 
 from .app import init_app, APIConfig
 
-config = APIConfig(config_sources=FileSource(file='config.yml'))
+config = APIConfig()
 app = init_app(config)
 
 if __name__ == "__main__":

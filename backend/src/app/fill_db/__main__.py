@@ -1,4 +1,3 @@
-from confz import FileSource
 import asyncio
 import json
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +18,7 @@ to debug/ give demonstrations
 
 
 async def fill_db(data: dict):
-    config = APIConfig(config_sources=FileSource(file='config.yml'))    
+    config = APIConfig()
     sessionmanager.init(config.db.get_connection_string().get_secret_value())
 
     async with sessionmanager.session() as session:

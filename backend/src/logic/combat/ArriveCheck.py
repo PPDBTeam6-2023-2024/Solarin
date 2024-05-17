@@ -2,6 +2,7 @@ from ...app.database.database_access.data_access import DataAccess
 from ...app.database.models import AttackArmy, AttackCity, EnterCity, MergeArmies, EnterPlanet
 from .ArmyCombat import ArmyCombat
 from ...app.routers.cityManager.city_checker import CityChecker
+from ...app.routers.logic.maintenance_socket_actions import MaintenanceSocketActions
 
 
 class ArriveCheck:
@@ -40,6 +41,9 @@ class ArriveCheck:
             return False
 
         if isinstance(target, AttackArmy):
+            owner = await da.ArmyAccess.get_army_owner(target.target_id)
+            m = MaintenanceSocketActions(owner.id, da)
+            await m.check_maintenance(False)
             await ArmyCombat.computeBattle(army_id, target.target_id, da)
 
         if isinstance(target, AttackCity):
@@ -48,6 +52,10 @@ class ArriveCheck:
             """
             ch = CityChecker(target.target_id, da)
             await ch.check_all()
+
+            owner = await da.CityAccess.get_city_controller(target.target_id)
+            m = MaintenanceSocketActions(owner.id, da)
+            await m.check_maintenance(False)
 
             await ArmyCombat.computeCityBattle(army_id, target.target_id, da)
 

@@ -283,3 +283,43 @@ async def get_ranking(
     data_access = DataAccess(db)
     ranking = await data_access.RankingAccess.get_top_ranking(30)
     return ranking
+
+
+@router.get("/get_alliance_members")
+async def get_alliance_members(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+) -> List:
+    """
+    get the ranking of users, based on the amount of Solarium they have
+    """
+
+    data_access = DataAccess(db)
+    alliance = await data_access.AllianceAccess.get_alliance(user_id)
+    if alliance is None:
+        return []
+    users = await data_access.AllianceAccess.get_alliance_members(alliance)
+
+    return [{"name": user.username, "id": user.id} for user in users if user.id != user_id]
+
+
+@router.post("/kick_user")
+async def kick_user(
+        request: Request,
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+):
+    """
+    Kick a user from the alliance
+    """
+
+    data = await request.json()
+    to_kick_id = data["user_id"]
+
+    data_access = DataAccess(db)
+    await data_access.AllianceAccess.kick_user(user_id, to_kick_id)
+    await data_access.commit()
+
+    return {"success": True}

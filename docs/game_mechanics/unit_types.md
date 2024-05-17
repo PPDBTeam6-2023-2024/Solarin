@@ -82,3 +82,13 @@ A point is a natural number and always bounded by the interval [0,499]
         * (Low) 149 CDP
         * (Moderate) 250 PBR
         * (High) 350 MS
+  
+* MotherShip Unit
+    * Spec: Space (This ship enables an army to go into space)
+    * Base Points:
+        * (Moderate) 50 AP
+        * (Low) 50 DP
+        * (High) 50 CAP
+        * (Low) 50 CDP
+        * (Moderate) 50 PBR
+        * (High) 50 MS

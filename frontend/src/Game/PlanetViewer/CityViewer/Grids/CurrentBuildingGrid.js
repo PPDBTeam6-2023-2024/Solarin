@@ -16,11 +16,11 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         { headerName: "Function", field: "type", autoHeight: true },
     ], [cityId]);
 
-    const rowData = useMemo(() => buildings.map((building) => ({
-        buildingType: building.building_type,
-        buildingRank: building.rank,
-        id: building.id,
-        type: building.type,
+    const rowData = useMemo(() => buildings?.map((building) => ({
+        buildingType: building?.building_type,
+        buildingRank: building?.rank,
+        id: building?.id,
+        type: building?.type,
     })), [buildings]);
 
     useEffect(() => {

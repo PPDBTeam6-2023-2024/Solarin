@@ -1,4 +1,4 @@
-import {useEffect, useState, Suspense} from "react"
+import {useEffect, useState, Suspense, useRef} from "react"
 import axios from 'axios'
 import PlanetViewer from "./PlanetViewer/PlanetViewer"
 import GalaxyViewer from "./GalaxyViewer/GalaxyViewer"
@@ -10,6 +10,9 @@ import {IoMdPlanet} from "react-icons/io";
 import {UserInfoContext} from "./Context/UserInfoContext"
 
 import {PlanetListContext} from "./Context/PlanetListContext"
+import {useSelector, useDispatch} from 'react-redux'
+import {setResource, setDecreaseResource} from "../redux/slices/resourcesSlice";
+import {initializeResources} from "./UI/ResourceViewer/ResourceViewer"
 
 const Game = () => {
     const [isAuth, setIsAuth] = useState(false)
@@ -18,6 +21,130 @@ const Game = () => {
     const [planetList, setPlanetList] = useState([{"id": 1, "name": "Terra"}])
     const [planetListIndex, setPlanetListIndex] = useState(0)
 
+    const dispatch = useDispatch()
+    const resources = useSelector((state) => state.resources.resources)
+
+    /*
+    * Use a websocket to realtime update information about the maintenance of an army
+    * */
+    const [maintenanceWebsocket, setMaintenanceWebsocket] = useState(null);
+    const isConnected = useRef(false);
+
+    /*
+    * To be able to simulate the change of maintenance live, will retrieve the maintenance rate and
+    * mimic this on the frontend
+    * */
+    const [maintenanceCost, setMaintenanceCost] = useState([]);
+    const [maintenanceCheckable, setMaintenanceCheckable] = useState(false);
+    useEffect(() => {
+        if (isConnected.current) return
+
+        isConnected.current = true;
+
+        const webSocket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/logic/maintenance`,
+            `${localStorage.getItem('access-token')}`);
+        setMaintenanceWebsocket(webSocket);
+
+        webSocket.onopen = () => {
+            webSocket.send(
+                JSON.stringify(
+                    {
+                        type: "get_maintenance_cost",
+            }))
+        }
+        initializeResources(dispatch)
+
+    }, []);
+
+    /*make sure we wait a given time before being able to check the maintenance (to prevent high traffic usage)*/
+    const checkable_maintenance = async(delay) => {
+        setMaintenanceCheckable(false)
+        await new Promise((resolve) => setTimeout(resolve, delay*1000))
+        setMaintenanceCheckable(true)
+    }
+
+
+    const isIntervalSet = useRef(false);
+
+    /*
+    * Handle maintenance websocket actions
+    * */
+    useEffect(() => {
+        if (!maintenanceWebsocket) return;
+
+        if (!isConnected.current) return
+
+        maintenanceWebsocket.onmessage = (event) => {
+            let data = JSON.parse(event.data)
+            if (data.type === "update_cost") {
+                setMaintenanceCost(data.maintenance_cost)
+                isIntervalSet.current = false;
+                initializeResources(dispatch)
+
+                checkable_maintenance(data.checkin)
+
+            }
+
+        };
+
+        return () => {
+            maintenanceWebsocket.close();
+        };
+
+    }, [maintenanceWebsocket]);
+
+    /*Check if resources <= 0, if so calibrate with backend*/
+    useEffect(() => {
+        if (!maintenanceCheckable){return}
+        Object.entries(resources).forEach((resource) => {
+            if (maintenanceCost[resource[0]] === undefined){return}
+
+            if (resource[1] <= 0){
+
+                const sendCheck = async() => {
+                    maintenanceWebsocket.send(
+                    JSON.stringify(
+                        {
+                            type: "get_maintenance_cost",
+                    }))
+                }
+
+                sendCheck()
+            }
+
+        })
+    }, [resources])
+
+
+    useEffect(() => {
+
+        let intervals = []
+
+        maintenanceCost.forEach((element) => {
+            if (element[1] != 0){
+                const makeInterval = async() => {
+                    await new Promise((resolve) => setTimeout(resolve, Math.floor(1000*3600/element[1])))
+                    const interval = setInterval(() => {
+                        dispatch(setDecreaseResource({"resource": element[0]}))
+                    }, Math.floor(1000*3600/element[1]))
+                    intervals.push(interval)
+                }
+                makeInterval()
+
+
+            }
+
+        });
+
+        return () => {
+            intervals.forEach((interval) => {
+                clearInterval(interval)
+            })
+            intervals = []
+
+        };
+
+    }, [maintenanceCost]);
     const authenticate = async () => {
         try {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}

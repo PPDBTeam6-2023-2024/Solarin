@@ -8,13 +8,14 @@ import ArmyViewStatEntry from "./ArmyViewStatEntry";
 import {SocketContext} from "../../Context/SocketContext";
 import GeneralView from "./GeneralView";
 import statsJson from "../stats.json";
-
+import ResourceCostEntry from "../ResourceViewer/ResourceCostEntry";
 
 function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
     const [general, setGeneral] = useState({});
     const [socket, setSocket] = useContext(SocketContext);
+    const [maintenance, setMaintenance] = useState([]);
 
     const fetchTroops = async () => {
         try {
@@ -26,6 +27,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
                 setStats(response.data.stats);
 
                 setGeneral(response.data.general);
+                setMaintenance(response.data.maintenance)
             }
         } catch (error) {
             console.error("Failed to fetch troops", error);
@@ -66,6 +68,14 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
 
     ));
 
+    /*Display the maintenance cost of the army*/
+    let maintenanceOutput = maintenance.map((element, index) => (
+        <>
+            <ResourceCostEntry key={element[0]} resource={element[0]} cost={element[1]} percentage={false}/>
+        </>
+
+    ));
+
     let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);
 
     return (
@@ -97,6 +107,12 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
                     <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`total-${armyId}`}
                               label={`${totalCount >= 0 ? totalCount : "?"} Units`}>
                         {troopsOutput}
+                    </TreeItem>
+
+                    <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`maintenance-${armyId}`}
+                              label={`Maintenance Cost /hour`}>
+                        {maintenanceOutput}
+
                     </TreeItem>
                 </TreeView>
             </div>

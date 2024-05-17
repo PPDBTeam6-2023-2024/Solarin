@@ -81,17 +81,6 @@ class DeveloperAccess(DatabaseAccess):
         wall = WallType(name=name, defense=defense)
         self.session.add(wall)
 
-    async def create_house_type(self, name: str, residents: int):
-        """
-        Create a new type of house having its citizens
-
-        :param: name: name of the building type
-        :param: residents: amount of residents living in such a house
-        :return: nothing
-        """
-        ht = HouseType(name=name, residents=residents)
-        self.session.add(ht)
-
     async def create_resource_type(self, type_name: str):
         """
         Add a new type of resource

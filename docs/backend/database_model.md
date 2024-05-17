@@ -76,7 +76,6 @@ An overview of each the tables in the database:
 |      BarracksType      | Lookup | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)             |
 |        WallType        | Lookup | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                |   
 |       TowerType        | Lookup | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
-|       HouseType        | Lookup | Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
 | ProductionBuildingType | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
 |   ProducesResources    | Lookup | Stores which resources a production building produces                                                                     |   
 |      CreationCost      | Lookup | Stores the cost to create/upgrade certain buildings                                                                       |

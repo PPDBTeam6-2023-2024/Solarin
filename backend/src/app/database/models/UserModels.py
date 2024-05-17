@@ -28,7 +28,6 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     alliance = Column(String, ForeignKey("alliance.name", deferrable=True, initially='DEFERRED', ondelete='SET NULL'))
-    faction_name = Column(String)
 
     """
     Stores when the last maintenance check of this user occurred

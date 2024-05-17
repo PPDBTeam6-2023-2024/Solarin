@@ -2,23 +2,25 @@ import React, {useContext, useMemo, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
+import {SplitArmy} from "../BuildingManager";
 
 const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, refresh}) => {
     const columns = useMemo(() => [
-        {headerName: "Troop Type", field: "troopType", autoHeight: true},
+        {headerName: "Troop Type", field: "troop_type", autoHeight: true},
         {headerName: "Rank", field: "rank"},
         {headerName: "Size", field: "size"},
     ], []);
 
     const rowData = useMemo(() => troops.troops.map((troop, index) => ({
-        troopType: troop.troop_type,
+        troop_type: troop.troop_type,
         rank: troop.rank,
         size: troop.size,
-        id: troop.id
+        army_id: troop.army_id
     })), [troops]);
 
     const [socket, setSocket] = useContext(SocketContext);
     const [gridApi, setGridApi] = useState()
+    const [armyId, setArmyId] = useState(troops.army_id)
 
     const selectAllRows = () => {
     if (gridApi) {
@@ -35,39 +37,34 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
     const handleLeaveCity = async () => {
 
         const selectedNodes = gridApi.getSelectedNodes();
-        const selectedData = selectedNodes.map(node => node.data);
+        const selectedTroops = selectedNodes.map(node => node.data);
 
         const allSelected = gridApi.getSelectedRows().length === gridApi.getDisplayedRowCount();
-        if (allSelected){
-            const data_json = {
+
+        if (!allSelected){
+            setArmyId(await SplitArmy(troops.army_id,selectedTroops))
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ type: "get_armies" }));
+            } else {
+                console.error("WebSocket is not open.");
+            }
+
+        } else{
+            setArmyId(troops.army_id)
+                    const data_json = {
             type: "leave_city",
-            army_id: troops.army_id
+            army_id: armyId
             };
 
             await socket.send(JSON.stringify(data_json));
 
             /*Makes it so that the access of armies arrives after the websocket arrives, a really short sleep*/
             await new Promise((resolve) => setTimeout(resolve, 50))
-            refresh()
         }
 
-    };
-    // const handleLeaveCity = async () => {
+        refresh()
 
-    //
-    //     setselectTroopsMode(true)
-    //
-    //     const data_json = {
-    //         type: "leave_city",
-    //         army_id: troops.army_id
-    //     };
-    //
-    //     await socket.send(JSON.stringify(data_json));
-    //
-    //     /*Makes it so that the access of armies arrives after the websocket arrives, a really short sleep*/
-    //     await new Promise((resolve) => setTimeout(resolve, 50))
-    //     refresh()
-    // };
+    };
 
     return (
         <>

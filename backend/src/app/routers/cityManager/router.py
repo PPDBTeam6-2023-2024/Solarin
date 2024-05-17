@@ -17,6 +17,7 @@ async def get_city_and_building_info(
         city_id: int,
         db=Depends(get_db)
 ) -> CityData:
+
     data_access = DataAccess(db)
 
     """
@@ -38,15 +39,6 @@ async def get_city_and_building_info(
     city_owner = await data_access.CityAccess.get_city_controller(city_id) 
     if user_id != city_owner.id:
         return []
-
-
-    """
-    do the city check, checking all the idle mechanics
-    """
-    city_checker = CityChecker(city_id, data_access)
-    remaining_time_update_time = await city_checker.check_upgrade_time()
-
-
 
     """
     Iterate through each building, creating a BuildingInstanceSchema for each one

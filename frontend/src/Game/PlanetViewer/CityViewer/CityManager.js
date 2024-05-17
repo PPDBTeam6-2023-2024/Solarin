@@ -85,7 +85,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
     const onRowMouseOver = event => {
         if (selectedTab === 'Army') {
-            setSelectedImage(getImageForTroopType(event.data.troopType))
+            setSelectedImage(getImageForTroopType(event.data.troop_type))
         } else if (selectedTab === "newBuildings") {
             setSelectedImage(getImageForBuildingType(event.data.name));
         } else {

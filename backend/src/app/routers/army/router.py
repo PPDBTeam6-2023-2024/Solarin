@@ -1,12 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Annotated
+from fastapi import APIRouter, Depends
+from typing import Annotated
 
 from ...database.database import get_db
 from ...database.database_access.army_access import *
 from ..authentication.router import get_my_id
 from .schemas import *
 from ...database.database_access.data_access import DataAccess
-from ..cityManager.city_checker import CityChecker
 
 from ..cityManager.city_checker import CityChecker
 
@@ -165,3 +164,24 @@ async def get_armies_in_city(
     await data_access.commit()
 
     return troops
+
+
+@router.post("/split_army/{army_id}", response_model=int)
+async def split_army(
+        user_id: Annotated[int, Depends(get_my_id)],
+        army_id: int,
+        split_data: SplitInfo,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Split a subset of the army of and form a new army with it.
+    If the main army is inside a city, have the new_army leave the city
+    """
+    data_access = DataAccess(db)
+    troops_list = split_data.to_split
+    if len(troops_list) == 0:
+        return
+
+    new_army_id = await data_access.ArmyAccess.split_army(troops_list, troops_list[0].army_id, user_id)
+
+    return new_army_id

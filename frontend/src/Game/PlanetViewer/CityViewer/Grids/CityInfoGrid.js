@@ -1,13 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import './NewBuildingGrid.css';
-import {getCityData, getUpgradeCost, upgradeBuilding} from "../BuildingManager";
-
 import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
 
 
-const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildings, refreshResources, setCityUpgradeInfo,cityId, refresh, setUpgradeCostMap,upgradeCost, cityInfo, setCityInfo }) => {
+const CityInfoGrid = ({ setBuildings, refreshResources,cityId, setUpgradeCostMap,upgradeCost, cityInfo, setCityInfo }) => {
 
     const RegionBuffsCellRenderer = ({ value }) => {
           return (
@@ -52,7 +50,6 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
 
     return (
         <>
-
                 <div className="ag-theme-alpine-dark city_info_grid">
                     <AgGridReact
                         rowData={rowData}
@@ -67,15 +64,13 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
                     <div className="building_image">
                         <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
                     </div>
-                {cityUpgradeInfo &&
-                    <UpgradeButtonComponent
+                { <UpgradeButtonComponent
                                             data = {cityInfo}
                                             cityId={cityId}
                                             upgradeCost={upgradeCost}
                                             setUpgradeCostMap={setUpgradeCostMap}
                                             refreshResources={refreshResources}
                                             setBuildings={setBuildings}
-                                            setCityUpgradeInfo={setCityUpgradeInfo}
                                             cityUpgradeBool={true}
                                             setCityInfo={setCityInfo}
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { AgGridReact } from "ag-grid-react";
 import './NewBuildingGrid.css';
 import { ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent } from "./Buttons";
@@ -20,6 +20,18 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         remaining_update_time: building?.remaining_update_time
     })), [buildings]);
 
+    useEffect(() => {
+    if (selectedBuilding) {
+        const updatedBuilding = buildings.find(b => b.id === selectedBuilding.id);
+        if (updatedBuilding) {
+            setSelectedBuilding(updatedBuilding);
+        } else {
+            setSelectedBuilding(null);
+        }
+    }
+    }, [buildings, selectedBuilding]);
+
+
     return (
         <>
             <div className="ag-theme-alpine-dark buildings_grid">
@@ -31,8 +43,9 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     suppressDragLeaveHidesColumns={true}
                     onCellMouseOver={event => {
                         setSelectedBuilding(event.data);
-                        onRowMouseOver(event);
+                        onRowMouseOver(event)
                     }}
+
                     onGridReady={params => params.api.sizeColumnsToFit()}
                     onGridSizeChanged={params => params.api.sizeColumnsToFit()}
                 />

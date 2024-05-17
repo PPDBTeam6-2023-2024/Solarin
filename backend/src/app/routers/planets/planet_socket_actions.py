@@ -97,6 +97,7 @@ class PlanetSocketActions:
                 "request_type": "change_direction",
                 "data": army.to_dict() | {"alliance": army.alliance, "username": army.username}
             })
+
     async def leave_planet(self, data: json):
         army_id = data["army_id"]
         owner = await self.data_access.ArmyAccess.get_army_owner(army_id)

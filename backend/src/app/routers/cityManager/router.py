@@ -10,6 +10,7 @@ from .city_checker import CityChecker
 
 router = APIRouter(prefix="/cityManager", tags=["City"])
 
+
 @router.get("/get_city_data/{city_id}", response_model=CityData)
 async def get_city_and_building_info(
         user_id: Annotated[int, Depends(get_my_id)],
@@ -38,6 +39,15 @@ async def get_city_and_building_info(
     if user_id != city_owner.id:
         return []
 
+
+    """
+    do the city check, checking all the idle mechanics
+    """
+    city_checker = CityChecker(city_id, data_access)
+    remaining_time_update_time = await city_checker.check_upgrade_time()
+
+
+
     """
     Iterate through each building, creating a BuildingInstanceSchema for each one
     """
@@ -49,15 +59,24 @@ async def get_city_and_building_info(
         schema = building.to_schema(building.type.type, remaining_update_time)
         buildings_schemas.append(schema)
 
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_city(city_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
+
     """
     Get city info
     """
     city_info = await data_access.CityAccess.get_city_info(city_id)
-    city_info_schema = CityInfoSchema(population=city_info[0], region_type=city_info[1], region_buffs=city_info[2], rank=city_info[3], remaining_update_time=remaining_time_update_time_city)
+    city_info_schema = CityInfoSchema(population=city_info[0], region_type=city_info[1],
+                                      region_buffs=city_info[2], rank=city_info[3],
+                                      remaining_update_time=remaining_time_update_time_city,
+                                      maintenance_cost=maintenance_cost)
 
     """
     Return the city data, consisting of the building_schemas info and the city_info_schema
     """
+
+
+    await data_access.commit()
     return CityData(city = city_info_schema, buildings = buildings_schemas)
 
 
@@ -162,6 +181,8 @@ async def upgrade_city(
     """
     data_access = DataAccess(db)
     data = await data_access.CityAccess.upgrade_city(user_id, city_id)
+
+    await data_access.commit()
     return Confirmation(confirmed=data)
 
 @router.get("/get_resource_stocks/{city_id}", response_model=StockOverViewSchema)

@@ -3,6 +3,7 @@ import { AgGridReact } from 'ag-grid-react';
 import './NewBuildingGrid.css';
 import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
+import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 
 
 const CityInfoGrid = ({ setBuildings, refreshResources,cityId, setUpgradeCostMap,upgradeCost, cityInfo, setCityInfo }) => {
@@ -35,13 +36,13 @@ const CityInfoGrid = ({ setBuildings, refreshResources,cityId, setUpgradeCostMap
 
     const rowData = useMemo(() => [
         // Example data preparation (similar to previous transformations)
-        { category: "Region type", info: cityInfo?.region_type , autoHeight: true},
-        { category: "Region buffs", info: cityInfo?.region_buffs.map(buff => ({
+        { category: "Region type", info: cityInfo.region_type , autoHeight: true},
+        { category: "Region buffs", info: cityInfo.region_buffs.map(buff => ({
             type: buff[0],
             modifier: parseFloat(buff[1]) - 1,
             percentage: `${(parseFloat(buff[1]) - 1) >= 0 ? '+' : ''}${((parseFloat(buff[1]) - 1) * 100).toFixed(0)}%`
         })) , autoHeight: true, autoWidth: true},
-        { category: "Population size", info: cityInfo?.population , autoHeight: true},
+        { category: "Population size", info: cityInfo.population , autoHeight: true},
     ], [cityInfo]);
 
     const onGridReady = (params) => {
@@ -50,18 +51,44 @@ const CityInfoGrid = ({ setBuildings, refreshResources,cityId, setUpgradeCostMap
 
     return (
         <>
-                <div className="ag-theme-alpine-dark city_info_grid">
-                    <AgGridReact
-                        rowData={rowData}
-                        columnDefs={columns}
-                        domLayout='autoHeight'
-                        suppressMovableColumns={true}
-                        suppressDragLeaveHidesColumns={true}
-                        onGridReady={onGridReady}
-                    />
+            <div className={"FontSizer"} style={{"width": "50%", "display": "inline-block"}}>
+                <div>
+                    Region type: <span style={{"color": "gold"}}>{cityInfo.region_type}</span>
                 </div>
-                <div className="right-screen-city-info">
-                    <div className="building_image">
+
+                <div>
+                    City Population: <span style={{"color": "gold"}}>{cityInfo.population}</span>
+                </div>
+
+                {/*Div to display the Region buffs*/}
+                <div>
+                    <h2>Region Buffs</h2>
+                    <div style={{"display": "flex", "flexDirection": "row", "alignItems": "center",
+                        "justifyContent": "center", "overflow": "scroll"}}>
+                        {cityInfo.region_buffs.map((element) => <ResourceCostEntry resource={element[0]}
+                                                                               cost={element[1]-1}
+                                                                               percentage={true}/>)}
+                    </div>
+
+                </div>
+
+                {/*Div to display the City Maintenance*/}
+                <div>
+                    <h2>City Maintenance Cost /hour</h2>
+                    <div style={{"display": "flex", "flexDirection": "row", "alignItems": "center",
+                        "justifyContent": "center", "overflow": "scroll"}}>
+                        {cityInfo.maintenance_cost.map((element, index) => <ResourceCostEntry resource={element[0]}
+                                                                                          cost={element[1]}
+                                                                                          percentage={false}/>)}
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div className="right-screen-city-info">
+                <div className="building_image">
                         <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
                     </div>
                 { <UpgradeButtonComponent

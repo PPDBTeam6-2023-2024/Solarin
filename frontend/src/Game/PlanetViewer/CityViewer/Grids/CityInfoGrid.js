@@ -12,6 +12,22 @@ import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 
 const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildings, refreshResources, setCityUpgradeInfo,cityId, refresh, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo }) => {
 
+    const [cityStats, setCityStats] = useState(null)
+
+
+    const fetchStats = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_stats/${cityId}`);
+            setCityStats(response.data);
+        } catch (error) {
+            console.error('Error while fetching city combat stats:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, [])
+
     const RegionBuffsCellRenderer = ({ value }) => {
           return (
             <>{value.map((buff, index) => (
@@ -97,11 +113,11 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
                     <>
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
-                            <div>{cityStats["defense"] + cityStats["city_defense"]}</div>
+                            <div>{cityStats["defense"]}</div>
                         </div>
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
-                            <div>{cityStats["attack"] + cityStats["city_attack"]}</div>
+                            <div>{cityStats["attack"]}</div>
                         </div>
                     </>
                 }

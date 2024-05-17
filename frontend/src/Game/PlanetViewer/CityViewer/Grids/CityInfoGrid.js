@@ -7,7 +7,7 @@ import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
 
 
-const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildings, refreshResources, setCityUpgradeInfo,cityId, refresh, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo }) => {
+const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildings, refreshResources, setCityUpgradeInfo,cityId, refresh, setUpgradeCostMap,upgradeCost, cityInfo, setCityInfo }) => {
 
     const RegionBuffsCellRenderer = ({ value }) => {
           return (
@@ -77,8 +77,6 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
                                             setBuildings={setBuildings}
                                             setCityUpgradeInfo={setCityUpgradeInfo}
                                             cityUpgradeBool={true}
-                                            timerDuration={cityUpgradeTimer}
-                                            setTimeDuration={setCityUpgradeTimer}
                                             setCityInfo={setCityInfo}
 
                     />

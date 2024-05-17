@@ -78,7 +78,6 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                                     setBuildings={setBuildings}
                                                     setCityInfo = {setCityInfo}
                                                     cityUpgradeBool={false}
-                                                    timerDuration={selectedBuilding.remaining_update_time}
                             />
                         }
                 </div>

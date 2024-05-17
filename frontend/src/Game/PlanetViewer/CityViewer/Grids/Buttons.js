@@ -70,7 +70,6 @@ export const UpgradeButtonComponent = ({
     refreshResources,
     setCityUpgradeInfo,
     cityUpgradeBool,
-    timerDuration = 0, // Default timer duration in seconds
     setTimeDuration,
     setCityInfo
 }) => {

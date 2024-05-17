@@ -30,7 +30,7 @@ function CityMapEntry(props) {
     }
     return (
         <div className={`${cursorStyleClass}`} onClick={cityOnClick}>
-            <div className="z-20 absolute opacity-80"
+            <div className="z-20 absolute opacity-80 pointer-events-none"
                  style={{transform: 'translate(-50%, -50%)',
                      left: `${props.city.x * 100}%`, top: `${props.city.y * 100}%`}}>
             { cityType === "enemy" &&

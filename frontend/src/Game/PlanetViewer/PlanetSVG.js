@@ -47,7 +47,7 @@ function PlanetSVG(props) {
     }, [props.planetId]);
 
     const width = 1920;
-    const height = 1080;
+    const height = 1010;
 
     const delaunay = useMemo(() => {
         const formattedData = data.map((d) => [width * d.x, height * d.y]);

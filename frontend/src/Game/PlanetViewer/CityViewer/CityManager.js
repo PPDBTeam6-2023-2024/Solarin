@@ -17,7 +17,6 @@ import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer
 import {initializeResources} from "../../UI/ResourceViewer/ResourceViewer"
 import {useDispatch} from 'react-redux'
 import CityInfoGrid from "./Grids/CityInfoGrid";
-import {getCityImage} from "./GetCityImage";
 
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {

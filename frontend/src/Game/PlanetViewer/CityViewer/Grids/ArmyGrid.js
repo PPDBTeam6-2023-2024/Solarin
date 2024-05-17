@@ -1,4 +1,4 @@
-import React, {useContext, useMemo} from "react";
+import React, {useContext, useMemo, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
@@ -18,20 +18,56 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
     })), [troops]);
 
     const [socket, setSocket] = useContext(SocketContext);
+    const [gridApi, setGridApi] = useState()
 
+    const selectAllRows = () => {
+    if (gridApi) {
+        // Check if the number of selected rows equals the total number of rows
+        const allSelected = gridApi.getSelectedRows().length === gridApi.getDisplayedRowCount();
+
+        if (allSelected) {
+            gridApi.deselectAll(); // Deselect all rows if they are all selected
+        } else {
+            gridApi.selectAll(); // Select all rows if they are not all selected
+        }
+    }
+};
     const handleLeaveCity = async () => {
 
-        const data_json = {
+        const selectedNodes = gridApi.getSelectedNodes();
+        const selectedData = selectedNodes.map(node => node.data);
+
+        const allSelected = gridApi.getSelectedRows().length === gridApi.getDisplayedRowCount();
+        if (allSelected){
+            const data_json = {
             type: "leave_city",
             army_id: troops.army_id
-        };
+            };
 
-        await socket.send(JSON.stringify(data_json));
+            await socket.send(JSON.stringify(data_json));
 
-        /*Makes it so that the access of armies arrives after the websocket arrives, a really short sleep*/
-        await new Promise((resolve) => setTimeout(resolve, 50))
-        refresh()
+            /*Makes it so that the access of armies arrives after the websocket arrives, a really short sleep*/
+            await new Promise((resolve) => setTimeout(resolve, 50))
+            refresh()
+        }
+
     };
+    // const handleLeaveCity = async () => {
+
+    //
+    //     setselectTroopsMode(true)
+    //
+    //     const data_json = {
+    //         type: "leave_city",
+    //         army_id: troops.army_id
+    //     };
+    //
+    //     await socket.send(JSON.stringify(data_json));
+    //
+    //     /*Makes it so that the access of armies arrives after the websocket arrives, a really short sleep*/
+    //     await new Promise((resolve) => setTimeout(resolve, 50))
+    //     refresh()
+    // };
 
     return (
         <>
@@ -46,15 +82,13 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
                     onCellClicked={(event) => {
                         setSelectedClick(event.data.index);
                     }}
-                    onGridReady={params => params.api.sizeColumnsToFit()}
-                    onGridSizeChanged={params => params.api.sizeColumnsToFit()}
-                    onRowClicked={params => {
-                        if (selectedClick[0] === params.data.index) {
-                            setSelectedClick([-1]);
-                        } else {
-                            setSelectedClick([params.data.index]);
-                        }
+                    onGridReady={params => {
+                        params.api.sizeColumnsToFit()
+                        setGridApi(params.api);
                     }}
+                    onGridSizeChanged={params => params.api.sizeColumnsToFit()}
+                    rowSelection="multiple"
+                    rowMultiSelectWithClick={true}
                 />
             </div>
             <div style={{"width": "27%"}} className="right-screen">
@@ -63,16 +97,24 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
                         <img src={selectedImage} alt="Troops" className="selected-image"/>
                     </div>
                 }
-
                 {rowData.length > 0 &&
-                    <button className="wide-button" onClick={handleLeaveCity}>
-                        Leave City
-                    </button>
+                    <div className="container">
+                        <div className="instruction-text">Click on troops to select</div>
+                        <div className="button-container">
+                            <button className="half-button" onClick={selectAllRows}>
+                                Select All
+                            </button>
+                            <button className="half-button" onClick={handleLeaveCity}>
+                                Leave City
+                            </button>
+                        </div>
+                    </div>
+
                 }
 
             </div>
         </>
-    );
+    )
 };
 
 export default ArmyGrid;

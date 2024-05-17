@@ -1,11 +1,19 @@
 from ..formula.compute_properties import *
 from ...app.database.database_access.data_access import DataAccess
 
+from ...app.routers.globalws.router import global_queue
 
 class ArmyCombat:
     """
     This class will make sure that combat between 2 armies occurs correctly
     """
+    @staticmethod
+    async def handle_death(user_id: int, da: DataAccess):
+        """
+        Handle the death of a user
+        """
+        if await da.UserAccess.is_dead(user_id):
+            await global_queue.put({"target": user_id, "type": "death"})
 
     @staticmethod
     async def computeBattle(army_1: int, army_2: int, da: DataAccess):
@@ -25,6 +33,7 @@ class ArmyCombat:
         """
         remove lost army, and give combat losses to winning army
         """
+        loser_id = (await da.ArmyAccess.get_army_owner(loser)).id
         await da.ArmyAccess.remove_army(loser)
 
         army_troops = await da.ArmyAccess.get_troops(winner)
@@ -35,6 +44,8 @@ class ArmyCombat:
         for army_troop in army_troops:
             army_troop.size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio, army_troop.size)
         await da.commit()
+
+        await ArmyCombat.handle_death(loser_id, da)
 
     @staticmethod
     async def computeCityBattle(army_1: int, city_id: int, da: DataAccess):
@@ -58,6 +69,7 @@ class ArmyCombat:
             """
             Remove the army inside a city if the city defense loses
             """
+            loser_id = (await da.ArmyAccess.get_army_owner(c_army_id)).id
             await da.ArmyAccess.remove_army(c_army_id)
 
             """
@@ -72,6 +84,7 @@ class ArmyCombat:
             await da.ArmyAccess.enter_city(city_id, army_1)
 
         else:
+            loser_id = (await da.ArmyAccess.get_army_owner(army_1)).id
             await da.ArmyAccess.remove_army(army_1)
             loss_army = c_army_id
 
@@ -88,3 +101,4 @@ class ArmyCombat:
                                                                      army_troop.size)
 
         await da.commit()
+        await ArmyCombat.handle_death(loser_id, da)

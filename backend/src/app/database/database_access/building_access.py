@@ -573,13 +573,14 @@ class BuildingAccess(DatabaseAccess):
             remaining_time = (upgrade_queue_entry.start_time + timedelta(
                 seconds=upgrade_queue_entry.duration)) - datetime.utcnow()
 
-            get_building_instance = select(BuildingInstance).where(city_id==BuildingInstance.city_id)
+            get_building_instance = select(BuildingInstance).where(upgrade_queue_entry.id==BuildingInstance.id)
             get_building_instance = await self.session.execute(get_building_instance)
 
             """
             Increase the building rank
             """
             building_instance: BuildingInstance = get_building_instance.first()[0]
+
 
             if remaining_time.total_seconds() <= 0:
 

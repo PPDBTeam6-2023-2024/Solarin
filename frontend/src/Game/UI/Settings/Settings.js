@@ -1,5 +1,5 @@
 import WindowUI from "../WindowUI/WindowUI"
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import "./Settings.css"
 import { SketchPicker } from 'react-color'
 import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../../Context/ThemeContext";
@@ -46,6 +46,55 @@ function Settings(props) {
             return ""
         }
     }
+
+    const sendRestartUpdate = async () => {
+        try {
+            /*send a post request to try and create or join the alliance*/
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/restart`,
+                "",
+                {
+                    headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json',
+                    },
+                }
+            )
+
+        } catch (e) {
+            return ""
+        }
+    }
+
+
+    const [initialClick, setInitialClick] = useState(true);
+    
+
+    useEffect(() => {
+        /*Refresh information on change*/
+
+        if (!props.viewSettings){return}
+
+        if (initialClick){
+            setInitialClick(false)
+        }
+
+        const handleClickOutside = event => {
+            const {target} = event;
+            const settingsElement = document.querySelector('.SettingsMenu');
+            console.log("s", settingsElement)
+
+            if (!initialClick && !(settingsElement.contains(target))) {
+
+                props.onClose();
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [props.viewSettings, initialClick]);
+
+    useEffect(() => {
+        if (!props.viewSettings){setInitialClick(true)}
+    }, [props.viewSettings])
 
     return (
         <>
@@ -102,6 +151,12 @@ function Settings(props) {
                             "justifyContent": "center"}}>
                             <Tooltip title={`Keep the changes the next time you open the game`}>
                             <button onClick={() => {sendColorUpdate()}} > Apply Changes Permanently</button>
+                            </Tooltip>
+                        </div>
+                        <div style={{"marginTop": "2vw", "display": "flex", "flexDirection": "row", "alignItems": "center",
+                            "justifyContent": "center"}}>
+                            <Tooltip title={`Reset the entire game for this player`}>
+                            <button onClick={() => {sendRestartUpdate()}} > Restart</button>
                             </Tooltip>
                         </div>
 

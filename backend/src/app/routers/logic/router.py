@@ -5,7 +5,7 @@ from sqlalchemy.sql.functions import coalesce
 from typing import Union, Annotated
 
 from .schemas import PoliticalStanceInput, PoliticalStanceChange
-
+from ..globalws.router import global_queue
 from ....app.routers.authentication.router import get_my_id, get_db
 from ....app.database.database_access.data_access import DataAccess
 from ....app.database.exceptions.invalid_action_exception import InvalidActionException
@@ -123,7 +123,7 @@ async def get_colors(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get
 async def set_colors(request: Request,
                      user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
     """
-    get the political values of a user
+    get the political values of a userUpdate the color preferences of a user
     """
     data = await request.json()
     data_access = DataAccess(db)
@@ -131,3 +131,19 @@ async def set_colors(request: Request,
                                                           data["tertiary"], data["text_color"])
 
     await data_access.commit()
+
+
+@router.post("/restart")
+async def restart(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
+    """
+    let the user restart
+    """
+    data_access = DataAccess(db)
+    await data_access.ArmyAccess.remove_user_armies(user_id)
+    await data_access.CityAccess.remove_user_cities(user_id)
+
+    await data_access.commit()
+
+    await global_queue.put({"target": user_id, "type": "death"})
+
+

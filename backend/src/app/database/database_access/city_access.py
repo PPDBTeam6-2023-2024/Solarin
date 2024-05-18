@@ -327,3 +327,12 @@ class CityAccess(DatabaseAccess):
             Return the remaining time in seconds
             """
             return int(remaining_time.total_seconds())
+
+    async def remove_user_cities(self, user_id: int):
+        """
+        Remove all cities belonging to a user
+        param: user_id: the users whose cities we want to remove
+        """
+        d = delete(City).where(City.controlled_by == user_id)
+        await self.session.execute(d)
+        await self.flush()

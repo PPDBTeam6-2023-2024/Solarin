@@ -5,7 +5,7 @@ import "./UI.css"
 import ChatIcon from "./ChatMenu/ChatIcon";
 import HiddenWindowsViewer from "./HiddenWIndowsViewer/HIddenWIndowsViewer";
 import TradingIcon from "./Trading/TradingIcon";
-import Settings from "./Settings/Settings";
+
 //component that contains all the UI components
 import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../Context/ThemeContext";
 const getColorString = (r, g, b, a) => {

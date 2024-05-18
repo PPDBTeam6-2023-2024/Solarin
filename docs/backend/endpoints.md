@@ -58,6 +58,9 @@ general logic information needed
 |    politics     |    GET    | Get the current political stance of a specific user |
 | update_politics |   POST    | update the political stance of a user               |
 |   maintenance   | WEBSOCKET | websocket to handle communication about maintenance |
+|     restart     |   POST    | let the user restart                                |
+
+
 
 </p>
 </details>

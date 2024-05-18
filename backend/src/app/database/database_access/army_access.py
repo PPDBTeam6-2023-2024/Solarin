@@ -887,4 +887,13 @@ class ArmyAccess(DatabaseAccess):
 
         return army.planet_id, curr_x, curr_y
 
+    async def remove_user_armies(self, user_id: int):
+        """
+        Remove all armies belonging to a user
+        param: user_id: the users whose armies we want to remove
+        """
+        d = delete(Army).where(Army.user_id == user_id)
+        await self.session.execute(d)
+        await self.flush()
+
 from .general_access import GeneralAccess

@@ -23,7 +23,7 @@ function SideMenu(props) {
 
     return (
         <>
-            <Settings viewSettings={settingsOpen}/>
+            <Settings viewSettings={settingsOpen} onClose={() => setSettingsOpen(false)}/>
             <div className="right-0 fixed z-10 text-5xl text-center">
                 {!menuOpen &&
                     <IoMdMenu

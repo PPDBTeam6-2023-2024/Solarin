@@ -68,6 +68,13 @@ class PropertyUtility:
         return int((creation_cost * (level+1)) / 2)
 
     @staticmethod
+    def get_GUT(tech_forge_cost: int, level: int) -> int:
+        """
+        Calculate the General Upgrade Time, based on the base creation cost and the level
+        """
+        return floor(tech_forge_cost * pow(1.15, level + 1))
+
+    @staticmethod
     def getGPR(modifier: float, base_rate: int, level: int, region_control: bool) -> int:
         """
         General production rate, decides how fast resources are produced
@@ -176,13 +183,6 @@ class PropertyUtility:
         time_cost = floor(upgrade_time * pow(1.15,level+1))
 
         return resource_cost, time_cost
-
-    @staticmethod
-    def get_building_upgrade_time(tech_forge_cost: int, level: int) -> int:
-        """
-        Calculate the general upgrade Time, based on the base creation cost and the level
-        """
-        return floor(tech_forge_cost * pow(1.15, level + 1))
 
 class PoliticalModifiers:
     """

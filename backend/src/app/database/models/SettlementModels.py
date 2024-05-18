@@ -1,4 +1,5 @@
 from sqlalchemy import *
+from sqlalchemy.ext.asyncio import AsyncAttrs
 
 from ..database import Base
 from sqlalchemy.orm import relationship
@@ -9,7 +10,7 @@ import datetime
 from ..models import *
 
 
-class City(Base):
+class City(Base, AsyncAttrs):
     """
     Stores information about a city that is in a region on a planet.
 

@@ -68,6 +68,10 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
     };
     // Get the selected troops
     const handleSplitArmy = async () => {
+        /* when all troops are selected, disable splitting army */
+        if (troops.length === selectedTroopIndexes.length){
+            return
+        }
         const selectedTroops = selectedTroopIndexes.map(index => troops[index]);
         await SplitArmy(armyId, selectedTroops).then(
             await new Promise((resolve) => setTimeout(resolve, 50)),
@@ -110,7 +114,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
     return (
         <WindowUI>
             <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto',
-                maxHeight: "60vh", "overflow": "scroll"}}>
+                maxHeight: "80vh", "overflow": "scroll"}}>
                 <TreeView aria-label="file system navigator">
 
                     <h1 className="text-2xl my-1">Army {armyId}</h1>

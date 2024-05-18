@@ -468,7 +468,7 @@ class BuildingAccess(DatabaseAccess):
         """
         Add building to the upgrade queue
         """
-        building_upgrade = BuildingUpgradeQueue(id=building_id, city_id=building_instance.city_id, start_time=datetime.utcnow(), duration=PropertyUtility.get_building_upgrade_time(TF_cost, building_instance.rank), current_rank=building_instance.rank)
+        building_upgrade = BuildingUpgradeQueue(id=building_id, city_id=building_instance.city_id, start_time=datetime.utcnow(), duration=PropertyUtility.get_GUT(TF_cost, building_instance.rank), current_rank=building_instance.rank)
 
         self.session.add(building_upgrade)
 

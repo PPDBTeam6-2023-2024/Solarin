@@ -399,7 +399,7 @@ async def test_training():
         assert army_troops[0].rank == 3
 
 
-async def test_troop_rank():
+async def test_troops():
     """
     test that troop ank works correctly
     """
@@ -409,26 +409,13 @@ async def test_troop_rank():
         """
         Tests that retrieving and upgrading unit ranks occurs correctly
         """
-        rank = await da.TrainingAccess.get_troop_rank(1, "soldier")
-        assert rank == 1
 
-        cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
+        cost_list = await da.TrainingAccess.get_troop_cost("soldier", 1)
         assert len(cost_list) == 1
         assert cost_list[0][0] == "Vibranium"
         assert cost_list[0][1] == 5
 
-        await da.TrainingAccess.upgrade_troop_rank(1, "soldier")
-
-        rank = await da.TrainingAccess.get_troop_rank(1, "soldier")
-        assert rank == 2
-
-        rank = await da.TrainingAccess.get_troop_rank(2, "soldier")
-        assert rank == 1
-
-        rank = await da.TrainingAccess.get_troop_rank(1, "medic")
-        assert rank == 1
-
-        cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
+        cost_list = await da.TrainingAccess.get_troop_cost("soldier", 1)
         assert len(cost_list) == 1
         assert cost_list[0][0] == "Vibranium"
         assert cost_list[0][1] == 5

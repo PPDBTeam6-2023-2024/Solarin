@@ -100,7 +100,7 @@ function TrainingViewer({buildingId, onClose, refreshResources, buildingType}) {
 
             </div>
 
-            <TrainingOptionBar onTrain={(trainJson) => addTrainingData(trainJson)} buildingType={buildingType}/>
+            <TrainingOptionBar onTrain={(trainJson) => addTrainingData(trainJson)} buildingType={buildingType} buildingId={buildingId}/>
             {errorMessage}
         </div>
     )

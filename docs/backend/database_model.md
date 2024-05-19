@@ -66,21 +66,22 @@ An overview of each the tables in the database:
 <summary><strong>Settlements</strong></summary>
 <p>
 
-|             Table             |  Type  | Purpose                                                                                                                   |
-|:-----------------------------:|:------:|:--------------------------------------------------------------------------------------------------------------------------|
-|             City              |  Data  | Stores information about a city that is in a region on a planet                                                           |                                                                                                                                                  |     
-|       BuildingInstance        |  Data  | Stores which buildings a city has                                                                                         |     
-|         BuildingType          | Lookup | Stores the types of buildings that can exist (This table is the parent of an ISA/polymorphic relation)                    |   
-|     BuildingUpgradeQueue      | Lookup | Stores the buildings being upgraded                                                                                       |   
-|         BarracksType          | Lookup | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)             |
-|           WallType            | Lookup | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                |   
-|           TowerType           | Lookup | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
-|           HouseType           | Lookup | Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
-|    ProductionBuildingType     | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
-|       ProducesResources       | Lookup | Stores which resources a production building produces                                                                     |   
-|         CreationCost          | Lookup | Stores the cost to create/upgrade certain buildings                                                                       |
-|           CityCosts           | Lookup | Stores the base cost to create/upgrade a city                                                                             |
-|        CityUpdateQueue        | Lookup | Stores the cities being upgraded                                                                                          |
+|         Table          |  Type  | Purpose                                                                                                                   |
+|:----------------------:|:------:|:--------------------------------------------------------------------------------------------------------------------------|
+|          City          |  Data  | Stores information about a city that is in a region on a planet                                                           |                                                                                                                                                  |     
+|    BuildingInstance    |  Data  | Stores which buildings a city has                                                                                         |     
+|      BuildingType      | Lookup | Stores the types of buildings that can exist (This table is the parent of an ISA/polymorphic relation)                    |   
+|  BuildingUpgradeQueue  | Lookup | Stores the buildings being upgraded                                                                                       |   
+|      BarracksType      | Lookup | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)             |
+|        WallType        | Lookup | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                |   
+|       TowerType        | Lookup | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
+|       HouseType        | Lookup | Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
+| ProductionBuildingType | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
+|   ProducesResources    | Lookup | Stores which resources a production building produces                                                                     |   
+|      CreationCost      | Lookup | Stores the cost to create/upgrade certain buildings                                                                       |
+|       CityCosts        | Lookup | Stores the base cost to create/upgrade a city                                                                             |
+|    CityUpdateQueue     |  Data  | Stores the cities being upgraded                                                                                          |
+|  BuildingUpdateQueue   |  Data  | Stores the buildings being upgraded                                                                                       |
 
 
 </p>

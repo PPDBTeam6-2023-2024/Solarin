@@ -16,5 +16,11 @@ When an army clicks on its own army it will move towards that army and when it a
 When an army moves to its own city, it will enter the city.
 To indicate which action will be done, Cursor indications are given when hovering over another city/army
 
+### Splitting up an army
+If an army consists of multiple troops, it may be desirable to split up the army. 
+This can be done by selecting the troops which you wish to split off, and press the "split army" button.
+<br>![alt text](../images/split_army_on_map.png)
+
+
 <br>![alt text](../images/fleets.png)
 Fleets, which are armies with at least one mothership unit,  are just like armies in terms of combat, merging, moving, viewing stats, etc... However they can also enter and exit planets. 

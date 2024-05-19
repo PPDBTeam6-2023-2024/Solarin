@@ -1,8 +1,8 @@
-"""
+"""empty message
 
-Revision ID: abf6934b3718
+Revision ID: 715a52e9823a
 Revises: 
-Create Date: 2024-05-17 13:44:58.152962
+Create Date: 2024-05-19 11:50:25.305008
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'abf6934b3718'
+revision: str = '715a52e9823a'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -116,12 +116,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['stat'], ['stat.name'], ondelete='cascade', initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('stat', 'general_name')
     )
-    op.create_table('houseType',
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('residents', src.app.database.models.domains.PositiveInteger(), nullable=False),
-    sa.ForeignKeyConstraint(['name'], ['buildingType.name'], initially='DEFERRED', deferrable=True),
-    sa.PrimaryKeyConstraint('name')
-    )
     op.create_table('maintenanceBuilding',
     sa.Column('building_type', sa.String(), nullable=False),
     sa.Column('resource_type', sa.TEXT(), nullable=False),
@@ -207,7 +201,6 @@ def upgrade() -> None:
     sa.Column('username', sa.String(), nullable=False),
     sa.Column('hashed_password', sa.String(), nullable=False),
     sa.Column('alliance', sa.String(), nullable=True),
-    sa.Column('faction_name', sa.String(), nullable=True),
     sa.Column('last_maintenance_check', sa.TIMESTAMP(), nullable=False),
     sa.ForeignKeyConstraint(['alliance'], ['alliance.name'], ondelete='SET NULL', initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('id'),
@@ -254,6 +247,15 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['controlled_by'], ['user.id'], initially='DEFERRED', deferrable=True),
     sa.ForeignKeyConstraint(['region_id'], ['planetRegion.id'], initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('colorCodes',
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('primary_color', src.app.database.models.domains.HexColor(), nullable=False),
+    sa.Column('secondary_color', src.app.database.models.domains.HexColor(), nullable=False),
+    sa.Column('tertiary_color', src.app.database.models.domains.HexColor(), nullable=False),
+    sa.Column('text_color', src.app.database.models.domains.HexColor(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='cascade', initially='DEFERRED', deferrable=True),
+    sa.PrimaryKeyConstraint('user_id')
     )
     op.create_table('friendsOf',
     sa.Column('user1_id', sa.Integer(), nullable=False),
@@ -370,6 +372,16 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['resource_type'], ['resourceType.name'], ondelete='cascade', initially='DEFERRED', deferrable=True),
     sa.PrimaryKeyConstraint('offer_id', 'resource_type')
     )
+    op.create_table('BuildingUpgradeQueue',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('city_id', sa.Integer(), nullable=False),
+    sa.Column('start_time', sa.DateTime(), nullable=False),
+    sa.Column('duration', src.app.database.models.domains.PositiveInteger(), nullable=False),
+    sa.Column('current_rank', src.app.database.models.domains.PositiveInteger(), nullable=False),
+    sa.ForeignKeyConstraint(['city_id'], ['city.id'], ),
+    sa.ForeignKeyConstraint(['id'], ['buildingInstance.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('attackArmy',
     sa.Column('army_id', sa.Integer(), nullable=False),
     sa.Column('target_id', sa.Integer(), nullable=False),
@@ -429,6 +441,7 @@ def downgrade() -> None:
     op.drop_table('enterCity')
     op.drop_table('attackCity')
     op.drop_table('attackArmy')
+    op.drop_table('BuildingUpgradeQueue')
     op.drop_table('tradeReceives')
     op.drop_table('tradeGives')
     op.drop_table('onArrive')
@@ -445,6 +458,7 @@ def downgrade() -> None:
     op.drop_table('hasResources')
     op.drop_table('hasPoliticalStance')
     op.drop_table('friendsOf')
+    op.drop_table('colorCodes')
     op.drop_table('city')
     op.drop_table('army')
     op.drop_table('allianceRequest')
@@ -461,7 +475,6 @@ def downgrade() -> None:
     op.drop_table('planet')
     op.drop_table('maintenanceTroop')
     op.drop_table('maintenanceBuilding')
-    op.drop_table('houseType')
     op.drop_table('generalModifier')
     op.drop_table('barracksType')
     op.drop_table('associatedWith')

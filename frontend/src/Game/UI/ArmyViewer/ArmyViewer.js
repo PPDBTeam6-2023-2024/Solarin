@@ -10,6 +10,8 @@ import GeneralView from "./GeneralView";
 import statsJson from "../stats.json";
 import ResourceCostEntry from "../ResourceViewer/ResourceCostEntry";
 import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../../Context/ThemeContext";
+import "./ArmyViewer.css"
+import {SplitArmy} from "../../PlanetViewer/CityViewer/BuildingManager"
 
 function ArmyViewer({armyId, onCityCreated, is_owner}) {
     const [troops, setTroops] = useState([]);
@@ -17,6 +19,8 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
     const [general, setGeneral] = useState({});
     const [socket, setSocket] = useContext(SocketContext);
     const [maintenance, setMaintenance] = useState([]);
+    const [selectedTroopIndexes, setSelectedTroopIndexes] = useState([]);
+
 
     const fetchTroops = async () => {
         try {
@@ -53,13 +57,42 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
 
     };
 
+    // handle clicks on troops
+    const handleTroopClick = (index) => {
+        if (selectedTroopIndexes.includes(index)) {
+            // If already selected, remove from the array
+            setSelectedTroopIndexes(selectedTroopIndexes.filter(i => i !== index));
+        } else {
+            // If not selected, add to the array
+            setSelectedTroopIndexes([...selectedTroopIndexes, index]);
+        }
+    };
+    // Get the selected troops
+    const handleSplitArmy = async () => {
+        /* when all troops are selected, disable splitting army */
+        if (troops.length === selectedTroopIndexes.length){
+            return
+        }
+        const selectedTroops = selectedTroopIndexes.map(index => troops[index]);
+        await SplitArmy(armyId, selectedTroops).then(
+            await new Promise((resolve) => setTimeout(resolve, 50)),
+            await socket.send(JSON.stringify({ type: "get_armies" })),
+            await fetchTroops(),
+            setSelectedTroopIndexes([])
+        );
+    };
+
+
+
     // for every troop type in the army create a TroopEntry
     let troopsOutput = troops.map((troop, index) => (
-        <>
-            <ArmyViewTroopEntry key={index} troop_type={troop.troop_type} troop_size={troop.size} rank={troop.rank}/>
-        </>
-
+        <div key={index}
+             className={`troopEntry ${selectedTroopIndexes.includes(index) ? 'troopEntrySelected' : ''}`}
+             onClick={() => handleTroopClick(index)}>
+            <ArmyViewTroopEntry troop_type={troop.troop_type} troop_size={troop.size} rank={troop.rank}/>
+        </div>
     ));
+
 
     /*displays the stats*/
     let statsOutput = Object.entries(stats).map(([key, value], index) => (
@@ -96,6 +129,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
                  "--tertiaryColor": tertiaryColor,
                  "--textColor": textColor,
                  "border": "0.4vw solid var(--tertiaryColor)"}}>
+
                 <TreeView aria-label="file system navigator">
 
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
@@ -110,6 +144,13 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
                         Create City
                         </Button>
                     }
+                    {selectedTroopIndexes.length > 0 && (
+                      <Button variant="contained"
+                        onClick={handleSplitArmy} sx={{margin: "10px"}}>
+                        Split Army
+                      </Button>
+                    )}
+
 
                     {is_owner &&
                     <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`general-${armyId}`} label={`General`}>
@@ -133,6 +174,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
 
                     </TreeItem>
                 </TreeView>
+
             </div>
         </WindowUI>
     );

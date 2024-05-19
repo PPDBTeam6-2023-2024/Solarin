@@ -1,11 +1,29 @@
-import React, {useContext, useMemo, useState} from 'react';
-import { AgGridReact } from 'ag-grid-react';
+import React, {useEffect, useContext, useMemo, useState} from 'react';
+import {AgGridReact} from 'ag-grid-react';
 import './NewBuildingGrid.css';
 import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
+import axios from "axios";
+import statsJson from "../../../UI/stats.json";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 import {TertiaryContext, TextColorContext} from "../../../Context/ThemeContext";
 const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCityUpgradeInfo,cityId, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo}) => {
+
+    const [cityStats, setCityStats] = useState(null)
+
+
+    const fetchStats = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_stats/${cityId}`);
+            setCityStats(response.data);
+        } catch (error) {
+            console.error('Error while fetching city combat stats:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, [])
 
     const RegionBuffsCellRenderer = ({ value }) => {
           return (
@@ -90,6 +108,18 @@ const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCity
             </div>
 
             <div className="right-screen-city-info">
+                {cityStats &&
+                    <>
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
+                            <div>{cityStats["defense"]}</div>
+                        </div>
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
+                            <div>{cityStats["attack"]}</div>
+                        </div>
+                    </>
+                }
                 <div className="building_image">
                         <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
                     </div>

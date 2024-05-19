@@ -105,7 +105,7 @@ const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) =>
                     </Box>
                     <ContextBridge>
                         <Popper open={detailsOpen} anchorEl={anchorEl} placement='right-start'>
-                            <ArmyViewer armyId={fleet.id} is_owner={fleet.owner === userInfo.id}/>
+                            <ArmyViewer armyId={fleet.id} is_owner={fleet.owner === userInfo.id} in_space={true}/>
                         </Popper>
                     </ContextBridge>
                 </Html>

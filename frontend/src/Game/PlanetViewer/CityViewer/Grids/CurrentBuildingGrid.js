@@ -2,9 +2,13 @@ import React, {useEffect, useMemo, useState} from "react";
 import { AgGridReact } from "ag-grid-react";
 import './NewBuildingGrid.css';
 import { ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent } from "./Buttons";
+import axios from "axios";
+import statsJson from "../../../UI/stats.json"
 
 const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage }) => {
     const [selectedBuilding, setSelectedBuilding] = useState(null);
+    const [baseStats, setBaseStats] = useState(null)
+    const [selectedBuildingStat, setSelectedBuildingStat] = useState(0)
 
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType"},
@@ -31,6 +35,24 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
     }
     }, [buildings, selectedBuilding]);
 
+
+    useEffect(() => {
+
+        const getStats = async () => {
+            // get the base stats of the towers/walls
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/building/get_stats/`);
+            setBaseStats(response.data);
+        }
+        getStats()
+    }, []);
+
+    useEffect(() => {
+        if (baseStats != null && selectedBuilding != null) {
+            const base = baseStats[selectedBuilding.buildingType];
+            const rank = selectedBuilding.buildingRank;
+            setSelectedBuildingStat(base * Math.floor(1.4 ** rank));
+        }
+    }, [baseStats, selectedBuilding]);  // also depend on baseStats in case this useEffect is executed before the getStats
 
     return (
         <>
@@ -70,6 +92,18 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                             </table>
                         </div>
                     )}
+                    {selectedBuilding && selectedBuilding.type === "tower" &&
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
+                            <div>{selectedBuildingStat}</div>
+                        </div>
+                    }
+                    {selectedBuilding && selectedBuilding.type === "wall" &&
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
+                            <div>{selectedBuildingStat}</div>
+                        </div>
+                    }
                     <div className="building_image">
                         <img src={selectedImage} alt="Building" className="selected-image"/>
                     </div>

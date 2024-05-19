@@ -200,3 +200,15 @@ async def get_resource_stocks(
         result_dict[building_id] = stock_list
     return StockOverViewSchema(overview=result_dict)
 
+@router.get("/get_stats/{city_id}")
+async def get_city_stats(city_id: int, db=Depends(get_db)):
+    """
+    get the attack and defense stat of a city + the army in it (if there is one)
+    """
+    data_access = DataAccess(db)
+    city_stats = await data_access.CityAccess.get_cities_stats(city_id)
+    c_army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
+    city_stats = await data_access.ArmyAccess.get_army_stats(c_army_id, city_stats)
+    return city_stats
+    
+

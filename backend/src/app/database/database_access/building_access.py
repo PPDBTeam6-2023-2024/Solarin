@@ -601,4 +601,26 @@ class BuildingAccess(DatabaseAccess):
 
         return remaining_update_dict
 
+    async def get_base_stats(self):
+        """
+        get the base stats of all types of towers and walls
+        :return: a dictionary with wall/tower names as keys and their defense/attack values as values
+        """
+        # Query WallType
+        wall_query = select(WallType.name, WallType.defense)
+        result = await self.session.execute(wall_query)
+        wall_types = result.all()
+
+        # Query TowerType
+        tower_query = select(TowerType.name, TowerType.attack)
+        result = await self.session.execute(tower_query)
+        tower_types = result.all()
+
+        # Combine results into a single dictionary
+        base_stats = {name: value for name, value in wall_types}
+        base_stats.update({name: value for name, value in tower_types})
+
+        return base_stats
+
+
 

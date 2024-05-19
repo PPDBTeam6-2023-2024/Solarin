@@ -14,7 +14,7 @@ import "./ArmyViewer.css"
 import {SplitArmy} from "../../PlanetViewer/CityViewer/BuildingManager"
 
 
-function ArmyViewer({armyId, onCityCreated, is_owner}) {
+function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
     const [general, setGeneral] = useState({});
@@ -135,7 +135,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner}) {
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
 
                     {/*Only display the create city button when the user is the owner of that army*/}
-                    {is_owner &&
+                    {is_owner && !in_space &&
                         <Button variant="contained" onClick={createCity} sx={{margin: "10px",
                             backgroundColor: primaryColor, '&:hover': {
                             backgroundColor: secondaryColor,

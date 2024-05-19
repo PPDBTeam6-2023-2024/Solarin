@@ -17,14 +17,14 @@ async def get_city_and_building_info(
         city_id: int,
         db=Depends(get_db)
 ) -> CityData:
+
     data_access = DataAccess(db)
 
     """
     do the city check, checking all the idle mechanics
     """
     city_checker = CityChecker(city_id, data_access)
-    remaining_time_update_time = await city_checker.check_all()
-
+    remaining_time_update_time_city,remaining_time_update_time_buildings = await city_checker.check_all()
 
     buildings = await data_access.BuildingAccess.get_city_buildings(city_id)
 
@@ -40,20 +40,15 @@ async def get_city_and_building_info(
     if user_id != city_owner.id:
         return []
 
-
-    """
-    do the city check, checking all the idle mechanics
-    """
-    city_checker = CityChecker(city_id, data_access)
-    remaining_time_update_time = await city_checker.check_upgrade_time()
-
-
-
     """
     Iterate through each building, creating a BuildingInstanceSchema for each one
     """
     for building in buildings:
-        schema = building.to_schema(building.type.type)
+        remaining_update_time = 0
+        if remaining_time_update_time_buildings.get(building.id) is not None:
+            remaining_update_time = remaining_time_update_time_buildings[building.id]
+
+        schema = building.to_schema(building.type.type, remaining_update_time)
         buildings_schemas.append(schema)
 
     maintenance_cost = await data_access.ResourceAccess.get_maintenance_city(city_id)
@@ -65,7 +60,7 @@ async def get_city_and_building_info(
     city_info = await data_access.CityAccess.get_city_info(city_id)
     city_info_schema = CityInfoSchema(population=city_info[0], region_type=city_info[1],
                                       region_buffs=city_info[2], rank=city_info[3],
-                                      remaining_update_time=remaining_time_update_time,
+                                      remaining_update_time=remaining_time_update_time_city,
                                       maintenance_cost=maintenance_cost)
 
     """

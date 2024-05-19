@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from src.app.database.database import sessionmanager
@@ -199,6 +201,31 @@ async def insert_test_data(connection_test):
 
         yield
 
+async def test_city_combat(event_loop):
+    """
+    Test combat between an army and a city
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        owner = await da.CityAccess.get_city_controller(1)
+        assert owner.id == 20
+
+        await da.ArmyAccess.enter_city(1, 2)
+
+        await da.ArmyAccess.attack_city(1, 1)
+
+        suc6 = await ArriveCheck.check_arrive(1, da)
+        assert suc6
+
+        owner = await da.CityAccess.get_city_controller(1)
+        assert owner.id == 1
+
+        army = await da.ArmyAccess.get_army_by_id(1)
+        troops = await da.ArmyAccess.get_troops(1)
+
+        assert army is not None
+        assert len(troops) > 0
 
 async def test_check_messages():
     """
@@ -492,28 +519,4 @@ async def test_army_combat():
         assert a1 is None or a2 is None
 
 
-async def test_city_combat():
-    """
-    Test combat between an army and a city
-    """
-    async with sessionmanager.session() as session:
-        da = DataAccess(session)
 
-        owner = await da.CityAccess.get_city_controller(1)
-        assert owner.id == 20
-
-        await da.ArmyAccess.enter_city(1, 2)
-
-        await da.ArmyAccess.attack_city(1, 1)
-
-        suc6 = await ArriveCheck.check_arrive(1, da)
-        assert suc6
-
-        owner = await da.CityAccess.get_city_controller(1)
-        assert owner.id == 1
-
-        army = await da.ArmyAccess.get_army_by_id(1)
-        troops = await da.ArmyAccess.get_troops(1)
-
-        assert army is not None
-        assert len(troops) > 0

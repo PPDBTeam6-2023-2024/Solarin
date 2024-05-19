@@ -415,7 +415,7 @@ class ArmyAccess(DatabaseAccess):
         """
         Check user doesn't attack alliance member
         """
-        if user_alliance == city_owner.alliance:
+        if user_alliance == city_owner.alliance and user_alliance != None:
             raise InvalidActionException("You cannot attack your allies")
 
         """
@@ -839,7 +839,7 @@ class ArmyAccess(DatabaseAccess):
             raise NotFoundException(not_found_param="army_id", table_name="army")
 
         same_owner = results[0].id == results[1].id
-        same_alliance = results[0].alliance == results[1].alliance and results[0].alliance is not None
+        same_alliance = results[0].alliance == results[1].alliance and results[0].alliance != None
 
         return same_owner, same_alliance
 

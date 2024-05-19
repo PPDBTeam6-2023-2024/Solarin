@@ -19,9 +19,9 @@ import {useDispatch} from 'react-redux'
 import CityInfoGrid from "./Grids/CityInfoGrid";
 
 
-const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
-    /*
-    * This component represents the City Menu
+const CityManager = ({ cityId, onClose}) => {
+    /**
+    * This component represents the City Menu, for when you click on 1 of your own cities
     * */
 
     const dispatch = useDispatch();
@@ -74,11 +74,12 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
                         getNewBuildingTypes(cityId).then(newBuildingTypes => {
                             setNewBuildingTypes(newBuildingTypes)
+                            getResourcesInStorage(cityId).then(resourcesInStorage=> {
+                            setResourcesInStorage(resourcesInStorage?.overview);
+                            });
                     });
 
-                        getResourcesInStorage(cityId).then(resourcesInStorage=> {
-                            setResourcesInStorage(resourcesInStorage?.overview);
-                    });
+
                     });
         });
     };

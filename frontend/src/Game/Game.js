@@ -59,7 +59,9 @@ const Game = () => {
     * */
     const authenticate = async () => {
         try {
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`,
+         'content-type': 'application/x-www-form-urlencoded',
+         'accept': 'application/json'}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/auth/me`)
             if (response.status === 200) {
                 setIsAuth(true)

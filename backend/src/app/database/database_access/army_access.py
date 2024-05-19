@@ -1,6 +1,8 @@
+import asyncio
 from typing import Optional
 from math import dist
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import exc
 
 from ..models import *
 from ..exceptions.permission_exception import PermissionException
@@ -19,6 +21,12 @@ Pre declaration of class because else circular import
 
 class GeneralAccess:
     pass
+
+
+"""
+Lock to prevent concurrency
+"""
+army_semaphore = asyncio.Semaphore(1)
 
 
 class ArmyAccess(DatabaseAccess):
@@ -66,43 +74,57 @@ class ArmyAccess(DatabaseAccess):
         """
         run a query to find the table giving the relation between troops and armies
         """
-        get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id,
-                                                 ArmyConsistsOf.troop_type == troop_type,
-                                                 ArmyConsistsOf.rank == rank)
-        """
-        Don't add empty entries
-        """
-        if amount == 0:
-            return
-
-        results = await self.session.execute(get_entry)
-        result = results.scalar_one_or_none()
 
         """
-        verify whether the entry (giving the specific relation) existed
+        Lock to prevent concurrency
         """
 
-        if result is None:
+        async with army_semaphore:
+            get_entry = Select(ArmyConsistsOf).where((ArmyConsistsOf.army_id == army_id) &
+                                                     (ArmyConsistsOf.troop_type == troop_type) &
+                                                     (ArmyConsistsOf.rank == rank))
             """
-            In case no entry is yet present:
-            We will create a new entry
+            Don't add empty entries
             """
-            army_consists_of = ArmyConsistsOf(army_id=army_id, troop_type=troop_type, rank=rank, size=amount)
-            self.session.add(army_consists_of)
+            if amount <= 0:
+                return
 
-        else:
+            await self.session.flush()
+            results = await self.session.execute(get_entry)
+            result = results.scalar_one_or_none()
+
+            r = await self.session.execute(Select(ArmyConsistsOf))
+            r = r.scalars().all()
+
             """
-            In case an entry is present:
-            We will increase the amount of the entry with the provided amount
+            verify whether the entry (giving the specific relation) existed
             """
 
-            result.size += amount
+            if result is None:
+                """
+                In case no entry is yet present:
+                We will create a new entry
+                """
 
-        """
-        Flush is necessary in case multiple adds to an army are done before a commit, because we might need
-        to alter the just created entry when the exact same troops are added to the army
-        """
-        await self.session.flush()
+                army_consists_of = ArmyConsistsOf(army_id=army_id, troop_type=troop_type, rank=rank, size=amount)
+                self.session.add(army_consists_of)
+                await self.session.commit()
+                r = await self.session.execute(Select(ArmyConsistsOf))
+                r = r.scalars().all()
+
+            else:
+                """
+                In case an entry is present:
+                We will increase the amount of the entry with the provided amount
+                """
+
+                result.size += amount
+
+            """
+            Flush is necessary in case multiple adds to an army are done before a commit, because we might need
+            to alter the just created entry when the exact same troops are added to the army
+            """
+            await self.session.flush()
 
     async def get_troops(self, army_id: int):
         """
@@ -139,6 +161,8 @@ class ArmyAccess(DatabaseAccess):
         await self.session.flush()
         armies = armies.scalars().all()
         return armies
+
+
     async def get_user_fleets_on_planet(self, user_id: int, planet_id: int ) -> list[Army]:
         """
        Get fleets on a planet
@@ -174,6 +198,8 @@ class ArmyAccess(DatabaseAccess):
         await self.session.flush()
         armies = armies.scalars().all()
         return armies
+
+
     async def get_army_extra(self, army_id: int):
         """
         Get also alliance name and username of the owner of the army
@@ -573,25 +599,28 @@ class ArmyAccess(DatabaseAccess):
         When no army is inside the city we will use the add_on_none optional
         to create an empty army
         """
+        async with army_semaphore:
+            armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
+            results = await self.session.execute(armies_in_cities)
+            result = results.scalar_one_or_none()
 
-        armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
-        results = await self.session.execute(armies_in_cities)
-        result = results.scalar_one_or_none()
+            if result is None and add_on_none:
+                """
+                When no army is inside the city put a default army inside the city
+                """
+                get_city = Select(City).where(City.id == city_id)
+                city = await self.session.execute(get_city)
+                city = city.scalar_one()
 
-        if result is None and add_on_none:
-            """
-            When no army is inside the city put a default army inside the city
-            """
-            get_city = Select(City).where(City.id == city_id)
-            city = await self.session.execute(get_city)
-            city = city.scalar_one()
+                army_id = await self.create_army(city.controlled_by, city.region.planet_id, city.x, city.y)
 
-            army_id = await self.create_army(city.controlled_by, city.region.planet_id, city.x, city.y)
-            await self.flush()
-            await self.enter_city(city.id, army_id)
-            result = army_id
+                await self.enter_city(city.id, army_id)
+                await self.session.flush()
+                result = army_id
+            await self.session.flush()
 
         return result
+
     async def leave_planet(self, army_id: int):
         """
        let an army exit a planet

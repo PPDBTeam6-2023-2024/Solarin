@@ -305,7 +305,7 @@ function PlanetViewer(props) {
                     {/*Display cityManager over the map*/}
                     {selectedCityId && showCityManager && (
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
+                            <CityManager key={selectedCityId} cityId={selectedCityId} onClose={handleCloseCityManager} />
                         </div>
                     )}
 

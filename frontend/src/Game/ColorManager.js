@@ -22,7 +22,7 @@ function ColorManager({children}) {
     * */
     useEffect(() => {
         const getColors = async() => {
-            axios.defaults.headers.common = await {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            axios.defaults.headers.common = await {'Authorization': `Bearer ${localStorage.getItem('access-token')}`, "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/colors`)
             if (response.data === null){return}
             /*
@@ -36,7 +36,7 @@ function ColorManager({children}) {
 
         getColors();
     }, []);
-
+    console.log("set colors")
     return (
 
         <div className="h-screen bg-gray-900"

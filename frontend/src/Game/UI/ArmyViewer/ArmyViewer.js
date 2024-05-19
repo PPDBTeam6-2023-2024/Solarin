@@ -113,10 +113,12 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
 
     let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);
 
+    console.log("p", useContext(PrimaryContext))
     const [primaryColor, setPrimaryColor] = useContext(PrimaryContext);
     const [secondaryColor, setSecondaryColor] = useContext(SecondaryContext);
     const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
     const [textColor, setTextColor] = useContext(TextColorContext);
+
 
 
     return (

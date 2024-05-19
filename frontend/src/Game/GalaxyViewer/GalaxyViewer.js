@@ -11,6 +11,7 @@ import {ReactReduxContext} from "react-redux";
 import Fleet from './Fleet'
 import Planet from './Planet'
 import {PlanetListContext} from "../Context/PlanetListContext";
+import ColorManager from "../ColorManager";
 
 function Scene(props) {
     const [socket, setSocket] = useContext(SocketContext)
@@ -210,6 +211,7 @@ function GalaxyViewer(props) {
     }, [socket])
 
     return (
+
         <PlanetIdContext.Provider value={0}>
         <SocketContext.Provider value={[socket, setSocket]}>
             <ForwardCanvas planetListIndex={props.planetListIndex} setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}/>

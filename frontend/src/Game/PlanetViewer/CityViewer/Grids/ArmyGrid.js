@@ -19,6 +19,7 @@ const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
     ], []);
 
     /* set row data */
+    console.log("t", troops)
     const rowData = useMemo(() => troops.troops.map((troop, index) => ({
         troop_type: troop.troop_type,
         rank: troop.rank,

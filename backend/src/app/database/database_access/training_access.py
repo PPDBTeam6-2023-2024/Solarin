@@ -137,7 +137,6 @@ class TrainingAccess(DatabaseAccess):
 
             army_id = await aa.get_army_in_city(building_city.id)
 
-
             await army_access.add_to_army(army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
             queue_entry.training_size -= troops_trained
             """

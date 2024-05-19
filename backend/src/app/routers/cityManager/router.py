@@ -209,6 +209,7 @@ async def get_city_stats(city_id: int, db=Depends(get_db)):
     city_stats = await data_access.CityAccess.get_cities_stats(city_id)
     c_army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
     city_stats = await data_access.ArmyAccess.get_army_stats(c_army_id, city_stats)
+    await data_access.commit()
     return city_stats
     
 

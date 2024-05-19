@@ -2,6 +2,7 @@ import React, {useContext, useState, useEffect, useRef} from "react";
 import {UserInfoContext} from "../Context/UserInfoContext";
 import {Html, useContextBridge} from "@react-three/drei";
 import {SocketContext} from "../Context/SocketContext";
+import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../Context/ThemeContext";
 import {ReactReduxContext} from "react-redux";
 import {animated} from "@react-spring/three";
 import {Box, List, ListItemButton, Popper} from "@mui/material";
@@ -33,7 +34,8 @@ const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) =>
     const [detailsOpen, setDetailsOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
 
-    const ContextBridge = useContextBridge(SocketContext, ReactReduxContext)
+    const ContextBridge = useContextBridge(SocketContext, ReactReduxContext, PrimaryContext,
+        SecondaryContext, TertiaryContext, TextColorContext)
     const [currentPos, setCurrentPos] = useState(lerp({
         sourcePosition: {x: fleet.x, y: fleet.y}, targetPosition: {x: fleet.to_x, y: fleet.to_y},
         arrivalTime:  new Date(fleet.arrivalTime).getTime(), departureTime: new Date(fleet.departureTime).getTime()

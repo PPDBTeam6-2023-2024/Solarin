@@ -356,7 +356,7 @@ dev = ["mypy (==v0.910)", "tox (==3.27.1)", "pytest (==6.1.2)", "pytest-cov (==2
 
 [[package]]
 name = "mako"
-version = "1.3.3"
+version = "1.3.5"
 description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
 category = "main"
 optional = false
@@ -452,21 +452,21 @@ test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
 
 [[package]]
 name = "psycopg"
-version = "3.1.18"
+version = "3.1.19"
 description = "PostgreSQL database adapter for Python"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-psycopg-binary = {version = "3.1.18", optional = true, markers = "implementation_name != \"pypy\" and extra == \"binary\""}
+psycopg-binary = {version = "3.1.19", optional = true, markers = "implementation_name != \"pypy\" and extra == \"binary\""}
 psycopg-pool = {version = "*", optional = true, markers = "extra == \"pool\""}
 typing-extensions = ">=4.1"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
-binary = ["psycopg-binary (==3.1.18)"]
-c = ["psycopg-c (==3.1.18)"]
+binary = ["psycopg-binary (==3.1.19)"]
+c = ["psycopg-c (==3.1.19)"]
 dev = ["black (>=24.1.0)", "codespell (>=2.2)", "dnspython (>=2.1)", "flake8 (>=4.0)", "mypy (>=1.4.1)", "types-setuptools (>=57.4)", "wheel (>=0.37)"]
 docs = ["Sphinx (>=5.0)", "furo (==2022.6.21)", "sphinx-autobuild (>=2021.3.14)", "sphinx-autodoc-typehints (>=1.12)"]
 pool = ["psycopg-pool"]
@@ -474,7 +474,7 @@ test = ["anyio (>=3.6.2,<4.0)", "mypy (>=1.4.1)", "pproxy (>=2.7)", "pytest (>=6
 
 [[package]]
 name = "psycopg-binary"
-version = "3.1.18"
+version = "3.1.19"
 description = "PostgreSQL database adapter for Python -- C optimisation distribution"
 category = "main"
 optional = false
@@ -482,7 +482,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "psycopg-pool"
-version = "3.2.1"
+version = "3.2.2"
 description = "Connection Pool for Psycopg"
 category = "main"
 optional = false

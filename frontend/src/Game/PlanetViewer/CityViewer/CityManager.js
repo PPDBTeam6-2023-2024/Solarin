@@ -60,33 +60,30 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
         /*Get information about the current buildings inside the city*/
         getCityData(cityId).then(cityData => {
-                setBuildings(cityData?.buildings);
-                setCityUpgradeTimer(cityData?.city?.remaining_update_time);
-                setCityInfo(cityData?.city);
+                    setBuildings(cityData?.buildings)
+                    setCityUpgradeTimer(cityData?.city?.remaining_update_time)
+                    setCityInfo(cityData?.city)
 
-            });
+                    /*Get information about the upgrade cost of a building*/
+                    getUpgradeCost(cityId).then(buildings => {
 
-        /*Get information about the upgrade cost of a building*/
-        getUpgradeCost(cityId).then(buildings => {
-                const building_costs = buildings?.[0];
-            if (!Array.isArray(building_costs)) {
-                console.error("Invalid or no data for building costs:", building_costs);
-                return;
-            }
-            const costMap = building_costs?.reduce((acc, building) => {
-                acc[building.id] = building;
-                return acc;
-            }, {});
-            setCityUpgradeInfo(buildings?.[1]);
-            setUpgradeCostMap(costMap);
+                        const costMap = buildings?.[0].reduce((acc, building) => {
+                            acc[building?.id] = building;
+                            return acc;
+                        }, {});
+
+                        setCityUpgradeInfo(buildings?.[1]);
+                        setUpgradeCostMap(costMap);
+
+                        getNewBuildingTypes(cityId).then(newBuildingTypes => {
+                            setNewBuildingTypes(newBuildingTypes)
+                    });
+
+                        getResourcesInStorage(cityId).then(resourcesInStorage=> {
+                            setResourcesInStorage(resourcesInStorage?.overview);
+                    });
+                    });
         });
-        getNewBuildingTypes(cityId).then(newBuildingTypes => {
-            setNewBuildingTypes(newBuildingTypes)
-        });
-        getResourcesInStorage(cityId).then(resourcesInStorage=> {
-            setResourcesInStorage(resourcesInStorage.overview);
-        }
-    )
     };
 
     const onRowMouseOver = event => {
@@ -169,6 +166,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                     {selectedTab === 'City' && <CityInfoGrid
                         cityUpgradeInfo={cityUpgradeInfo}
                         onRowMouseOver={onRowMouseOver}
+                        refresh={cityContextLoader}
                         setBuildings={setBuildings}
                         refreshResources={() => initializeResources(dispatch)}
                         setUpgradeCostMap={setUpgradeCostMap}

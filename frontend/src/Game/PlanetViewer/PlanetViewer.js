@@ -218,6 +218,7 @@ function PlanetViewer(props) {
             switch (response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
+                    console.log(armies)
                     setArmyImages(armies);
                     break
                 case "change_direction":
@@ -326,7 +327,7 @@ function PlanetViewer(props) {
                         translationBounds={{
                             xMin: 1920 - mapState.scale * 1920,
                             xMax: 0,
-                            yMin: 1080 - mapState.scale * 1080,
+                            yMin: 1010 - mapState.scale * 1010,
                             yMax: 0,
                         }}
                     >

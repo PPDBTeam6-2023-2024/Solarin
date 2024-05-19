@@ -15,7 +15,7 @@ This substantial upfront cost represents the resources and infrastructure requir
 
 ## City Upgrade
 
-As your city grows, upgrading its level becomes essential to accommodate increasing needs and expanding ambitions. Each city level represents an advancement in infrastructure, population capacity, and economic development.
+As your city grows, upgrading its level becomes essential to accommodate increasing needs and expanding ambitions. Each city level represents an advancement in infrastructure, population capacity, and economic development. The maximum level a city can reach is level 5.
 
 ### City Upgrade Cost
 

@@ -12,7 +12,7 @@ function ArmyMapEntry(props) {
     const [userInfo, setUserInfo] = useContext(UserInfoContext);
 
     const isOwner = +(userInfo.id === props.army.owner)
-    const isAllied = props.army.alliance === userInfo.alliance
+    const isAllied = userInfo.alliance && props.army.alliance === userInfo.alliance
     let cursorStyleClass = "ArmyMapEntryPointer";
     const armyType = (!isAllied && !isOwner) ? "enemy" : (isOwner) ? "own" : "ally"
     if (props.decide_moving && !props.moving_Selected){

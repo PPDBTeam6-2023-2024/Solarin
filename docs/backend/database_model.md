@@ -71,6 +71,7 @@ An overview of each the tables in the database:
 |          City          |  Data  | Stores information about a city that is in a region on a planet                                                           |                                                                                                                                                  |     
 |    BuildingInstance    |  Data  | Stores which buildings a city has                                                                                         |     
 |      BuildingType      | Lookup | Stores the types of buildings that can exist (This table is the parent of an ISA/polymorphic relation)                    |   
+|  BuildingUpgradeQueue  | Lookup | Stores the buildings being upgraded                                                                                       |   
 |      BarracksType      | Lookup | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)             |
 |        WallType        | Lookup | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                |   
 |       TowerType        | Lookup | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
@@ -79,7 +80,8 @@ An overview of each the tables in the database:
 |   ProducesResources    | Lookup | Stores which resources a production building produces                                                                     |   
 |      CreationCost      | Lookup | Stores the cost to create/upgrade certain buildings                                                                       |
 |       CityCosts        | Lookup | Stores the base cost to create/upgrade a city                                                                             |
-|    CityUpdateQueue     | Lookup | Stores the cities being upgraded                                                                                          |
+|    CityUpdateQueue     |  Data  | Stores the cities being upgraded                                                                                          |
+|  BuildingUpdateQueue   |  Data  | Stores the buildings being upgraded                                                                                       |
 
 
 </p>

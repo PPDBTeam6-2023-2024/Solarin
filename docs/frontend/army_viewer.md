@@ -21,5 +21,6 @@ Displaying the troops their rank amount and type. We are also able to see the co
 The component offers functionalities too:
 - **Move Army**: Users can specify new coordinates (`x`, `y`) to relocate the army. 
 - **Create City**: Allows users to create a city at the army's current location, utilizing the army's `planet_id` and coordinates.
+- **Split**: Allows user to split off selected troops, and use them to from a separate army
 
 

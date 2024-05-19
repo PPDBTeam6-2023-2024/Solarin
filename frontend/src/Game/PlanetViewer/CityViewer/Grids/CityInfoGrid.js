@@ -1,14 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import './NewBuildingGrid.css';
-import {getCityData, getUpgradeCost, upgradeBuilding} from "../BuildingManager";
-
 import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 
 
-const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildings, refreshResources, setCityUpgradeInfo,cityId, refresh, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo }) => {
+const CityInfoGrid = ({ setBuildings, refreshResources,cityId, setUpgradeCostMap,upgradeCost, cityInfo, setCityInfo }) => {
 
     const RegionBuffsCellRenderer = ({ value }) => {
           return (
@@ -53,7 +51,6 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
 
     return (
         <>
-
             <div className={"FontSizer"} style={{"width": "50%", "display": "inline-block"}}>
                 <div>
                     Region type: <span style={{"color": "gold"}}>{cityInfo.region_type}</span>
@@ -94,18 +91,14 @@ const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildin
                 <div className="building_image">
                         <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
                     </div>
-                {cityUpgradeInfo &&
-                    <UpgradeButtonComponent
+                { <UpgradeButtonComponent
                                             data = {cityInfo}
                                             cityId={cityId}
                                             upgradeCost={upgradeCost}
                                             setUpgradeCostMap={setUpgradeCostMap}
                                             refreshResources={refreshResources}
                                             setBuildings={setBuildings}
-                                            setCityUpgradeInfo={setCityUpgradeInfo}
                                             cityUpgradeBool={true}
-                                            timerDuration={cityUpgradeTimer}
-                                            setTimeDuration={setCityUpgradeTimer}
                                             setCityInfo={setCityInfo}
 
                     />

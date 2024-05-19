@@ -26,7 +26,12 @@ This displays a list of buildings you can still construct within the city. If th
 The army tab shows all the troops present inside the city, grouped as one army:
 <br><img src="../images/army_in_city.png" alt="Army in City" width="300">
 
-Pressing the 'Leave City' button makes your army leave the city.
+#### Split Army
+Troops can be made to leave the city and form an army on the map.
+This can be done by simple clicking on the troops you wish to form an army with, and then press the leave city button.
+Alternatively, press the "select all troops"-button and then press the leave city button, to have all troops leave the city.
+
+
 
 ### City Info Tab
 

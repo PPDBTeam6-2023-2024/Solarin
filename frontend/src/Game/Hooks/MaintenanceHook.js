@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setDecreaseResource} from "../../redux/slices/resourcesSlice";
 
 const MaintenanceHook = () => {
-    /*
+    /**
     * This hook handles the maintenance costs, and visually reducing it from the user its account.
     * Maintenance cost are costs the user need to maintain its cities and armies. This being an IDLE mechanic,
     * we cannot constantly sync each second with the backend. That is why based on the maintenance cost,

@@ -174,3 +174,14 @@ This router will handle the communication about Armies and their actions
 
 </p>
 </details>
+
+<details>
+<summary><strong>Spawn: '/globalws'</strong></summary>
+<p>
+
+| Endpoint |  Method   | Purpose                                  |
+|:--------:|:---------:|:-----------------------------------------|
+|    ws    | WEBSOCKET | Websocket to transfer global information |
+
+</p>
+</details>

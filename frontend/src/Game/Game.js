@@ -15,6 +15,7 @@ import {useSelector, useDispatch} from 'react-redux'
 import {setResource, setDecreaseResource} from "../redux/slices/resourcesSlice";
 import {initializeResources} from "./UI/ResourceViewer/ResourceViewer"
 import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "./Context/ThemeContext";
+import Notification from "./UI/CombatNotifications/Notification";
 
 const Game = () => {
     /**
@@ -214,6 +215,15 @@ const Game = () => {
         }
     };
 
+    /*
+    * Store a list of current pop-up notifications
+    * */
+    const [combatNotifications, setCombatNotifications] = useState([]);
+    const remove_notification = async(notification) => {
+        await new Promise((resolve) => setTimeout(resolve, 5000))
+        setCombatNotifications(notif => notif.filter(item => item !== notification))
+    }
+
     useEffect(() => {
         ws.current = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/globalws/ws`, `${localStorage.getItem('access-token')}`);
 
@@ -225,6 +235,12 @@ const Game = () => {
             const data = JSON.parse(event.data)
             if (data.type === 'death') {
                 navigate('/game-over')
+            }
+
+            /*Display a combat notification*/
+            if (data.type === "combat_notification"){
+                setCombatNotifications(notif => [...notif, data])
+                remove_notification(data)
             }
         };
 
@@ -245,6 +261,8 @@ const Game = () => {
         authenticate()
         getAllPlanets()
     }, [])
+
+
     return (<div className="h-screen bg-gray-900"
             style={{
                 '--primaryColor': primaryColor,
@@ -263,6 +281,12 @@ const Game = () => {
 
                     {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
                         <UI/>
+
+                        {combatNotifications.map((el) => <Notification won={el.won}
+                                                                       own_target={el.own_target}
+                                                                       other_target={el.other_target}/>)}
+
+
                         {viewMode === View.PlanetView &&
                             <div>
                                 <div onClick={() => setViewMode(View.GalaxyView)}

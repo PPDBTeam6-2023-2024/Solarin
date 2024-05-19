@@ -1,5 +1,7 @@
 import React from "react";
-
+/**
+ * Context to easily access the theme colors
+ * */
 const PrimaryContext = React.createContext();
 const SecondaryContext = React.createContext();
 const TertiaryContext = React.createContext();

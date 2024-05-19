@@ -9,22 +9,14 @@ import ArmyViewer from "../UI/ArmyViewer/ArmyViewer";
 import {useFrame} from '@react-three/fiber'
 import { Gltf} from "@react-three/drei";
 import {MathUtils} from "three"
-
-// spaceship model credit: "Ameaterasu" (https://skfb.ly/oTpuL) by gavinpgamer1
+import {lerp} from "../Armies/ArmyMovement"
+/* spaceship model credit: "Ameaterasu" (https://skfb.ly/oTpuL) by gavinpgamer1 */
 
 const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) => {
-    // calculate position based on source- and target position and how much time has elapsed
-    const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
-        let date = new Date()
-        date.setHours(date.getHours() - 2)
 
-        const elapsedTime = date - departureTime
-        const totalTime = arrivalTime - departureTime
-        const percentComplete = (elapsedTime < totalTime) ? elapsedTime / totalTime : 1;
-        const currentX = sourcePosition.x + (targetPosition.x - sourcePosition.x) * percentComplete
-        const currentY = sourcePosition.y + (targetPosition.y - sourcePosition.y) * percentComplete
-        return {x: currentX, y: currentY}
-    }
+    /**
+     * Display a spaceship in space
+     * */
 
     const fleetRef = useRef()
     const [clicked, setClicked] = useState(false)

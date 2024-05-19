@@ -3,7 +3,7 @@ import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
-
+import {SplitArmy} from "../BuildingManager";
 
 const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, refresh}) => {
 

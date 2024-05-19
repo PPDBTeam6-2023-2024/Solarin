@@ -129,19 +129,12 @@ function PlanetViewer(props) {
                 arrivalTime: arrivalTime, departureTime: departureTime
             })
 
-            const currentPosition = lerp({
-                    sourcePosition: {x: army.x, y: army.y},
-                    targetPosition: {x: army.to_x, y: army.to_y},
-                    arrivalTime: army.arrivalTime,
-                    departureTime: army.departureTime
-                })
-
             return {
                 id: army.id,
                 x: army.x,
                 y: army.y,
-                curr_x: currentPosition.x,
-                curr_y: currentPosition.y,
+                curr_x: currentPos.x,
+                curr_y: currentPos.y,
                 to_x: army.to_x,
                 to_y: army.to_y,
                 owner: army.owner,
@@ -182,7 +175,7 @@ function PlanetViewer(props) {
         return () => {
             clearInterval(interval)
         }
-    })
+    }, [armyImages])
 
     /*
     * Handle when an army changes direction

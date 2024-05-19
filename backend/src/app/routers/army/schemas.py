@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class TroopTypeSchema(BaseModel):
@@ -44,3 +44,14 @@ class ArmyConsistsOfSchema(BaseModel):
     class Config:
         orm_mode = True
         from_attributes = True
+
+
+class TroopInfo(BaseModel):
+    troop_type: str
+    rank: int
+    size: int
+    army_id: int
+
+
+class SplitInfo(BaseModel):
+    to_split: List[TroopInfo]

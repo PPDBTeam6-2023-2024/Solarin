@@ -28,11 +28,18 @@ This grow_rate can differ from the grow rate used for calculating the Unit Stats
 	* $\text{CC}$ is the creation cost of the building
 	* GUC and CC is given in Techforge (TF) currency by default
 
+## General Upgrade Time (GUT)
+* $\left\lfloor \text{TFC} \times 1.15^{\text{level} + 1} \right\rfloor
+	* $\text{level}$ is the current (pre-upgrade) level of the building
+	* $\text{TFC}$ is the Tech Forge cost for upgrading the building
+	* GUT is thus dependent on the TF cost, determined by using the GUC formula
+
 ## General Production Rate (GPR)
 * $\text{GPR(resource, building)}=\text{modifier(region, resource)} \cdot \text{baseRate(resource, building)}\cdot\text{level}^2 * (1+\text{Control Modifier(region, player)}*0.25)$ 
 	* $\text{baseRate(resource, building)}$ is the amount of the resource produced in a given building per minute
 	* $\text{modifier(region, resource)}$ is the modifier that is applied depending on the resource produced and the region where the building is located
     * $\text{$\text{Control Modifier (region, player)}$ is a bonus multiplier that applies when a player controls all building instances within a region. This is set at a fixed value of +25% if the player is in control of the region.
+
 ## Building Types
 A building can generally be upgraded up to level 10.
 The capacity of a building is $\text{baseCapacity}\cdot\text{level}$

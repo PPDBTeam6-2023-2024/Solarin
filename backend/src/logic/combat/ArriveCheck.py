@@ -33,6 +33,8 @@ class ArriveCheck:
         if target is None:
             return False
 
+        target_id = target.target_id
+
         """
         When we did not yet arrive, we don't need to fight yet
         """
@@ -50,14 +52,17 @@ class ArriveCheck:
             """
             Update city before calculating attack
             """
+            await da.session.flush()
             ch = CityChecker(target.target_id, da)
             await ch.check_all()
+            await da.session.flush()
 
-            owner = await da.CityAccess.get_city_controller(target.target_id)
+
+            owner = await da.CityAccess.get_city_controller(target_id)
             m = MaintenanceSocketActions(owner.id, da)
             await m.check_maintenance(False)
 
-            await ArmyCombat.computeCityBattle(army_id, target.target_id, da)
+            await ArmyCombat.computeCityBattle(army_id, target_id, da)
 
         if isinstance(target, EnterCity):
             """
@@ -68,6 +73,7 @@ class ArriveCheck:
             When army is already in city, don't add again
             """
             army_in_city = await da.ArmyAccess.get_army_in_city(target.target_id, False)
+
             if army_id == army_in_city:
                 return
 

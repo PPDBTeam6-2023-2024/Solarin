@@ -194,7 +194,7 @@ function PlanetViewer(props) {
         return () => {
             socket.close()
         }
-    }, [socket])
+    }, [])
 
 
     /*

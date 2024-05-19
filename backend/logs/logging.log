@@ -1,0 +1,566 @@
+ERROR    2024-05-15 12:00:45.550 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-33' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=NotFoundException('data access Exception: User does not have an entry for 10')>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x1141eb790>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x1141ebd10>
+          │           │            └ 10
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x113882980>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 43, in check_arrive
+    await ArmyCombat.computeBattle(army_id, target.target_id, da)
+          │          │             │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x1141eb790>
+          │          │             │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x113785e40>
+          │          │             │        └ <src.app.database.models.ArmyModels.AttackArmy object at 0x11428e910>
+          │          │             └ 10
+          │          └ <staticmethod(<function ArmyCombat.computeBattle at 0x113882660>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 47, in computeBattle
+    await ArmyCombat.handle_death(loser, da)
+          │          │            │      └ <src.app.database.database_access.data_access.DataAccess object at 0x1141eb790>
+          │          │            └ 10
+          │          └ <staticmethod(<function ArmyCombat.handle_death at 0x113882a20>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 15, in handle_death
+    if await da.UserAccess.is_dead(user_id):
+             │  │          │       └ 10
+             │  │          └ <function UserAccess.is_dead at 0x113811b20>
+             │  └ <src.app.database.database_access.user_access.UserAccess object at 0x1141eb810>
+             └ <src.app.database.database_access.data_access.DataAccess object at 0x1141eb790>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/database/database_access/user_access.py", line 310, in is_dead
+    raise NotFoundException(user_id, "User")
+          │                 └ 10
+          └ <class 'src.app.database.exceptions.not_found_exception.NotFoundException'>
+
+src.app.database.exceptions.not_found_exception.NotFoundException: data access Exception: User does not have an entry for 10
+ERROR    2024-05-15 12:03:31.158 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-30' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=NotFoundException('data access Exception: User does not have an entry for 11')>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x1191ed3d0>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x1191ed8d0>
+          │           │            └ 11
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x1188ee480>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 43, in check_arrive
+    await ArmyCombat.computeBattle(army_id, target.target_id, da)
+          │          │             │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x1191ed3d0>
+          │          │             │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x1187bde40>
+          │          │             │        └ <src.app.database.models.ArmyModels.AttackArmy object at 0x1191fd010>
+          │          │             └ 11
+          │          └ <staticmethod(<function ArmyCombat.computeBattle at 0x1188bb9c0>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 47, in computeBattle
+    await ArmyCombat.handle_death(loser, da)
+          │          │            │      └ <src.app.database.database_access.data_access.DataAccess object at 0x1191ed3d0>
+          │          │            └ 11
+          │          └ <staticmethod(<function ArmyCombat.handle_death at 0x1188ba660>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 15, in handle_death
+    if await da.UserAccess.is_dead(user_id):
+             │  │          │       └ 11
+             │  │          └ <function UserAccess.is_dead at 0x118849b20>
+             │  └ <src.app.database.database_access.user_access.UserAccess object at 0x1191ed450>
+             └ <src.app.database.database_access.data_access.DataAccess object at 0x1191ed3d0>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/database/database_access/user_access.py", line 310, in is_dead
+    raise NotFoundException(user_id, "User")
+          │                 └ 11
+          └ <class 'src.app.database.exceptions.not_found_exception.NotFoundException'>
+
+src.app.database.exceptions.not_found_exception.NotFoundException: data access Exception: User does not have an entry for 11
+ERROR    2024-05-15 12:05:39.367 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-53' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=RuntimeError("Unexpected ASGI message 'websocket.send', after sending 'websocket.close' or response already completed.")>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 128, in check_army_combat
+    await self.connection_pool.broadcast({"request_type": "reload"})
+          │    │               └ <function ConnectionPool.broadcast at 0x1188b98a0>
+          │    └ <src.app.routers.core.connection_pool.ConnectionPool object at 0x1191ed690>
+          └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x1272db890>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/core/connection_pool.py", line 21, in broadcast
+    await connection.send_json(data)
+          │          │         └ {'request_type': 'reload'}
+          │          └ <function WebSocket.send_json at 0x11782c220>
+          └ <starlette.websockets.WebSocket object at 0x1191ecc90>
+
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/starlette/websockets.py", line 179, in send_json
+    await self.send({"type": "websocket.send", "text": text})
+          │    │                                       └ '{"request_type":"reload"}'
+          │    └ <function WebSocket.send at 0x10d42fb00>
+          └ <starlette.websockets.WebSocket object at 0x1191ecc90>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/starlette/websockets.py", line 88, in send
+    await self._send(message)
+          │    │     └ {'type': 'websocket.send', 'text': '{"request_type":"reload"}'}
+          │    └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x1191a6ac0>
+          └ <starlette.websockets.WebSocket object at 0x1191ecc90>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/starlette/_exception_handler.py", line 50, in sender
+    await send(message)
+          │    └ {'type': 'websocket.send', 'text': '{"request_type":"reload"}'}
+          └ <bound method WebSocketProtocol.asgi_send of <uvicorn.protocols.websockets.websockets_impl.WebSocketProtocol object at 0x1191...
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 386, in asgi_send
+    raise RuntimeError(msg % message_type)
+                       │     └ 'websocket.send'
+                       └ "Unexpected ASGI message '%s', after sending 'websocket.close' or response already completed."
+
+RuntimeError: Unexpected ASGI message 'websocket.send', after sending 'websocket.close' or response already completed.
+ERROR    2024-05-15 12:07:35.214 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-30' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=NotFoundException('data access Exception: User does not have an entry for 12')>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x118ddc3d0>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x118e24650>
+          │           │            └ 12
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x11853e480>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 43, in check_arrive
+    await ArmyCombat.computeBattle(army_id, target.target_id, da)
+          │          │             │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x118ddc3d0>
+          │          │             │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x11840de40>
+          │          │             │        └ <src.app.database.models.ArmyModels.AttackArmy object at 0x118ef14d0>
+          │          │             └ 12
+          │          └ <staticmethod(<function ArmyCombat.computeBattle at 0x11850b9c0>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 47, in computeBattle
+    await ArmyCombat.handle_death(loser, da)
+          │          │            │      └ <src.app.database.database_access.data_access.DataAccess object at 0x118ddc3d0>
+          │          │            └ 12
+          │          └ <staticmethod(<function ArmyCombat.handle_death at 0x11850a660>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 15, in handle_death
+    if await da.UserAccess.is_dead(user_id):
+             │  │          │       └ 12
+             │  │          └ <function UserAccess.is_dead at 0x118499b20>
+             │  └ <src.app.database.database_access.user_access.UserAccess object at 0x118e24190>
+             └ <src.app.database.database_access.data_access.DataAccess object at 0x118ddc3d0>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/database/database_access/user_access.py", line 310, in is_dead
+    raise NotFoundException(user_id, "User")
+          │                 └ 12
+          └ <class 'src.app.database.exceptions.not_found_exception.NotFoundException'>
+
+src.app.database.exceptions.not_found_exception.NotFoundException: data access Exception: User does not have an entry for 12
+ERROR    2024-05-15 12:09:50.821 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-59' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=ArgumentError('SQL expression element or literal value expected, got <src.app.database.models.UserModels.User object at 0x12ecdbc10>.')>
+Traceback (most recent call last):
+
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 794, in _literal_coercion
+    return expr._bind_param(operator, element, type_=bindparam_type)
+           │    │           │         │              └ None
+           │    │           │         └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+           │    │           └ <built-in function eq>
+           │    └ <function NamedColumn._bind_param at 0x11fdaa200>
+           └ Column('id', Integer(), table=<user>, primary_key=True, nullable=False, default=Sequence('user_id_seq', metadata=MetaData()))
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 4525, in _bind_param
+    return BindParameter(
+           └ <class 'sqlalchemy.sql.elements.BindParameter'>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 2029, in __init__
+    self.type = _compared_to_type.coerce_compared_value(
+    │    │      │                 └ <function TypeEngine.coerce_compared_value at 0x11fd0fe20>
+    │    │      └ Integer()
+    │    └ NullType()
+    └ BindParameter('%(4850119888 id)s', <src.app.database.models.UserModels.User object at 0x12ecdbc10>, type_=NullType())
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/type_api.py", line 1035, in coerce_compared_value
+    _coerced_type = _resolve_value_to_type(value)
+                    │                      └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+                    └ <function _resolve_value_to_type at 0x11fe8a840>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/sqltypes.py", line 3767, in _resolve_value_to_type
+    raise exc.ArgumentError(
+          │   └ <class 'sqlalchemy.exc.ArgumentError'>
+          └ <module 'sqlalchemy.exc' from '/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/si...
+
+sqlalchemy.exc.ArgumentError: Object <src.app.database.models.UserModels.User object at 0x12ecdbc10> is not legal as a SQL literal value
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x121120d10>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x121111190>
+          │           │            └ 13
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x12077e980>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 43, in check_arrive
+    await ArmyCombat.computeBattle(army_id, target.target_id, da)
+          │          │             │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x121120d10>
+          │          │             │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x120681e40>
+          │          │             │        └ <src.app.database.models.ArmyModels.AttackArmy object at 0x1211930d0>
+          │          │             └ 13
+          │          └ <staticmethod(<function ArmyCombat.computeBattle at 0x1207dc400>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 48, in computeBattle
+    await ArmyCombat.handle_death(loser_id, da)
+          │          │            │         └ <src.app.database.database_access.data_access.DataAccess object at 0x121120d10>
+          │          │            └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+          │          └ <staticmethod(<function ArmyCombat.handle_death at 0x1207b3b00>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 15, in handle_death
+    if await da.UserAccess.is_dead(user_id):
+             │  │          │       └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+             │  │          └ <function UserAccess.is_dead at 0x12070db20>
+             │  └ <src.app.database.database_access.user_access.UserAccess object at 0x121112910>
+             └ <src.app.database.database_access.data_access.DataAccess object at 0x121120d10>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/database/database_access/user_access.py", line 305, in is_dead
+    query = select(User).where(User.id == user_id)
+            │      │           │    │     └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+            │      │           │    └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x1204a2020>
+            │      │           └ <class 'src.app.database.models.UserModels.User'>
+            │      └ <class 'src.app.database.models.UserModels.User'>
+            └ <function select at 0x11ff34040>
+
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 582, in __eq__
+    return self.operate(eq, other)
+           │    │       │   └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+           │    │       └ <built-in function eq>
+           │    └ <function QueryableAttribute.operate at 0x120197740>
+           └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x1204a2020>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 453, in operate
+    return op(self.comparator, *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
+           │  │    │            │        └ {}
+           │  │    │            └ (<src.app.database.models.UserModels.User object at 0x12ecdbc10>,)
+           │  │    └ <member 'comparator' of 'QueryableAttribute' objects>
+           │  └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x1204a2020>
+           └ <built-in function eq>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 582, in __eq__
+    return self.operate(eq, other)
+           │    │       │   └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+           │    │       └ <built-in function eq>
+           │    └ <function ColumnProperty.Comparator.operate at 0x1202c1ee0>
+           └ <sqlalchemy.orm.properties.ColumnProperty.Comparator object at 0x1204d5f80>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/properties.py", line 479, in operate
+    return op(self.__clause_element__(), *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
+           │  │    │                      │        └ {}
+           │  │    │                      └ (<src.app.database.models.UserModels.User object at 0x12ecdbc10>,)
+           │  │    └ <member '__clause_element__' of 'Comparator' objects>
+           │  └ <sqlalchemy.orm.properties.ColumnProperty.Comparator object at 0x1204d5f80>
+           └ <built-in function eq>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/annotation.py", line 371, in __eq__
+    return self.__element.__class__.__eq__(self, other)
+           │                               │     └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+           │                               └ Column('id', Integer(), table=<user>, primary_key=True, nullable=False, default=Sequence('user_id_seq', metadata=MetaData()))
+           └ Column('id', Integer(), table=<user>, primary_key=True, nullable=False, default=Sequence('user_id_seq', metadata=MetaData()))
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 582, in __eq__
+    return self.operate(eq, other)
+           │    │       │   └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+           │    │       └ <built-in function eq>
+           │    └ <function ColumnElement.operate at 0x11fd94a40>
+           └ Column('id', Integer(), table=<user>, primary_key=True, nullable=False, default=Sequence('user_id_seq', metadata=MetaData()))
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 1511, in operate
+    return op(self.comparator, *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
+           │  │    │            │        └ {}
+           │  │    │            └ (<src.app.database.models.UserModels.User object at 0x12ecdbc10>,)
+           │  │    └ <sqlalchemy.sql.sqltypes.HasExpressionLookup.Comparator object at 0x120f51510>
+           │  └ Column('id', Integer(), table=<user>, primary_key=True, nullable=False, default=Sequence('user_id_seq', metadata=MetaData()))
+           └ <built-in function eq>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/operators.py", line 582, in __eq__
+    return self.operate(eq, other)
+           │    │       │   └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+           │    │       └ <built-in function eq>
+           │    └ <function TypeEngine.Comparator.operate at 0x11fd0e700>
+           └ <sqlalchemy.sql.sqltypes.HasExpressionLookup.Comparator object at 0x120f51510>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/type_api.py", line 194, in operate
+    return op_fn(self.expr, op, *other, **addtl_kw)
+           │     │    │     │    │        └ immutabledict({'negate_op': <built-in function ne>})
+           │     │    │     │    └ (<src.app.database.models.UserModels.User object at 0x12ecdbc10>,)
+           │     │    │     └ <built-in function eq>
+           │     │    └ <member 'expr' of 'Comparator' objects>
+           │     └ <sqlalchemy.sql.sqltypes.HasExpressionLookup.Comparator object at 0x120f51510>
+           └ <function _boolean_compare at 0x11fefbf60>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/default_comparator.py", line 121, in _boolean_compare
+    obj = coercions.expect(
+          │         └ <function expect at 0x11fc858a0>
+          └ <module 'sqlalchemy.sql.coercions' from '/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/pyt...
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
+    resolved = impl._literal_coercion(
+               │    └ <function BinaryElementImpl._literal_coercion at 0x11fc86980>
+               └ <sqlalchemy.sql.coercions.BinaryElementImpl object at 0x1101c2f40>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 796, in _literal_coercion
+    self._raise_for_expected(element, err=err)
+    │    │                   └ <src.app.database.models.UserModels.User object at 0x12ecdbc10>
+    │    └ <function ExpressionElementImpl._raise_for_expected at 0x11fc86840>
+    └ <sqlalchemy.sql.coercions.BinaryElementImpl object at 0x1101c2f40>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 782, in _raise_for_expected
+    return super()._raise_for_expected(
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/coercions.py", line 518, in _raise_for_expected
+    raise exc.ArgumentError(msg, code=code) from err
+          │   │             │         │          └ ArgumentError('Object <src.app.database.models.UserModels.User object at 0x12ecdbc10> is not legal as a SQL literal value')
+          │   │             │         └ None
+          │   │             └ 'SQL expression element or literal value expected, got <src.app.database.models.UserModels.User object at 0x12ecdbc10>.'
+          │   └ <class 'sqlalchemy.exc.ArgumentError'>
+          └ <module 'sqlalchemy.exc' from '/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/si...
+
+sqlalchemy.exc.ArgumentError: SQL expression element or literal value expected, got <src.app.database.models.UserModels.User object at 0x12ecdbc10>.
+ERROR    2024-05-15 12:11:03.245 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-30' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=AttributeError("type object 'City' has no attribute 'owner_id'")>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x120844290>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x120844850>
+          │           │            └ 14
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x11ffca980>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 43, in check_arrive
+    await ArmyCombat.computeBattle(army_id, target.target_id, da)
+          │          │             │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x120844290>
+          │          │             │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x11fed5e40>
+          │          │             │        └ <src.app.database.models.ArmyModels.AttackArmy object at 0x120906010>
+          │          │             └ 14
+          │          └ <staticmethod(<function ArmyCombat.computeBattle at 0x120028400>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 48, in computeBattle
+    await ArmyCombat.handle_death(loser_id, da)
+          │          │            │         └ <src.app.database.database_access.data_access.DataAccess object at 0x120844290>
+          │          │            └ 3
+          │          └ <staticmethod(<function ArmyCombat.handle_death at 0x120007b00>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 15, in handle_death
+    if await da.UserAccess.is_dead(user_id):
+             │  │          │       └ 3
+             │  │          └ <function UserAccess.is_dead at 0x11ff5db20>
+             │  └ <src.app.database.database_access.user_access.UserAccess object at 0x120844310>
+             └ <src.app.database.database_access.data_access.DataAccess object at 0x120844290>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/database/database_access/user_access.py", line 312, in is_dead
+    query = select(City).where(City.owner_id == user_id)
+            │      │           │                └ 3
+            │      │           └ <class 'src.app.database.models.SettlementModels.City'>
+            │      └ <class 'src.app.database.models.SettlementModels.City'>
+            └ <function select at 0x11f7a4040>
+
+AttributeError: type object 'City' has no attribute 'owner_id'
+ERROR    2024-05-15 14:01:17.024 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-112' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place?")>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x12277b1d0>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x12277a790>
+          │           │            └ 15
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x113fc2700>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 52, in check_arrive
+    await ArmyCombat.computeCityBattle(army_id, target.target_id, da)
+          │          │                 │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x12277b1d0>
+          │          │                 │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x113ec7060>
+          │          │                 │        └ <src.app.database.models.ArmyModels.AttackCity object at 0x122735810>
+          │          │                 └ 15
+          │          └ <staticmethod(<function ArmyCombat.computeCityBattle at 0x11401c4a0>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 104, in computeCityBattle
+    await ArmyCombat.handle_death(loser.id, da)
+          │          │            │     │   └ <src.app.database.database_access.data_access.DataAccess object at 0x12277b1d0>
+          │          │            │     └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x113ce6020>
+          │          │            └ <src.app.database.models.UserModels.User object at 0x1227ca350>
+          │          └ <staticmethod(<function ArmyCombat.handle_death at 0x113fc27a0>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 566, in __get__
+    return self.impl.get(state, dict_)  # type: ignore[no-any-return]
+           │    │        │      └ {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x122765190>}
+           │    │        └ <sqlalchemy.orm.state.InstanceState object at 0x122765190>
+           │    └ <member 'impl' of 'QueryableAttribute' objects>
+           └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x113ce6020>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 1086, in get
+    value = self._fire_loader_callables(state, key, passive)
+            │    │                      │      │    └ symbol('PASSIVE_OFF')
+            │    │                      │      └ 'id'
+            │    │                      └ <sqlalchemy.orm.state.InstanceState object at 0x122765190>
+            │    └ <function AttributeImpl._fire_loader_callables at 0x1139e5260>
+            └ <sqlalchemy.orm.attributes.ScalarAttributeImpl object at 0x1147a7b00>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 1116, in _fire_loader_callables
+    return state._load_expired(state, passive)
+           │     │             │      └ symbol('PASSIVE_OFF')
+           │     │             └ <sqlalchemy.orm.state.InstanceState object at 0x122765190>
+           │     └ <function InstanceState._load_expired at 0x1139fe5c0>
+           └ <sqlalchemy.orm.state.InstanceState object at 0x122765190>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/state.py", line 796, in _load_expired
+    self.manager.expired_attribute_loader(self, toload, passive)
+    │    │                                │     │       └ symbol('PASSIVE_OFF')
+    │    │                                │     └ {'alliance', 'username', 'faction_name', 'hashed_password', 'email', 'id'}
+    │    │                                └ <sqlalchemy.orm.state.InstanceState object at 0x122765190>
+    │    └ <member 'manager' of 'InstanceState' objects>
+    └ <sqlalchemy.orm.state.InstanceState object at 0x122765190>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/loading.py", line 1653, in load_scalar_attributes
+    result = load_on_ident(
+             └ <function load_on_ident at 0x113a832e0>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/loading.py", line 509, in load_on_ident
+    return load_on_pk_identity(
+           └ <function load_on_pk_identity at 0x113a83380>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/loading.py", line 694, in load_on_pk_identity
+    session.execute(
+    │       └ <function Session.execute at 0x113be9580>
+    └ <sqlalchemy.orm.session.Session object at 0x12277a610>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2306, in execute
+    return self._execute_internal(
+           │    └ <function Session._execute_internal at 0x113be9260>
+           └ <sqlalchemy.orm.session.Session object at 0x12277a610>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2191, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                   │      │                 └ <classmethod(<function AbstractORMCompileState.orm_execute_statement at 0x113a4ee80>)>
+                   │      └ <class 'sqlalchemy.orm.context.ORMSelectCompileState'>
+                   └ typing.Any
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/orm/context.py", line 293, in orm_execute_statement
+    result = conn.execute(
+             │    └ <function Connection.execute at 0x1137ecae0>
+             └ <sqlalchemy.engine.base.Connection object at 0x1227cbcd0>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1422, in execute
+    return meth(
+           └ <bound method ClauseElement._execute_on_connection of <sqlalchemy.sql.selectable.Select object at 0x122736550>>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 514, in _execute_on_connection
+    return connection._execute_clauseelement(
+           │          └ <function Connection._execute_clauseelement at 0x1137ece00>
+           └ <sqlalchemy.engine.base.Connection object at 0x1227cbcd0>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1644, in _execute_clauseelement
+    ret = self._execute_context(
+          │    └ <function Connection._execute_context at 0x1137ecfe0>
+          └ <sqlalchemy.engine.base.Connection object at 0x1227cbcd0>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1850, in _execute_context
+    return self._exec_single_context(
+           │    └ <function Connection._exec_single_context at 0x1137ed080>
+           └ <sqlalchemy.engine.base.Connection object at 0x1227cbcd0>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1990, in _exec_single_context
+    self._handle_dbapi_exception(
+    │    └ <function Connection._handle_dbapi_exception at 0x1137ed300>
+    └ <sqlalchemy.engine.base.Connection object at 0x1227cbcd0>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2360, in _handle_dbapi_exception
+    raise exc_info[1].with_traceback(exc_info[2])
+          │                          └ (<class 'sqlalchemy.exc.MissingGreenlet'>, MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here....
+          └ (<class 'sqlalchemy.exc.MissingGreenlet'>, MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here....
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1971, in _exec_single_context
+    self.dialect.do_execute(
+    │    │       └ <function DefaultDialect.do_execute at 0x113887ce0>
+    │    └ <sqlalchemy.dialects.postgresql.asyncpg.PGDialect_asyncpg object at 0x114683610>
+    └ <sqlalchemy.engine.base.Connection object at 0x1227cbcd0>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 919, in do_execute
+    cursor.execute(statement, parameters)
+    │      │       │          └ (1,)
+    │      │       └ 'SELECT "user".id AS user_id, "user".email AS user_email, "user".username AS user_username, "user".hashed_password AS user_ha...
+    │      └ <function AsyncAdapt_asyncpg_cursor.execute at 0x1142ae660>
+    └ <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x12274cc40>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 572, in execute
+    self._adapt_connection.await_(
+    │    └ <member '_adapt_connection' of 'AsyncAdapt_asyncpg_cursor' objects>
+    └ <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x12274cc40>
+  File "/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 122, in await_only
+    raise exc.MissingGreenlet(
+          │   └ <class 'sqlalchemy.exc.MissingGreenlet'>
+          └ <module 'sqlalchemy.exc' from '/Users/arne/Library/Caches/pypoetry/virtualenvs/ppdb-project-tODdTDVU-py3.11/lib/python3.11/si...
+
+sqlalchemy.exc.MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+ERROR    2024-05-15 14:03:02.724 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-26' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=AttributeError("'NoneType' object has no attribute 'id'")>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x11c7679d0>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x11c767ed0>
+          │           │            └ 15
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x11be3a980>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 52, in check_arrive
+    await ArmyCombat.computeCityBattle(army_id, target.target_id, da)
+          │          │                 │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x11c7679d0>
+          │          │                 │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x11bd3f060>
+          │          │                 │        └ <src.app.database.models.ArmyModels.AttackCity object at 0x11c799850>
+          │          │                 └ 15
+          │          └ <staticmethod(<function ArmyCombat.computeCityBattle at 0x11be985e0>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 79, in computeCityBattle
+    await da.CityAccess.set_new_controller(city_id, owner.id)
+          │  │          │                  │        └ None
+          │  │          │                  └ 1
+          │  │          └ <function CityAccess.set_new_controller at 0x11bde5440>
+          │  └ <src.app.database.database_access.city_access.CityAccess object at 0x11c767c50>
+          └ <src.app.database.database_access.data_access.DataAccess object at 0x11c7679d0>
+
+AttributeError: 'NoneType' object has no attribute 'id'
+ERROR    2024-05-15 14:08:15.391 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-26' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=AttributeError("'NoneType' object has no attribute 'id'")>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x1188e5a50>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x1188e6010>
+          │           │            └ 15
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x117fa6980>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 52, in check_arrive
+    await ArmyCombat.computeCityBattle(army_id, target.target_id, da)
+          │          │                 │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x1188e5a50>
+          │          │                 │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x117eab060>
+          │          │                 │        └ <src.app.database.models.ArmyModels.AttackCity object at 0x118909cd0>
+          │          │                 └ 15
+          │          └ <staticmethod(<function ArmyCombat.computeCityBattle at 0x1180005e0>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 79, in computeCityBattle
+    await da.CityAccess.set_new_controller(city_id, owner.id)
+          │  │          │                  │        └ None
+          │  │          │                  └ 1
+          │  │          └ <function CityAccess.set_new_controller at 0x117f55440>
+          │  └ <src.app.database.database_access.city_access.CityAccess object at 0x1188e5a90>
+          └ <src.app.database.database_access.data_access.DataAccess object at 0x1188e5a50>
+
+AttributeError: 'NoneType' object has no attribute 'id'
+ERROR    2024-05-15 14:10:55.445 logging:callHandlers - Task exception was never retrieved
+future: <Task finished name='Task-25' coro=<PlanetSocketActions.check_army_combat() done, defined at /Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py:117> exception=AttributeError("'NoneType' object has no attribute 'id'")>
+Traceback (most recent call last):
+
+> File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/app/routers/planets/planet_socket_actions.py", line 123, in check_army_combat
+    await ArriveCheck.check_arrive(army, self.data_access)
+          │           │            │     │    └ <src.app.database.database_access.data_access.DataAccess object at 0x119de2650>
+          │           │            │     └ <src.app.routers.planets.planet_socket_actions.PlanetSocketActions object at 0x119decc10>
+          │           │            └ 15
+          │           └ <staticmethod(<function ArriveCheck.check_arrive at 0x1194ae980>)>
+          └ <class 'src.logic.combat.ArriveCheck.ArriveCheck'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArriveCheck.py", line 52, in check_arrive
+    await ArmyCombat.computeCityBattle(army_id, target.target_id, da)
+          │          │                 │        │      │          └ <src.app.database.database_access.data_access.DataAccess object at 0x119de2650>
+          │          │                 │        │      └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x1193b7060>
+          │          │                 │        └ <src.app.database.models.ArmyModels.AttackCity object at 0x119e41250>
+          │          │                 └ 15
+          │          └ <staticmethod(<function ArmyCombat.computeCityBattle at 0x11950c5e0>)>
+          └ <class 'src.logic.combat.ArmyCombat.ArmyCombat'>
+
+  File "/Users/arne/Documents/repos/school/PPDB-Project/backend/src/logic/combat/ArmyCombat.py", line 80, in computeCityBattle
+
+AttributeError: 'NoneType' object has no attribute 'id'

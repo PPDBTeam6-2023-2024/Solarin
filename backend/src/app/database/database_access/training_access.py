@@ -6,7 +6,7 @@ from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from ....logic.formula.compute_properties import *
 from .database_acess import DatabaseAccess
-from ...config import APIConfig
+from src.app import config
 
 
 class TrainingAccess(DatabaseAccess):
@@ -62,7 +62,6 @@ class TrainingAccess(DatabaseAccess):
         """
         create queue
         """
-        config = APIConfig()
         if config.idle_time is not None:
             training_time = config.idle_time
         else:

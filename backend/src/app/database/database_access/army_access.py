@@ -12,6 +12,7 @@ from ..models.ArmyModels import Army
 from ....logic.formula.compute_properties import PoliticalModifiers
 from .city_access import CityAccess
 from ...config import APIConfig
+from src.app import config
 
 """
 Pre declaration of class because else circular import
@@ -337,7 +338,6 @@ class ArmyAccess(DatabaseAccess):
         to calculate how long the army will need to move to this position (delta)
         """
         distance = dist((army.x, army.y), (army.to_x, army.to_y))
-        config = APIConfig()
         if config.idle_time is not None:
             delta = timedelta(seconds=config.idle_time)
         else:

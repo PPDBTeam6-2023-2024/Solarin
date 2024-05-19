@@ -5,6 +5,7 @@ from src.app.database.database_access.data_access import DataAccess
 from src.app.database.models import *
 from sqlalchemy import inspect
 from ...src.logic.combat.ArriveCheck import *
+
 @pytest.fixture(scope="function", autouse=True)
 async def insert_test_data(connection_test):
     async with sessionmanager.connect() as connection:

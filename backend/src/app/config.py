@@ -39,4 +39,3 @@ class APIConfig(BaseConfig):
     logging: Optional[LoggingConfig] = None
     idle_time: Optional[int] = None
 
-    CONFIG_SOURCES = FileSource(file='config.yml')

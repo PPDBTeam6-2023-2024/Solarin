@@ -53,7 +53,7 @@ export const TrainButtonComponent = ({data, setSelectedClick}) => {
             className="wide-button"
             onClick={(event) => {
                 event.stopPropagation();
-                setSelectedClick([data.id, "Barracks", data.buildingType]);
+                setSelectedClick([data.id, "Barracks", data.building_type]);
             }}
         >
             Train Troops

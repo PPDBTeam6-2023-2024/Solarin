@@ -18,7 +18,14 @@ const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) =>
      * Display a spaceship in space
      * */
 
+    /*
+    * Store reference to the fleet object, to be able to do some visual manipulation
+    * */
     const fleetRef = useRef()
+
+    /*
+    * Store whether the fleet is clicked (selected)
+    * */
     const [clicked, setClicked] = useState(false)
     const [userInfo] = useContext(UserInfoContext);
 

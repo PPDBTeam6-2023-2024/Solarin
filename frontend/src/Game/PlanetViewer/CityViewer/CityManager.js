@@ -112,7 +112,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, [initialClick]);
-
     return (
         <div className="darken_background">
             <WindowUI>
@@ -151,16 +150,16 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                             }
 
                     {selectedTab === 'Army' && <ArmyGrid
-                        selectedClick={selectedClick}
                         onRowMouseOver={onRowMouseOver}
                         troops={troops}
-                        setSelectedClick={setSelectedClick}
                         selectedImage={selectedImage}
                         refresh={cityContextLoader}
                     />
                     }
 
-                    {selectedTab === 'City' && <CityInfoGrid
+                    {selectedTab === 'City' &&
+
+                        <CityInfoGrid
                         cityUpgradeInfo={cityUpgradeInfo}
                         onRowMouseOver={onRowMouseOver}
                         refresh={cityContextLoader}
@@ -171,8 +170,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         setCityUpgradeInfo={setCityUpgradeInfo}
                         upgradeCost={cityUpgradeInfo}
                         cityInfo = {cityInfo}
-                        setCityInfo = {setCityInfo}
-                    />
+                        setCityInfo = {setCityInfo}/>
+
 
                     }
 

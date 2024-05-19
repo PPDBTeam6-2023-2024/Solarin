@@ -5,7 +5,7 @@ import {SocketContext} from "../../../Context/SocketContext";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 import {SplitArmy} from "../BuildingManager";
 
-const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, refresh}) => {
+const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
 
     const [socket, setSocket] = useContext(SocketContext);
     const [gridApi, setGridApi] = useState()
@@ -82,9 +82,6 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
                     onCellMouseOver={onRowMouseOver}
-                    onCellClicked={(event) => { // handle clicks
-                        setSelectedClick(event.data.index);
-                    }}
                     onGridReady={params => {
                         params.api.sizeColumnsToFit() // handle scaling
                         setGridApi(params.api); // set api for row selection

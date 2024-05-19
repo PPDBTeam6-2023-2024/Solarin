@@ -27,7 +27,6 @@ function GetImagePath(regionType) {
 
 function PlanetSVG(props) {
     const [data, setData] = useState([]);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -109,7 +108,7 @@ function PlanetSVG(props) {
             }
             {
                 props.armyImages.map((army, i) => {
-                        return !(army.curr_x === army.to_x && army.curr_y === army.to_y) ? <Fragment key={i}>
+                        return !(army.curr_x === army.to_x && army.curr_y === army.to_y) ? <Fragment key={army.id}>
                             <line stroke={"lightblue"} strokeWidth={3} x1={army.curr_x * width}
                                   y1={army.curr_y * height} x2={army.to_x * width} y2={army.to_y * height}/>
                             <circle cx={army.to_x * width} cy={army.to_y * height} r={10} fill={"lightblue"}/>

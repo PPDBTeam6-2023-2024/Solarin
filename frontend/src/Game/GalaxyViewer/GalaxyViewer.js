@@ -193,12 +193,21 @@ function ForwardCanvas(props) {
 
 }
 function GalaxyViewer(props) {
-    /*This state and ref keep information about the websocket*/
+    /**
+    * This component visualizes the view we would see when we are in space
+    * */
+
+    /*
+     * This state and ref keep information about the websocket
+     * */
     const isWebSocketConnected = useRef(false);
     const [socket, setSocket] = useState(null)
     useEffect(() => {
         if (isWebSocketConnected.current) return
         isWebSocketConnected.current = true;
+        /*
+        * The galaxy can be seen as planet 0, and so we can easily reuse all the logic for planets
+        * */
         const webSocket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/planet/ws/0`, `${localStorage.getItem('access-token')}`);
         setSocket(webSocket)
     },[])

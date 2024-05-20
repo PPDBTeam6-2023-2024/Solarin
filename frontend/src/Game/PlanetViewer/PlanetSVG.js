@@ -5,6 +5,9 @@ import axios from 'axios';
 
 // get the correct image path for the given region
 function GetImagePath(regionType) {
+    /*
+    * For each planet region type, we take the corresponding image
+    * */
     const imagePaths = {
         "valley of shadow": '/images/region_types/valley_of_shadow.jpeg',
         "arctic": '/images/region_types/arctic.jpg',

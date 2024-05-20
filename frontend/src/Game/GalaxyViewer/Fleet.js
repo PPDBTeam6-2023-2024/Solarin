@@ -30,17 +30,29 @@ const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) =>
     const [clicked, setClicked] = useState(false)
     const [userInfo] = useContext(UserInfoContext);
 
-
+    /*
+    * Keeps track whether the details menu of this army is opened
+    * */
     const [detailsOpen, setDetailsOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
 
+    /*
+    * ContextBridge is used, to make sure certain contexts are still applicable
+    * */
     const ContextBridge = useContextBridge(SocketContext, ReactReduxContext, PrimaryContext,
         SecondaryContext, TertiaryContext, TextColorContext)
+
+    /*
+    * Keep track of the current position of the army (=fleet)
+    * */
     const [currentPos, setCurrentPos] = useState(lerp({
         sourcePosition: {x: fleet.x, y: fleet.y}, targetPosition: {x: fleet.to_x, y: fleet.to_y},
         arrivalTime:  new Date(fleet.arrivalTime).getTime(), departureTime: new Date(fleet.departureTime).getTime()
     }))
 
+    /*
+    * Rotate the fleet into the right direction
+    * */
     useEffect(() => {
         fleetRef.current.rotation.y = Math.atan2(fleet.to_x - currentPos.x, fleet.to_y - currentPos.y) + Math.PI
     }, [])

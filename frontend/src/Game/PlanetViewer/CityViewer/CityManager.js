@@ -17,7 +17,6 @@ import {getImageForBuildingType, getImageForTroopType} from "../../UI/CityViewer
 import {initializeResources} from "../../UI/ResourceViewer/ResourceViewer"
 import {useDispatch} from 'react-redux'
 import CityInfoGrid from "./Grids/CityInfoGrid";
-import {getCityImage} from "./GetCityImage";
 
 
 const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
@@ -30,7 +29,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
     /*List of the buildings inside the city*/
     const [buildings, setBuildings] = useState([]);
     const [resourcesInStorage, setResourcesInStorage] = useState([])
-    const [cityUpgradeTimer, setCityUpgradeTimer] = useState([])
 
     const [upgradeCostMap, setUpgradeCostMap] = useState([]);
     const [cityUpgradeInfo, setCityUpgradeInfo] = useState([]);
@@ -64,7 +62,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
         /*Get information about the current buildings inside the city*/
         getCityData(cityId).then(cityData => {
                     setBuildings(cityData?.buildings)
-                    setCityUpgradeTimer(cityData?.city?.remaining_update_time)
                     setCityInfo(cityData?.city)
 
                     /*Get information about the upgrade cost of a building*/
@@ -91,7 +88,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
     const onRowMouseOver = event => {
         if (selectedTab === 'Army') {
-            setSelectedImage(getImageForTroopType(event.data.troopType))
+            setSelectedImage(getImageForTroopType(event.data.troop_type))
         } else if (selectedTab === "newBuildings") {
             setSelectedImage(getImageForBuildingType(event.data.name));
             setSelectedNewBuilding(event.data.name);
@@ -182,8 +179,6 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         upgradeCost={cityUpgradeInfo}
                         cityInfo = {cityInfo}
                         setCityInfo = {setCityInfo}
-                        cityUpgradeTimer={cityUpgradeTimer}
-                        setCityUpgradeTimer={setCityUpgradeTimer}
                     />
 
                     }

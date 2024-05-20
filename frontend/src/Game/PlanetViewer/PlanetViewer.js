@@ -218,6 +218,7 @@ function PlanetViewer(props) {
             switch (response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
+                    console.log(armies)
                     setArmyImages(armies);
                     break
                 case "change_direction":
@@ -313,7 +314,7 @@ function PlanetViewer(props) {
                     {/*Display cityManager over the map*/}
                     {selectedCityId && showCityManager && (
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager}/>
+                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager} />
                         </div>
                     )}
 
@@ -326,7 +327,7 @@ function PlanetViewer(props) {
                         translationBounds={{
                             xMin: 1920 - mapState.scale * 1920,
                             xMax: 0,
-                            yMin: 1080 - mapState.scale * 1080,
+                            yMin: 1010 - mapState.scale * 1010,
                             yMax: 0,
                         }}
                     >

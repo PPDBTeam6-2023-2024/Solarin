@@ -22,7 +22,7 @@ function formatTime(seconds) {
     return parts.join(':');
 }
 
-export const ResourceButtonComponent = ({data, cityId, refreshResources, resourcesInStorage, setResourcesInStorage}) => {
+export const ResourceButtonComponent = ({data, cityId, refreshResources, setResourcesInStorage}) => {
     const buttonStyle = "wide-button";
 
     const collectResourcesHelper = async (cityId, buildingId) => {
@@ -68,33 +68,72 @@ export const UpgradeButtonComponent = ({
     setBuildings,
     upgradeCost,
     refreshResources,
-    setCityUpgradeInfo,
     cityUpgradeBool,
-    timerDuration = 0, // Default timer duration in seconds
-    setTimeDuration,
     setCityInfo
 }) => {
-    const [timer, setTimer] = useState(timerDuration);
+    const [timer, setTimer] = useState(0);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const [totalTimePassed, setTotalTimePassed] = useState(0)
 
+    // Timer to increment total time passed
     useEffect(() => {
-        setTimer(timerDuration);
+        const timerInterval = setInterval(() => {
+            setTotalTimePassed(prevTotalTimePassed => prevTotalTimePassed + 1);
+        }, 1000);
 
-        setIsButtonDisabled(timer > 0);
+        return () => clearInterval(timerInterval);
+    }, []);
+
+    // Effect to handle remaining time and button disabling logic
+    useEffect(() => {
+        const updateTimerAndCheckForExpiration = () => {
+            const newTimerValue = Math.max(data.remaining_update_time - totalTimePassed, 0);
+            setTimer(newTimerValue);
+            if(data.remaining_update_time > 0 && newTimerValue <= 0){
+                refreshData();
+            }
+            setIsButtonDisabled(newTimerValue > 0);
+        };
+
+        updateTimerAndCheckForExpiration();
 
         const countdown = setInterval(() => {
             setTimer(prevTimer => {
-                if (prevTimer <= 1) {
+                const newTimer = Math.max(prevTimer - 1, 0);
+                if (newTimer <= 0) {
                     clearInterval(countdown);
                     setIsButtonDisabled(false);
-                    return 0;
                 }
-                return prevTimer - 1;
+                return newTimer;
             });
         }, 1000);
-
         return () => clearInterval(countdown);
-    }, [timerDuration]);
+    }, [data.remaining_update_time, totalTimePassed]);
+
+    const refreshData = async () => {
+        try {
+            const cityData = await getCityData(cityId);
+            setBuildings(cityData?.buildings);
+            setCityInfo(cityData?.city);
+
+            const buildings = await getUpgradeCost(cityId);
+            const building_costs = buildings[0];
+            const costMap = building_costs?.reduce((acc, building) => {
+                acc[building?.id] = building;
+                return acc;
+            }, {});
+            setUpgradeCostMap(costMap);
+            refreshResources();
+
+            if (cityUpgradeBool){
+                setTimer(buildings[1]?.time_cost);
+                setIsButtonDisabled(true);
+            }
+        } catch (error) {
+            console.error("Error refreshing building and city data:", error);
+        }
+    };
+
 
     const UpgradeBuildingHelper = async () => {
         try {
@@ -103,32 +142,9 @@ export const UpgradeButtonComponent = ({
                 UpgradeSuccessful = await upgradeBuilding(cityId, data.id);
             } else {
                 UpgradeSuccessful = await upgradeCity(cityId);
-                console.log("should be confirmed here: ", UpgradeSuccessful)
             }
             if (UpgradeSuccessful.confirmed === true) {
-                const buildings = await getUpgradeCost(cityId);
-                const building_costs = buildings[0];
-                const costMap = building_costs?.reduce((acc, building) => {
-                    acc[building?.id] = building;
-                    return acc;
-                }, {});
-                setUpgradeCostMap(costMap);
-                refreshResources();
-                setCityUpgradeInfo(buildings?.[1]);
-                const cityData = await getCityData(cityId);
-                setBuildings(cityData?.buildings);
-                setCityInfo(cityData?.city);
-                console.log("city info : ", cityData)
-
-                if (cityUpgradeBool){
-                    setTimeDuration(buildings[1]?.time_cost);
-                    setTimer(buildings[1]?.time_cost);
-                    setIsButtonDisabled(true);
-                } else {
-                    setTimeDuration(buildings[0]?.time_cost);
-                    setTimer(buildings[0]?.time_cost);
-                    setIsButtonDisabled(true);
-                }
+                await refreshData()
             }
         } catch (error) {
             console.error("Failed to upgrade building:", error);

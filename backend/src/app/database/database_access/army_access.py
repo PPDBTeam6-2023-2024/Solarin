@@ -887,6 +887,53 @@ class ArmyAccess(DatabaseAccess):
 
         return army.planet_id, curr_x, curr_y
 
+    async def split_army(self, troop_list: list, army_id: int, user_id: int) -> int:
+        """
+        Split of a set of troops from an army
+        param: troop_list: list of troops that will be split of from the rest of the army
+        return: id of the new army that was split of from the main army
+        """
+
+        """
+        get main army
+        """
+        get_army = select(Army).where(Army.id == army_id)
+        army = await self.session.execute(get_army)
+        army = army.first()[0]
+
+
+        """
+        determine position of new army, which will be just next to the main army
+        """
+        planet_id, curr_x, curr_y = await self.get_current_position(army_id)
+        new_x = curr_x +0.02 if curr_x < 0.95 else curr_x - 0.02
+
+        """
+        create new army
+        """
+        new_army_id = await self.create_army(user_id, planet_id, new_x, curr_y)
+
+        """
+        remove troops from old army and add to new army
+        """
+        for troop in troop_list:
+            """
+            run a query to find the table giving the relation between troops and armies
+            """
+            get_troop = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id,
+                                                     ArmyConsistsOf.troop_type == troop.troop_type,
+                                                     ArmyConsistsOf.rank == troop.rank)
+            troop = await self.session.execute(get_troop)
+            troop = troop.first()[0]
+            troop.army_id = new_army_id
+
+
+
+
+        await self.session.flush()
+        await self.session.commit()
+        return new_army_id
+
     async def get_troop_stats(self):
         """
         get all the stats of every type of troops

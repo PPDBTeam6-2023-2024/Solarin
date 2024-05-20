@@ -278,6 +278,7 @@ class CityAccess(DatabaseAccess):
         city.rank += rank_increase
 
         # Commit the changes to the database
+        await self.session.flush()
         await self.session.commit()
 
     async def get_remain_update_time(self, city_id: int) -> float:
@@ -307,13 +308,6 @@ class CityAccess(DatabaseAccess):
             """
             upgrade_tuple = await self.get_city_upgrade_cost(city_id)
             resource_cost = upgrade_tuple[0]
-
-            """
-            get the city instance in the database
-            """
-            get_city = select(City).where(City.id == city_id)
-            city = await self.session.execute(get_city)
-            city: City = city.first()[0]
 
             """
             Update the population according to the population upgrade cost and increase the city_rank by 1

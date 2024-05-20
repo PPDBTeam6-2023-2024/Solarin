@@ -13,6 +13,7 @@ class BuildingInstanceSchema(ConfigClass):
     building_type: str
     rank: int
     type: str
+    remaining_update_time: int
 
 class CitySchema(ConfigClass):
     id: int

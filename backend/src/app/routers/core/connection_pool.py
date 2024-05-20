@@ -18,7 +18,13 @@ class ConnectionPool:
 
     async def broadcast(self, data):
         for connection in self.active_connections:
-            await connection.send_json(data)
+            """
+            Try in case client is not connected anymore, without letting the backend know
+            """
+            try:
+                await connection.send_json(data)
+            except RuntimeError:
+                self.active_connections.remove(connection)
 
     @staticmethod
     async def send_personal_message(websocket: WebSocket, data):

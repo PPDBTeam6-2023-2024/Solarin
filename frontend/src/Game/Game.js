@@ -8,149 +8,60 @@ import ProfileViewer from "./UI/ProfileViewer/ProfileViewer";
 import {RiArrowLeftSLine} from "react-icons/ri";
 import {IoMdPlanet} from "react-icons/io";
 import {UserInfoContext} from "./Context/UserInfoContext"
-import { useNavigate } from "react-router-dom"
 
 import {PlanetListContext} from "./Context/PlanetListContext"
-import {useSelector, useDispatch} from 'react-redux'
-import {setResource, setDecreaseResource} from "../redux/slices/resourcesSlice";
-import {initializeResources} from "./UI/ResourceViewer/ResourceViewer"
 
+import ColorManager from "./ColorManager";
+import Notification from "./UI/CombatNotifications/Notification";
+import MaintenanceHook from "./Hooks/MaintenanceHook";
+import GlobalHook from "./Hooks/GlobalHook";
 const Game = () => {
+    /**
+     * This Component is the general component containing the entire game
+     * All game related content is part of this component
+     */
+
+    /*
+    * Keep track whether the user is authenticated and its user information
+    * */
     const [isAuth, setIsAuth] = useState(false)
     const [userInfo, setUserInfo] = useState(null)
+
+    /*
+    * Tracks which view the user is lookup at
+    * */
     const [viewMode, setViewMode] = useState(View.PlanetView)
-    const [planetList, setPlanetList] = useState([{"id": 1, "name": "Terra"}])
+
+    /*
+    * Stores the list of all planets the user can access (planets with an army or city on it)
+    * */
+    const [planetList, setPlanetList] = useState([])
+
+    /*
+    * Stores the index of the planet the player is currently looking at
+    * By default it will display the first planet in the list
+    * */
     const [planetListIndex, setPlanetListIndex] = useState(0)
-    const ws = useRef(null)
-    const navigate = useNavigate()
-
-    const dispatch = useDispatch()
-    const resources = useSelector((state) => state.resources.resources)
 
     /*
-    * Use a websocket to realtime update information about the maintenance of an army
+    * Support maintenance using a custom hook
     * */
-    const [maintenanceWebsocket, setMaintenanceWebsocket] = useState(null);
-    const isConnected = useRef(false);
+    MaintenanceHook()
 
     /*
-    * To be able to simulate the change of maintenance live, will retrieve the maintenance rate and
-    * mimic this on the frontend
+    * Support the global websocket actions using a custom hook
     * */
-    const [maintenanceCost, setMaintenanceCost] = useState([]);
-    const [maintenanceCheckable, setMaintenanceCheckable] = useState(false);
-    useEffect(() => {
-        if (isConnected.current) return
-
-        isConnected.current = true;
-
-        const webSocket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/logic/maintenance`,
-            `${localStorage.getItem('access-token')}`);
-        setMaintenanceWebsocket(webSocket);
-
-        webSocket.onopen = () => {
-            webSocket.send(
-                JSON.stringify(
-                    {
-                        type: "get_maintenance_cost",
-            }))
-        }
-        initializeResources(dispatch)
-
-    }, []);
-
-    /*make sure we wait a given time before being able to check the maintenance (to prevent high traffic usage)*/
-    const checkable_maintenance = async(delay) => {
-        setMaintenanceCheckable(false)
-        await new Promise((resolve) => setTimeout(resolve, delay*1000))
-        setMaintenanceCheckable(true)
-    }
-
-
-    const isIntervalSet = useRef(false);
+    const [combatNotifications, setCombatNotifications] = useState([]);
+    GlobalHook(setCombatNotifications)
 
     /*
-    * Handle maintenance websocket actions
+    * Verify who the user is
     * */
-    useEffect(() => {
-        if (!maintenanceWebsocket) return;
-
-        if (!isConnected.current) return
-
-        maintenanceWebsocket.onmessage = (event) => {
-            let data = JSON.parse(event.data)
-            if (data.type === "update_cost") {
-                setMaintenanceCost(data.maintenance_cost)
-                isIntervalSet.current = false;
-                initializeResources(dispatch)
-
-                checkable_maintenance(data.checkin)
-
-            }
-
-        };
-
-        return () => {
-            maintenanceWebsocket.close();
-        };
-
-    }, [maintenanceWebsocket]);
-
-    /*Check if resources <= 0, if so calibrate with backend*/
-    useEffect(() => {
-        if (!maintenanceCheckable){return}
-        Object.entries(resources).forEach((resource) => {
-            if (maintenanceCost[resource[0]] === undefined){return}
-
-            if (resource[1] <= 0){
-
-                const sendCheck = async() => {
-                    maintenanceWebsocket.send(
-                    JSON.stringify(
-                        {
-                            type: "get_maintenance_cost",
-                    }))
-                }
-
-                sendCheck()
-            }
-
-        })
-    }, [resources])
-
-
-    useEffect(() => {
-
-        let intervals = []
-
-        maintenanceCost.forEach((element) => {
-            if (element[1] != 0){
-                const makeInterval = async() => {
-                    await new Promise((resolve) => setTimeout(resolve, Math.floor(1000*3600/element[1])))
-                    const interval = setInterval(() => {
-                        dispatch(setDecreaseResource({"resource": element[0]}))
-                    }, Math.floor(1000*3600/element[1]))
-                    intervals.push(interval)
-                }
-                makeInterval()
-
-
-            }
-
-        });
-
-        return () => {
-            intervals.forEach((interval) => {
-                clearInterval(interval)
-            })
-            intervals = []
-
-        };
-
-    }, [maintenanceCost]);
     const authenticate = async () => {
         try {
-            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+            axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`,
+         'content-type': 'application/x-www-form-urlencoded',
+         'accept': 'application/json'}
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/auth/me`)
             if (response.status === 200) {
                 setIsAuth(true)
@@ -161,8 +72,11 @@ const Game = () => {
         }
     }
 
+    /*
+    * Empty the list of planets
+    * */
     const setPlanetListToDefault = async () => {
-        setPlanetList([{"id": 1, "name": "Terra"}])
+        setPlanetList([])
     }
 
     const getAllPlanets = async () => {
@@ -172,8 +86,9 @@ const Game = () => {
             const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
 
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/private`)
-            if (response.data.length > 0) setPlanetList(response.data)
-            else await setPlanetListToDefault()
+            if (response.data.length > 0){
+                setPlanetList(response.data);
+            }else await setPlanetListToDefault()
 
             changePlanetId(response2.data.planet_id);
 
@@ -182,6 +97,9 @@ const Game = () => {
         }
     }
 
+    /*
+    * Update the planet that we are currently looking at
+    * */
     const changePlanetId = (planetId) => {
         const newIndex = planetList.findIndex(planet => planet.id === planetId);
         if (newIndex !== -1) {
@@ -191,75 +109,65 @@ const Game = () => {
         }
     };
 
-    useEffect(() => {
-        ws.current = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/globalws/ws`, `${localStorage.getItem('access-token')}`);
 
-        ws.current.onopen = function (event) {
-            console.log('WebSocket is open now.');
-        };
-
-        ws.current.onmessage = function (event) {
-            const data = JSON.parse(event.data)
-            if (data.type === 'death') {
-                navigate('/game-over')
-            }
-        };
-
-        ws.current.onclose = function (event) {
-            console.log('WebSocket is closed now.');
-        };
-
-        ws.current.onerror = function (event) {
-            console.error('WebSocket error observed:', event);
-        };
-
-        return () => {
-            ws.current.close();
-        };
-    }, []);
-
+    /*
+    * When opening the game, start to authenticate the user
+    * And loading all the planets
+    * */
     useEffect(() => {
         authenticate()
         getAllPlanets()
     }, [])
-    return (<div className="h-screen bg-gray-900">
+
+
+    return (
+        <ColorManager>
         <UserInfoContext.Provider value={[userInfo, setUserInfo]}>
-            <ViewModeContext.Provider value={[viewMode, setViewMode]}>
-                <PlanetListContext.Provider value={[planetList, setPlanetList]}>
+        <ViewModeContext.Provider value={[viewMode, setViewMode]}>
+        <PlanetListContext.Provider value={[planetList, setPlanetList]}>
 
-                    {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
-                        <UI/>
-                        {viewMode === View.PlanetView &&
-                            <>
-                                <div onClick={() => setViewMode(View.GalaxyView)}
-                                     className="fixed text-5xl z-10 transition ease-in-out hover:scale-150 hover:translate-x-5 hover:translate-y-1 duration-300 flex">
-                                    <RiArrowLeftSLine className="basis-1/4"/>
-                                    <IoMdPlanet/>
-                                </div>
-                                <PlanetViewer key={planetList[planetListIndex].id}
-                                              planetName={planetList[planetListIndex].name}
-                                              planetId={planetList[planetListIndex].id}
-                                              planetListIndex={[planetListIndex, setPlanetListIndex]}/>
-                            </>
-                        }
+            {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
+                <UI/>
 
-                        {viewMode === View.GalaxyView &&
-                            <GalaxyViewer setViewMode={setViewMode} planetListIndex={[planetListIndex, setPlanetListIndex]} changePlanetId={changePlanetId}/>
-                        }
-
-                        {viewMode === View.ProfileView &&
-                            <ProfileViewer changePlanetByID={changePlanetId}/>
-                        }
-
-                    </Suspense>
-                    }
+                {combatNotifications.map((el) => <Notification won={el.won}
+                                                               own_target={el.own_target}
+                                                               other_target={el.other_target}/>)}
 
 
-                    {!userInfo && !isAuth && <h1>Not authenticated</h1>}
+                {/*Display a planet map*/}
+                {viewMode === View.PlanetView && planetList[planetListIndex] !== undefined &&
+                    <div>
+                        <div onClick={() => setViewMode(View.GalaxyView)}
+                             className="fixed text-5xl z-10 transition ease-in-out hover:scale-150 hover:translate-x-5 hover:translate-y-1 duration-300 flex">
+                            <RiArrowLeftSLine className="basis-1/4"/>
+                            <IoMdPlanet/>
+                        </div>
+                        <PlanetViewer key={planetList[planetListIndex].id}
+                                      planetName={planetList[planetListIndex].name}
+                                      planetId={planetList[planetListIndex].id}
+                                      planetListIndex={[planetListIndex, setPlanetListIndex]}/>
+                    </div>
+                }
 
-                </PlanetListContext.Provider>
-            </ViewModeContext.Provider>
+                {/*Display the galaxy map*/}
+                {viewMode === View.GalaxyView &&
+                    <GalaxyViewer setViewMode={setViewMode} planetListIndex={[planetListIndex, setPlanetListIndex]} changePlanetId={changePlanetId}/>
+                }
+
+                {/*Display the profile menu*/}
+                {viewMode === View.ProfileView &&
+                    <ProfileViewer changePlanetByID={changePlanetId}/>
+                }
+
+            </Suspense>
+            }
+
+            {/*When a user is not authenticated, we will inform the user of that*/}
+            {!userInfo && !isAuth && <h1>Not authenticated</h1>}
+
+        </PlanetListContext.Provider>
+        </ViewModeContext.Provider>
         </UserInfoContext.Provider>
-    </div>)
+        </ColorManager>)
 }
 export default Game

@@ -601,7 +601,6 @@ class BuildingAccess(DatabaseAccess):
 
         return remaining_update_dict
 
-
     async def get_base_stats(self):
         """
         get the base stats of all types of towers and walls
@@ -632,3 +631,4 @@ class BuildingAccess(DatabaseAccess):
         result = await self.session.execute(query)
         result = result.all()
         return result
+

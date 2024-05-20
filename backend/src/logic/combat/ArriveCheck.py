@@ -44,8 +44,20 @@ class ArriveCheck:
 
         if isinstance(target, AttackArmy):
             owner = await da.ArmyAccess.get_army_owner(target.target_id)
+
+            """
+            Update maintenance status of the target user
+            """
             m = MaintenanceSocketActions(owner.id, da)
             await m.check_maintenance(False)
+
+            """
+            Update maintenance status of the attacker user
+            """
+            owner = await da.ArmyAccess.get_army_owner(army_id)
+            m = MaintenanceSocketActions(owner.id, da)
+            await m.check_maintenance(False)
+
             await ArmyCombat.computeBattle(army_id, target.target_id, da)
 
         if isinstance(target, AttackCity):
@@ -57,8 +69,17 @@ class ArriveCheck:
             await ch.check_all()
             await da.session.flush()
 
-
+            """
+            Update maintenance status of the target user
+            """
             owner = await da.CityAccess.get_city_controller(target_id)
+            m = MaintenanceSocketActions(owner.id, da)
+            await m.check_maintenance(False)
+
+            """
+            Update maintenance status of the attacker user
+            """
+            owner = await da.ArmyAccess.get_army_owner(army_id)
             m = MaintenanceSocketActions(owner.id, da)
             await m.check_maintenance(False)
 

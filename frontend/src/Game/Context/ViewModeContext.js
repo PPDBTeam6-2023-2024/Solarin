@@ -1,6 +1,12 @@
 import React from "react";
 
-// enum
+/**
+ * Context to access which view is currently active
+ * */
+
+/*
+* Enumeration of views
+* */
 const View = {
     GalaxyView: "GalaxyView",
     PlanetView: "PLanetView",

@@ -58,6 +58,9 @@ general logic information needed
 |    politics     |    GET    | Get the current political stance of a specific user |
 | update_politics |   POST    | update the political stance of a user               |
 |   maintenance   | WEBSOCKET | websocket to handle communication about maintenance |
+|     restart     |   POST    | let the user restart                                |
+
+
 
 </p>
 </details>
@@ -169,6 +172,17 @@ This router will handle the communication about Armies and their actions
 | available_generals |  GET   | Retrieve the generals that are still able to be assigned to an army |
 |    add_general     |  POST  | Assign a general to an army                                         |
 |   remove_general   |  POST  | Un-assign a general from an army                                    |
+
+</p>
+</details>
+
+<details>
+<summary><strong>Spawn: '/globalws'</strong></summary>
+<p>
+
+| Endpoint |  Method   | Purpose                                  |
+|:--------:|:---------:|:-----------------------------------------|
+|    ws    | WEBSOCKET | Websocket to transfer global information |
 
 </p>
 </details>

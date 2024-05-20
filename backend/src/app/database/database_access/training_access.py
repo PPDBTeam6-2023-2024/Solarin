@@ -137,7 +137,6 @@ class TrainingAccess(DatabaseAccess):
 
             army_id = await aa.get_army_in_city(building_city.id)
 
-
             await army_access.add_to_army(army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
             queue_entry.training_size -= troops_trained
             """
@@ -168,7 +167,7 @@ class TrainingAccess(DatabaseAccess):
         results = results.all()
         return results
 
-    async def get_troop_cost(self, user_id: int, troop_type: str):
+    async def get_troop_cost(self, troop_type: str, rank: int):
         """
         Calculate the cost of 1 unit, based on the rank the user has leveled the unit to
 
@@ -176,8 +175,6 @@ class TrainingAccess(DatabaseAccess):
         :param: troop_type: type of unit it wants to train
         :return: list of following format (resource_type, amount)
         """
-
-        rank = await self.get_troop_rank(user_id, troop_type)
 
         get_cost = Select(TroopTypeCost.resource_type, TroopTypeCost.amount).where(TroopTypeCost.troop_type == troop_type)
 
@@ -194,53 +191,4 @@ class TrainingAccess(DatabaseAccess):
 
         return ranked_cost
 
-    async def get_troop_rank(self, user_id: int, troop_type: str):
-        """
-        Get the rank of a specific unit for a specific user
-
-        :param: user_id: id of the user who wants to know the unit cost
-        :param: troop_type: type of unit whose rank we want to retrieve corresponding to the user id
-        """
-
-        rank = Select(TroopRank.rank).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
-        results = await self.session.execute(rank)
-        result = results.first()
-
-        if result is None:
-            return 1
-        return result[0]
-
-    async def upgrade_troop_rank(self, user_id: int, troop_type: str):
-        """
-        Upgrade the rank of a specific unit, for a specific user
-
-        :param: user_id: id of the user who wants to know the unit cost
-        :param: troop_type: type of unit whose rank we want to upgrade corresponding to the user id
-        """
-
-        rank = await self.get_troop_rank(user_id, troop_type)
-
-        """
-        rank 1 is not yet stored, so if the original rank mis 1, we need to create a row with the new rank
-        """
-        create_new_row = False
-        if rank == 1:
-            create_new_row = True
-
-        rank += 1
-
-        if create_new_row:
-            """
-            create new row entry
-            """
-            self.session.add(TroopRank(user_id=user_id, troop_type=troop_type, rank=rank))
-        else:
-            """
-            alter row entry
-            """
-            u = update(TroopRank).\
-                values({"rank": rank}).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
-            await self.session.execute(u)
-
-        await self.session.flush()
 

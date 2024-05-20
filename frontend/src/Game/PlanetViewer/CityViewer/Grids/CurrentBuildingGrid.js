@@ -1,33 +1,22 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
-import {ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent} from "./Buttons";
+import { ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent } from "./Buttons";
 import axios from "axios";
 import statsJson from "../../../UI/stats.json"
 
-const CurrentBuildingGrid = ({
-                                 buildings,
-                                 onRowMouseOver,
-                                 setSelectedClick,
-                                 selectedClick,
-                                 selectedImage,
-                                 cityId,
-                                 setCityInfo,
-                                 setBuildings,
-                                 upgradeCostMap,
-                                 setUpgradeCostMap,
-                                 refreshResources,
-                                 resourcesInStorage,
-                                 setResourcesInStorage
-                             }) => {
+const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage }) => {
+    /**
+     * Visualization of the grid of the current buildings the city currently has
+     * */
     const [selectedBuilding, setSelectedBuilding] = useState(null);
     const [baseStats, setBaseStats] = useState(null)
     const [selectedBuildingStat, setSelectedBuildingStat] = useState(0)
 
     const columns = useMemo(() => [
-        {headerName: "Building Type", field: "buildingType"},
-        {headerName: "Building Rank", field: "buildingRank"},
-        {headerName: "Function", field: "type", autoHeight: true},
+        { headerName: "Building Type", field: "buildingType"},
+        { headerName: "Building Rank", field: "buildingRank" },
+        { headerName: "Function", field: "type", autoHeight: true },
     ], [cityId]);
 
     const rowData = useMemo(() => buildings?.map((building) => ({
@@ -37,6 +26,18 @@ const CurrentBuildingGrid = ({
         type: building?.type,
         remaining_update_time: building?.remaining_update_time
     })), [buildings]);
+
+    useEffect(() => {
+    if (selectedBuilding) {
+        const updatedBuilding = buildings.find(b => b.id === selectedBuilding.id);
+        if (updatedBuilding) {
+            setSelectedBuilding(updatedBuilding);
+        } else {
+            setSelectedBuilding(null);
+        }
+    }
+    }, [buildings, selectedBuilding]);
+
 
     useEffect(() => {
 
@@ -55,19 +56,6 @@ const CurrentBuildingGrid = ({
             setSelectedBuildingStat(base * Math.floor(1.4 ** rank));
         }
     }, [baseStats, selectedBuilding]);  // also depend on baseStats in case this useEffect is executed before the getStats
-
-
-    useEffect(() => {
-        if (selectedBuilding) {
-            const updatedBuilding = buildings.find(b => b.id === selectedBuilding.id);
-            if (updatedBuilding) {
-                setSelectedBuilding(updatedBuilding);
-            } else {
-                setSelectedBuilding(null);
-            }
-        }
-    }, [buildings, selectedBuilding]);
-
 
     return (
         <>
@@ -93,16 +81,16 @@ const CurrentBuildingGrid = ({
                         <div>
                             <table>
                                 <thead>
-                                <tr>
-                                    <th>Amount in Stock</th>
-                                </tr>
+                                    <tr>
+                                        <th>Amount in Stock</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
-                                    <tr key={index}>
-                                        <td>{res.amount_in_stock} / {res.max_amount} {res.resource_name}</td>
-                                    </tr>
-                                ))}
+                                    {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
+                                        <tr key={index}>
+                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name}</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
@@ -122,26 +110,26 @@ const CurrentBuildingGrid = ({
                     <div className="building_image">
                         <img src={selectedImage} alt="Building" className="selected-image"/>
                     </div>
-                    {selectedBuilding && selectedBuilding.type === "Barracks" &&
-                        <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
-                    }
-                    {selectedBuilding && selectedBuilding.type === "productionBuilding" &&
-                        <ResourceButtonComponent data={selectedBuilding} cityId={cityId}
-                                                 refreshResources={refreshResources}
-                                                 resourcesInStorage={resourcesInStorage}
-                                                 setResourcesInStorage={setResourcesInStorage}/>
-                    }
-                    {selectedBuilding &&
-                        <UpgradeButtonComponent data={selectedBuilding}
-                                                cityId={cityId}
-                                                upgradeCost={upgradeCostMap}
-                                                setUpgradeCostMap={setUpgradeCostMap}
-                                                refreshResources={refreshResources}
-                                                setBuildings={setBuildings}
-                                                setCityInfo={setCityInfo}
-                                                cityUpgradeBool={false}
-                        />
-                    }
+                        {selectedBuilding && selectedBuilding.type==="Barracks" &&
+                            <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
+                        }
+                        {selectedBuilding && selectedBuilding.type === "productionBuilding" &&
+                            <ResourceButtonComponent data={selectedBuilding} cityId={cityId}
+                                                     refreshResources={refreshResources}
+                                                     resourcesInStorage={resourcesInStorage}
+                                                     setResourcesInStorage={setResourcesInStorage}/>
+                        }
+                        {selectedBuilding &&
+                            <UpgradeButtonComponent data={selectedBuilding}
+                                                    cityId={cityId}
+                                                    upgradeCost={upgradeCostMap}
+                                                    setUpgradeCostMap={setUpgradeCostMap}
+                                                    refreshResources={refreshResources}
+                                                    setBuildings={setBuildings}
+                                                    setCityInfo = {setCityInfo}
+                                                    cityUpgradeBool={false}
+                            />
+                        }
                 </div>
             }
         </>

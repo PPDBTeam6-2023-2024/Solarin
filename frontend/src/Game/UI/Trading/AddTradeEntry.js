@@ -7,6 +7,7 @@ import {loadSlim} from "@tsparticles/slim";
 import Tooltip from "@mui/material/Tooltip";
 import {tradeSocketContext} from "./TradeSocketContext";
 import {openAddTradeContext} from "./openAddTradeContext";
+import {TextColorContext} from "../../Context/ThemeContext";
 
 
 const addTradeResourceList = (onClickAction, skip_list) => {
@@ -41,6 +42,8 @@ function AddTradeEntry(props) {
     * In this component a user can choose which resources he/she wants to give/receive and how much of each
     * */
 
+    const [textColor, setTextColor] = useContext(TextColorContext);
+
     const [tradeSocket, setTradeSocket] = useContext(tradeSocketContext);
     const [openAddTrade, setOpenAddTrade] = useContext(openAddTradeContext);
 
@@ -61,7 +64,7 @@ function AddTradeEntry(props) {
     * Add a resource to the list of resources we want to receive
     * */
     const addToReceive= (resource) => {
-        setReceives(r => [...r, [resource, 1]]);
+        setReceives(r => [...r, [resource, 0]]);
     }
 
     /*
@@ -109,9 +112,9 @@ function AddTradeEntry(props) {
                         {/*For each resource display an input place to modify the amount of this resource for
                         this trade*/}
                         <input type="number" name="resourceAmount" value={resource[1]}
-                               min="1"
+                               min="0"
                                max={`${resourceAmount[resource[0]]}`}
-                               className="AddResourceAmountInput"
+                               className="AddResourceAmountInput" style={{"color": textColor}}
                            onChange={(event) => { onChange(event, index, resource) }}></input>
 
                         {/*Remove Trade resource button*/}

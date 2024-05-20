@@ -17,8 +17,8 @@ function TrainingOptionAdder(props) {
 
     const getTypeCosts = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/unit/train_cost/${props.type}`);
-            return response.data;
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/unit/train_cost/${props.type}/${props.buildingId}`)
+            return response.data
         } catch (e) {
             return []
         }
@@ -43,7 +43,7 @@ function TrainingOptionAdder(props) {
             setTypeCost(data);
         }
 
-        getTrainingCost();
+        getTrainingCost()
     }, [props.type]);
 
     /*reference to the div that displays the resources needed for the upgrade*/

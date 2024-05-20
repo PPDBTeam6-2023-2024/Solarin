@@ -27,6 +27,8 @@ async def get_fleets(db: AsyncSession = Depends(get_db)) -> List[ArmySchema]:
         armies_schema.append(temp)
 
     return armies_schema
+
+
 @router.get("/fleets", response_model=List[ArmySchema])
 async def get_user_fleets(user_id: int, planet_id: int, db: AsyncSession = Depends(get_db)) -> List[ArmySchema]:
     """
@@ -145,7 +147,6 @@ async def get_armies_in_city(
     """
     data_access = DataAccess(db)
 
-
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
 
     """
@@ -156,10 +157,13 @@ async def get_armies_in_city(
 
     troops = await get_troops(user_id, army_id, db)
 
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_army(army_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
+
     """
     Add the army_id, because this is useful information, for army actions
     """
-    troops.update({"army_id": army_id})
+    troops.update({"army_id": army_id, "maintenance": maintenance_cost})
 
     await data_access.commit()
 

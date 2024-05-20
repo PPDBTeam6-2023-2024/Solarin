@@ -2,6 +2,7 @@ import React, {useContext, useState, useEffect, useRef} from "react";
 import {UserInfoContext} from "../Context/UserInfoContext";
 import {Html, useContextBridge} from "@react-three/drei";
 import {SocketContext} from "../Context/SocketContext";
+import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../Context/ThemeContext";
 import {ReactReduxContext} from "react-redux";
 import {animated} from "@react-spring/three";
 import {Box, List, ListItemButton, Popper} from "@mui/material";
@@ -9,37 +10,49 @@ import ArmyViewer from "../UI/ArmyViewer/ArmyViewer";
 import {useFrame} from '@react-three/fiber'
 import { Gltf} from "@react-three/drei";
 import {MathUtils} from "three"
-
-// spaceship model credit: "Ameaterasu" (https://skfb.ly/oTpuL) by gavinpgamer1
+import {lerp} from "../Armies/ArmyMovement"
+/* spaceship model credit: "Ameaterasu" (https://skfb.ly/oTpuL) by gavinpgamer1 */
 
 const Fleet = ({moveTo, fleet, decideMoving, movingSelected, toggleMoveMode}) => {
-    // calculate position based on source- and target position and how much time has elapsed
-    const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
-        let date = new Date()
-        date.setHours(date.getHours() - 2)
 
-        const elapsedTime = date - departureTime
-        const totalTime = arrivalTime - departureTime
-        const percentComplete = (elapsedTime < totalTime) ? elapsedTime / totalTime : 1;
-        const currentX = sourcePosition.x + (targetPosition.x - sourcePosition.x) * percentComplete
-        const currentY = sourcePosition.y + (targetPosition.y - sourcePosition.y) * percentComplete
-        return {x: currentX, y: currentY}
-    }
+    /**
+     * Display a spaceship in space
+     * */
 
+    /*
+    * Store reference to the fleet object, to be able to do some visual manipulation
+    * */
     const fleetRef = useRef()
+
+    /*
+    * Store whether the fleet is clicked (selected)
+    * */
     const [clicked, setClicked] = useState(false)
     const [userInfo] = useContext(UserInfoContext);
 
-
+    /*
+    * Keeps track whether the details menu of this army is opened
+    * */
     const [detailsOpen, setDetailsOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
 
-    const ContextBridge = useContextBridge(SocketContext, ReactReduxContext)
+    /*
+    * ContextBridge is used, to make sure certain contexts are still applicable
+    * */
+    const ContextBridge = useContextBridge(SocketContext, ReactReduxContext, PrimaryContext,
+        SecondaryContext, TertiaryContext, TextColorContext)
+
+    /*
+    * Keep track of the current position of the army (=fleet)
+    * */
     const [currentPos, setCurrentPos] = useState(lerp({
         sourcePosition: {x: fleet.x, y: fleet.y}, targetPosition: {x: fleet.to_x, y: fleet.to_y},
         arrivalTime:  new Date(fleet.arrivalTime).getTime(), departureTime: new Date(fleet.departureTime).getTime()
     }))
 
+    /*
+    * Rotate the fleet into the right direction
+    * */
     useEffect(() => {
         fleetRef.current.rotation.y = Math.atan2(fleet.to_x - currentPos.x, fleet.to_y - currentPos.y) + Math.PI
     }, [])

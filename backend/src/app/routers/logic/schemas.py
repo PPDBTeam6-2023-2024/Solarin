@@ -18,3 +18,10 @@ class PoliticalStanceInput(BaseModel):
     corporate_state: float
     theocracy: float
     technocracy: float
+
+
+class ColorCodeScheme(BaseModel):
+    primary_color: str
+    secondary_color: str
+    tertiary_color: str
+    text_color: str

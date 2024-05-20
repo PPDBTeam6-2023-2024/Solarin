@@ -9,10 +9,17 @@ import {SocketContext} from "../../Context/SocketContext";
 import GeneralView from "./GeneralView";
 import statsJson from "../stats.json";
 import ResourceCostEntry from "../ResourceViewer/ResourceCostEntry";
+import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../../Context/ThemeContext";
 import "./ArmyViewer.css"
 import {SplitArmy} from "../../PlanetViewer/CityViewer/BuildingManager"
 
-function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
+
+function ArmyViewer({armyId, is_owner, onCityCreated, in_space}) {
+    /**
+     * This component visualizes the details menu of an army, containing
+     * information about its General, Stats, and troops
+     * */
+
     const [troops, setTroops] = useState([]);
     const [stats, setStats] = useState([]);
     const [general, setGeneral] = useState({});
@@ -53,6 +60,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
                 };
 
         await socket.send(JSON.stringify(data_json));
+        onCityCreated()
 
     };
 
@@ -66,7 +74,7 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
             setSelectedTroopIndexes([...selectedTroopIndexes, index]);
         }
     };
-    // Get the selected troops
+    /*Get the selected troops*/
     const handleSplitArmy = async () => {
         /* when all troops are selected, disable splitting army */
         if (troops.length === selectedTroopIndexes.length){
@@ -83,7 +91,10 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
 
 
 
-    // for every troop type in the army create a TroopEntry
+    /*
+    * for every troop type in the army create a TroopEntry
+    * These troops can be selected, to be able to let them split off from the current army
+    * */
     let troopsOutput = troops.map((troop, index) => (
         <div key={index}
              className={`troopEntry ${selectedTroopIndexes.includes(index) ? 'troopEntrySelected' : ''}`}
@@ -109,25 +120,51 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
 
     ));
 
+    /*
+    * Calculate the total amount of troops inside this army
+    * */
     let totalCount = troops.reduce((acc, troop) => acc + troop.size, 0);
+
+    /*
+    * Visualize the army viewer using the theme colors
+    * */
+    const [primaryColor, setPrimaryColor] = useContext(PrimaryContext);
+    const [secondaryColor, setSecondaryColor] = useContext(SecondaryContext);
+    const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
+    const [textColor, setTextColor] = useContext(TextColorContext);
 
     return (
         <WindowUI>
-            <div className="bg-gray-600 border-4" style={{ padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto',
-                maxHeight: "80vh", "overflow": "scroll"}}>
+            <div className={"UI"}
+                 style={{
+                 padding: "1rem", zIndex: 1, position: 'absolute', top: '10%', left: '10%', width: '15vw', minWidth:"300px", height: 'auto',
+                 maxHeight: "70vh", "overflow": "scroll",
+                 '--primaryColor': primaryColor,
+                 '--secundaryColor': secondaryColor,
+                 "--tertiaryColor": tertiaryColor,
+                 "--textColor": textColor,
+                 "border": "0.4vw solid var(--tertiaryColor)"}}>
                 <TreeView aria-label="file system navigator">
 
                     <h1 className="text-2xl my-1">Army {armyId}</h1>
 
                     {/*Only display the create city button when the user is the owner of that army*/}
                     {is_owner && !in_space &&
-                        <Button variant="contained" onClick={createCity} sx={{margin: "10px"}}>
+                        <Button variant="contained" onClick={createCity} sx={{margin: "10px",
+                            backgroundColor: primaryColor, '&:hover': {
+                            backgroundColor: secondaryColor,
+                            boxShadow: 'none',
+                          }}}>
                         Create City
                         </Button>
                     }
                     {selectedTroopIndexes.length > 0 && (
                       <Button variant="contained"
-                        onClick={handleSplitArmy} sx={{margin: "10px"}}>
+                        onClick={handleSplitArmy} sx={{margin: "10px",
+                            backgroundColor: primaryColor, '&:hover': {
+                            backgroundColor: secondaryColor,
+                            boxShadow: 'none',
+                          }}}>
                         Split Army
                       </Button>
                     )}

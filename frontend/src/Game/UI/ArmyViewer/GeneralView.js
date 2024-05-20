@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import troopsJson from "./../troops.json"
 import "./ArmyViewTroopEntry.css"
 import Tooltip from "@mui/material/Tooltip";
@@ -7,6 +7,7 @@ import SelectGeneralView from "./SelectGeneralView";
 import generalsJson from "./generals.json"
 import axios from "axios";
 import GeneralViewStatEntry from "./GeneralViewStats";
+import {TextColorContext} from "../../Context/ThemeContext";
 
 function GeneralView({armyId, generalInfo, onChangeGeneral}) {
     /*Display the general that is part of the army*/
@@ -56,6 +57,8 @@ function GeneralView({armyId, generalInfo, onChangeGeneral}) {
         onChangeGeneral();
     }
 
+    const [textColor, setTextColor] = useContext(TextColorContext);
+
     return (
         <>
             {!generalSelectorMenu &&
@@ -65,7 +68,7 @@ function GeneralView({armyId, generalInfo, onChangeGeneral}) {
                     {/*Display the general*/}
                     {generalInfo !== null &&
                         <>
-                            <span style={{"fontSize": "150%", "color": "gold"}}>General {generalInfo.name}</span>
+                            <span style={{"fontSize": "150%", "color": textColor}}>General {generalInfo.name}</span>
                             <div style={{"width": "50%", "display": "inline-block"}}>
 
                             <img src={(`/images/general_images/${generalsJson[generalInfo.name]["icon"]}`)}

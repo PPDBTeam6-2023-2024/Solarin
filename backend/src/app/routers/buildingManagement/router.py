@@ -107,6 +107,8 @@ async def get_tower_wall_stats(db=Depends(get_db)):
     """
     data_access = DataAccess(db)
     result = await data_access.BuildingAccess.get_base_stats()
+
+    await data_access.commit()
     return result
 
 

@@ -1,13 +1,13 @@
-import {useState} from "react"
+import {useContext, useState} from "react"
 import SideMenu from "./SideMenu/SideMenu";
 import ProfileButton from "./ProfileViewer/ProfileButton";
 import "./UI.css"
 import ChatIcon from "./ChatMenu/ChatIcon";
 import HiddenWindowsViewer from "./HiddenWIndowsViewer/HIddenWIndowsViewer";
 import TradingIcon from "./Trading/TradingIcon";
-import Settings from "./Settings/Settings";
-//component that contains all the UI components
 
+//component that contains all the UI components
+import {PrimaryContext, SecondaryContext, TertiaryContext, TextColorContext} from "../Context/ThemeContext";
 const getColorString = (r, g, b, a) => {
     /**
      * Convert rgba to its corresponding hex
@@ -21,16 +21,19 @@ function UI() {
     /**
      * these 2 states exist to be able to change the UI colors
      * */
-    const [primaryColor, setPrimaryColor] = useState("#ce1c75")
-    const [secondaryColor, setSecondaryColor] = useState("#d57d11")
-    const [tertiaryColor, setTertiaryColor] = useState("#e1b812")
+    const [primaryColor, setPrimaryColor] = useContext(PrimaryContext);
+    const [secondaryColor, setSecondaryColor] = useContext(SecondaryContext);
+    const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
+    const [textColor, setTextColor] = useContext(TextColorContext);
+
     return (
 
         <div className="UI" style={
             {
                 '--primaryColor': primaryColor,
                 '--secundaryColor': secondaryColor,
-                "--tertiaryColor": tertiaryColor
+                "--tertiaryColor": tertiaryColor,
+                "--textColor": textColor
             }}>
 
             {/*load hidden windows viewer */}

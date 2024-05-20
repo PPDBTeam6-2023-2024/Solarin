@@ -4,23 +4,33 @@ import Tooltip from "@mui/material/Tooltip";
 
 function GeneralViewStatEntry(props) {
 
-    /*This component represents a stat entry in the details of an army*/
+    /**
+     * This component represents a stat entry in the details of an army
+     * */
+
+    const getColor = (val) => {
+        /*
+        * Determine the colors of a modifier based on its value
+        * 0 -> white
+        * negative -> red
+        * positive -> green
+        * */
+
+        let color = "white";
+        if (val > 0){
+            color = "green";
+        }else if (val < 0){
+            color = "red";
+        }
+        return color
+    }
 
     const value = Math.round(props.stat_value*100)
-    let color = "white";
-    if (value > 0){
-        color = "green";
-    }else if (value < 0){
-        color = "red";
-    }
+    const color = getColor(value)
+
 
     const political_value = Math.round(props.political_stat_value*100)
-    let political_color = "white";
-    if (political_value > 0){
-        political_color = "green";
-    }else if (political_value < 0){
-        political_color = "red";
-    }
+    const political_color = getColor(political_value)
 
     return (
         <div style={{"width": "100%", "marginTop": "0.3vw"}}>

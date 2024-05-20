@@ -46,7 +46,10 @@ function TradingMenu(props) {
         const webSocket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/trading/ws`,
             `${localStorage.getItem('access-token')}`);
 
-        setTradeSocket(webSocket);
+        if(userInfo.alliance){
+            setTradeSocket(webSocket);
+        }
+
     }, []);
 
     /*Receive trade events from the websocket*/

@@ -86,7 +86,6 @@ function PoliticsMenu() {
                 ...impacts,
                 Cost: cost
             };
-            console.log(payload);
             await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
             setStanceFetched(false)
 

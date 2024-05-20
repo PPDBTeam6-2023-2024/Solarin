@@ -34,7 +34,6 @@ function TrainingOptionAdder(props) {
             }
         }
         getTroopStats();
-        console.log(troopStats);
     }, []);
 
     useEffect(() => {

@@ -61,8 +61,6 @@ const BuildingGrid = ({
         }
         getCombatStats();
         getProdStats();
-        console.log(baseStats);
-        console.log(prodStats);
     }, []);
 
     const columns = useMemo(() => [

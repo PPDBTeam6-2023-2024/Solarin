@@ -203,5 +203,4 @@ async def get_troop_stats(db=Depends(get_db)):
         if troop not in formatted_result:
             formatted_result[troop] = []
         formatted_result[troop].append({"stat": stat, "value": value})
-        print(formatted_result)
     return formatted_result

@@ -103,7 +103,8 @@
 }
 
 .instruction-text {
-    margin-bottom: 10px;
+    margin-bottom: 0.2vw;
+    font-size: 1.4vw;
     text-align: center;
 }
 

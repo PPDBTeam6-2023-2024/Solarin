@@ -45,7 +45,13 @@ const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
 
         const selectedNodes = gridApi.getSelectedNodes();
         const selectedTroops = selectedNodes.map(node => node.data);
-        const allSelected = gridApi.getSelectedRows().length === gridApi.getDisplayedRowCount();
+
+        /*
+        * When no units are selected to leave the city, we will let all troops leave (so in that case, they are also
+        * all selected)
+        * */
+        const allSelected = (gridApi.getSelectedRows().length === gridApi.getDisplayedRowCount())
+            || (gridApi.getSelectedRows().length === 0);
 
         if (!allSelected){
             /* if not all troops are selected, split army and leave city with selected troops */
@@ -104,11 +110,13 @@ const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
 
             </div>
             <div style={{"width": "27%"}} className="right-screen">
-                {selectedImage &&
+
                     <div className="building_image">
+                        {selectedImage &&
                         <img src={selectedImage} alt="Troops" className="selected-image"/>
+                        }
                     </div>
-                }
+
                 {rowData.length > 0 &&
                     <div className="container">
                         <div className="instruction-text">Click on troops to select</div>

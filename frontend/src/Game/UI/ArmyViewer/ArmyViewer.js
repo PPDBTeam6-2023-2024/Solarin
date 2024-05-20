@@ -148,7 +148,11 @@ function ArmyViewer({armyId, onCityCreated, is_owner, in_space}) {
                     }
                     {selectedTroopIndexes.length > 0 && (
                       <Button variant="contained"
-                        onClick={handleSplitArmy} sx={{margin: "10px"}}>
+                        onClick={handleSplitArmy} sx={{margin: "10px",
+                            backgroundColor: primaryColor, '&:hover': {
+                            backgroundColor: secondaryColor,
+                            boxShadow: 'none',
+                          }}}>
                         Split Army
                       </Button>
                     )}

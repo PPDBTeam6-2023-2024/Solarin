@@ -6,6 +6,9 @@ import axios from "axios";
 import statsJson from "../../../UI/stats.json"
 
 const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage }) => {
+    /**
+     * Visualization of the grid of the current buildings the city currently has
+     * */
     const [selectedBuilding, setSelectedBuilding] = useState(null);
     const [baseStats, setBaseStats] = useState(null)
     const [selectedBuildingStat, setSelectedBuildingStat] = useState(0)

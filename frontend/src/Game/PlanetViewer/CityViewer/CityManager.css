@@ -134,11 +134,14 @@
 
 .building-stats {
     align-items: center;
-    max-width: 2.5vw;
-    max-height: 2.5vw;
-    width: auto;
-    height: auto;
+    font-size: 1.5vw;
     display: inline-flex;
+}
+
+.building-stats img {
+    max-width: 3vw;
+    max-height: 3vw;
+
 }
 
 .city_info_container {

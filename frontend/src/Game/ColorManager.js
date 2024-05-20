@@ -36,7 +36,6 @@ function ColorManager({children}) {
 
         getColors();
     }, []);
-    console.log("set colors")
     return (
 
         <div className="h-screen bg-gray-900"

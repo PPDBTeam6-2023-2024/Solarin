@@ -44,7 +44,6 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
     """
     data_access = DataAccess(db)
     current_stance = await data_access.UserAccess.get_politics(user_id)
-
     cost = []
     for key, value in changes.Cost.items():
         cost.append((key, value))
@@ -69,7 +68,6 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
         if attr in current_stance_dict:
             updated_value = max(0, min(1, current_stance_dict[attr] + change_percent))
             updated_stance[attr] = updated_value
-
     await data_access.UserAccess.update_politics(user_id, updated_stance)
 
     return {"message": "Political stance updated successfully", "new_stance": updated_stance}

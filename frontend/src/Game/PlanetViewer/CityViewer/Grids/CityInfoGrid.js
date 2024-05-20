@@ -7,11 +7,15 @@ import axios from "axios";
 import statsJson from "../../../UI/stats.json";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 import {TertiaryContext, TextColorContext} from "../../../Context/ThemeContext";
-const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCityUpgradeInfo,cityId, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo}) => {
-
+const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap, upgradeCost, cityInfo, setCityInfo}) => {
+    /**
+     * This component visualizes the city manager menu when you select the 'City' tab
+     * */
     const [cityStats, setCityStats] = useState(null)
 
-
+    /*
+    * Load the city combat stats
+    * */
     const fetchStats = async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_stats/${cityId}`);
@@ -25,48 +29,9 @@ const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCity
         fetchStats();
     }, [])
 
-    const RegionBuffsCellRenderer = ({ value }) => {
-          return (
-            <>{value.map((buff, index) => (
-              <span key={index} style={{ color: buff.modifier >= 0 ? 'green' : 'red' }}>
-                {buff.percentage} {buff.type}
-              </span>
-            )).reduce((prev, curr) => [prev, ', ', curr])}</> // This handles the comma separation properly in JSX
-          );
-        };
-
-
-     const columns = useMemo(() => [
-        { headerName: "Category", field: "category" },
-        {
-            headerName: "Information",
-            field: "info",
-            cellRenderer: (params) => {
-                if (params.data.category === "Region buffs") {
-                    return <RegionBuffsCellRenderer value={params.value} />;
-                } else {
-                    return <span>{params.value}</span>;
-                }
-            }
-        }
-    ], []);
-
-    const rowData = useMemo(() => [
-        // Example data preparation (similar to previous transformations)
-        { category: "Region type", info: cityInfo.region_type , autoHeight: true},
-        { category: "Region buffs", info: cityInfo.region_buffs.map(buff => ({
-            type: buff[0],
-            modifier: parseFloat(buff[1]) - 1,
-            percentage: `${(parseFloat(buff[1]) - 1) >= 0 ? '+' : ''}${((parseFloat(buff[1]) - 1) * 100).toFixed(0)}%`
-        })) , autoHeight: true, autoWidth: true},
-        { category: "Population size", info: cityInfo.population , autoHeight: true},
-    ], [cityInfo]);
-
-    const onGridReady = (params) => {
-        params.api.sizeColumnsToFit();
-    };
-
-    const [tertiaryColor, setTertiaryColor] = useContext(TertiaryContext);
+    /*
+    * Make textcolor depend on theme
+    * */
     const [textColor, setTextColor] = useContext(TextColorContext);
 
     return (
@@ -109,20 +74,22 @@ const CityInfoGrid = ({ cityUpgradeInfo, setBuildings, refreshResources, setCity
 
             <div className="right-screen-city-info">
                 {cityStats &&
-                    <>
-                        <div className={"building-stats"}>
-                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
-                            <div>{cityStats["defense"]}</div>
-                        </div>
+                    <div style={{"display": "flex", "flexDirection": "row", "marginTop": "0.5vw"}}>
+                        {/*Display the combat stats of a city*/}
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
                             <div>{cityStats["attack"]}</div>
                         </div>
-                    </>
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
+                            <div>{cityStats["defense"]}</div>
+                        </div>
+                    </div>
                 }
                 <div className="building_image">
-                        <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
-                    </div>
+                    {/*Display an image of the city*/}
+                    <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
+                </div>
                 { <UpgradeButtonComponent
                                             data = {cityInfo}
                                             cityId={cityId}

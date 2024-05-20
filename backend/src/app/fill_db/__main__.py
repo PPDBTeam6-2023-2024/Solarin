@@ -3,7 +3,7 @@ import json
 from sqlalchemy.ext.asyncio import AsyncSession
 import os
 
-from ..config import APIConfig
+from ..config import APIConfig, FileSource
 from ..database.database import sessionmanager
 from ..database.database_access.data_access import DataAccess
 from ..routers.spawn.planet_generation import generate_random_planet
@@ -18,7 +18,7 @@ to debug/ give demonstrations
 
 
 async def fill_db(data: dict):
-    config = APIConfig()
+    config = APIConfig(config_sources=[FileSource("config.yml")])
     sessionmanager.init(config.db.get_connection_string().get_secret_value())
 
     async with sessionmanager.session() as session:

@@ -14,6 +14,7 @@ from ..exceptions.permission_exception import PermissionException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
 from ....logic.formula.compute_properties import PoliticalModifiers
+from src.app import config
 
 
 class BuildingAccess(DatabaseAccess):
@@ -468,7 +469,8 @@ class BuildingAccess(DatabaseAccess):
         """
         Add building to the upgrade queue
         """
-        building_upgrade = BuildingUpgradeQueue(id=building_id, city_id=building_instance.city_id, start_time=datetime.utcnow(), duration=PropertyUtility.get_GUT(TF_cost, building_instance.rank), current_rank=building_instance.rank)
+        duration = config.idle_time if config.idle_time is not None else PropertyUtility.get_GUT(TF_cost, building_instance.rank)
+        building_upgrade = BuildingUpgradeQueue(id=building_id, city_id=building_instance.city_id, start_time=datetime.utcnow(), duration=duration, current_rank=building_instance.rank)
 
         self.session.add(building_upgrade)
 

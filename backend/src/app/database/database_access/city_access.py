@@ -8,6 +8,7 @@ from .resource_access import ResourceAccess
 from ..models import *
 from .planet_access import PlanetAccess
 from .database_acess import DatabaseAccess
+from src.app import config
 
 
 class CityAccess(DatabaseAccess):
@@ -251,7 +252,8 @@ class CityAccess(DatabaseAccess):
             """
             Add city to the cityUpdateQueue
             """
-            city_update = CityUpdateQueue(city_id=city_id, start_time=datetime.utcnow(), duration=time_cost)
+            duration = time_cost if config.idle_time is None else config.idle_time
+            city_update = CityUpdateQueue(city_id=city_id, start_time=datetime.utcnow(), duration=duration)
 
             self.session.add(city_update)
 

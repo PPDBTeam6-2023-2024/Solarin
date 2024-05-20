@@ -51,8 +51,8 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
 
     useEffect(() => {
         if (baseStats != null && selectedBuilding != null) {
-            const base = baseStats[selectedBuilding.buildingType];
-            const rank = selectedBuilding.buildingRank;
+            const base = baseStats[selectedBuilding.building_type];
+            const rank = selectedBuilding.rank;
             setSelectedBuildingStat(base * Math.floor(1.4 ** rank));
         }
     }, [baseStats, selectedBuilding]);  // also depend on baseStats in case this useEffect is executed before the getStats

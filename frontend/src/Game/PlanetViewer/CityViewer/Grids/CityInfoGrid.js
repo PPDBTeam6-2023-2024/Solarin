@@ -74,7 +74,7 @@ const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap
 
             <div className="right-screen-city-info">
                 {cityStats &&
-                    <div style={{"display": "flex", "flexDirection": "row", "marginTop": "0.5vw"}}>
+                    <div style={{"display": "flex", "flexDirection": "column", "marginTop": "0.5vw", "rowGap": "0.5vw"}}>
                         {/*Display the combat stats of a city*/}
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>

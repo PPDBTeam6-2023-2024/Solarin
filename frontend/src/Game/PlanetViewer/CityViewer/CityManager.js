@@ -46,6 +46,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
     const [selectedTab, setSelectedTab] = useState('currentBuildings');
 
+    const [selectedNewBuilding, setSelectedNewBuilding] = useState("");
+    const [selectedType, setSelectedType] = useState("");
+
     // load city context (buildings, troops, etc.) either from API or from context map
     const cityContextLoader = (() => {
         /*Load city information*/
@@ -91,6 +94,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
             setSelectedImage(getImageForTroopType(event.data.troopType))
         } else if (selectedTab === "newBuildings") {
             setSelectedImage(getImageForBuildingType(event.data.name));
+            setSelectedNewBuilding(event.data.name);
+            setSelectedType(event.data.buildingType);
         } else {
             setSelectedImage(getImageForBuildingType(event.data.buildingType));
         }
@@ -150,6 +155,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                                 cityId={cityId}
                                 updateBuildingsAndTypes={updateBuildingsAndTypes}
                                 refreshResources={() => initializeResources(dispatch)}
+                                selectedBuilding = {selectedNewBuilding}
+                                selectedType = {selectedType}
                               />
                             }
 

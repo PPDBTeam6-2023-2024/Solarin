@@ -559,3 +559,12 @@ class BuildingAccess(DatabaseAccess):
 
         return base_stats
 
+    async def get_prod_stats(self):
+        """
+        get the types of production buildings and what they produce
+        :return: a dictionary with building name as key and what it produces as value
+        """
+        query = Select(ProducesResources.building_name, ProducesResources.resource_name, ProducesResources.base_production)
+        result = await self.session.execute(query)
+        result = result.all()
+        return result

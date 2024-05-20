@@ -108,3 +108,19 @@ async def get_tower_wall_stats(db=Depends(get_db)):
     data_access = DataAccess(db)
     result = await data_access.BuildingAccess.get_base_stats()
     return result
+
+
+@router.get("/get_production/")
+async def get_production_stats(db=Depends(get_db)):
+    """
+    get the different types of production buildings and what they produce
+    """
+    data_access = DataAccess(db)
+    result = await data_access.BuildingAccess.get_prod_stats()
+    formatted_result = {}
+    for item in result:
+        building, resource, amount = item
+        if building not in formatted_result:
+            formatted_result[building] = []
+        formatted_result[building].append({"resource": resource, "amount": amount})
+    return formatted_result

@@ -887,4 +887,14 @@ class ArmyAccess(DatabaseAccess):
 
         return army.planet_id, curr_x, curr_y
 
+    async def get_troop_stats(self):
+        """
+        get all the stats of every type of troops
+        :return: a list of dictionaries
+        """
+        query = Select(TroopHasStat.troop_type, TroopHasStat.stat, TroopHasStat.value)
+        result = await self.session.execute(query)
+        result = result.all()
+        return result
+
 from .general_access import GeneralAccess

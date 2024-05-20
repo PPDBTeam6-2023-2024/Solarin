@@ -48,3 +48,22 @@
     z-index: 21;
 
 }
+
+.troop-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-template-rows: repeat(2, auto);  /* 2 rows */
+    row-gap: 1vw;
+    column-gap: 4vw;
+    justify-items: center;
+    align-items: center;
+    margin-bottom: 1.4vw;
+    margin-left: 0.2vw;
+}
+
+.stat-entry {
+    width: auto;
+    height: auto;
+    max-height: 2vw;
+    max-width: 2vw;
+}

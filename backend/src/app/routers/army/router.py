@@ -165,3 +165,19 @@ async def get_armies_in_city(
     await data_access.commit()
 
     return troops
+
+@router.get("/get_troop_stats/")
+async def get_troop_stats(db=Depends(get_db)):
+    """
+    get the stats of all the different types of troops
+    """
+    data_access = DataAccess(db)
+    result = await data_access.ArmyAccess.get_troop_stats()
+    formatted_result = {}
+    for item in result:
+        troop, stat, value = item
+        if troop not in formatted_result:
+            formatted_result[troop] = []
+        formatted_result[troop].append({"stat": stat, "value": value})
+        print(formatted_result)
+    return formatted_result

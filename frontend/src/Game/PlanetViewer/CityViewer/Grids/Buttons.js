@@ -73,31 +73,19 @@ export const UpgradeButtonComponent = ({
     upgradeCost,
     refreshResources,
     cityUpgradeBool,
-    setCityInfo
+    setCityInfo,
+    totalTimePassed,
+    setTotalTimePassed
 }) => {
     /**
      * Component to create an upgrade button
      * */
 
     /*
-    * Timer to display when update done
-    * */
-    const [timer, setTimer] = useState(0);
-
-    /*
     * A button appears disabled when not clickable (during upgrade, or when not enough resources)
     * */
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-    const [totalTimePassed, setTotalTimePassed] = useState(0)
-
-    /*Timer to increment total time passed*/
-    useEffect(() => {
-        const timerInterval = setInterval(() => {
-            setTotalTimePassed(prevTotalTimePassed => prevTotalTimePassed + 1);
-        }, 1000);
-
-        return () => clearInterval(timerInterval);
-    }, []);
+    const [timer, setTimer] = useState(0)
 
     /* Effect to handle remaining time and button disabling logic*/
     useEffect(() => {
@@ -141,13 +129,14 @@ export const UpgradeButtonComponent = ({
             setCityInfo(cityData?.city);
 
             const buildings = await getUpgradeCost(cityId);
-            const building_costs = buildings[0];
+            const building_costs = buildings?.[0];
             const costMap = building_costs?.reduce((acc, building) => {
                 acc[building?.id] = building;
                 return acc;
             }, {});
             setUpgradeCostMap(costMap);
             refreshResources();
+            setTotalTimePassed(0)
 
             if (cityUpgradeBool){
                 setTimer(buildings[1]?.time_cost);

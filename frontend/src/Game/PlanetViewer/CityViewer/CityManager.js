@@ -47,6 +47,20 @@ const CityManager = ({ cityId, onClose}) => {
     const [selectedNewBuilding, setSelectedNewBuilding] = useState("");
     const [selectedType, setSelectedType] = useState("");
 
+    /*
+    * Central Timer for updates
+    * */
+    const [timer, setTimer] = useState(0);
+
+    /*Timer to increment total time passed*/
+    useEffect(() => {
+        const timerInterval = setInterval(() => {
+            setTimer(prevTotalTimePassed => prevTotalTimePassed + 1);
+        }, 1000);
+
+        return () => clearInterval(timerInterval);
+    }, [timer, setTimer]);
+
     // load city context (buildings, troops, etc.) either from API or from context map
     const cityContextLoader = (() => {
         /*Load city information*/
@@ -158,6 +172,8 @@ const CityManager = ({ cityId, onClose}) => {
                         resourcesInStorage={resourcesInStorage}
                         setResourcesInStorage={setResourcesInStorage}
                         setCityInfo={setCityInfo}
+                        timer={timer}
+                        setTimer={setTimer}
                     />}
 
                     {/*Displays the Tab to add new buildings*/}
@@ -193,7 +209,10 @@ const CityManager = ({ cityId, onClose}) => {
                         cityId = {cityId}
                         upgradeCost={cityUpgradeInfo}
                         cityInfo = {cityInfo}
-                        setCityInfo = {setCityInfo}/>
+                        setCityInfo = {setCityInfo}
+                        timer={timer}
+                        setTimer={setTimer}
+                        />
 
 
                     }

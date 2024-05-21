@@ -7,7 +7,7 @@ import axios from "axios";
 import statsJson from "../../../UI/stats.json";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 import {TertiaryContext, TextColorContext} from "../../../Context/ThemeContext";
-const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap, upgradeCost, cityInfo, setCityInfo}) => {
+const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap, upgradeCost, cityInfo, setCityInfo, timer, setTimer}) => {
     /**
      * This component visualizes the city manager menu when you select the 'City' tab
      * */
@@ -99,6 +99,8 @@ const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap
                                             setBuildings={setBuildings}
                                             cityUpgradeBool={true}
                                             setCityInfo={setCityInfo}
+                                            totalTimePassed={timer}
+                                            setTotalTimePassed={setTimer}
 
                     />
                 }

@@ -123,15 +123,15 @@
     }
   ],
   "resources": {
-    "TF": 20,
-    "RA": 20,
-    "SOL": 20,
-    "POP": 30,
-    "INF": 20,
-    "MI": 20,
-    "UR": 20,
-    "OI": 20,
-    "CO": 20
+    "TF": 20000,
+    "RA": 20000,
+    "SOL": 20000,
+    "POP": 20000,
+    "INF": 20000,
+    "MI": 20000,
+    "UR": 20000,
+    "OI": 20000,
+    "CO": 20000
   },
   "stats": ["attack", "defense", "city_attack", "city_defense", "recovery", "speed"],
   "units": [

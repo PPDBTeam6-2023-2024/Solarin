@@ -193,21 +193,6 @@ class TowerType(BuildingType):
     }
 
 
-class HouseType(BuildingType):
-    """
-    Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)
-    name: name of the HouseType building.
-    Every row in this table indicates a building that can be used as a house building
-    """
-    __tablename__ = 'houseType'
-    name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    residents = Column(PositiveInteger, nullable=False)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'house'
-    }
-
-
 class ProductionBuildingType(BuildingType):
     """
     Stores which types of production buildings exist

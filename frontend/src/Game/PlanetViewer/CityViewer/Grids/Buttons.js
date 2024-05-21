@@ -8,7 +8,11 @@ import {
 } from "../BuildingManager";
 import React, { useState, useEffect } from 'react';
 
+
 function formatTime(seconds) {
+    /*
+    * Gives time a good format
+    * */
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
@@ -53,7 +57,7 @@ export const TrainButtonComponent = ({data, setSelectedClick}) => {
             className="wide-button"
             onClick={(event) => {
                 event.stopPropagation();
-                setSelectedClick([data.id, "Barracks", data.buildingType]);
+                setSelectedClick([data.id, "Barracks", data.building_type]);
             }}
         >
             Train Troops
@@ -71,11 +75,22 @@ export const UpgradeButtonComponent = ({
     cityUpgradeBool,
     setCityInfo
 }) => {
+    /**
+     * Component to create an upgrade button
+     * */
+
+    /*
+    * Timer to display when update done
+    * */
     const [timer, setTimer] = useState(0);
+
+    /*
+    * A button appears disabled when not clickable (during upgrade, or when not enough resources)
+    * */
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const [totalTimePassed, setTotalTimePassed] = useState(0)
 
-    // Timer to increment total time passed
+    /*Timer to increment total time passed*/
     useEffect(() => {
         const timerInterval = setInterval(() => {
             setTotalTimePassed(prevTotalTimePassed => prevTotalTimePassed + 1);
@@ -84,8 +99,11 @@ export const UpgradeButtonComponent = ({
         return () => clearInterval(timerInterval);
     }, []);
 
-    // Effect to handle remaining time and button disabling logic
+    /* Effect to handle remaining time and button disabling logic*/
     useEffect(() => {
+        /*
+        * When waiting time is over, update the data
+        * */
         const updateTimerAndCheckForExpiration = () => {
             const newTimerValue = Math.max(data.remaining_update_time - totalTimePassed, 0);
             setTimer(newTimerValue);
@@ -97,6 +115,9 @@ export const UpgradeButtonComponent = ({
 
         updateTimerAndCheckForExpiration();
 
+        /*
+        * Visualize count down
+        * */
         const countdown = setInterval(() => {
             setTimer(prevTimer => {
                 const newTimer = Math.max(prevTimer - 1, 0);
@@ -111,6 +132,9 @@ export const UpgradeButtonComponent = ({
     }, [data.remaining_update_time, totalTimePassed]);
 
     const refreshData = async () => {
+        /*
+        * Resync data with the backend
+        * */
         try {
             const cityData = await getCityData(cityId);
             setBuildings(cityData?.buildings);
@@ -136,6 +160,9 @@ export const UpgradeButtonComponent = ({
 
 
     const UpgradeBuildingHelper = async () => {
+        /*
+        * Execute the upgrade action
+        * */
         try {
             let UpgradeSuccessful;
             if (!cityUpgradeBool) {
@@ -151,12 +178,15 @@ export const UpgradeButtonComponent = ({
         }
     };
 
+
     let costData = cityUpgradeBool ? upgradeCost : upgradeCost[data.id];
     const isCostAvailable = costData && costData.costs.length > 0;
     const buttonStyle = isCostAvailable && costData.can_upgrade && !isButtonDisabled && !(cityUpgradeBool && (data.rank === 5))
         ? "wide-button"
         : "wide-button disabled";
     const formattedTime = formatTime(timer);
+
+    /*Display the upgrade button text*/
     const buttonText = isButtonDisabled
         ? `Please wait ${formattedTime}`
         : (cityUpgradeBool && (data.rank === 5))
@@ -166,7 +196,7 @@ export const UpgradeButtonComponent = ({
                 : 'Loading...';
 
     return (
-        <button className={buttonStyle} onClick={UpgradeBuildingHelper}
+        <button style={{"fontSize": "1.4vw"}} className={buttonStyle} onClick={UpgradeBuildingHelper}
                 disabled={!isCostAvailable || !costData.can_upgrade || isButtonDisabled}>
             {buttonText}
         </button>

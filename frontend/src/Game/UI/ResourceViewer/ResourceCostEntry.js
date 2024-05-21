@@ -19,16 +19,16 @@ function ResourceCostEntry(props) {
                 <img src={(`/images/resources/${resourcesJson[props.resource]["icon"]}`)} draggable={false} alt={""}/>
             </div>
 
-            <div style={{"fontSize": "150%", "justifyContent": "center", "alignItems": "center", "display": "flex"}}>
+            <div style={{"fontSize": "100%", "justifyContent": "center", "alignItems": "center", "display": "flex"}}>
                 {props.percentage &&
                     <span style={{"color": color}}>
                         {parseFloat(props.cost).toFixed(2)*100}%
                     </span>
                 }
                 {!props.percentage &&
-                    <>
+                    <span>
                         {props.cost}
-                    </>
+                    </span>
                 }
 
             </div>

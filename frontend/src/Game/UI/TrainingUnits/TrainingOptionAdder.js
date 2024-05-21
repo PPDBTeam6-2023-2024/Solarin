@@ -4,6 +4,7 @@ import axios from "axios";
 import './TrainingOptionBar.css'
 import './TrainingOptionAdder.css'
 import TrainingCostEntry from "./TrainingCostEntry";
+import statJson from "../stats.json"
 
 function TrainingOptionAdder(props) {
     /*
@@ -12,16 +13,28 @@ function TrainingOptionAdder(props) {
 
     /*This state takes the typecost into account so, it can display the cost before the user starts training*/
     const [typeCost, setTypeCost] = useState([]);
+    const [troopStats, setTroopStats] = useState([])
 
     const getTypeCosts = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/unit/train_cost/${props.type}`)
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/unit/train_cost/${props.type}/${props.buildingId}`)
             return response.data
         } catch (e) {
             return []
         }
 
     }
+    useEffect(() => {
+        const getTroopStats = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/get_troop_stats/`);
+                setTroopStats(response.data);
+            } catch (e) {
+                return []
+            }
+        }
+        getTroopStats();
+    }, []);
 
     useEffect(() => {
         async function getTrainingCost() {
@@ -71,6 +84,17 @@ function TrainingOptionAdder(props) {
             }}>
                 {typeCost.map((value, index) => <TrainingCostEntry key={index} resource={value[0]}
                                                                    cost={value[1] * unitAmount}/>)}
+                {troopStats[props.type] &&
+                    <div className={"troop-stats"}>
+                        {troopStats[props.type].map(stat => (
+                            <div key={stat.stat} className="stat-entry">
+                                <img src={`/images/stats_icons/${statJson[stat.stat].icon}`}
+                                     alt={stat}/>
+                                <div>{stat.value*unitAmount}</div>
+                            </div>
+                        ))}
+                    </div>
+                }
             </div>
 
 

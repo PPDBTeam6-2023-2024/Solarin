@@ -10,6 +10,7 @@ router = APIRouter(prefix="/globalws", tags=["GlobalWS"])
 pool = {}
 global_queue = asyncio.Queue()
 
+
 @router.websocket("/ws")
 async def global_ws(websocket: WebSocket, db=Depends(get_db)):
     auth_token = websocket.headers.get("Sec-WebSocket-Protocol")

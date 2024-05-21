@@ -1,63 +1,48 @@
-import React, { useMemo } from 'react';
-import { AgGridReact } from 'ag-grid-react';
+import React, {useEffect, useContext, useMemo, useState} from 'react';
+import {AgGridReact} from 'ag-grid-react';
 import './NewBuildingGrid.css';
 import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
+import axios from "axios";
+import statsJson from "../../../UI/stats.json";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
+import {TertiaryContext, TextColorContext} from "../../../Context/ThemeContext";
+const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap, upgradeCost, cityInfo, setCityInfo}) => {
+    /**
+     * This component visualizes the city manager menu when you select the 'City' tab
+     * */
+    const [cityStats, setCityStats] = useState(null)
 
-
-const CityInfoGrid = ({ setBuildings, refreshResources,cityId, setUpgradeCostMap,upgradeCost, cityInfo, setCityInfo }) => {
-
-    const RegionBuffsCellRenderer = ({ value }) => {
-          return (
-            <>{value.map((buff, index) => (
-              <span key={index} style={{ color: buff.modifier >= 0 ? 'green' : 'red' }}>
-                {buff.percentage} {buff.type}
-              </span>
-            )).reduce((prev, curr) => [prev, ', ', curr])}</> // This handles the comma separation properly in JSX
-          );
-        };
-
-
-     const columns = useMemo(() => [
-        { headerName: "Category", field: "category" },
-        {
-            headerName: "Information",
-            field: "info",
-            cellRenderer: (params) => {
-                if (params.data.category === "Region buffs") {
-                    return <RegionBuffsCellRenderer value={params.value} />;
-                } else {
-                    return <span>{params.value}</span>;
-                }
-            }
+    /*
+    * Load the city combat stats
+    * */
+    const fetchStats = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_stats/${cityId}`);
+            setCityStats(response.data);
+        } catch (error) {
+            console.error('Error while fetching city combat stats:', error);
         }
-    ], []);
-
-    const rowData = useMemo(() => [
-        // Example data preparation (similar to previous transformations)
-        { category: "Region type", info: cityInfo.region_type , autoHeight: true},
-        { category: "Region buffs", info: cityInfo.region_buffs.map(buff => ({
-            type: buff[0],
-            modifier: parseFloat(buff[1]) - 1,
-            percentage: `${(parseFloat(buff[1]) - 1) >= 0 ? '+' : ''}${((parseFloat(buff[1]) - 1) * 100).toFixed(0)}%`
-        })) , autoHeight: true, autoWidth: true},
-        { category: "Population size", info: cityInfo.population , autoHeight: true},
-    ], [cityInfo]);
-
-    const onGridReady = (params) => {
-        params.api.sizeColumnsToFit();
     };
+
+    useEffect(() => {
+        fetchStats();
+    }, [])
+
+    /*
+    * Make textcolor depend on theme
+    * */
+    const [textColor, setTextColor] = useContext(TextColorContext);
 
     return (
         <>
             <div className={"FontSizer"} style={{"width": "50%", "display": "inline-block"}}>
                 <div>
-                    Region type: <span style={{"color": "gold"}}>{cityInfo.region_type}</span>
+                    Region type: <span style={{"color": textColor}}>{cityInfo.region_type}</span>
                 </div>
 
                 <div>
-                    City Population: <span style={{"color": "gold"}}>{cityInfo.population}</span>
+                    City Population: <span style={{"color": textColor}}>{cityInfo.population}</span>
                 </div>
 
                 {/*Div to display the Region buffs*/}
@@ -88,9 +73,23 @@ const CityInfoGrid = ({ setBuildings, refreshResources,cityId, setUpgradeCostMap
             </div>
 
             <div className="right-screen-city-info">
-                <div className="building_image">
-                        <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
+                {cityStats &&
+                    <div style={{"display": "flex", "flexDirection": "column", "marginTop": "0.5vw", "rowGap": "0.5vw"}}>
+                        {/*Display the combat stats of a city*/}
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
+                            <div>{cityStats["attack"]}</div>
+                        </div>
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
+                            <div>{cityStats["defense"]}</div>
+                        </div>
                     </div>
+                }
+                <div className="building_image">
+                    {/*Display an image of the city*/}
+                    <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
+                </div>
                 { <UpgradeButtonComponent
                                             data = {cityInfo}
                                             cityId={cityId}

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from typing import Annotated
+from typing import List, Annotated
 
 from ...database.database import get_db
 from ...database.database_access.army_access import *
@@ -27,6 +27,8 @@ async def get_fleets(db: AsyncSession = Depends(get_db)) -> List[ArmySchema]:
         armies_schema.append(temp)
 
     return armies_schema
+
+
 @router.get("/fleets", response_model=List[ArmySchema])
 async def get_user_fleets(user_id: int, planet_id: int, db: AsyncSession = Depends(get_db)) -> List[ArmySchema]:
     """
@@ -145,7 +147,6 @@ async def get_armies_in_city(
     """
     data_access = DataAccess(db)
 
-
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
 
     """
@@ -156,10 +157,13 @@ async def get_armies_in_city(
 
     troops = await get_troops(user_id, army_id, db)
 
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_army(army_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
+
     """
     Add the army_id, because this is useful information, for army actions
     """
-    troops.update({"army_id": army_id})
+    troops.update({"army_id": army_id, "maintenance": maintenance_cost})
 
     await data_access.commit()
 
@@ -185,3 +189,18 @@ async def split_army(
     new_army_id = await data_access.ArmyAccess.split_army(troops_list, troops_list[0].army_id, user_id)
 
     return new_army_id
+
+@router.get("/get_troop_stats/")
+async def get_troop_stats(db=Depends(get_db)):
+    """
+    get the stats of all the different types of troops
+    """
+    data_access = DataAccess(db)
+    result = await data_access.ArmyAccess.get_troop_stats()
+    formatted_result = {}
+    for item in result:
+        troop, stat, value = item
+        if troop not in formatted_result:
+            formatted_result[troop] = []
+        formatted_result[troop].append({"stat": stat, "value": value})
+    return formatted_result

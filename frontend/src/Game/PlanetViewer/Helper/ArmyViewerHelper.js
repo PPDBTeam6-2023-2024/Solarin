@@ -1,4 +1,7 @@
 export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
+    /**
+     * Open an army menu
+     * */
     const overlayRect = e.target.getBoundingClientRect();
     const position = {
         x: overlayRect.left + window.scrollX,
@@ -24,6 +27,9 @@ export const toggleArmyViewer = async (e, army, setActiveArmyViewers) => {
 };
 
 export const closeArmyViewer = (army, setActiveArmyViewers) => {
+    /**
+     * Close an army menu
+     * */
     setActiveArmyViewers(prev => {
         const index = prev.findIndex(viewer => viewer.id === army.id);
         if (index >= 0) {

@@ -1,7 +1,10 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {AgGridReact} from 'ag-grid-react';
 import './NewBuildingGrid.css';
 import {createBuilding} from '../BuildingManager';
+import axios from "axios";
+import statsJson from "../../../UI/stats.json";
+import resourceJson from "../../../UI/ResourceViewer/resources.json";
 
 const BuildButtonComponent = ({data, cityId, updateBuildingsAndTypes, refreshResources}) => {
     const handleBuild = (event) => {
@@ -36,8 +39,30 @@ const BuildingGrid = ({
                           selectedImage,
                           cityId,
                           updateBuildingsAndTypes,
-                          refreshResources
+                          refreshResources,
+                          selectedBuilding,
+                          selectedType
                       }) => {
+
+    const [prodStats, setProdStats] = useState([])
+    const [baseStats, setBaseStats] = useState([])
+
+    useEffect(() => {
+
+        const getProdStats = async () => {
+            // get the base production stats of all the production buildings
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/building/get_production/`);
+            setProdStats(response.data);
+        }
+        const getCombatStats = async () => {
+            // get the base stats of the towers/walls
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/building/get_stats/`);
+            setBaseStats(response.data);
+        }
+        getCombatStats();
+        getProdStats();
+    }, []);
+
     const columns = useMemo(() => [
         {headerName: "Name", field: "name"},
         {headerName: "Type", field: "buildingType", autoHeight: true},
@@ -79,13 +104,40 @@ const BuildingGrid = ({
             </div>
             {selectedImage &&
                 <div className="right-screen">
+                    {selectedType && selectedType === "tower" &&
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
+                            <div>{baseStats[selectedBuilding]}</div>
+                        </div>
+                    }
+                    {selectedType && selectedType === "wall" &&
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
+                            <div>{baseStats[selectedBuilding]}</div>
+                        </div>
+                    }
+                    {selectedType && selectedType === "productionBuilding" &&
+                        <>
+                            <div>Produces:</div>
+                            <div className={"building-stats"}>
+                                {prodStats[selectedBuilding].map(resource => (
+                                    <div key={resource.resource} className="resource-entry">
+                                        <img src={`/images/resources/${resourceJson[resource.resource].icon}`}
+                                             alt={resource.resource}/>
+                                        <div>{resource.amount}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    }
                     <div className="building_image">
                         <img src={selectedImage} alt="Building" className="selected-image"/>
                     </div>
                 </div>
             }
         </>
-    );
+    )
+        ;
 };
 
 

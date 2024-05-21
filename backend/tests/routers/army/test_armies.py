@@ -199,3 +199,53 @@ async def test_split_army(client):
         new_army_id = response.json()
         assert isinstance(new_army_id, int)
 
+
+async def test_get_troop_stats(client):
+    async with sessionmanager.session() as session:
+        data_access = DataAccess(session)
+
+        data = {
+            "email": "test@example.com",
+            "username": "test",
+            "password": "test"
+        }
+        response = client.post("/auth/add_user", json=data)
+        assert response.status_code == 200
+
+        battle_stats_soldier = BattleStats(
+            attack=15,
+            defense=5,
+            city_attack=10,
+            city_defense=4,
+            recovery=3,
+            speed=10.0
+        )
+
+        battle_stats_brute = BattleStats(
+            attack=25,
+            defense=20,
+            city_attack=20,
+            city_defense=15,
+            recovery=5,
+            speed=5.0
+        )
+
+        await data_access.DeveloperAccess.create_troop_type(
+            type_name="Soldier",
+            training_time=timedelta(hours=2),
+            battle_stats=battle_stats_soldier,
+            required_rank=2
+        )
+
+        await data_access.DeveloperAccess.create_troop_type(
+            type_name="Brute",
+            training_time=timedelta(hours=8),
+            battle_stats=battle_stats_brute,
+            required_rank=3
+        )
+
+
+        await session.commit()
+
+    response = client.get(f"/army/get_troop_stats/")
+    assert response.status_code == 200

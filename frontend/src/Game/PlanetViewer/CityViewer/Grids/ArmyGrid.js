@@ -2,9 +2,10 @@ import React, {useContext, useMemo, useState} from "react";
 import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
+import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 import {SplitArmy} from "../BuildingManager";
 
-const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, refresh}) => {
+const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
 
     const [socket, setSocket] = useContext(SocketContext);
     const [gridApi, setGridApi] = useState()
@@ -43,7 +44,13 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
 
         const selectedNodes = gridApi.getSelectedNodes();
         const selectedTroops = selectedNodes.map(node => node.data);
-        const allSelected = gridApi.getSelectedRows().length === gridApi.getDisplayedRowCount();
+
+        /*
+        * When no units are selected to leave the city, we will let all troops leave (so in that case, they are also
+        * all selected)
+        * */
+        const allSelected = (gridApi.getSelectedRows().length === gridApi.getDisplayedRowCount())
+            || (gridApi.getSelectedRows().length === 0);
 
         if (!allSelected){
             /* if not all troops are selected, split army and leave city with selected troops */
@@ -81,9 +88,6 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
                     onCellMouseOver={onRowMouseOver}
-                    onCellClicked={(event) => { // handle clicks
-                        setSelectedClick(event.data.index);
-                    }}
                     onGridReady={params => {
                         params.api.sizeColumnsToFit() // handle scaling
                         setGridApi(params.api); // set api for row selection
@@ -92,13 +96,26 @@ const ArmyGrid = ({troops, onRowMouseOver, setSelectedClick, selectedClick, sele
                     rowSelection="multiple" // handle row selection
                     rowMultiSelectWithClick={true}
                 />
+
+                <div>
+                <h2 style={{"textAlign": "center"}}>Army Maintenance Cost /hour</h2>
+                <div style={{"display": "flex", "flexDirection": "row", "alignItems": "center",
+                    "justifyContent": "center", "overflow": "scroll"}}>
+                    {troops.maintenance.map((element, index) => <ResourceCostEntry resource={element[0]}
+                                                                                      cost={element[1]}
+                                                                                      percentage={false}/>)}
+                </div>
+                </div>
+
             </div>
             <div style={{"width": "27%"}} className="right-screen">
-                {selectedImage &&
+
                     <div className="building_image">
+                        {selectedImage &&
                         <img src={selectedImage} alt="Troops" className="selected-image"/>
+                        }
                     </div>
-                }
+
                 {rowData.length > 0 &&
                     <div className="container">
                         <div className="instruction-text">Click on troops to select</div>

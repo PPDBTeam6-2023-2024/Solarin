@@ -1,6 +1,8 @@
 * {
   color: white;
 }
+
+
 #tsparticles canvas{
   position: absolute;
   width: 100%;

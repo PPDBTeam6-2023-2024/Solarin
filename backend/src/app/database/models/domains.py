@@ -115,3 +115,40 @@ class PositiveInteger(TypeDecorator):
 
     def process_result_value(self, value, dialect):
         return value
+
+
+class HexColor(TypeDecorator):
+    """
+    This class is a domain for colors encoded as hexadecimal
+    """
+
+    impl = String
+    cache_ok = True
+
+    @property
+    def python_type(self) -> Type[Any]:
+        return int
+
+    def process_literal_param(self, value, dialect: Dialect) -> str:
+        return value
+
+    def process_bind_param(self, value, dialect):
+        """
+        SQL Alchemy has no native support for adding checks to Domains, so
+        we check manually that it is a valid hex code
+        """
+
+        if value is not None:
+            if not isinstance(value, str):
+                raise DomainException("HexColor", "not a string type")
+
+            if len(value) != 7:
+                raise DomainException("HexColor", "wrong amount of characters")
+
+            if value[0] != "#":
+                raise DomainException("HexColor", "HexColor needs to start with a '#'")
+
+        return value
+
+    def process_result_value(self, value, dialect):
+        return value

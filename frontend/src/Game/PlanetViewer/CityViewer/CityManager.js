@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useContext} from 'react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import './CityManager.css';
@@ -19,9 +19,9 @@ import {useDispatch} from 'react-redux'
 import CityInfoGrid from "./Grids/CityInfoGrid";
 
 
-const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
-    /*
-    * This component represents the City Menu
+const CityManager = ({ cityId, onClose}) => {
+    /**
+    * This component represents the City Menu, for when you click on 1 of your own cities
     * */
 
     const dispatch = useDispatch();
@@ -44,6 +44,9 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
 
     const [selectedTab, setSelectedTab] = useState('currentBuildings');
 
+    const [selectedNewBuilding, setSelectedNewBuilding] = useState("");
+    const [selectedType, setSelectedType] = useState("");
+
     // load city context (buildings, troops, etc.) either from API or from context map
     const cityContextLoader = (() => {
         /*Load city information*/
@@ -53,41 +56,52 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
     })
 
     /*Update the buildings their information*/
-    const updateBuildingsAndTypes = () => {
+    const updateBuildingsAndTypes = async() => {
         /* Refresh buildings and types, by loading its current information from the backend*/
 
         /*Get information about the current buildings inside the city*/
-        getCityData(cityId).then(cityData => {
+        await getCityData(cityId).then(cityData => {
                     setBuildings(cityData?.buildings)
                     setCityInfo(cityData?.city)
 
-                    /*Get information about the upgrade cost of a building*/
-                    getUpgradeCost(cityId).then(buildings => {
+        });
 
-                        const costMap = buildings?.[0].reduce((acc, building) => {
-                            acc[building?.id] = building;
-                            return acc;
-                        }, {});
+        /*Get information about the upgrade cost of a building*/
+        await getUpgradeCost(cityId).then(buildings => {
 
-                        setCityUpgradeInfo(buildings?.[1]);
-                        setUpgradeCostMap(costMap);
+            const costMap = buildings?.[0].reduce((acc, building) => {
+                acc[building?.id] = building;
+                return acc;
+            }, {});
 
-                        getNewBuildingTypes(cityId).then(newBuildingTypes => {
-                            setNewBuildingTypes(newBuildingTypes)
-                    });
+            setCityUpgradeInfo(buildings?.[1]);
+            setUpgradeCostMap(costMap);
 
-                        getResourcesInStorage(cityId).then(resourcesInStorage=> {
-                            setResourcesInStorage(resourcesInStorage?.overview);
-                    });
-                    });
+
+        });
+
+        /*
+        * Get information about the buildings we can still build
+        * */
+        await getNewBuildingTypes(cityId).then(newBuildingTypes => {
+                setNewBuildingTypes(newBuildingTypes)
+                getResourcesInStorage(cityId).then(resourcesInStorage=> {
+                setResourcesInStorage(resourcesInStorage?.overview);
+                });
+
         });
     };
 
+    /*
+    * Make sure when we hover over a row entry, that we know what we are hovering over
+    * */
     const onRowMouseOver = event => {
         if (selectedTab === 'Army') {
             setSelectedImage(getImageForTroopType(event.data.troop_type))
         } else if (selectedTab === "newBuildings") {
             setSelectedImage(getImageForBuildingType(event.data.name));
+            setSelectedNewBuilding(event.data.name);
+            setSelectedType(event.data.buildingType);
         } else {
             setSelectedImage(getImageForBuildingType(event.data.buildingType));
         }
@@ -98,6 +112,10 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
         setInitialClick(false);
     }, [])
 
+    /*
+    * When clicking outside the window, we want to automatically close the window
+    * This useEffect will check whether we click outside, and if so close the menu
+    * */
     useEffect(() => {
         /*Refresh information on change*/
         const handleClickOutside = event => {
@@ -117,6 +135,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
         <div className="darken_background">
             <WindowUI>
                 <div className="building_view">
+                    {/*Visualizes the tab options*/}
                     <div className="tabs">
                         <button onClick={() => setSelectedTab('currentBuildings')}>Current Buildings</button>
                         <button onClick={() => setSelectedTab('newBuildings')}>New Buildings</button>
@@ -124,6 +143,7 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         <button onClick={() => setSelectedTab('City')}>City</button>
                     </div>
 
+                    {/*Displays the Tab of current buildings*/}
                     {selectedTab === 'currentBuildings' && <CurrentBuildingGrid
                         buildings={buildings}
                         onRowMouseOver={onRowMouseOver}
@@ -139,6 +159,8 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                         setResourcesInStorage={setResourcesInStorage}
                         setCityInfo={setCityInfo}
                     />}
+
+                    {/*Displays the Tab to add new buildings*/}
                     {selectedTab === 'newBuildings' &&
                               <NewBuildingGrid
                                 buildings={newBuildingTypes}
@@ -147,32 +169,32 @@ const CityManager = ({ cityId, primaryColor, secondaryColor, onClose}) => {
                                 cityId={cityId}
                                 updateBuildingsAndTypes={updateBuildingsAndTypes}
                                 refreshResources={() => initializeResources(dispatch)}
+                                selectedBuilding = {selectedNewBuilding}
+                                selectedType = {selectedType}
                               />
                             }
 
+                    {/*Displays the Army Tab*/}
                     {selectedTab === 'Army' && <ArmyGrid
-                        selectedClick={selectedClick}
                         onRowMouseOver={onRowMouseOver}
                         troops={troops}
-                        setSelectedClick={setSelectedClick}
                         selectedImage={selectedImage}
                         refresh={cityContextLoader}
                     />
                     }
 
-                    {selectedTab === 'City' && <CityInfoGrid
-                        cityUpgradeInfo={cityUpgradeInfo}
-                        onRowMouseOver={onRowMouseOver}
-                        refresh={cityContextLoader}
+                    {/*Displays the City Tab*/}
+                    {selectedTab === 'City' &&
+
+                        <CityInfoGrid
                         setBuildings={setBuildings}
                         refreshResources={() => initializeResources(dispatch)}
                         setUpgradeCostMap={setUpgradeCostMap}
                         cityId = {cityId}
-                        setCityUpgradeInfo={setCityUpgradeInfo}
                         upgradeCost={cityUpgradeInfo}
                         cityInfo = {cityInfo}
-                        setCityInfo = {setCityInfo}
-                    />
+                        setCityInfo = {setCityInfo}/>
+
 
                     }
 

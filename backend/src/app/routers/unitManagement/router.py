@@ -9,9 +9,10 @@ from ...database.models import *
 router = APIRouter(prefix="/unit", tags=["City"])
 
 
-@router.get("/train_cost/{unit_type}")
+@router.get("/train_cost/{unit_type}/{building_id}")
 async def get_buildings(
         user_id: Annotated[int, Depends(get_my_id)],
+        building_id: int,
         unit_type: str,
         db=Depends(get_db)
 ):
@@ -21,7 +22,8 @@ async def get_buildings(
 
     da = DataAccess(db)
 
-    cost_list = await da.TrainingAccess.get_troop_cost(user_id, unit_type)
+    rank = await da.BuildingAccess.get_building_rank(building_id)
+    cost_list = await da.TrainingAccess.get_troop_cost(unit_type, rank)
     return cost_list
 
 
@@ -54,7 +56,8 @@ async def get_buildings(
         return {"queue": [], "success": False, "message":
                 "Only the owner of this building can change its training queue"}
 
-    cost_list = await da.TrainingAccess.get_troop_cost(user_id, troop_type)
+    rank = await da.BuildingAccess.get_building_rank(building_id)
+    cost_list = await da.TrainingAccess.get_troop_cost(troop_type, rank)
     cost_list = [(c[0], c[1]*amount) for c in cost_list]
     has_resources = await da.ResourceAccess.has_resources(user_id, cost_list)
     if not has_resources:
@@ -77,12 +80,8 @@ async def get_buildings(
     await da.BuildingAccess.checked(building_id)
     await da.commit()
 
-    rank = await da.TrainingAccess.get_troop_rank(user_id, troop_type)
-    rank2 = await da.BuildingAccess.get_building_rank(building_id)
-    """
-    Rank of the troops are the average of the troop rank and the building type
-    """
-    rank = floor((rank+rank2)/2)
+    rank = await da.BuildingAccess.get_building_rank(building_id)
+
     await da.TrainingAccess.train_type(building_id, troop_type, rank, amount)
     await da.commit()
 

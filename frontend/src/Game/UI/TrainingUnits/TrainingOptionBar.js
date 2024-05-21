@@ -51,7 +51,7 @@ function TrainingOptionBar(props) {
                 )
                 }
             </div>
-            {selected !== "" && <TrainingOptionAdder onTrain={props.onTrain} type={selected}/>}
+            {selected !== "" && <TrainingOptionAdder onTrain={props.onTrain} type={selected} buildingId={props.buildingId}/>}
         </>
     )
 }

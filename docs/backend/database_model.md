@@ -39,8 +39,10 @@ An overview of each the tables in the database:
 |     FriendsOf      |  Data  | Store which users are friends with each other                                                                                                            |
 |   FriendRequest    |  Data  | Stores which users have pending friend requests                                                                                                          |
 |  AllianceRequest   |  Data  | Stores which users have pending alliance requests to join an alliance (needs to be accepted by someone in the alliance)                                  |
-|  PoliticalStance   | LOOKUP | Stores all the political ideologies in our game                                                                                                          |
+|  PoliticalStance   | Lookup | Stores all the political ideologies in our game                                                                                                          |
 | HasPoliticalStance |  Data  | Stores information about the political direction of the user                                                                                             |
+|     ColorCodes     |  Data  | Stores which color themes the user has selected                                                                                                          |
+
 
 </p>
 </details>
@@ -75,7 +77,6 @@ An overview of each the tables in the database:
 |      BarracksType      | Lookup | Stores which types of barracks exist (This table is a child of an ISA/polymorphic relation with BuildingType)             |
 |        WallType        | Lookup | Stores which types of walls exist (This table is a child of an ISA/polymorphic relation with BuildingType)                |   
 |       TowerType        | Lookup | Stores which types of towers exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
-|       HouseType        | Lookup | Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)               |   
 | ProductionBuildingType | Lookup | Stores which types of production buildings exist (This table is a child of an ISA/polymorphic relation with BuildingType) |   
 |   ProducesResources    | Lookup | Stores which resources a production building produces                                                                     |   
 |      CreationCost      | Lookup | Stores the cost to create/upgrade certain buildings                                                                       |
@@ -98,7 +99,6 @@ An overview of each the tables in the database:
 |  TroopTypeCost  | Lookup | Stores which resources and how much of them it costs to train a unit                                                                                                                                                    |
 |      Army       |  Data  | Stores data about an army                                                                                                                                                                                               |
 | ArmyConsistsOf  |  Data  | The relation indication which types of units are part of the army and in what quantities                                                                                                                                |
-|    TroopRank    |  Data  | Stores the rank of the unit for a specific user (if no entry, the rank is 1)                                                                                                                                            |
 | AttackOnArrive  |  Data  | To handle actions when an army arrives in an IDLE manner we use this table to keep track of events that need to occur when an army arrives at its destination (This table is the parent of an ISA/polymorphic relation) |
 |   AttackArmy    |  Data  | Stores which other army we might attack when our army arrives at its position  (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                   |
 |   AttackCity    |  Data  | Stores which city we might attack when our army arrives at its position     (This table is a child of an ISA/polymorphic relation with AttackArmy)                                                                      |

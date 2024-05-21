@@ -40,9 +40,9 @@ export const Resources = () => {
             {Object.entries(resources).map((resource) =>
                 <Tooltip key={resource} title={getResourceField(resource[0], "description", "")}>
                     <div className="mr-3 p-1 max-h-9 shrink-0 relative">
-                        <p>{resource[1]}
+                        <p><span style={{"fontSize": "1.4vw"}}>{resource[1]}</span>
                             {getResourceField(resource[0], "icon", null) &&
-                                <img className="inline ml-2 max-w-7 max-h-7 w-auto h-auto"
+                                <img className="inline ml-2 max-w-10 max-h-10 w-auto h-auto"
                                      src={(`/images/resources/${getResourceField(resource[0], "icon", "")}`)}
                                      alt={resource[0]} draggable={false}/>
                             }

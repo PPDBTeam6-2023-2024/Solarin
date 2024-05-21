@@ -50,10 +50,12 @@
 }
 
 .troop-stats {
+    position: absolute;
+    left: -17vw;
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 columns */
     grid-template-rows: repeat(2, auto);  /* 2 rows */
-    row-gap: 1vw;
+    row-gap: 1.4vw;
     column-gap: 3vw;
     justify-items: center;
     align-items: center;
@@ -66,4 +68,5 @@
     height: auto;
     max-height: 2vw;
     max-width: 2vw;
+    font-size: 1.2vw;
 }

@@ -37,3 +37,4 @@ class APIConfig(BaseConfig):
     db: Optional[DBConfig] = None
     CORS_sources: Optional[list[AnyUrl]] = []
     logging: Optional[LoggingConfig] = None
+    idle_time: Optional[int] = None

@@ -50,60 +50,60 @@
     {"planet-type": "shadow", "region-type": "silicaat"}
   ],
   "barracks":[
-    {"name":  "barracks", "creation-cost": 550, "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}],
+    {"name":  "barracks", "creation-cost": {"TF": 550, "POP":  100}, "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}],
       "maintenance":  [{"product-name":  "RA", "amount":  20}]},
-    {"name":  "space-dock", "creation-cost": 1250, "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}],
+    {"name":  "space-dock", "creation-cost": {"TF": 1250, "CO":  1000, "UR": 250, "OI": 500}, "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}],
       "maintenance":  [{"product-name":  "RA", "amount":  10}, {"product-name":  "OI", "amount":  25}, {"product-name":  "UR", "amount":  1}]}
     ],
   "towers": [
-    {"name":  "Sentry Tower", "attack":  50, "creation-cost":  500},
-    {"name":  "Plasmic Cannons", "attack":  100, "creation-cost":  2500},
-    {"name":  "Directed Antiprotonic Annihilation System", "attack":  150, "creation-cost":  10000}
+    {"name":  "Sentry Tower", "attack":  50, "creation-cost":  {"TF": 500, "SOL":  50}},
+    {"name":  "Plasmic Cannons", "attack":  100, "creation-cost":  {"TF": 2500, "SOL": 100, "MI":  200}},
+    {"name":  "Directed Antiprotonic Annihilation System", "attack":  150, "creation-cost":  {"TF": 10000, "SOL":  250, "MI": 500, "UR":  150}}
   ],
   "walls": [
-    {"name":  "Reinforced Techno-Mesh", "defense": 50, "creation-cost":  500},
-    {"name":  "Solarinium Absorption Barrier", "defense": 100, "creation-cost":  2500},
-    {"name":  "Void-fuelled Nullification Wall", "defense": 150, "creation-cost":  10000}
+    {"name":  "Reinforced Techno-Mesh", "defense": 50, "creation-cost":  {"TF": 500}},
+    {"name":  "Solarinium Absorption Barrier", "defense": 100, "creation-cost":  {"TF": 2500, "SOL": 500, "MI": 500}},
+    {"name":  "Void-fuelled Nullification Wall", "defense": 150, "creation-cost":  {"TF": 10000, "SOL": 500, "MI": 1000, "UR": 250}}
   ],
   "production-buildings": [
-    {"name":  "nexus", "creation-cost" : 6500,"products": [
+    {"name":  "nexus", "creation-cost" : {"TF": 6500, "UR": 500, "SOL": 500},"products": [
       {"product-name":  "SOL", "base-rate":  600, "base-cap":  5000},
       {"product-name":  "TF", "base-rate":  400, "base-cap":  5000}
     ], "maintenance":  [{"product-name":  "RA", "amount":  20}]},
-    {"name":  "farmpod", "creation-cost": 1200,"products":  [
+    {"name":  "farmpod", "creation-cost": {"TF": 1200, "MI": 250, "SOL": 50},"products":  [
       {"product-name":  "RA", "base-rate":  300, "base-cap":  5000}
     ], "maintenance":  []},
-    {"name":  "cloning-chamber", "creation-cost": 1500,"products":  [
+    {"name":  "cloning-chamber", "creation-cost": {"TF": 1500, "RA": 1000, "CO": 250, "SOL":  100},"products":  [
       {"product-name":  "POP", "base-rate":  150, "base-cap":  1000}
     ], "maintenance":  [{"product-name":  "RA", "amount":  40}]},
-    {"name":  "extractor", "creation-cost": 3000,"products":  [
+    {"name":  "extractor", "creation-cost": {"TF": 3000, "SOL": 150, "CO":  500},"products":  [
       {"product-name":  "MI", "base-rate":  500, "base-cap":  1500},
       {"product-name":  "OI", "base-rate":  500, "base-cap":  1500}
     ], "maintenance":  [{"product-name":  "CO", "amount":  15}]},
-    {"name":  "reactor", "creation-cost": 10000,"products":  [
+    {"name":  "reactor", "creation-cost": {"TF": 10000, "SOL": 250, "MI": 500},"products":  [
       {"product-name":  "UR", "base-rate":  100, "base-cap":  550}
     ], "maintenance":  [{"product-name":  "RA", "amount":  5}]},
-    {"name":  "oil-pump", "creation-cost": 3500,"products":  [
+    {"name":  "oil-pump", "creation-cost": {"TF": 3500, "SOL": 50, "CO": 500},"products":  [
       {"product-name":  "OI", "base-rate":  400, "base-cap":  1600}
     ], "maintenance":  [{"product-name":  "RA", "amount":  5}]},
-    {"name":  "parlement", "creation-cost": 1500,"products":  [
+    {"name":  "parlement", "creation-cost": {"TF": 1500, "SOL": 25},"products":  [
       {"product-name":  "INF", "base-rate":  100, "base-cap":  200}
     ], "maintenance":  [{"product-name":  "RA", "amount":  30}]},
-    {"name":  "solar-generator", "creation-cost": 6800,"products":  [
+    {"name":  "solar-generator", "creation-cost": {"TF": 6800, "CO": 500},"products":  [
       {"product-name":  "SOL", "base-rate":  700, "base-cap":  5000}
     ], "maintenance":  [{"product-name":  "RA", "amount":  2}]},
-    {"name":  "material-lab", "creation-cost": 9000,"products":  [
+    {"name":  "material-lab", "creation-cost": {"TF": 9000, "SOL": 150},"products":  [
       {"product-name":  "TF", "base-rate":  700, "base-cap":  6000}
     ], "maintenance":  [{"product-name":  "RA", "amount":  5}]},
-    {"name":  "plant-growth-accelerator", "creation-cost": 15000,"products":  [
+    {"name":  "plant-growth-accelerator", "creation-cost": {"TF": 15000, "UR": 250},"products":  [
       {"product-name":  "SOL", "base-rate":  1500, "base-cap":  10000}
     ], "maintenance":  [{"product-name":  "RA", "amount":  20}]},
-    {"name":  "electric-mine", "creation-cost": 9000,"products":  [
+    {"name":  "electric-mine", "creation-cost": {"TF": 9000, "SOL": 100},"products":  [
       {"product-name":  "MI", "base-rate":  800, "base-cap":  10000},
       {"product-name":  "CO", "base-rate":  200, "base-cap":  7000},
       {"product-name":  "OI", "base-rate":  30, "base-cap":  300}
     ], "maintenance":  [{"product-name":  "RA", "amount":  5}]},
-    {"name":  "solar-lab", "creation-cost": 7000,"products":  [
+    {"name":  "solar-lab", "creation-cost": {"TF": 7000, "MI": 500},"products":  [
       {"product-name":  "TF", "base-rate":  100, "base-cap":  600},
       {"product-name":  "SOL", "base-rate":  500, "base-cap":  4000}
     ], "maintenance":  [{"product-name":  "RA", "amount":  5}]}
@@ -127,31 +127,31 @@
   "units": [
     {"name":  "soldier", "spec": "land", "base-points":
     {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250},
-      "maintenance":  [{"product-name":  "RA", "amount":  25}]
+      "maintenance":  [{"product-name":  "RA", "amount":  25}],"extra_cost": {"TF": 50}
     },
     {"name":  "tank", "spec": "land", "base-points":
     {"AP":  149, "DP":  350, "CAP":  149, "CDP":  300, "PBR": 250, "MS": 149},
-      "maintenance":  [{"product-name":  "RA", "amount":  30}]
+      "maintenance":  [{"product-name":  "RA", "amount":  30}],"extra_cost": {"TF": 50, "CO": 50}
     },
     {"name":  "assassin", "spec": "land", "base-points":
     {"AP":  350, "DP":  149, "CAP":  250, "CDP":  149, "PBR": 250, "MS": 350},
-      "maintenance":  [{"product-name":  "RA", "amount":  20}]
+      "maintenance":  [{"product-name":  "RA", "amount":  20}], "extra_cost": {"TF": 75}
     },
     {"name":  "medic", "spec": "land", "base-points":
     {"AP":  200, "DP":  200, "CAP":  200, "CDP":  200, "PBR": 350, "MS": 250},
-      "maintenance":  [{"product-name":  "RA", "amount":  10}]
+      "maintenance":  [{"product-name":  "RA", "amount":  10}], "extra_cost": {"MI": 50, "TF": 50}
     },
     {"name":  "fighter", "spec": "space", "base-points":
     {"AP":  350, "DP":  200, "CAP":  149, "CDP":  200, "PBR": 250, "MS": 350},
-      "maintenance":  [{"product-name":  "RA", "amount":  3}, {"product-name":  "OI", "amount":  10}]
+      "maintenance":  [{"product-name":  "RA", "amount":  3}, {"product-name":  "OI", "amount":  10}], "extra_cost": {"OI": 50, "CO":  50}
     },
     {"name":  "bomber", "spec": "space", "base-points":
     {"AP":  250, "DP":  149, "CAP":  350, "CDP":  149, "PBR": 250, "MS": 350},
-      "maintenance":  [{"product-name":  "RA", "amount":  3}, {"product-name":  "OI", "amount":  10}]
+      "maintenance":  [{"product-name":  "RA", "amount":  3}, {"product-name":  "OI", "amount":  10}], "extra_cost": {"CO": 50, "OI": 50, "MI":  25}
     },
     {"name":  "mothership", "spec": "space", "base-points":
     {"AP":  50, "DP":  50, "CAP":  50, "CDP":  50, "PBR": 50, "MS": 50},
-      "maintenance":  [{"product-name":  "RA", "amount":  50}]
+      "maintenance":  [{"product-name":  "RA", "amount":  50}], "extra_cost": {"CO": 100, "OI": 50}
     }
   ],
   "generals": [

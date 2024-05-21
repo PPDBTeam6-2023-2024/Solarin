@@ -84,17 +84,22 @@ function TrainingOptionAdder(props) {
             }}>
                 {typeCost.map((value, index) => <TrainingCostEntry key={index} resource={value[0]}
                                                                    cost={value[1] * unitAmount}/>)}
+
+            </div>
+
+            <div style={{"position": "relative"}}>
                 {troopStats[props.type] &&
-                    <div className={"troop-stats"}>
-                        {troopStats[props.type].map(stat => (
-                            <div key={stat.stat} className="stat-entry">
-                                <img src={`/images/stats_icons/${statJson[stat.stat].icon}`}
-                                     alt={stat}/>
-                                <div>{stat.value*unitAmount}</div>
-                            </div>
-                        ))}
-                    </div>
+                <div className={"troop-stats"}>
+                    {troopStats[props.type].map(stat => (
+                        <div key={stat.stat} className="stat-entry">
+                            <img src={`/images/stats_icons/${statJson[stat.stat].icon}`}
+                                 alt={stat}/>
+                            <div>{stat.value*unitAmount}</div>
+                        </div>
+                    ))}
+                </div>
                 }
+
             </div>
 
 

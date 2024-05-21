@@ -42,6 +42,8 @@ async def test_create_building_1(building_access: BuildingAccess, session: Async
 
 async def test_create_building_2(building_access: BuildingAccess, data_access: DataAccess, session: AsyncSession):
     await data_access.ResourceAccess.add_resource(1, "TF", 6500)
+    await data_access.ResourceAccess.add_resource(1, "UR", 500)
+    await data_access.ResourceAccess.add_resource(1, "SOL", 500)
     b_id = await building_access.create_building(1, 1, "nexus")
     await building_access.commit()
 
@@ -112,6 +114,6 @@ async def test_get_available_building_types_2(building_access: BuildingAccess, d
     for a in avail:
         if a["can_build"]:
             can_build_count += 1
-    assert can_build_count == 1
+    assert can_build_count == 0
 
 

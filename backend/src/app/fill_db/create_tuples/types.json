@@ -122,7 +122,17 @@
       "activity": "upgrade", "time_cost": 600
     }
   ],
-  "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],
+  "resources": {
+    "TF": 20,
+    "RA": 20,
+    "SOL": 20,
+    "POP": 30,
+    "INF": 20,
+    "MI": 20,
+    "UR": 20,
+    "OI": 20,
+    "CO": 20
+  },
   "stats": ["attack", "defense", "city_attack", "city_defense", "recovery", "speed"],
   "units": [
     {"name":  "soldier", "spec": "land", "base-points":

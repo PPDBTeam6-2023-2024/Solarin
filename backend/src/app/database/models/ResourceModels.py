@@ -33,6 +33,7 @@ class ResourceType(Base):
     """
     __tablename__ = 'resourceType'
     name = Column(String, primary_key=True)
+    starting_amount = Column(PositiveInteger, nullable=False)
 
 
 class ProductionRegionModifier(Base):

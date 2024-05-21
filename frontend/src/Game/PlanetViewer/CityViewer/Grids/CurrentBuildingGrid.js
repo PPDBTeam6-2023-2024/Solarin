@@ -5,7 +5,7 @@ import { ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent }
 import axios from "axios";
 import statsJson from "../../../UI/stats.json"
 
-const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage }) => {
+const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage, timer, setTimer }) => {
     /**
      * Visualization of the grid of the current buildings the city currently has
      * */
@@ -128,6 +128,8 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                                     setBuildings={setBuildings}
                                                     setCityInfo = {setCityInfo}
                                                     cityUpgradeBool={false}
+                                                    totalTimePassed={timer}
+                                                    setTotalTimePassed={setTimer}
                             />
                         }
                 </div>

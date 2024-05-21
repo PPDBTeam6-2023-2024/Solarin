@@ -121,7 +121,7 @@ An overview of each the tables in the database:
 
 |          Table           |  Type  | Purpose                                                                                                           |
 |:------------------------:|:------:|:------------------------------------------------------------------------------------------------------------------|
-|       ResourceType       | Lookup | Types of resources that are in the game                                                                           |  
+|       ResourceType       | Lookup | Types of resources that are in the game - also has info about the starting amount of each resource type for a new player                                                                          |  
 |       HasResources       |  Data  | Store resources associated with a user (stores how many of the resources a user has)                              |
 |        TradeOffer        |  Data  | Stores the currently active trading offers                                                                        |
 |        TradeGives        |  Data  | This table stores which resources a user will give to the trade offer setter when he/she accepts the trade offer. |

@@ -87,13 +87,10 @@ class CreateTuples:
                 maintenance = [(m["product-name"], m["amount"]) for m in building_type["maintenance"]]
                 await self.__dev.create_maintenance_building(building_type["name"], maintenance)
 
-
-
-    async def create_resource_types(self, resource_types: list[str]):
-        for resource_type in resource_types:
+    async def create_resource_types(self, resource_types: dict[str, int]):
+        for resource_type, starting_amount in resource_types.items():
             if await self.__session.get(ResourceType, resource_type) is None:
-                await self.__dev.create_resource_type(resource_type)
-
+                await self.__dev.create_resource_type(resource_type, starting_amount)
     async def create_troop_types(self, troop_types: list[dict[str, Any]]):
         for troop_type in troop_types:
             if await self.__session.get(TroopType, troop_type["name"]) is None:

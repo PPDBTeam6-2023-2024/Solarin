@@ -13,6 +13,8 @@ from .user_access import UserAccess
 from ..models.ArmyModels import Army
 from ....logic.formula.compute_properties import PoliticalModifiers
 from .city_access import CityAccess
+from src.app import config
+
 
 """
 Pre declaration of class because else circular import
@@ -362,7 +364,10 @@ class ArmyAccess(DatabaseAccess):
         to calculate how long the army will need to move to this position (delta)
         """
         distance = dist((army.x, army.y), (army.to_x, army.to_y))
-        delta = await self.get_army_time_delta(army_id, distance=distance, developer_speed=10)
+        if config.idle_time is not None:
+            delta = timedelta(seconds=config.idle_time)
+        else:
+            delta = await self.get_army_time_delta(army_id, distance=distance)
 
         """
         Change the departure time to now and the arrival time to the moment our army will arrive

@@ -13,6 +13,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
     const [selectedBuilding, setSelectedBuilding] = useState(null);
     const [baseStats, setBaseStats] = useState(null)
     const [selectedBuildingStat, setSelectedBuildingStat] = useState(0)
+    const [rates, setRates] = useState({})
 
     const columns = useMemo(() => [
         { headerName: "Building Type", field: "buildingType"},
@@ -31,6 +32,12 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
     }
     }, [buildings, selectedBuilding]);
 
+    useEffect(() => {
+        const fetchRates = async() => {
+            if (selectedBuilding) setRates(await getProductionBuildingRates(selectedBuilding.id))
+        }
+        fetchRates()
+        }, [selectedBuilding])
 
     useEffect(() => {
 
@@ -55,9 +62,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         buildingRank: building?.rank,
         id: building?.id,
         type: building?.type,
-        remaining_update_time: building?.remaining_update_time,
-        rates: building?.rates
-    })), [buildings]);
+        remaining_update_time: building?.remaining_update_time})), [buildings]);
   
     return (
         <>
@@ -69,9 +74,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
                     onCellMouseOver={async (event)=> {
-                        let building = event.data
-                        if(building.rates === undefined) building.rates = await getProductionBuildingRates(building.id)
-                        setSelectedBuilding(building);
+                        setSelectedBuilding(event.data);
                         onRowMouseOver(event);
                     }}
 
@@ -92,8 +95,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                 <tbody>
                                     {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
                                         <tr key={index}>
-                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {<small>{String(selectedBuilding.rates[res.resource_name])}/hr</small>}</td>
-
+                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {rates[res.resource_name] && <small>{String(rates[res.resource_name])}/hr</small>}</td>
                                         </tr>
                                     ))}
                                 </tbody>

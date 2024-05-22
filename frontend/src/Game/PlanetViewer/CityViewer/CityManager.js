@@ -108,6 +108,7 @@ const CityManager = ({ cityId, onClose}) => {
 
     /*
     * Make sure when we hover over a row entry, that we know what we are hovering over
+    * Make sure when we hover over a row entry, that we know what we are hovering over
     * */
     const onRowMouseOver = event => {
         if (selectedTab === 'Army') {

@@ -350,12 +350,7 @@ class BuildingAccess(DatabaseAccess):
         """
 
         stance = await UserAccess(self.session).get_politics(user_id)
-
-        general_production_modifier = 1
-        if stance:
-            general_production_modifier += ((stance.anarchism * 10) + (stance.democratic * 3) - (
-                        stance.theocracy * 10) - (
-                                                    stance.technocracy * 5) + (stance.corporate_state * 20)) / 100
+        general_production_modifier = PoliticalModifiers.production_modifier(stance)
 
         modifier_dict = dict()
         for row_list in production_modifier:

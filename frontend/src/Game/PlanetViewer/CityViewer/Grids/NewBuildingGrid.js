@@ -86,7 +86,6 @@ const BuildingGrid = ({
         }),
         can_build: building.can_build,
         id: building.id,
-        rates: building.rates,
         index: index
     })), [buildings]);
     return (

@@ -4,6 +4,7 @@ import './NewBuildingGrid.css';
 import { ResourceButtonComponent, TrainButtonComponent, UpgradeButtonComponent } from "./Buttons";
 import axios from "axios";
 import statsJson from "../../../UI/stats.json"
+import {getProductionBuildingRates} from "../BuildingManager";
 
 const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, selectedClick, selectedImage, cityId, setCityInfo, setBuildings, upgradeCostMap, setUpgradeCostMap, refreshResources, resourcesInStorage, setResourcesInStorage, timer, setTimer }) => {
     /**
@@ -18,14 +19,6 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         { headerName: "Building Rank", field: "buildingRank" },
         { headerName: "Function", field: "type", autoHeight: true },
     ], [cityId]);
-
-    const rowData = useMemo(() => buildings?.map((building) => ({
-        buildingType: building?.building_type,
-        buildingRank: building?.rank,
-        id: building?.id,
-        type: building?.type,
-        remaining_update_time: building?.remaining_update_time
-    })), [buildings]);
 
     useEffect(() => {
     if (selectedBuilding) {
@@ -57,6 +50,15 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
         }
     }, [baseStats, selectedBuilding]);  // also depend on baseStats in case this useEffect is executed before the getStats
 
+    const rowData = useMemo( () => buildings.map( (building) => ({
+        buildingType: building?.building_type,
+        buildingRank: building?.rank,
+        id: building?.id,
+        type: building?.type,
+        remaining_update_time: building?.remaining_update_time,
+        rates: building?.rates
+    })), [buildings]);
+  
     return (
         <>
             <div className="ag-theme-alpine-dark buildings_grid">
@@ -66,9 +68,11 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                     domLayout='normal'
                     suppressMovableColumns={true}
                     suppressDragLeaveHidesColumns={true}
-                    onCellMouseOver={event => {
-                        setSelectedBuilding(event.data);
-                        onRowMouseOver(event)
+                    onCellMouseOver={async (event)=> {
+                        let building = event.data
+                        if(building.rates === undefined) building.rates = await getProductionBuildingRates(building.id)
+                        setSelectedBuilding(building);
+                        onRowMouseOver(event);
                     }}
 
                     onGridReady={params => params.api.sizeColumnsToFit()}
@@ -88,7 +92,8 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                 <tbody>
                                     {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
                                         <tr key={index}>
-                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name}</td>
+                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {<small>{String(selectedBuilding.rates[res.resource_name])}/hr</small>}</td>
+
                                         </tr>
                                     ))}
                                 </tbody>

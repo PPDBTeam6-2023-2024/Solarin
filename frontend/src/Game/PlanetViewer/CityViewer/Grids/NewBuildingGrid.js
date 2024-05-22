@@ -82,13 +82,13 @@ const BuildingGrid = ({
         buildingType: building.type,
         buildingRank: building.required_rank,
         cost: building.costs.map((cost) => {
-            return (cost.cost_amount + " " + cost.cost_type)
+            return `${cost.cost_amount} ${cost.cost_type}`
         }),
         can_build: building.can_build,
         id: building.id,
+        rates: building.rates,
         index: index
     })), [buildings]);
-
     return (
         <>
             <div className="ag-theme-alpine-dark buildings_grid">

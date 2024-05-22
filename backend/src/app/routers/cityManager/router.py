@@ -70,7 +70,6 @@ async def get_city_and_building_info(
     await data_access.commit()
     return CityData(city = city_info_schema, buildings = buildings_schemas)
 
-
 @router.get("/cities/{planet_id}")
 async def get_cities(
         planet_id: int,

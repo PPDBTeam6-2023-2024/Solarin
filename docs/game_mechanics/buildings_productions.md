@@ -49,13 +49,19 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacity(unit, barracks)}=20$
 	* Creation Cost:
 		* 550 TF
+		* 100 POP
 
 	* Training time will depend on the unit type
 * Space Dock
 	* For training space units 
 		* $\text{basePrice}(\text{spaceUnit}) = 100$ SOL
 		* $\text{baseCapacity(spaceUnit, spaceDock)}=30$
-	* 1250 TF Creation Cost
+  	* Creation Cost:
+		* 1250 TF 
+		* 1000 Coal
+  		* 250 Uranium
+  	 	* 500 Oil
+
 	* Training time will depend on the unit type
 * Nexus
 	* Produces: 
@@ -67,18 +73,26 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 			* $\text{baseCapacity(TF, nexus)}=5000$
 	* Creation Cost:
 		* 6500 TF
+  		* 500 Uranium
+    		* 500 Solarium 
 	* The player begins with a free *Nexus*
 * Farmpod
 	* Produces *Rations (RA)*
 		* $\text{baseRate(RA, farmpod)}=300$
 		* $\text{baseCapacity(RA, farmpod)}=5000$
-	* 1200 TF Creation Cost
+	* Creation Cost:
+ 		* 1200 TF
+   		* 250 Minerals
+     		* 50 Solarium 
 * Cloning Chamber
 	* Produces *Population (POP)*
 		* $\text{baseRate(POP, cloningChamber)}=150$
 		* $\text{baseCapacity(POP, cloningChamber)}=1000$
 	* Creation Cost
 		* 1500 TF
+ 	 	* 1000 Rations
+    		* 250 Coal
+      		* 100 Solarium
 * Extractor
 	* Produces:
 		* *Minerals*
@@ -89,12 +103,16 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 			* $\text{baseCapacity(oil, extractor)}=1500$
 	* Creation Cost:
 		* 3000 TF
+  		* 150 Solarium
+    		* 500 Coal
 * Reactor
 	* Produces *Uranium*
 		* $\text{baseRate(uranium, extractor))}=100$
 		* $\text{baseCapacity(uranium, extractor)}=550$
 	* Creation Cost:
 		* 10000 TF
+  		* 250 Solarium
+    		* 500 Minerals
   
 * Oil Pump
 	* Produces *Oil*
@@ -102,6 +120,8 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacit(yoil, oil pump)}=1600$
 	* Creation Cost:
 		* 3500 TF
+  		* 50 Solarium
+    		* 500 Coal
       
 * Parlement
 	* Produces *Influence*
@@ -109,6 +129,7 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacity(influence, parlement)}=200$
 	* Creation Cost:
 		* 1500 TF
+  		* 25 Solarium
 
 * Solar Generator
 	* Produces *SOL*
@@ -116,6 +137,7 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacity(SOL, solar generator)}=5000$
 	* Creation Cost:
 		* 6800 TF
+  		* 500 Coal
  
 * Material Lab
 	* Produces *TF*
@@ -123,6 +145,7 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacity(TF, material lab)}=6000$
 	* Creation Cost:
 		* 9000 TF
+  		* 150 Solarium
  
 * Plant Growth Accelerator
 	* Produces *RA*
@@ -130,6 +153,7 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacity(RA, plant growth accelerator)}=10000$
 	* Creation Cost:
 		* 15000 TF
+  		* 250 Uranium
  
 * Electric Mine
 	* Produces *Minerals*
@@ -143,6 +167,7 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 		* $\text{baseCapacity(Oil, electric mine)}=300$
 	* Creation Cost:
 		* 9000 TF
+  		* 100 Solarium
  
 * Solar Lab
     * Produces *TF*
@@ -153,3 +178,4 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
         * $\text{baseCapacity(TF, material lab)}=4000$
     * Creation Cost:
         * 7000 TF
+        * 500 Minerals

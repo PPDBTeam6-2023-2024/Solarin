@@ -38,9 +38,9 @@ class PropertyUtility:
         generate the production cost, based on the points
         """
         PropertyUtility.verifyBasePoints(base_points)
-        return base_price * int(floor(
-            mean(base_points) /
-            mean(PropertyUtility.base_point_bounds)) ** PropertyUtility.rate)
+        a = mean(base_points)
+        b = mean(PropertyUtility.base_point_bounds)
+        return int(floor(base_price * a / b))
 
     @staticmethod
     def getUnitTrainCost(base_price: int, level: int) -> int:

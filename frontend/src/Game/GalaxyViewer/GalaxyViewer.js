@@ -16,14 +16,11 @@ import ColorManager from "../ColorManager";
 function Scene(props) {
     const [socket, setSocket] = useContext(SocketContext)
 
-
     const [fleetsInSpace, setFleetsInSpace] = useState([])
-
 
     const [publicPlanets, setPublicPlanets] = useState([])
     const [privatePlanets, setPrivatePlanets] = useState([])
-
-
+/* Handle when getting fleets */
     const handleGetFleets = (data) => {
         return data.map(fleet => {
             const arrivalTime = new Date(fleet.arrival_time).getTime()
@@ -57,7 +54,7 @@ function Scene(props) {
         if (!socket) return
         socket.onmessage = async (event) => {
             let response = JSON.parse(event.data)
-            /*Websocket cases depending on the type of request we receive from the abckend websockets*/
+            /* Websocket cases depending on the type of request we receive from the backend websockets */
             switch (response.request_type) {
                 case "get_armies":
                     const fleets = await handleGetFleets(response.data)
@@ -128,17 +125,23 @@ function Scene(props) {
         })
         setFleetsMoveMode([])
     }
+    /* In order to not lose contexts in child components when working with react-three-fiber */
     const ContextBridge = useContextBridge(SocketContext, UserInfoContext,  ReactReduxContext, PlanetListContext)
+
     return (
         <>
+            {/* The stars enclosing the planets and sun */}
             <Stars/>
+            {/* Ambient light to ensure objects are not completely dark*/}
             <ambientLight intensity={0.9}/>
+            {/* Invisible plane to track hovers when having fleets on move mode */}
             <mesh name="plane" onClick={(e) => {
                 if (fleetsMoveMode.length !== 0) moveTo(e)
             }} visible={false} onPointerMove={(e) => setHoverPos(e.point)} position={[0, 0, 0]}
                   scale={[1000, 0.1, 1000]}>
                 <boxGeometry args={[1, 1, 1]}/>
             </mesh>
+            {/* Render lines for fleets currently in move mode */}
             {
                 fleetsMoveMode.map((obj, i) => {
                     return (
@@ -146,6 +149,7 @@ function Scene(props) {
                     )
                 })
             }
+            {/* Bounds are for moving to the planet that was clicked last time*/}
             <Bounds fit clip observe margin={1.2}>
                 {/*Display a sun in the center*/}
                 <mesh position={[0, 0, 0]} scale={5} name={"solarin"}>
@@ -160,9 +164,10 @@ function Scene(props) {
                         )
                     })
                 }
-                {/*Display the planets in the galaxy view*/}
+                {/* Propagating contexts */}
                 <ContextBridge>
-                {publicPlanets.map((planet, i) => {
+                    {/*Display the planets in the galaxy view*/}
+                    {publicPlanets.map((planet, i) => {
                     return (
                         <Planet key={i} planet={planet}
                                 privatePlanets={privatePlanets}
@@ -185,6 +190,7 @@ function ForwardCanvas(props) {
     return (
         <Canvas
         flat shadows style={{position: "fixed", backgroundColor: "#0a0a0a"}} scene={{background: "black"}}>
+            {/* Propagating contexts */}
             <ContextBridge>
                 <Scene planetListIndex={props.planetListIndex} setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}/>
             </ContextBridge>

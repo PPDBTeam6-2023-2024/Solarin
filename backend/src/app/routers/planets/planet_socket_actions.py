@@ -34,7 +34,7 @@ class PlanetSocketActions:
         armies = await self.data_access.ArmyAccess.get_armies_on_planet_extra(planet_id=self.planet_id)
         data = {
             "request_type": data["type"],
-            "data": [army.to_dict() | {"alliance": army.alliance, "username": army.username} for army in armies]
+            "data": [army.to_dict() | {"alliance": army.alliance, "username": army.username, "speed": army.speed} for army in armies]
         }
         await self.connection_pool.send_personal_message(self.websocket, data)
 
@@ -95,7 +95,7 @@ class PlanetSocketActions:
         if changed:
             await self.connection_pool.broadcast({
                 "request_type": "change_direction",
-                "data": army.to_dict() | {"alliance": army.alliance, "username": army.username}
+                "data": army.to_dict() | {"alliance": army.alliance, "username": army.username, "speed": army.speed}
             })
 
     async def leave_planet(self, data: json):

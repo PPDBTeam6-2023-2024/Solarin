@@ -156,7 +156,7 @@ function Settings(props) {
                         <div style={{"marginTop": "2vw", "display": "flex", "flexDirection": "row", "alignItems": "center",
                             "justifyContent": "center"}}>
                             <Tooltip title={`Reset the entire game for this player`}>
-                            <button onClick={() => {sendRestartUpdate()}} > Restart</button>
+                            <button onClick={() => {sendRestartUpdate()}} > Restart Game</button>
                             </Tooltip>
                         </div>
 

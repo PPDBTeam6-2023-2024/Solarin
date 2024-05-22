@@ -14,6 +14,26 @@ class ResourceAccess(DatabaseAccess):
     def __init__(self, session: AsyncSession):
         super().__init__(session)
 
+    async def set_starting_resources(self, user_id: int) -> None:
+        """
+        Set the starting resources for a user and remove all the resources the user had before
+
+        :param: user_id: id of the user whose resources will be set
+        """
+        resources = await self.session.execute(select(ResourceType))
+        resources = resources.scalars().all()
+        for resource in resources:
+            """
+            Remove all the resources the user had before
+            """
+            d = delete(HasResources).where(HasResources.owner_id == user_id)
+            await self.session.execute(d)
+            """
+            Set the starting resources for the user
+            """
+            self.session.add(HasResources(resource_type=resource.name, quantity=resource.starting_amount, owner_id=user_id))
+        await self.session.flush()
+
     async def has_resources(self, user_id: int, resource_check: List[Tuple[str, int]]) -> bool:
         """
         Checks if the provided user has enough of the provided resources

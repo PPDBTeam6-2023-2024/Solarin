@@ -81,14 +81,14 @@ class DeveloperAccess(DatabaseAccess):
         wall = WallType(name=name, defense=defense)
         self.session.add(wall)
 
-    async def create_resource_type(self, type_name: str):
+    async def create_resource_type(self, type_name: str, starting_amount: int = 0):
         """
         Add a new type of resource
 
         :param: type_name: name of resource
         :return: nothing
         """
-        r = ResourceType(name=type_name)
+        r = ResourceType(name=type_name, starting_amount=starting_amount)
         self.session.add(r)
 
     async def set_produces_resources(self, building_name: str, resource_name: str, base_production: int,

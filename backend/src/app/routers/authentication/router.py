@@ -35,7 +35,7 @@ async def add_user(user: UserCreate, db=Depends(get_db)):
         }
     except sqlalchemy.exc.IntegrityError:
         await db.rollback()
-        raise HTTPException(status_code=404, detail="Email or username already taken")
+        raise HTTPException(status_code=409, detail="Email or username already taken")
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail="Failed to add user")

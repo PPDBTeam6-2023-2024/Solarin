@@ -11,7 +11,6 @@ const MaintenanceHook = () => {
     * we will mimic the resources updates on the frontend
     * This hook makes sure, the resources are properly updated based on the maintenance cost
     * */
-
     const dispatch = useDispatch()
     const resources = useSelector((state) => state.resources.resources)
 
@@ -29,7 +28,7 @@ const MaintenanceHook = () => {
     * To be able to simulate the change of maintenance live, will retrieve the maintenance rate and
     * mimic this on the frontend
     * */
-    const [maintenanceCost, setMaintenanceCost] = useState([]);
+    const [maintenanceCost, setMaintenanceCost] = useState({});
     const [maintenanceCheckable, setMaintenanceCheckable] = useState(false);
     useEffect(() => {
         if (isConnected.current) return
@@ -89,6 +88,7 @@ const MaintenanceHook = () => {
                 * When we get an update_cost action, we will update the websocket costs
                 * Resync the resources, and handle the maintenance checkable
                 * */
+
                 setMaintenanceCost(data.maintenance_cost)
                 initializeResources(dispatch)
 
@@ -144,13 +144,11 @@ const MaintenanceHook = () => {
         * For each maintenance cost resource, we will set an interval in which we reduce the resource by 1
         * */
         let intervals = []
-
-        maintenanceCost.forEach((element) => {
+        Object.entries(maintenanceCost).forEach((element) => {
             /*
             * Only make intervals for resources that have a cost > 0/h
             * */
-            if (element[1] = 0){
-
+            if (element[1] !== 0){
                 const makeInterval = async() => {
                     /*
                     * Wait a short amount of time before starting the interval, the reason for this is rounding.

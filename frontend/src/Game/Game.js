@@ -44,11 +44,6 @@ const Game = () => {
     const [planetListIndex, setPlanetListIndex] = useState(0)
 
     /*
-    * Support maintenance using a custom hook
-    * */
-    MaintenanceHook()
-
-    /*
     * Support the global websocket actions using a custom hook
     * */
     const [combatNotifications, setCombatNotifications] = useState([]);
@@ -117,7 +112,14 @@ const Game = () => {
     useEffect(() => {
         authenticate()
         getAllPlanets()
+
     }, [])
+
+    /*
+    * Support maintenance using a custom hook
+    * */
+
+    MaintenanceHook()
 
 
     return (

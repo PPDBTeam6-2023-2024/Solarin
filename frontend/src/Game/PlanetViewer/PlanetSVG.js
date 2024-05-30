@@ -4,7 +4,7 @@ import axios from 'axios';
 
 
 // get the correct image path for the given region
-function GetImagePath(regionType) {
+export function GetImagePath(regionType) {
     /*
     * For each planet region type, we take the corresponding image
     * */

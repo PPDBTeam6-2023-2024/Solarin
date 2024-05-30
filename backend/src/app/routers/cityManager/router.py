@@ -70,6 +70,7 @@ async def get_city_and_building_info(
     await data_access.commit()
     return CityData(city = city_info_schema, buildings = buildings_schemas)
 
+
 @router.get("/cities/{planet_id}")
 async def get_cities(
         planet_id: int,
@@ -141,10 +142,11 @@ async def get_upgrade_cost(
         cost = await data_access.BuildingAccess.get_upgrade_cost(user_id, building.id)
         result.append(CostSchema(id=cost[0], costs=cost[1], time_cost=0, can_upgrade=cost[2]))
 
-    return result,city_upgrade_cost
+    return result, city_upgrade_cost
+
 
 @router.get("/cities_user")
-async def friend_requests(
+async def cities_user(
         user_id: Annotated[int, Depends(get_my_id)],
         db: AsyncSession = Depends(get_db)
 
@@ -159,6 +161,7 @@ async def friend_requests(
     cities_schemas = [city.to_city_schema() for city in data]
 
     return cities_schemas
+
 
 @router.post("/upgrade_city/{city_id}", response_model=Confirmation)
 async def upgrade_city(
@@ -198,6 +201,7 @@ async def get_resource_stocks(
             stock_list.append(ResourceStockSchema(resource_name=resource_stock[0], amount_in_stock=resource_stock[1], max_amount=resource_stock[2]))
         result_dict[building_id] = stock_list
     return StockOverViewSchema(overview=result_dict)
+
 
 @router.get("/get_stats/{city_id}")
 async def get_city_stats(city_id: int, db=Depends(get_db)):

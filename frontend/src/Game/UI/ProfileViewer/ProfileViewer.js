@@ -48,7 +48,6 @@ function ProfileViewer(props) {
         /*get the list of all the requests to join the alliance*/
         try {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/army/armies_user`)
-            console.log("resp", response)
             setArmiesList(response.data)
         } catch (e) {
             setArmiesList([])

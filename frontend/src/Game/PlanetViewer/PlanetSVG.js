@@ -104,7 +104,8 @@ function PlanetSVG(props) {
     /* calculate travel time to a coordinate in minutes (for army movement) */
     const getTravelTime = (from, to, speed) => {
         /*to change when army speed is taken into account*/
-        return Math.round(Math.hypot(to[0]-from[0], to[1]-from[1])*speed/60)
+        const mapCrossTime = 1000 / speed * 60
+        return Math.round(Math.hypot(to[0]-from[0], to[1]-from[1])*mapCrossTime)
     }
 
     /*

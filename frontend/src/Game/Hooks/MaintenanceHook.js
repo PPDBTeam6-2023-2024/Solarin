@@ -159,11 +159,23 @@ const MaintenanceHook = () => {
                     await new Promise((resolve) => setTimeout(resolve, Math.floor(1000*3600/element[1])))
 
                     /*
+                    * To avoid cpu intensiveness, we will maximally update the maintenance of each
+                    * resource every second
+                    * */
+                    let interval_change = 1;
+                    let interval_duration = 1000*3600/element[1];
+                    if (interval_duration < 1000){
+                        const d = Math.ceil(1000/interval_duration)
+                        interval_duration *= d;
+                        interval_change *= d;
+                    }
+
+                    /*
                     * Create the interval to slowly decrease the resource amount of the user
                     * */
                     const interval = setInterval(() => {
-                        dispatch(setDecreaseResource({"resource": element[0]}))
-                    }, Math.floor(1000*3600/element[1]))
+                        dispatch(setDecreaseResource({"resource": element[0], "amount": interval_change}))
+                    }, Math.floor(interval_duration))
                     intervals.push(interval)
                 }
                 makeInterval()

@@ -17,7 +17,7 @@ const resourcesSlice = createSlice({
           let resources = state.resources
 
 
-          let state_copy = {...state, "resources": {...resources, [action.payload.resource]: Math.max(resources[action.payload.resource]-1, 0)}}
+          let state_copy = {...state, "resources": {...resources, [action.payload.resource]: Math.max(resources[action.payload.resource]-action.payload.amount, 0)}}
 
           return state_copy
       }

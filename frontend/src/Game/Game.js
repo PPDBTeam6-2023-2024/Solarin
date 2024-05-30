@@ -81,11 +81,16 @@ const Game = () => {
             const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
 
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/private`)
+            console.log("spawning", response.data)
+
             if (response.data.length > 0){
                 setPlanetList(response.data);
-            }else await setPlanetListToDefault()
 
-            changePlanetId(response2.data.planet_id);
+                /*
+                * This line sets manually the default planet id
+                * */
+                setPlanetListIndex(response.data.findIndex(planet => planet.id === response2.data.planet_id));
+            }else await setPlanetListToDefault()
 
         } catch (error) {
             await setPlanetListToDefault()

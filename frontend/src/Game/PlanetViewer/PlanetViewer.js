@@ -119,6 +119,7 @@ function PlanetViewer(props) {
 
             return {
                 id: army.id,
+                speed: army.speed,
                 x: army.x,
                 y: army.y,
                 curr_x: currentPos.x,
@@ -209,7 +210,7 @@ function PlanetViewer(props) {
             switch (response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
-                    console.log(armies)
+                    console.log(response.data)
                     setArmyImages(armies);
                     break
                 case "change_direction":

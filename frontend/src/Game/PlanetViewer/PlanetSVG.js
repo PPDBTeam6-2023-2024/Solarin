@@ -124,7 +124,7 @@ function PlanetSVG(props) {
             {
                 props.armiesMoveMode.map((army, i) => {
                     const armyImage = props.armyImages.find((elem) => elem.id === army);
-                    return <Fragment key={i}>
+                    return <Fragment key={army.id}>
                     <line stroke={"red"} strokeWidth={3} key={i} x1={armyImage.curr_x*width} y1={armyImage.curr_y*height} x2={mousePos[0]*width} y2={mousePos[1]*height}/>
                     <circle cx={mousePos[0]*width} cy={mousePos[1]*height} r={10} fill={"red"}/>
                     <text fill="white" x={(mousePos[0]+armyImage.curr_x)*width/2} y={(mousePos[1]+armyImage.curr_y)*height/2-20}>

@@ -733,7 +733,7 @@ class BuildingAccess(DatabaseAccess):
         :param city_id: id of the city
         :return: list of barrack ids
         """
-        get_barracks = select(BuildingInstance.id).where(and_(BuildingInstance.city_id == city_id, BuildingInstance.building_type == "Barracks"))
+        get_barracks = select(BuildingInstance.id).where(and_(BuildingInstance.city_id == city_id, BuildingInstance.building_type == "barracks"))
         barracks = await self.session.execute(get_barracks)
         barracks = barracks.all()
         return [b[0] for b in barracks]

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, Request, WebSocket
+from fastapi import APIRouter, Depends, Query, Request, WebSocket, WebSocketDisconnect
 
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
@@ -96,7 +96,7 @@ async def get_buildings(
     return {"queue": output, "success": True, "message": ""}
 
 
-async def building_queue_trigger(building_id, trigger_queue, da):
+async def building_queue_trigger(building_id, trigger_queue, da: DataAccess):
     """
     This function will trigger the training queue to check if a new troop is trained
     """
@@ -126,10 +126,10 @@ async def websocket_endpoint(websocket: WebSocket, city_id: int, db=Depends(get_
     data_access = DataAccess(db)
 
     # get all barrack ids in the city
-    ids = await data_access.BuildingAccess.get_buildings(city_id, "barracks")
+    ids = await data_access.BuildingAccess.get_barrack_ids_in_city(city_id)
 
     trigger_queue = asyncio.Queue()
-    tasks = [asyncio.create_task(building_queue_trigger(b.id, trigger_queue, data_access)) for b in ids]
+    tasks = [asyncio.create_task(building_queue_trigger(id, trigger_queue, data_access)) for id in ids]
 
     try:
         while True:
@@ -137,9 +137,10 @@ async def websocket_endpoint(websocket: WebSocket, city_id: int, db=Depends(get_
             # wait for a trigger that a new troop is trained
             await trigger_queue.get()
             await websocket.send_json({"message": "new troop trained"})
-    except Exception as e:
+    except WebSocketDisconnect:
         pass
+    except Exception as e:
+        await websocket.close()
     finally:
         for t in tasks:
             t.cancel()
-        await websocket.close()

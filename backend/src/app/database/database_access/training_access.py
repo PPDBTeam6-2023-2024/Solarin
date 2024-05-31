@@ -63,7 +63,7 @@ class TrainingAccess(DatabaseAccess):
         create queue
         """
         if config.idle_time is not None:
-            training_time = config.idle_time
+            training_time = config.idle_time * amount
         else:
             training_time: int = await self.__getTrainingTime(troop_type) * amount
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,
@@ -115,7 +115,10 @@ class TrainingAccess(DatabaseAccess):
             If multiple troops trained add only part to army when not fully done
             """
 
-            unit_training_time = r[1]
+            if config.idle_time is not None:
+                unit_training_time = config.idle_time
+            else:
+                unit_training_time = r[1]
             queue_entry: TrainingQueue = r[0]
 
             """
@@ -172,7 +175,7 @@ class TrainingAccess(DatabaseAccess):
         """
         get_queue_entries = Select(TrainingQueue, TroopType.training_time).join(TroopType,
                                                                                 TroopType.type == TrainingQueue.troop_type).where(
-            TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))
+        TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))
         results = await self.session.execute(get_queue_entries)
         results = results.all()
         return results

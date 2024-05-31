@@ -32,13 +32,16 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
     }
     }, [buildings, selectedBuilding]);
 
+
     useEffect(() => {
+        /*Get production rate for a building*/
         const fetchRates = async() => {
-            if (selectedBuilding) setRates(await getProductionBuildingRates(selectedBuilding.id))
+            setRates(await getProductionBuildingRates(cityId))
         }
         fetchRates()
-        }, [selectedBuilding])
+        }, [])
 
+    /*Get stats of a building in case we have a tower or a wall*/
     useEffect(() => {
 
         const getStats = async () => {
@@ -95,7 +98,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                 <tbody>
                                     {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
                                         <tr key={index}>
-                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {rates[res.resource_name] && <small>{String(rates[res.resource_name])}/hr</small>}</td>
+                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {rates[selectedBuilding.id][res.resource_name] && <small>{String(rates[selectedBuilding.id][res.resource_name])}/hr</small>}</td>
                                         </tr>
                                     ))}
                                 </tbody>

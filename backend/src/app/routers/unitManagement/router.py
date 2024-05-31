@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request, WebSocket
 
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
@@ -93,3 +93,33 @@ async def get_buildings(
 
     output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
     return {"queue": output, "success": True, "message": ""}
+
+
+@router.websocket("/ws/city_troops/{city_id}")
+async def websocket_endpoint(websocket: WebSocket, city_id: int, db=Depends(get_db)):
+    """
+    This websocket will provide the user with the current troops in a city
+    Firstly it will send all the troops that are currently in the city.
+    Then it will send updates when a new troop is trained
+    """
+    auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
+    user_id = get_my_id(auth_token)
+    await websocket.accept(subprotocol=auth_token)
+
+    # no connection manager needed because this is a simple p2p connection
+
+    data_access = DataAccess(db)
+
+    try:
+        # send all the troops that are currently in the city
+        army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
+        troops = await data_access.ArmyAccess.get_troops(army_id)
+        troops = [t.to_armyconsistsof_schema().model_dump() for t in troops]
+        await websocket.send_json({"troops": troops})
+        # send updates when a new troop is trained
+        training_queue = await data_access.TrainingAccess.get_queue(city_id)
+        while True:
+
+            await websocket.send_json(troops)
+    except Exception as e:
+        pass

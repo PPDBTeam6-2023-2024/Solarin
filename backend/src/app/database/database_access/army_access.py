@@ -128,7 +128,7 @@ class ArmyAccess(DatabaseAccess):
             """
             await self.session.flush()
 
-    async def get_troops(self, army_id: int):
+    async def get_troops(self, army_id: int) -> list[ArmyConsistsOf]:
         """
         Get the troops that are part of the army
 

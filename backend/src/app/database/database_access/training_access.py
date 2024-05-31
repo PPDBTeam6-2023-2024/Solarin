@@ -154,7 +154,7 @@ class TrainingAccess(DatabaseAccess):
         """
         await self.session.flush()
 
-    async def get_queue(self, building_id):
+    async def get_queue(self, building_id) -> TrainingQueue:
         """
         get the training queue of a building id
         :param: building_id: id of buildings whose queue we will check
@@ -162,8 +162,8 @@ class TrainingAccess(DatabaseAccess):
         """
 
         """
-                query to get the training queue, sorted by asc Training id, so the first entry will be first in the list 
-                """
+        query to get the training queue, sorted by asc Training id, so the first entry will be first in the list 
+        """
         get_queue_entries = Select(TrainingQueue, TroopType.training_time).join(TroopType,
                                                                                 TroopType.type == TrainingQueue.troop_type).where(
             TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))

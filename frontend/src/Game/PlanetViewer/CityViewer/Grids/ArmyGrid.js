@@ -1,15 +1,40 @@
-import React, {useContext, useMemo, useState} from "react";
+import React, {useContext, useMemo, useState, useRef, useEffect} from "react";
 import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 import {SplitArmy} from "../BuildingManager";
+import {GetArmyInCity} from "../BuildingManager";
 
-const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
+const ArmyGrid = ({cityId, onRowMouseOver, selectedImage, refresh}) => {
 
     const [socket, setSocket] = useContext(SocketContext);
     const [gridApi, setGridApi] = useState()
-    const [armyId, setArmyId] = useState(troops.army_id)
+    const [troops, setTroops] = useState([])
+    const [armyId, setArmyId] = useState(null)
+    const websocket = useRef(null);
+
+    useEffect(() => {
+        websocket.current = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/unit/ws/${cityId}`, `${localStorage.getItem('access-token')}`);
+        websocket.current.onopen = () => {
+            console.log("Websocket connected");
+        };
+
+        websocket.current.onmessage = (event) => {
+            GetArmyInCity(cityId).then(setTroops);
+        };
+        websocket.current.onclose = () => {
+            console.log("Websocket closed");
+        };
+
+        return () => {
+            websocket.current.close();
+        };
+    }, [setTroops, cityId]);
+
+    useEffect(() => {
+        GetArmyInCity(cityId).then(setTroops);
+    }, [cityId]);
 
     /* set column data */
     const columns = useMemo(() => [

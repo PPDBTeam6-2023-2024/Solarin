@@ -34,7 +34,6 @@ const CityManager = ({ cityId, onClose}) => {
     const [cityUpgradeInfo, setCityUpgradeInfo] = useState([]);
     const [cityInfo, setCityInfo] = useState([])
     const [newBuildingTypes, setNewBuildingTypes] = useState([]);
-    const [troops, setTroops] = useState([]); // State for troops
 
     const [selectedImage, setSelectedImage] = useState(null);
 
@@ -65,8 +64,6 @@ const CityManager = ({ cityId, onClose}) => {
     const cityContextLoader = (() => {
         /*Load city information*/
         updateBuildingsAndTypes()
-        /*Load army information*/
-        getArmyInCity(cityId).then(setTroops); // Fetch and set troops
     })
 
     /*Update the buildings their information*/
@@ -194,7 +191,7 @@ const CityManager = ({ cityId, onClose}) => {
                     {/*Displays the Army Tab*/}
                     {selectedTab === 'Army' && <ArmyGrid
                         onRowMouseOver={onRowMouseOver}
-                        troops={troops}
+                        cityId={cityId}
                         selectedImage={selectedImage}
                         refresh={cityContextLoader}
                     />

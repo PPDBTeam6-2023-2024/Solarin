@@ -5,6 +5,7 @@ from typing import Annotated, Tuple, List
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 from ...database.models import *
+import asyncio
 
 router = APIRouter(prefix="/unit", tags=["City"])
 
@@ -95,12 +96,26 @@ async def get_buildings(
     return {"queue": output, "success": True, "message": ""}
 
 
-@router.websocket("/ws/city_troops/{city_id}")
+async def building_queue_trigger(building_id, trigger_queue, da):
+    """
+    This function will trigger the training queue to check if a new troop is trained
+    """
+    while True:
+        time_until_next_update = await da.TrainingAccess.check_queue(building_id)
+        await da.BuildingAccess.checked(building_id)
+        await da.commit()
+        await trigger_queue.put(True)
+        if time_until_next_update is None:
+            time_until_next_update = 5
+        else:
+            time_until_next_update += 0.3
+        await asyncio.sleep(time_until_next_update)
+
+
+@router.websocket("/ws/{city_id}")
 async def websocket_endpoint(websocket: WebSocket, city_id: int, db=Depends(get_db)):
     """
-    This websocket will provide the user with the current troops in a city
-    Firstly it will send all the troops that are currently in the city.
-    Then it will send updates when a new troop is trained
+    This websocket will notify the user when a new troop is trained in the city
     """
     auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
     user_id = get_my_id(auth_token)
@@ -110,16 +125,21 @@ async def websocket_endpoint(websocket: WebSocket, city_id: int, db=Depends(get_
 
     data_access = DataAccess(db)
 
-    try:
-        # send all the troops that are currently in the city
-        army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
-        troops = await data_access.ArmyAccess.get_troops(army_id)
-        troops = [t.to_armyconsistsof_schema().model_dump() for t in troops]
-        await websocket.send_json({"troops": troops})
-        # send updates when a new troop is trained
-        training_queue = await data_access.TrainingAccess.get_queue(city_id)
-        while True:
+    # get all barrack ids in the city
+    ids = await data_access.BuildingAccess.get_buildings(city_id, "barracks")
 
-            await websocket.send_json(troops)
+    trigger_queue = asyncio.Queue()
+    tasks = [asyncio.create_task(building_queue_trigger(b.id, trigger_queue, data_access)) for b in ids]
+
+    try:
+        while True:
+            # send all the troops that are currently in the city
+            # wait for a trigger that a new troop is trained
+            await trigger_queue.get()
+            await websocket.send_json({"message": "new troop trained"})
     except Exception as e:
         pass
+    finally:
+        for t in tasks:
+            t.cancel()
+        await websocket.close()

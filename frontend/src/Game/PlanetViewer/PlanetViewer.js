@@ -1,5 +1,5 @@
 import {MapInteractionCSS} from 'react-map-interaction';
-import {useState, useEffect, useContext, useRef} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 
 import CityManager from "./CityViewer/CityManager";
 
@@ -7,7 +7,7 @@ import CityManager from "./CityViewer/CityManager";
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
 
-import {toggleArmyViewer, closeArmyViewer} from './Helper/ArmyViewerHelper';
+import {closeArmyViewer, toggleArmyViewer} from './Helper/ArmyViewerHelper';
 import {fetchCities} from './Helper/CityHelper';
 
 import ArmyMapEntry from "./ArmyMapEntry";
@@ -150,21 +150,32 @@ function PlanetViewer(props) {
     * by updating the army position, visually based on linear interpolation
     */
     useEffect(() => {
-        const interval = setInterval(async () => {
-            setArmyImages(armyImages.map((elem) => {
-                const currentPosition = lerp({
-                    sourcePosition: {x: elem.x, y: elem.y},
-                    targetPosition: {x: elem.to_x, y: elem.to_y},
-                    arrivalTime: elem.arrivalTime,
-                    departureTime: elem.departureTime
+
+        const interval = setInterval( () => {
+
+
+            /*
+            * Update the army positions on the planet
+            * */
+            setArmyImages(img => {
+
+                return img.map((elem) => {
+                    const currentPosition = lerp({
+                        sourcePosition: {x: elem.x, y: elem.y},
+                        targetPosition: {x: elem.to_x, y: elem.to_y},
+                        arrivalTime: elem.arrivalTime,
+                        departureTime: elem.departureTime
+                    })
+                    return {...elem, curr_x: currentPosition.x, curr_y: currentPosition.y}
                 })
-                return {...elem, curr_x: currentPosition.x, curr_y: currentPosition.y}
-            }))
+
+            })
+
         }, 100);
         return () => {
             clearInterval(interval)
         }
-    }, [armyImages])
+    }, [armyImages.map(army => army.to_x+","+army.to_y).join(";").toString()])
 
     /*
     * Handle when an army changes direction
@@ -192,6 +203,7 @@ function PlanetViewer(props) {
     We want to make sure the Army viewer will be closed.
     */
     useEffect(() => {
+
         let removed = activeArmyViewers.filter(army => !armyImages.some(new_army => new_army.id === army.id))
         removed.forEach((r, index) => {
             closeArmyViewer(r, setActiveArmyViewers)
@@ -210,8 +222,7 @@ function PlanetViewer(props) {
             switch (response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
-                    console.log(response.data)
-                    setArmyImages(armies);
+                    await setArmyImages(armies);
                     break
                 case "change_direction":
                     const newArmies = handleChangeDirection(response.data)
@@ -281,6 +292,7 @@ function PlanetViewer(props) {
             toggleMoveMode(armyId)
         })
     }
+
     return (
         <>
             {/*Make it possible to access the socket in the children without using props (because cleaner)*/}

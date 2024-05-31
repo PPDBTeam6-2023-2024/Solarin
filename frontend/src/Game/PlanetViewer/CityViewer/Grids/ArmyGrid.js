@@ -71,7 +71,7 @@ const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
             await socket.send(JSON.stringify(data_json));
 
             /*Makes it so that the access of armies arrives after the websocket arrives, a really short sleep*/
-            await new Promise((resolve) => setTimeout(resolve, 50))
+            await new Promise((resolve) => setTimeout(resolve, 300))
         }
 
         refresh()

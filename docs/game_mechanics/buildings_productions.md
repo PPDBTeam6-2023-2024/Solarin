@@ -38,7 +38,7 @@ This grow_rate can differ from the grow rate used for calculating the Unit Stats
 * $\text{GPR(resource, building)}=\text{modifier(region, resource)} \cdot \text{baseRate(resource, building)}\cdot\text{level}^2 * (1+\text{Control Modifier(region, player)}*0.25)$ 
 	* $\text{baseRate(resource, building)}$ is the amount of the resource produced in a given building per minute
 	* $\text{modifier(region, resource)}$ is the modifier that is applied depending on the resource produced and the region where the building is located
-    * $\text{$\text{Control Modifier (region, player)}$ is a bonus multiplier that applies when a player controls all building instances within a region. This is set at a fixed value of +25% if the player is in control of the region.
+    * $\text{Control Modifier (region, player) is a bonus multiplier that applies when a player controls all building instances within a region. This is set at a fixed value of +25% if the player is in control of the region.}$
 
 ## Building Types
 A building can generally be upgraded up to level 10.

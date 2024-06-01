@@ -81,25 +81,14 @@ class DeveloperAccess(DatabaseAccess):
         wall = WallType(name=name, defense=defense)
         self.session.add(wall)
 
-    async def create_house_type(self, name: str, residents: int):
-        """
-        Create a new type of house having its citizens
-
-        :param: name: name of the building type
-        :param: residents: amount of residents living in such a house
-        :return: nothing
-        """
-        ht = HouseType(name=name, residents=residents)
-        self.session.add(ht)
-
-    async def create_resource_type(self, type_name: str):
+    async def create_resource_type(self, type_name: str, starting_amount: int = 0):
         """
         Add a new type of resource
 
         :param: type_name: name of resource
         :return: nothing
         """
-        r = ResourceType(name=type_name)
+        r = ResourceType(name=type_name, starting_amount=starting_amount)
         self.session.add(r)
 
     async def set_produces_resources(self, building_name: str, resource_name: str, base_production: int,
@@ -236,3 +225,38 @@ class DeveloperAccess(DatabaseAccess):
         Sets the costs related to cities, e.g. the creation cost of the city
         """
         self.session.add(CityCosts(activity=activity, resource_type=resource_type, cost_amount=cost_amount, time_cost=time_cost))
+
+    async def create_political_stance(self, stance_name: str):
+        """
+        Create a political stance
+        :param: stance_name:name of the stance we create
+        """
+
+        self.session.add(PoliticalStance(name=stance_name))
+        await self.session.flush()
+
+    async def create_maintenance_building(self, building_name: str, maintenance_cost: list[tuple[str, int]]):
+        """
+        Create the base maintenance cost for a building type
+
+        :param: building_name: name of the building type
+        :param: maintenance_cost: list of the cost [resource type, amount]
+        """
+
+        for cost in maintenance_cost:
+            self.session.add(MaintenanceBuilding(building_type=building_name, resource_type=cost[0], amount=cost[1]))
+
+        await self.session.flush()
+
+    async def create_maintenance_troop(self, troop_name: str, maintenance_cost: list[tuple[str, int]]):
+        """
+        Create the base maintenance cost for a troop type
+
+        :param: troop_name: name of the troop type
+        :param: maintenance_cost: list of the cost [resource type, amount]
+        """
+
+        for cost in maintenance_cost:
+            self.session.add(MaintenanceTroop(troop_type=troop_name, resource_type=cost[0], amount=cost[1]))
+
+        await self.session.flush()

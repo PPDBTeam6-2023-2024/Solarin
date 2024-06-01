@@ -34,7 +34,7 @@ class PlanetSocketActions:
         armies = await self.data_access.ArmyAccess.get_armies_on_planet_extra(planet_id=self.planet_id)
         data = {
             "request_type": data["type"],
-            "data": [army.to_dict() | {"alliance": army.alliance, "username": army.username} for army in armies]
+            "data": [army.to_dict() | {"alliance": army.alliance, "username": army.username, "speed": army.speed} for army in armies]
         }
         await self.connection_pool.send_personal_message(self.websocket, data)
 
@@ -95,8 +95,9 @@ class PlanetSocketActions:
         if changed:
             await self.connection_pool.broadcast({
                 "request_type": "change_direction",
-                "data": army.to_dict() | {"alliance": army.alliance, "username": army.username}
+                "data": army.to_dict() | {"alliance": army.alliance, "username": army.username, "speed": army.speed}
             })
+
     async def leave_planet(self, data: json):
         army_id = data["army_id"]
         owner = await self.data_access.ArmyAccess.get_army_owner(army_id)
@@ -138,11 +139,12 @@ class PlanetSocketActions:
         """
 
         pending_on_arrives = await self.data_access.ArmyAccess.get_pending_attacks(self.planet_id)
-
+        tasks = []
         for pending_on_arrive in pending_on_arrives:
-            asyncio.create_task(
+            tasks.append(asyncio.create_task(
                 self.check_army_combat(pending_on_arrive[0],
-                                       (pending_on_arrive[1] - datetime.datetime.utcnow()).total_seconds()))
+                                       (pending_on_arrive[1] - datetime.datetime.utcnow()).total_seconds())))
+        return tasks
 
     async def create_city(self, data: json):
         """

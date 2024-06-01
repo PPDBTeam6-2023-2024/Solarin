@@ -8,7 +8,10 @@ import {useNavigate} from 'react-router-dom';
 
 const hasValidToken = async () => {
     try {
-         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`}
+
+         axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`,
+         'content-type': 'application/x-www-form-urlencoded',
+         'accept': 'application/json', "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/auth/me`)
         return response.status === 200
     } catch (e) {
@@ -100,7 +103,10 @@ function Login() {
             /*After creating an account it is convenient to automatically log in too*/
             await doLogin(username, password)
         }catch(error) {
-          setSignError(error.response.data.detail[0].msg)
+            /*
+            * Diplay why the user was not able to create an account
+            * */
+            setSignError(error.response.data.detail.msg)
         }
     }
 

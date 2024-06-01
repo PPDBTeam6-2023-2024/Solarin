@@ -1,5 +1,5 @@
 import {MapInteractionCSS} from 'react-map-interaction';
-import {useState, useEffect, useContext, useRef} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 
 import CityManager from "./CityViewer/CityManager";
 
@@ -7,7 +7,7 @@ import CityManager from "./CityViewer/CityManager";
 import {UserInfoContext} from "../Context/UserInfoContext";
 import PlanetSVG from './PlanetSVG';
 
-import {toggleArmyViewer, closeArmyViewer} from './Helper/ArmyViewerHelper';
+import {closeArmyViewer, toggleArmyViewer} from './Helper/ArmyViewerHelper';
 import {fetchCities} from './Helper/CityHelper';
 
 import ArmyMapEntry from "./ArmyMapEntry";
@@ -16,7 +16,7 @@ import ArmyManageView from "../UI/ArmyViewer/ArmyManageView";
 import {SocketContext} from "../Context/SocketContext";
 import {PlanetIdContext} from "../Context/PlanetIdContext";
 import PlanetSwitcher from "../UI/PlanetSwitcher/PlanetSwitcher";
-import zIndex from "@mui/material/styles/zIndex";
+import {lerp} from "../Armies/ArmyMovement"
 
 function PlanetViewer(props) {
     /*
@@ -108,18 +108,6 @@ function PlanetViewer(props) {
 
     }, []);
 
-    // calculate position based on source- and target position and how much time has elapsed
-    const lerp = ({sourcePosition, targetPosition, arrivalTime, departureTime}) => {
-        let date = new Date()
-        date.setHours(date.getHours() - 2)
-
-        const elapsedTime = date - departureTime
-        const totalTime = arrivalTime - departureTime
-        const percentComplete = (elapsedTime < totalTime) ? elapsedTime / totalTime : 1;
-        const currentX = sourcePosition.x + (targetPosition.x - sourcePosition.x) * percentComplete
-        const currentY = sourcePosition.y + (targetPosition.y - sourcePosition.y) * percentComplete
-        return {x: currentX, y: currentY}
-    }
     const handleGetArmies = (data) => {
         return data.map(army => {
             const arrivalTime = new Date(army.arrival_time).getTime()
@@ -128,10 +116,14 @@ function PlanetViewer(props) {
                 sourcePosition: {x: army.x, y: army.y}, targetPosition: {x: army.to_x, y: army.to_y},
                 arrivalTime: arrivalTime, departureTime: departureTime
             })
+
             return {
                 id: army.id,
+                speed: army.speed,
                 x: army.x,
                 y: army.y,
+                curr_x: currentPos.x,
+                curr_y: currentPos.y,
                 to_x: army.to_x,
                 to_y: army.to_y,
                 owner: army.owner,
@@ -158,21 +150,32 @@ function PlanetViewer(props) {
     * by updating the army position, visually based on linear interpolation
     */
     useEffect(() => {
-        const interval = setInterval(async () => {
-            setArmyImages(armyImages.map((elem) => {
-                const currentPosition = lerp({
-                    sourcePosition: {x: elem.x, y: elem.y},
-                    targetPosition: {x: elem.to_x, y: elem.to_y},
-                    arrivalTime: elem.arrivalTime,
-                    departureTime: elem.departureTime
+
+        const interval = setInterval( () => {
+
+
+            /*
+            * Update the army positions on the planet
+            * */
+            setArmyImages(img => {
+
+                return img.map((elem) => {
+                    const currentPosition = lerp({
+                        sourcePosition: {x: elem.x, y: elem.y},
+                        targetPosition: {x: elem.to_x, y: elem.to_y},
+                        arrivalTime: elem.arrivalTime,
+                        departureTime: elem.departureTime
+                    })
+                    return {...elem, curr_x: currentPosition.x, curr_y: currentPosition.y}
                 })
-                return {...elem, curr_x: currentPosition.x, curr_y: currentPosition.y}
-            }))
+
+            })
+
         }, 100);
         return () => {
             clearInterval(interval)
         }
-    })
+    }, [armyImages.map(army => army.to_x+","+army.to_y).join(";").toString()])
 
     /*
     * Handle when an army changes direction
@@ -191,7 +194,7 @@ function PlanetViewer(props) {
         return () => {
             socket.close()
         }
-    }, [socket])
+    }, [])
 
 
     /*
@@ -200,6 +203,7 @@ function PlanetViewer(props) {
     We want to make sure the Army viewer will be closed.
     */
     useEffect(() => {
+
         let removed = activeArmyViewers.filter(army => !armyImages.some(new_army => new_army.id === army.id))
         removed.forEach((r, index) => {
             closeArmyViewer(r, setActiveArmyViewers)
@@ -218,7 +222,7 @@ function PlanetViewer(props) {
             switch (response.request_type) {
                 case "get_armies":
                     const armies = await handleGetArmies(response.data)
-                    setArmyImages(armies);
+                    await setArmyImages(armies);
                     break
                 case "change_direction":
                     const newArmies = handleChangeDirection(response.data)
@@ -288,6 +292,7 @@ function PlanetViewer(props) {
             toggleMoveMode(armyId)
         })
     }
+
     return (
         <>
             {/*Make it possible to access the socket in the children without using props (because cleaner)*/}
@@ -313,7 +318,7 @@ function PlanetViewer(props) {
                     {/*Display cityManager over the map*/}
                     {selectedCityId && showCityManager && (
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 20 }}>
-                            <CityManager key={selectedCityId} cityId={selectedCityId} primaryColor="black" secondaryColor="black" onClose={handleCloseCityManager}/>
+                            <CityManager key={selectedCityId} cityId={selectedCityId} onClose={handleCloseCityManager} />
                         </div>
                     )}
 
@@ -326,7 +331,7 @@ function PlanetViewer(props) {
                         translationBounds={{
                             xMin: 1920 - mapState.scale * 1920,
                             xMax: 0,
-                            yMin: 1080 - mapState.scale * 1080,
+                            yMin: 1010 - mapState.scale * 1010,
                             yMax: 0,
                         }}
                     >

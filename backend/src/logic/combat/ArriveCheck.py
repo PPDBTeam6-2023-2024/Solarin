@@ -2,6 +2,7 @@ from ...app.database.database_access.data_access import DataAccess
 from ...app.database.models import AttackArmy, AttackCity, EnterCity, MergeArmies, EnterPlanet
 from .ArmyCombat import ArmyCombat
 from ...app.routers.cityManager.city_checker import CityChecker
+from ...app.routers.logic.maintenance_socket_actions import MaintenanceSocketActions
 
 
 class ArriveCheck:
@@ -32,6 +33,8 @@ class ArriveCheck:
         if target is None:
             return False
 
+        target_id = target.target_id
+
         """
         When we did not yet arrive, we don't need to fight yet
         """
@@ -40,16 +43,47 @@ class ArriveCheck:
             return False
 
         if isinstance(target, AttackArmy):
+            owner = await da.ArmyAccess.get_army_owner(target.target_id)
+
+            """
+            Update maintenance status of the target user
+            """
+            m = MaintenanceSocketActions(owner.id, da)
+            await m.check_maintenance(False)
+
+            """
+            Update maintenance status of the attacker user
+            """
+            owner = await da.ArmyAccess.get_army_owner(army_id)
+            m = MaintenanceSocketActions(owner.id, da)
+            await m.check_maintenance(False)
+
             await ArmyCombat.computeBattle(army_id, target.target_id, da)
 
         if isinstance(target, AttackCity):
             """
             Update city before calculating attack
             """
+            await da.session.flush()
             ch = CityChecker(target.target_id, da)
             await ch.check_all()
+            await da.session.flush()
 
-            await ArmyCombat.computeCityBattle(army_id, target.target_id, da)
+            """
+            Update maintenance status of the target user
+            """
+            owner = await da.CityAccess.get_city_controller(target_id)
+            m = MaintenanceSocketActions(owner.id, da)
+            await m.check_maintenance(False)
+
+            """
+            Update maintenance status of the attacker user
+            """
+            owner = await da.ArmyAccess.get_army_owner(army_id)
+            m = MaintenanceSocketActions(owner.id, da)
+            await m.check_maintenance(False)
+
+            await ArmyCombat.computeCityBattle(army_id, target_id, da)
 
         if isinstance(target, EnterCity):
             """
@@ -60,6 +94,7 @@ class ArriveCheck:
             When army is already in city, don't add again
             """
             army_in_city = await da.ArmyAccess.get_army_in_city(target.target_id, False)
+
             if army_id == army_in_city:
                 return
 

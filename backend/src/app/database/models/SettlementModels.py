@@ -1,4 +1,5 @@
 from sqlalchemy import *
+from sqlalchemy.ext.asyncio import AsyncAttrs
 
 from ..database import Base
 from sqlalchemy.orm import relationship
@@ -9,7 +10,7 @@ import datetime
 from ..models import *
 
 
-class City(Base):
+class City(Base, AsyncAttrs):
     """
     Stores information about a city that is in a region on a planet.
 
@@ -32,7 +33,7 @@ class City(Base):
 
     region = relationship("PlanetRegion", back_populates="cities", lazy='joined')
 
-    population = Column(Integer, default= 1024)
+    population = Column(PositiveInteger, default= 1024)
 
     def to_city_schema(self):
         """
@@ -79,7 +80,7 @@ class BuildingInstance(Base):
     """
     type = relationship("BuildingType", back_populates="instances", lazy='joined')
 
-    def to_schema(self, type_category) -> BuildingInstanceSchema:
+    def to_schema(self, type_category, remaining_update_time) -> BuildingInstanceSchema:
         """
         Convert the buildinginstance Object to a scheme
         """
@@ -89,10 +90,24 @@ class BuildingInstance(Base):
             building_type=self.building_type,
             rank=self.rank,
             type=type_category,
+            remaining_update_time=remaining_update_time
         )
 
         return b
 
+class BuildingUpgradeQueue(Base):
+    """
+    Stores the buildings currently being upgraded
+    id: id of the building
+    start_time: datetime when the upgrade was started
+    duration: duration of the upgrade
+    """
+    __tablename__ = 'BuildingUpgradeQueue'
+    id = Column(Integer, ForeignKey("buildingInstance.id"), primary_key=True)
+    city_id = Column(Integer, ForeignKey("city.id"), nullable=False)
+    start_time = Column(DateTime, nullable=False)
+    duration = Column(PositiveInteger, nullable=False)
+    current_rank = Column(PositiveInteger, nullable=False)
 
 class BuildingType(Base):
     """
@@ -105,7 +120,7 @@ class BuildingType(Base):
     name = Column(String, Sequence("buildingType_name_seq"), primary_key=True)
 
     type = Column(String, nullable=False)
-    required_rank = Column(Integer)
+    required_rank = Column(PositiveInteger)
     __mapper_args__ = {
         'polymorphic_on': type
     }
@@ -156,7 +171,7 @@ class WallType(BuildingType):
     """
     __tablename__ = 'wallType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    defense = Column(Integer, nullable=False)
+    defense = Column(PositiveInteger, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'wall'
@@ -171,25 +186,10 @@ class TowerType(BuildingType):
     """
     __tablename__ = 'towerType'
     name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    attack = Column(Integer, nullable=False)
+    attack = Column(PositiveInteger, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'tower'
-    }
-
-
-class HouseType(BuildingType):
-    """
-    Stores which types of houses exist (This table is a child of an ISA/polymorphic relation with BuildingType)
-    name: name of the HouseType building.
-    Every row in this table indicates a building that can be used as a house building
-    """
-    __tablename__ = 'houseType'
-    name = Column(String, ForeignKey("buildingType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
-    residents = Column(Integer, nullable=False)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'house'
     }
 
 
@@ -255,6 +255,7 @@ class CreationCost(Base):
     cost_type = Column(String, ForeignKey("resourceType.name", deferrable=True, initially='DEFERRED'), primary_key=True)
     cost_amount = Column(PositiveInteger, nullable=False)
 
+
 class CityCosts(Base):
     """
     Stores the costs related to city-related activities.
@@ -267,8 +268,9 @@ class CityCosts(Base):
     __tablename__ = "CityCosts"
     activity = Column(String, primary_key=True)
     resource_type = Column(String, ForeignKey("resourceType.name"), primary_key=True)
-    time_cost = Column(Integer, nullable=True)
-    cost_amount = Column(Integer, nullable=False)
+    time_cost = Column(PositiveInteger, nullable=True)
+    cost_amount = Column(PositiveInteger, nullable=False)
+
 
 class CityUpdateQueue(Base):
     """
@@ -280,4 +282,4 @@ class CityUpdateQueue(Base):
     __tablename__ = "CityUpdateQueue"
     city_id = Column(ForeignKey("city.id"), primary_key=True)
     start_time = Column(DateTime, nullable=False)
-    duration = Column(Integer)
+    duration = Column(PositiveInteger)

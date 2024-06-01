@@ -1,3 +1,5 @@
+from sqlalchemy.orm import joinedload
+
 from ..models import *
 from ..database import AsyncSession
 from ..exceptions.not_found_exception import NotFoundException
@@ -254,16 +256,13 @@ class UserAccess(DatabaseAccess):
         initialize the value for each political stance to 0
         :param new_user_id: the id of the user we are creating
         """
-        query = Select(PoliticalStance).where(PoliticalStance.user_id == new_user_id)
-        existing_entry = await self.session.execute(query)
-        if existing_entry.first() is not None:
-            # there already is an entry for some reason
-            update_query = update(PoliticalStance).where(PoliticalStance.user_id == new_user_id).values(anarchism=0, authoritarian=0, democratic=0, corporate_state=0, theocracy=0, technocracy=0)
-            await self.session.execute(update_query)
-        else:
-            # create a new entry
-            insert_query = insert(PoliticalStance).values(user_id=new_user_id, anarchism=0, authoritarian=0, democratic=0, corporate_state=0, theocracy=0, technocracy=0)
-            await self.session.execute(insert_query)
+        query = Select(PoliticalStance)
+        stances = await self.session.execute(query)
+        stances = stances.scalars().all()
+        for s in stances:
+            self.session.add(HasPoliticalStance(stance_name=s.name, user_id=new_user_id))
+
+        await self.session.flush()
 
     async def get_politics(self, user_id: int):
         """
@@ -272,10 +271,15 @@ class UserAccess(DatabaseAccess):
         :return: a values between 0 and 1 for each type of society
         """
 
-        get_query = Select(PoliticalStance).where(PoliticalStance.user_id == user_id)
+        get_query = Select(HasPoliticalStance).where(HasPoliticalStance.user_id == user_id)
         result = await self.session.execute(get_query)
-        result = result.scalars().first()
-        return result
+        result = result.unique().scalars().all()
+
+        political_dict = {}
+        for r in result:
+            political_dict.update({r.stance_name: r.value})
+
+        return political_dict
 
     async def update_politics(self, user_id: int, stance: dict):
         """
@@ -291,6 +295,59 @@ class UserAccess(DatabaseAccess):
         if not valid_updates:
             raise ValueError("No valid fields provided for update.")
 
-        update_query = update(PoliticalStance).where(PoliticalStance.user_id == user_id).values(**valid_updates)
-        await self.session.execute(update_query)
+        get_user = Select(User).where(User.id == user_id).options(joinedload('*'))
+        user = await self.session.execute(get_user)
+
+        user = user.unique().scalar_one()
+
+        for s in user.stances:
+            s.value = valid_updates.get(s.stance_name)
+
         await self.session.commit()
+
+    async def get_color_preferences(self, user_id: int) -> ColorCodes:
+        get_colors = Select(ColorCodes).where(ColorCodes.user_id == user_id)
+        color_codes = await self.session.execute(get_colors)
+        color_codes = color_codes.scalar_one_or_none()
+        return color_codes
+
+    async def update_color_preferences(self, user_id: int, primary: str, secondary: str, tertiary: str,
+                                       text_color: str):
+        color_code: ColorCodes = await self.get_color_preferences(user_id)
+        if color_code is None:
+            self.session.add(ColorCodes(user_id=user_id,
+                                        primary_color=primary,
+                                        secondary_color=secondary,
+                                        tertiary_color=tertiary,
+                                        text_color=text_color))
+        else:
+            color_code.primary_color = primary
+            color_code.secondary_color = secondary
+            color_code.tertiary_color = tertiary
+            color_code.text_color = text_color
+
+        await self.session.flush()
+
+    async def is_dead(self, user_id: int) -> bool:
+        """
+        Check if the user is dead (no armies and no cities)
+
+        :param user_id: user id of the user we are checking
+        :return: True if the user is dead, False otherwise
+        """
+        query = select(User).where(User.id == user_id)
+        user = await self.session.execute(query)
+        user = user.scalars().first()
+
+        if user is None:
+            raise NotFoundException(user_id, "User")
+
+        query = select(City).where(City.controlled_by == user_id)
+        city = await self.session.execute(query)
+        city = city.scalars().first()
+
+        query = select(Army).where(Army.user_id == user_id)
+        army = await self.session.execute(query)
+        army = army.scalars().first()
+
+        return city is None and army is None

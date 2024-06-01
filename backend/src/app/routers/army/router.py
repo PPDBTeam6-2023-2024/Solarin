@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from typing import List, Annotated
 
 from ...database.database import get_db
@@ -27,6 +27,8 @@ async def get_fleets(db: AsyncSession = Depends(get_db)) -> List[ArmySchema]:
         armies_schema.append(temp)
 
     return armies_schema
+
+
 @router.get("/fleets", response_model=List[ArmySchema])
 async def get_user_fleets(user_id: int, planet_id: int, db: AsyncSession = Depends(get_db)) -> List[ArmySchema]:
     """
@@ -107,12 +109,15 @@ async def get_troops(
 
     general = await data_access.GeneralAccess.get_general(army_id)
     if general is not None:
-        modifiers = await data_access.GeneralAccess.get_modifiers(general.name)
-        modifiers = [m.to_scheme() for m in modifiers]
+        modifiers = await data_access.GeneralAccess.get_modifiers(user_id, general.name)
+        modifiers = [m[0].to_scheme(m[1]) for m in modifiers]
         general = general.to_scheme().dict()
         general.update({"modifiers": modifiers})
 
-    return {"troops": troops_schema, "stats": army_stats, "general": general}
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_army(army_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
+
+    return {"troops": troops_schema, "stats": army_stats, "general": general, "maintenance": maintenance_cost, "army_id": army_id}
 
 
 @router.get("/armies_user")
@@ -127,7 +132,28 @@ async def armies_user(
 
     data_access = DataAccess(db)
     armies = await data_access.ArmyAccess.get_user_armies(user_id)
-    armies_schemas = [army.to_army_schema() for army in armies]
+    armies_schemas = [army.to_army_schema().dict() for army in armies]
+
+    for i, army in enumerate(armies):
+        """
+        Provide information about the general of the army
+        """
+        general = await data_access.GeneralAccess.get_general(army.id)
+        if general is not None:
+            general = general.to_scheme().dict()
+
+        armies_schemas[i]["general"] = general
+
+        """
+        Provide information about the city the army might be in
+        """
+        city = await data_access.ArmyAccess.army_in_city(army.id)
+        armies_schemas[i]["city"] = city
+
+        if city is not None:
+            city_rank = await data_access.CityAccess.get_city_rank(city)
+            armies_schemas[i]["city_rank"] = city_rank
+
     return armies_schemas
 
 
@@ -141,16 +167,62 @@ async def get_armies_in_city(
     Get detailed information about the army in a city, including their troops.
     """
     data_access = DataAccess(db)
+
     army_id = await data_access.ArmyAccess.get_army_in_city(city_id)
 
     """
     do the city check, checking all the idle mechanics
     """
+    ch = CityChecker(city_id, data_access)
+    await ch.check_all()
 
     troops = await get_troops(user_id, army_id, db)
+
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_army(army_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
 
     """
     Add the army_id, because this is useful information, for army actions
     """
-    troops.update({"army_id": army_id})
+    troops.update({"army_id": army_id, "maintenance": maintenance_cost})
+
+    await data_access.commit()
+
     return troops
+
+
+@router.post("/split_army/{army_id}", response_model=int)
+async def split_army(
+        user_id: Annotated[int, Depends(get_my_id)],
+        army_id: int,
+        split_data: SplitInfo,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Split a subset of the army of and form a new army with it.
+    If the main army is inside a city, have the new_army leave the city
+    """
+    data_access = DataAccess(db)
+    troops_list = split_data.to_split
+    if len(troops_list) == 0:
+        return
+
+    new_army_id = await data_access.ArmyAccess.split_army(troops_list, troops_list[0].army_id, user_id)
+
+    return new_army_id
+
+
+@router.get("/get_troop_stats/")
+async def get_troop_stats(db=Depends(get_db)):
+    """
+    get the stats of all the different types of troops
+    """
+    data_access = DataAccess(db)
+    result = await data_access.ArmyAccess.get_troop_stats()
+    formatted_result = {}
+    for item in result:
+        troop, stat, value = item
+        if troop not in formatted_result:
+            formatted_result[troop] = []
+        formatted_result[troop].append({"stat": stat, "value": value})
+    return formatted_result

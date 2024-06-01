@@ -50,10 +50,10 @@
     {"planet-type": "shadow", "region-type": "silicaat"}
   ],
   "barracks":[
-    {"name":  "barracks", "creation-cost": {"TF": 550, "POP":  100},
-      "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}]},
-    {"name":  "space-dock", "creation-cost": {"TF": 1250, "CO":  1000, "UR": 250, "OI": 500},
-      "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}]}
+    {"name":  "barracks", "creation-cost": {"TF": 550, "POP":  100}, "products": [{"product-name":  "land-unit", "base-price":  50, "base-production": 10, "base-cap":  20}],
+      "maintenance":  [{"product-name":  "RA", "amount":  20}]},
+    {"name":  "space-dock", "creation-cost": {"TF": 1250, "CO":  1000, "UR": 250, "OI": 500}, "products": [{"product-name":  "space-unit", "base-price":  100, "base-production": 10, "base-cap":  30}],
+      "maintenance":  [{"product-name":  "RA", "amount":  10}, {"product-name":  "OI", "amount":  25}, {"product-name":  "UR", "amount":  1}]}
     ],
   "towers": [
     {"name":  "Sentry Tower", "attack":  50, "creation-cost":  {"TF": 500, "SOL":  50}},
@@ -69,44 +69,44 @@
     {"name":  "nexus", "creation-cost" : {"TF": 6500, "UR": 500, "SOL": 500},"products": [
       {"product-name":  "SOL", "base-rate":  600, "base-cap":  5000},
       {"product-name":  "TF", "base-rate":  400, "base-cap":  5000}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  20}]},
     {"name":  "farmpod", "creation-cost": {"TF": 1200, "MI": 250, "SOL": 50},"products":  [
       {"product-name":  "RA", "base-rate":  300, "base-cap":  5000}
-    ]},
+    ], "maintenance":  []},
     {"name":  "cloning-chamber", "creation-cost": {"TF": 1500, "RA": 1000, "CO": 250, "SOL":  100},"products":  [
       {"product-name":  "POP", "base-rate":  150, "base-cap":  1000}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  40}]},
     {"name":  "extractor", "creation-cost": {"TF": 3000, "SOL": 150, "CO":  500},"products":  [
       {"product-name":  "MI", "base-rate":  500, "base-cap":  1500},
       {"product-name":  "OI", "base-rate":  500, "base-cap":  1500}
-    ]},
+    ], "maintenance":  [{"product-name":  "CO", "amount":  15}]},
     {"name":  "reactor", "creation-cost": {"TF": 10000, "SOL": 250, "MI": 500},"products":  [
       {"product-name":  "UR", "base-rate":  100, "base-cap":  550}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  5}]},
     {"name":  "oil-pump", "creation-cost": {"TF": 3500, "SOL": 50, "CO": 500},"products":  [
       {"product-name":  "OI", "base-rate":  400, "base-cap":  1600}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  5}]},
     {"name":  "parlement", "creation-cost": {"TF": 1500, "SOL": 25},"products":  [
       {"product-name":  "INF", "base-rate":  100, "base-cap":  200}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  30}]},
     {"name":  "solar-generator", "creation-cost": {"TF": 6800, "CO": 500},"products":  [
       {"product-name":  "SOL", "base-rate":  700, "base-cap":  5000}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  2}]},
     {"name":  "material-lab", "creation-cost": {"TF": 9000, "SOL": 150},"products":  [
       {"product-name":  "TF", "base-rate":  700, "base-cap":  6000}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  5}]},
     {"name":  "plant-growth-accelerator", "creation-cost": {"TF": 15000, "UR": 250},"products":  [
       {"product-name":  "SOL", "base-rate":  1500, "base-cap":  10000}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  20}]},
     {"name":  "electric-mine", "creation-cost": {"TF": 9000, "SOL": 100},"products":  [
       {"product-name":  "MI", "base-rate":  800, "base-cap":  10000},
       {"product-name":  "CO", "base-rate":  200, "base-cap":  7000},
       {"product-name":  "OI", "base-rate":  30, "base-cap":  300}
-    ]},
+    ], "maintenance":  [{"product-name":  "RA", "amount":  5}]},
     {"name":  "solar-lab", "creation-cost": {"TF": 7000, "MI": 500},"products":  [
       {"product-name":  "TF", "base-rate":  100, "base-cap":  600},
       {"product-name":  "SOL", "base-rate":  500, "base-cap":  4000}
-    ]}
+    ], "maintenance":  [{"product-name":  "RA", "amount":  5}]}
   ],
   "city-costs": [
     {"resource-type":  "SOL", "amount": 25600,
@@ -122,29 +122,46 @@
       "activity": "upgrade", "time_cost": 600
     }
   ],
-  "resources": ["TF", "RA", "SOL", "POP", "INF", "MI", "UR", "OI", "CO"],
+  "resources": {
+    "TF": 20000,
+    "RA": 20000,
+    "SOL": 20000,
+    "POP": 20000,
+    "INF": 20000,
+    "MI": 20000,
+    "UR": 20000,
+    "OI": 20000,
+    "CO": 20000
+  },
   "stats": ["attack", "defense", "city_attack", "city_defense", "recovery", "speed"],
   "units": [
-    {"name":  "soldier", "extra_cost": {"TF": 50},"spec": "land", "base-points":
-    {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250}
+    {"name":  "soldier", "spec": "land", "base-points":
+    {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250},
+      "maintenance":  [{"product-name":  "RA", "amount":  25}],"extra_cost": {"TF": 50}
     },
-    {"name":  "tank", "extra_cost": {"TF": 50, "CO": 50} ,"spec": "land", "base-points":
-    {"AP":  149, "DP":  350, "CAP":  149, "CDP":  300, "PBR": 250, "MS": 149}
+    {"name":  "tank", "spec": "land", "base-points":
+    {"AP":  149, "DP":  350, "CAP":  149, "CDP":  300, "PBR": 250, "MS": 149},
+      "maintenance":  [{"product-name":  "RA", "amount":  30}],"extra_cost": {"TF": 50, "CO": 50}
     },
-    {"name":  "assassin", "extra_cost": {"TF": 75}, "spec": "land", "base-points":
-    {"AP":  350, "DP":  149, "CAP":  250, "CDP":  149, "PBR": 250, "MS": 350}
+    {"name":  "assassin", "spec": "land", "base-points":
+    {"AP":  350, "DP":  149, "CAP":  250, "CDP":  149, "PBR": 250, "MS": 350},
+      "maintenance":  [{"product-name":  "RA", "amount":  20}], "extra_cost": {"TF": 75}
     },
-    {"name":  "medic", "extra_cost": {"MI": 50, "TF": 50} ,"spec": "land", "base-points":
-    {"AP":  200, "DP":  200, "CAP":  200, "CDP":  200, "PBR": 350, "MS": 250}
+    {"name":  "medic", "spec": "land", "base-points":
+    {"AP":  200, "DP":  200, "CAP":  200, "CDP":  200, "PBR": 350, "MS": 250},
+      "maintenance":  [{"product-name":  "RA", "amount":  10}], "extra_cost": {"MI": 50, "TF": 50}
     },
-    {"name":  "fighter", "extra_cost": {"OI": 50, "CO":  50},"spec": "space", "base-points":
-    {"AP":  350, "DP":  200, "CAP":  149, "CDP":  200, "PBR": 250, "MS": 350}
+    {"name":  "fighter", "spec": "space", "base-points":
+    {"AP":  350, "DP":  200, "CAP":  149, "CDP":  200, "PBR": 250, "MS": 350},
+      "maintenance":  [{"product-name":  "RA", "amount":  3}, {"product-name":  "OI", "amount":  10}], "extra_cost": {"OI": 50, "CO":  50}
     },
-    {"name":  "bomber", "extra_cost": {"CO": 50, "OI": 50, "MI":  25} ,"spec": "space", "base-points":
-    {"AP":  250, "DP":  149, "CAP":  350, "CDP":  149, "PBR": 250, "MS": 350}
+    {"name":  "bomber", "spec": "space", "base-points":
+    {"AP":  250, "DP":  149, "CAP":  350, "CDP":  149, "PBR": 250, "MS": 350},
+      "maintenance":  [{"product-name":  "RA", "amount":  3}, {"product-name":  "OI", "amount":  10}], "extra_cost": {"CO": 50, "OI": 50, "MI":  25}
     },
-    {"name":  "mothership", "extra_cost": {"CO": 100, "OI": 50},  "spec": "space", "base-points":
-    {"AP":  0, "DP":  0, "CAP":  0, "CDP":  0, "PBR": 0, "MS": 0}
+    {"name":  "mothership", "spec": "space", "base-points":
+    {"AP":  50, "DP":  50, "CAP":  50, "CDP":  50, "PBR": 50, "MS": 50},
+      "maintenance":  [{"product-name":  "RA", "amount":  50}], "extra_cost": {"CO": 100, "OI": 50}
     }
   ],
   "generals": [
@@ -203,17 +220,73 @@
         {"stat":  "attack", "amount":0.3, "political_stance":  "authoritarian"}
     ]}
   ],"production-modifiers": [
-      {"region-type": "arctic", "resource-type": "CO", "modifier": 1.2},
-      {"region-type": "arctic", "resource-type": "MI", "modifier": 1.3},
-      {"region-type": "arctic", "resource-type": "OI", "modifier": 0.8},
-      {"region-type": "desert", "resource-type": "OI", "modifier": 1.4},
-      {"region-type": "desert", "resource-type": "UR", "modifier": 1.2},
-      {"region-type": "desert", "resource-type": "TF", "modifier": 0.8},
-      {"region-type": "alpine", "resource-type": "MI", "modifier": 1.4},
-      {"region-type": "alpine", "resource-type": "TF", "modifier": 1.2},
-      {"region-type": "alpine", "resource-type": "UR", "modifier": 0.8},
-      {"region-type": "plain", "resource-type": "RA", "modifier": 1.5},
-      {"region-type": "plain", "resource-type": "CO", "modifier": 1.1},
-      {"region-type": "plain", "resource-type": "TF", "modifier": 0.8}
-  ]
+    {"region-type": "arctic", "resource-type": "CO", "modifier": 1.2},
+    {"region-type": "arctic", "resource-type": "MI", "modifier": 1.3},
+    {"region-type": "arctic", "resource-type": "OI", "modifier": 0.8},
+    {"region-type": "arctic", "resource-type": "RA", "modifier": 0.6},
+    {"region-type": "polar", "resource-type": "CO", "modifier": 0.8},
+    {"region-type": "polar", "resource-type": "MI", "modifier": 1.4},
+    {"region-type": "polar", "resource-type": "OI", "modifier": 0.5},
+    {"region-type": "polar", "resource-type": "RA", "modifier": 0.8},
+    {"region-type": "desert", "resource-type": "SOL", "modifier": 1.1},
+    {"region-type": "desert", "resource-type": "OI", "modifier": 1.4},
+    {"region-type": "desert", "resource-type": "UR", "modifier": 1.2},
+    {"region-type": "desert", "resource-type": "TF", "modifier": 0.8},
+    {"region-type": "desert", "resource-type": "RA", "modifier": 0.5},
+    {"region-type": "alpine", "resource-type": "MI", "modifier": 1.4},
+    {"region-type": "alpine", "resource-type": "TF", "modifier": 1.2},
+    {"region-type": "alpine", "resource-type": "UR", "modifier": 0.8},
+    {"region-type": "alpine", "resource-type": "RA", "modifier": 0.9},
+    {"region-type": "plain", "resource-type": "RA", "modifier": 1.6},
+    {"region-type": "plain", "resource-type": "CO", "modifier": 1.1},
+    {"region-type": "plain", "resource-type": "TF", "modifier": 0.8},
+    {"region-type": "taiga", "resource-type": "TF", "modifier": 1.5},
+    {"region-type": "taiga", "resource-type": "OI", "modifier": 0.8},
+    {"region-type": "taiga", "resource-type": "RA", "modifier": 0.7},
+    {"region-type": "taiga", "resource-type": "UR", "modifier": 1.3},
+    {"region-type": "savannah", "resource-type": "TF", "modifier": 1.05},
+    {"region-type": "savannah", "resource-type": "SOL", "modifier": 1.1},
+    {"region-type": "savannah", "resource-type": "OI", "modifier": 0.8},
+    {"region-type": "savannah", "resource-type": "RA", "modifier": 0.7},
+    {"region-type": "savannah", "resource-type": "UR", "modifier": 0.4},
+    {"region-type": "steppe", "resource-type": "RA", "modifier": 1.3},
+    {"region-type": "steppe", "resource-type": "SOL", "modifier": 0.9},
+    {"region-type": "steppe", "resource-type": "UR", "modifier": 0.7},
+    {"region-type": "rainforest", "resource-type": "RA", "modifier": 1.8},
+    {"region-type": "rainforest", "resource-type": "MI", "modifier": 1.2},
+    {"region-type": "rainforest", "resource-type": "UR", "modifier": 0.7},
+    {"region-type": "rainforest", "resource-type": "OI", "modifier": 0.5},
+    {"region-type": "rainforest", "resource-type": "TF", "modifier": 0.6},
+    {"region-type": "rainforest", "resource-type": "SOL", "modifier": 0.7},
+    {"region-type": "coast", "resource-type": "RA", "modifier": 1.2},
+    {"region-type": "coast", "resource-type": "UR", "modifier": 1.4},
+    {"region-type": "coast", "resource-type": "TF", "modifier": 0.7},
+    {"region-type": "coast", "resource-type": "SOL", "modifier": 0.9},
+    {"region-type": "coast", "resource-type": "MI", "modifier": 0.6},
+    {"region-type": "magma", "resource-type": "MI", "modifier": 2.5},
+    {"region-type": "magma", "resource-type": "UR", "modifier": 1.8},
+    {"region-type": "magma", "resource-type": "SOL", "modifier": 1.1},
+    {"region-type": "magma", "resource-type": "OI", "modifier": 0.8},
+    {"region-type": "magma", "resource-type": "RA", "modifier": 0.1},
+    {"region-type": "magma", "resource-type": "TF", "modifier": 0.3},
+    {"region-type": "volcanic", "resource-type": "MI", "modifier": 1.6},
+    {"region-type": "volcanic", "resource-type": "UR", "modifier": 1.4},
+    {"region-type": "volcanic", "resource-type": "OI", "modifier": 1.6},
+    {"region-type": "volcanic", "resource-type": "RA", "modifier": 0.2},
+    {"region-type": "volcanic", "resource-type": "TF", "modifier": 0.7},
+    {"region-type": "silicaat", "resource-type": "MI", "modifier": 3.1},
+    {"region-type": "silicaat", "resource-type": "UR", "modifier": 0.7},
+    {"region-type": "silicaat", "resource-type": "OI", "modifier": 0.6},
+    {"region-type": "silicaat", "resource-type": "RA", "modifier": 0.7},
+    {"region-type": "silicaat", "resource-type": "TF", "modifier": 0.9},
+    {"region-type": "silicaat", "resource-type": "SOL", "modifier": 0.9},
+    {"region-type": "dark forest", "resource-type": "RA", "modifier": 1.1},
+    {"region-type": "dark forest", "resource-type": "SOL", "modifier": 0.2},
+    {"region-type": "dark forest", "resource-type": "TF", "modifier": 0.9},
+    {"region-type": "valley of shadow", "resource-type": "TF", "modifier": 1.5},
+    {"region-type": "valley of shadow", "resource-type": "UR", "modifier": 1.1},
+    {"region-type": "valley of shadow", "resource-type": "MI", "modifier": 1.1},
+    {"region-type": "valley of shadow", "resource-type": "SOL", "modifier": 0.3}
+  ],
+  "political-stance": ["anarchism", "authoritarian", "democratic", "corporate_state", "theocracy", "technocracy"]
 }

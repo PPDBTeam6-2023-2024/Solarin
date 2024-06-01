@@ -10,9 +10,11 @@ import {setResources} from "../../../redux/slices/resourcesSlice";
 
 export const initializeResources = async (dispatch) => {
     try {
+        axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`,
+         'content-type': 'application/x-www-form-urlencoded',
+         'accept': 'application/json', "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"}
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/logic/resources`);
         if (response.status === 200) {
-            console.log("setting resources: ", response.data)
             dispatch(setResources(response.data))
         }
     } catch (error) {
@@ -37,10 +39,10 @@ export const Resources = () => {
 
             {Object.entries(resources).map((resource) =>
                 <Tooltip key={resource} title={getResourceField(resource[0], "description", "")}>
-                    <div className="mr-3 bg-gradient-to-r from-gray-600 to-gray-700 p-1 max-h-9 shrink-0 relative">
-                        <p>{resource[1]}
+                    <div className="mr-3 p-1 max-h-9 shrink-0 relative">
+                        <p><span style={{"fontSize": "1.4vw"}}>{resource[1]}</span>
                             {getResourceField(resource[0], "icon", null) &&
-                                <img className="inline ml-2 max-w-7 max-h-7 w-auto h-auto"
+                                <img className="inline ml-2 max-w-10 max-h-10 w-auto h-auto"
                                      src={(`/images/resources/${getResourceField(resource[0], "icon", "")}`)}
                                      alt={resource[0]} draggable={false}/>
                             }

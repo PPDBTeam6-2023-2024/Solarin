@@ -172,4 +172,31 @@ async def test_get_resource_stocks(client, data_access: DataAccess):
 
     assert resource_found, "No resources found in city storage."
 
+async def test_get_building_stats(client):
+    async with sessionmanager.session() as session:
+        data_access = DataAccess(session)
 
+        data = {
+            "email": "test@example.com",
+            "username": "test",
+            "password": "test"
+        }
+        response = client.post("/auth/add_user", json=data)
+        assert response.status_code == 200
+
+        await data_access.DeveloperAccess.create_wall_type("wall", 50)
+        await data_access.DeveloperAccess.create_wall_type("wall2", 100)
+
+        await data_access.DeveloperAccess.create_tower_type("tower2", 100)
+        await data_access.DeveloperAccess.create_tower_type("tower", 50)
+
+        await data_access.DeveloperAccess.create_production_building_type("prod")
+        await data_access.DeveloperAccess.set_produces_resources("prod", "SOL", 100, 2000)
+        await data_access.DeveloperAccess.set_produces_resources("prod", "TF", 50, 2000)
+
+        await session.commit()
+
+        response = client.get(f"building/get_stats/")
+        assert response.status_code == 200
+        response = client.get(f"building/get_production/")
+        assert response.status_code == 200

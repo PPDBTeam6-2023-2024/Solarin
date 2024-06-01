@@ -68,6 +68,13 @@ class PropertyUtility:
         return int((creation_cost * (level+1)) / 2)
 
     @staticmethod
+    def get_GUT(tech_forge_cost: int, level: int) -> int:
+        """
+        Calculate the General Upgrade Time, based on the base creation cost and the level
+        """
+        return floor(tech_forge_cost * pow(1.15, level + 1))
+
+    @staticmethod
     def getGPR(modifier: float, base_rate: int, level: int, region_control: bool) -> int:
         """
         General production rate, decides how fast resources are produced
@@ -171,12 +178,48 @@ class PropertyUtility:
         level: current level of the city
         """
 
-
-
         resource_cost=[(cost[0],PropertyUtility.getGUC(cost[1], level)) for cost in upgrade_cost]
 
         time_cost = floor(upgrade_time * pow(1.15,level+1))
 
         return resource_cost, time_cost
 
+class PoliticalModifiers:
+    """
+    Do calculations based on political modifiers
+    """
+
+    @staticmethod
+    def strength_modifier(stance: dict):
+        """
+        Calculate the strength modifier based on the political stance
+        """
+        strength = 1
+        strength += ((stance.get("authoritarian", 0) * 30) - (stance.get("anarchism", 0) * 20) +
+                     (stance.get("theocracy", 0) * 15) - (stance.get("democratic", 0) * 10)) / 100
+
+        return strength
+
+    @staticmethod
+    def speed_modifier(stance: dict):
+        """
+        Calculate the speed modifier based on the political stance
+        """
+
+        speed_modifier = 1
+        speed_modifier += ((stance.get("anarchism", 0) * 10) - (stance.get("corporate_state", 0) * 30)
+                           - (stance.get("theocracy", 0) * 5)) / 100
+        return speed_modifier
+
+    @staticmethod
+    def production_modifier(stance: dict):
+        """
+        Calculate the speed modifier based on the political stance
+        """
+
+        general_production_modifier = 1
+        general_production_modifier += ((stance.get("anarchism", 0) * 10) + (stance.get("democratic", 0) * 3)
+                            - (stance.get("theocracy", 0) * 10) - (
+                            stance.get("technocracy", 0) * 5) + (stance.get("corporate_state", 0) * 20)) / 100
+        return general_production_modifier
 

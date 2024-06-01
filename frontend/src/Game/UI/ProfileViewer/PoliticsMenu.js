@@ -86,8 +86,11 @@ function PoliticsMenu() {
                 ...impacts,
                 Cost: cost
             };
-            console.log(payload);
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
+            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload, {
+                    headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json',
+                    }});
             setStanceFetched(false)
 
             /*Recalibrate the resources*/
@@ -118,7 +121,6 @@ function PoliticsMenu() {
     }, []);
 
     const modifiers = generateModifiers(stance);
-    console.log(stance)
     const data = {
         labels: ['Anarchism', 'Authoritarian', 'Democratic', 'Corporate state', 'Theocracy', 'Technocracy'],
         datasets: [
@@ -152,8 +154,7 @@ function PoliticsMenu() {
                     color: 'white',
                     lineWidth: 0.3
                 }
-            },
-            maintainAspectRatio: true
+            }
         }
     };
 

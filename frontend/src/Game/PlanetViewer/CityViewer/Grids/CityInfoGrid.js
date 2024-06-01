@@ -1,91 +1,106 @@
-import React, { useMemo, useState } from 'react';
-import { AgGridReact } from 'ag-grid-react';
+import React, {useEffect, useContext, useMemo, useState} from 'react';
+import {AgGridReact} from 'ag-grid-react';
 import './NewBuildingGrid.css';
-import {getCityData, getUpgradeCost, upgradeBuilding} from "../BuildingManager";
-
 import {UpgradeButtonComponent} from "./Buttons";
 import {getCityImage} from "../GetCityImage";
+import axios from "axios";
+import statsJson from "../../../UI/stats.json";
+import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
+import {TertiaryContext, TextColorContext} from "../../../Context/ThemeContext";
+const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap, upgradeCost, cityInfo, setCityInfo, timer, setTimer}) => {
+    /**
+     * This component visualizes the city manager menu when you select the 'City' tab
+     * */
+    const [cityStats, setCityStats] = useState(null)
 
-
-const CityInfoGrid = ({ cityUpgradeInfo, selectedImage,resourceImage, setBuildings, refreshResources, setCityUpgradeInfo,cityId, refresh, setUpgradeCostMap, cityUpgradeTimer ,setCityUpgradeTimer,upgradeCost, cityInfo, setCityInfo }) => {
-    // const columns = useMemo(() => [
-    //     { headerName: "", field: "label" },
-    //     { headerName: "", field: "value", cellStyle: params => ({
-    //         fontWeight: params.data.label === 'Region buffs' ? 'bold' : 'normal',
-    //         color: params.data.label === 'Region buffs' ? 'red' : 'black'
-    //     }) }
-    // ], []);
-
-    const RegionBuffsCellRenderer = ({ value }) => {
-          return (
-            <>{value.map((buff, index) => (
-              <span key={index} style={{ color: buff.modifier >= 0 ? 'green' : 'red' }}>
-                {buff.percentage} {buff.type}
-              </span>
-            )).reduce((prev, curr) => [prev, ', ', curr])}</> // This handles the comma separation properly in JSX
-          );
-        };
-
-
-     const columns = useMemo(() => [
-        { headerName: "Category", field: "category" },
-        {
-            headerName: "Information",
-            field: "info",
-            cellRenderer: (params) => {
-                if (params.data.category === "Region buffs") {
-                    return <RegionBuffsCellRenderer value={params.value} />;
-                } else {
-                    return <span>{params.value}</span>;
-                }
-            }
+    /*
+    * Load the city combat stats
+    * */
+    const fetchStats = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/cityManager/get_stats/${cityId}`);
+            setCityStats(response.data);
+        } catch (error) {
+            console.error('Error while fetching city combat stats:', error);
         }
-    ], []);
-
-    const rowData = useMemo(() => [
-        // Example data preparation (similar to previous transformations)
-        { category: "Region type", info: cityInfo.region_type , autoHeight: true},
-        { category: "Region buffs", info: cityInfo.region_buffs.map(buff => ({
-            type: buff[0],
-            modifier: parseFloat(buff[1]) - 1,
-            percentage: `${(parseFloat(buff[1]) - 1) >= 0 ? '+' : ''}${((parseFloat(buff[1]) - 1) * 100).toFixed(0)}%`
-        })) , autoHeight: true, autoWidth: true},
-        { category: "Population size", info: cityInfo.population , autoHeight: true},
-    ], [cityInfo]);
-
-    const onGridReady = (params) => {
-        params.api.sizeColumnsToFit();
     };
+
+    useEffect(() => {
+        fetchStats();
+    }, [])
+
+    /*
+    * Make textcolor depend on theme
+    * */
+    const [textColor, setTextColor] = useContext(TextColorContext);
 
     return (
         <>
-
-                <div className="ag-theme-alpine-dark city_info_grid">
-                    <AgGridReact
-                        rowData={rowData}
-                        columnDefs={columns}
-                        domLayout='autoHeight'
-                        suppressMovableColumns={true}
-                        suppressDragLeaveHidesColumns={true}
-                        onGridReady={onGridReady}
-                    />
+            <div className={"FontSizer"} style={{"width": "50%", "display": "inline-block"}}>
+                <div>
+                    Region type: <span style={{"color": textColor}}>{cityInfo.region_type}</span>
                 </div>
-                <div className="right-screen-city-info">
-                    <div className="building_image">
-                        <img src={getCityImage(cityInfo.rank)} alt="City" className="selected-image shadow-2xl"/>
+
+                <div>
+                    City Population: <span style={{"color": textColor}}>{cityInfo.population}</span>
+                </div>
+
+                {/*Div to display the Region buffs*/}
+                <div>
+                    <h2>Region Buffs</h2>
+                    <div style={{"display": "flex", "flexDirection": "row", "alignItems": "center",
+                        "justifyContent": "center", "overflow": "scroll"}}>
+                        {cityInfo.region_buffs.map((element) => <ResourceCostEntry resource={element[0]}
+                                                                               cost={element[1]-1}
+                                                                               percentage={true}/>)}
                     </div>
-                {cityUpgradeInfo &&
-                    <UpgradeButtonComponent
+
+                </div>
+
+                {/*Div to display the City Maintenance*/}
+                <div>
+                    <h2>City Maintenance Cost /hour</h2>
+                    <div style={{"display": "flex", "flexDirection": "row", "alignItems": "center",
+                        "justifyContent": "center", "overflow": "scroll"}}>
+                        {cityInfo.maintenance_cost.map((element, index) => <ResourceCostEntry resource={element[0]}
+                                                                                          cost={element[1]}
+                                                                                          percentage={false}/>)}
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div className="right-screen-city-info">
+                {cityStats &&
+                    <div style={{"display": "flex", "flexDirection": "row", "marginTop": "0.5vw", "rowGap": "0.5vw"}}>
+                        {/*Display the combat stats of a city*/}
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
+                            <div>{cityStats["attack"]}</div>
+                        </div>
+                        <div className={"building-stats"}>
+                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
+                            <div>{cityStats["defense"]}</div>
+                        </div>
+                    </div>
+                }
+                <div className="building_image">
+                    {/*Display an image of the city*/}
+                    <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
+                </div>
+                { <UpgradeButtonComponent
+                                            data = {cityInfo}
                                             cityId={cityId}
                                             upgradeCost={upgradeCost}
                                             setUpgradeCostMap={setUpgradeCostMap}
                                             refreshResources={refreshResources}
                                             setBuildings={setBuildings}
-                                            setCityUpgradeInfo={setCityUpgradeInfo}
                                             cityUpgradeBool={true}
-                                            timerDuration={cityUpgradeTimer}
-                                            setTimeDuration={setCityUpgradeTimer}
                                             setCityInfo={setCityInfo}
+                                            totalTimePassed={timer}
+                                            setTotalTimePassed={setTimer}
 
                     />
                 }

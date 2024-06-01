@@ -1,10 +1,11 @@
 /* CityViewer.css */
+.ag-theme-alpine-dark .ag-header,
 .ag-theme-alpine-dark .ag-header-cell,
 .ag-theme-alpine-dark .ag-header-group-cell {
     /* Replace primaryColor and secondaryColor with actual colors or add classes dynamically */
-    background: linear-gradient(to top, black, #d20000) !important;
+
+    background: linear-gradient(to top, var(--primaryColor), var(--secundaryColor)) !important;
     font-size: 1.2vw;
-    color: #030303;
 }
 
 .ag-theme-alpine-dark .ag-row {
@@ -41,10 +42,7 @@
     height: 27vw;
     overflow: scroll;
     /*background: transparent;  => add if nescessary*/
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: auto;
-    margin-right: auto;
+    margin: auto;
     border-radius: 0.2vw 0 0 0.2vw;
 }
 
@@ -53,7 +51,9 @@
     display: flex;
     width: 90vw;
     height: 30vw;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(139, 0, 0, 0.5));
+
+    background: linear-gradient(to top, color-mix(in srgb, var(--primaryColor), transparent 50%),
+    color-mix(in srgb, var(--secundaryColor), transparent 50%));
     border-radius: 3vw;
 }
 
@@ -62,9 +62,7 @@
     height: 20vw;
     position: relative;
     display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: auto;
+    margin: auto;
     justify-content: center;
 }
 
@@ -72,7 +70,6 @@
     display: inline-block;
     width: 40%;
     height: 40%;
-    overflow: scroll;
     border-radius: 0.2vw 0 0 0.2vw;
     transform: translateY(60%) translateX(10%);
 }
@@ -88,8 +85,8 @@
 
 
 .tabs button {
-    background: linear-gradient(to top, black, #d20000);
-    color: whitesmoke;
+    background: linear-gradient(to top, var(--primaryColor), var(--secundaryColor));
+    color: var(--textColor);
     border: none;
     outline: none;
     cursor: pointer;
@@ -102,21 +99,20 @@
 }
 
 .tabs button:hover {
-    background: linear-gradient(to top, #d20000, black);
+    background: linear-gradient(to top, var(--secundaryColor), var(--primaryColor));
 }
 
 .right-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translateY(10%) translateX(-12%);
+    transform: translateX(-7%) translateY(10%);
 }
 
 .right-screen-city-info{
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translateY(5%) translateX(25%);
 }
 
 
@@ -127,11 +123,35 @@
 }
 
 .right-screen th, .right-screen td {
-    border: 0.1vw solid darkred;
+    border: 0.1vw solid var(--secundaryColor);
     padding: 0.1vw 0.5vw 0vw 0.5vw;
     text-align: left;
 }
 
 .right-screen th {
     background-color: transparent;
+}
+
+.building-stats {
+    align-items: center;
+
+    font-size: 1.5vw;
+    display: inline-flex;
+    margin: auto;
+}
+
+.building-stats img {
+    max-width: 3vw;
+    max-height: 3vw;
+
+}
+
+.city_info_container {
+    display: flex;
+    flex-direction: column;
+}
+
+.resource-entry {
+    margin-left: 0.2vw;
+    margin-right: 0.2vw;
 }

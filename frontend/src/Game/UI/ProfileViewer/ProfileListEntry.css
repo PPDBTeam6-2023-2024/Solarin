@@ -1,5 +1,8 @@
 .ProfileListEntry {
-    display: block;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+
 }
 
 .ProfileListEntry .goto:hover {

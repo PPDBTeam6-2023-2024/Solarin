@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, Request
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.functions import coalesce
 from typing import Union, Annotated
 
 from .schemas import PoliticalStanceInput, PoliticalStanceChange
-
+from ..globalws.router import global_queue
 from ....app.routers.authentication.router import get_my_id, get_db
 from ....app.database.database_access.data_access import DataAccess
 from ....app.database.exceptions.invalid_action_exception import InvalidActionException
-
+from .maintenance_socket_actions import MaintenanceSocketActions
 router = APIRouter(prefix="/logic")
 
 
@@ -29,10 +30,8 @@ async def get_political_stance(user_id: Annotated[int, Depends(get_my_id)], db=D
     """
     data_access = DataAccess(db)
     result = await data_access.UserAccess.get_politics(user_id)
-    return result
 
-def model_to_dict(instance):
-    return {key: value for key, value in instance.__dict__.items() if not key.startswith('_')}
+    return result
 
 
 @router.post("/update_politics")
@@ -45,7 +44,6 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
     """
     data_access = DataAccess(db)
     current_stance = await data_access.UserAccess.get_politics(user_id)
-
     cost = []
     for key, value in changes.Cost.items():
         cost.append((key, value))
@@ -59,7 +57,7 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
         await data_access.ResourceAccess.remove_resource(user_id, cost_type[0], cost_type[1])
 
     # convert to dict using helper function
-    current_stance_dict = model_to_dict(current_stance)
+    current_stance_dict = current_stance
 
     updated_stance = {}
     for key, value in changes.dict().items():
@@ -70,7 +68,80 @@ async def update_politics(user_id: Annotated[int, Depends(get_my_id)], changes: 
         if attr in current_stance_dict:
             updated_value = max(0, min(1, current_stance_dict[attr] + change_percent))
             updated_stance[attr] = updated_value
-
     await data_access.UserAccess.update_politics(user_id, updated_stance)
 
     return {"message": "Political stance updated successfully", "new_stance": updated_stance}
+
+
+@router.websocket("/maintenance")
+async def websocket_endpoint(
+        websocket: WebSocket, db: AsyncSession = Depends(get_db)
+):
+
+    auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
+
+    await websocket.accept(subprotocol=auth_token)
+
+    user_id = get_my_id(auth_token)
+
+    """
+    start receiving new requests
+    """
+    data_access = DataAccess(db)
+
+    maintenance_actions = MaintenanceSocketActions(user_id, data_access, websocket)
+
+    try:
+        while True:
+            data = await websocket.receive_json()
+            if data["type"] == "get_maintenance_cost":
+                await maintenance_actions.maintenance_request(data)
+
+    except WebSocketDisconnect:
+        try:
+            await websocket.close()
+        except Exception as e:
+            pass
+
+
+@router.get("/colors")
+async def get_colors(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
+    """
+    get the political values of a user
+    """
+    data_access = DataAccess(db)
+    color_codes = await data_access.UserAccess.get_color_preferences(user_id)
+
+    if color_codes is not None:
+        color_codes = color_codes.toScheme()
+    return color_codes
+
+
+@router.post("/colors")
+async def set_colors(request: Request,
+                     user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
+    """
+    get the political values of a userUpdate the color preferences of a user
+    """
+    data = await request.json()
+    data_access = DataAccess(db)
+    await data_access.UserAccess.update_color_preferences(user_id, data["primary"], data["secondary"],
+                                                          data["tertiary"], data["text_color"])
+
+    await data_access.commit()
+
+
+@router.post("/restart")
+async def restart(user_id: Annotated[int, Depends(get_my_id)], db=Depends(get_db)):
+    """
+    let the user restart
+    """
+    data_access = DataAccess(db)
+    await data_access.ArmyAccess.remove_user_armies(user_id)
+    await data_access.CityAccess.remove_user_cities(user_id)
+
+    await data_access.commit()
+
+    await global_queue.put({"target": user_id, "type": "death"})
+
+

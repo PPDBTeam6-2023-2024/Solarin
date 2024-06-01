@@ -13,6 +13,8 @@ from ..exceptions.invalid_action_exception import InvalidActionException
 from ..exceptions.permission_exception import PermissionException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
+from ....logic.formula.compute_properties import PoliticalModifiers
+from src.app import config
 
 
 class BuildingAccess(DatabaseAccess):
@@ -348,12 +350,7 @@ class BuildingAccess(DatabaseAccess):
         """
 
         stance = await UserAccess(self.session).get_politics(user_id)
-
-        general_production_modifier = 1
-        if stance:
-            general_production_modifier += ((stance.anarchism * 10) + (stance.democratic * 3) - (
-                        stance.theocracy * 10) - (
-                                                    stance.technocracy * 5) + (stance.corporate_state * 20)) / 100
+        general_production_modifier = PoliticalModifiers.production_modifier(stance)
 
         modifier_dict = dict()
         for row_list in production_modifier:
@@ -454,11 +451,7 @@ class BuildingAccess(DatabaseAccess):
 
         stance = await UserAccess(self.session).get_politics(user_id)
 
-        general_production_modifier = 1
-        if stance:
-            general_production_modifier += ((stance.anarchism * 10) + (stance.democratic * 3) - (stance.theocracy * 10) - (
-                        stance.technocracy * 5) + (stance.corporate_state * 20)) / 100
-
+        general_production_modifier = PoliticalModifiers.production_modifier(stance)
 
         modifier_dict = dict()
         for row_list in production_modifier:
@@ -553,9 +546,26 @@ class BuildingAccess(DatabaseAccess):
             raise InvalidActionException("insufficient resources to upgrade this building")
 
         """
-        Increase the building rank
+        Get TF cost from cost list
         """
-        building_instance.rank += 1
+        TF_cost = None
+        for cost_type, cost_amount in upgrade_cost:
+            if cost_type == "TF":
+                TF_cost = cost_amount
+                break
+
+
+        """
+        Add building to the upgrade queue
+        """
+        if config.idle_time is not None:
+            duration = config.idle_time
+        else:
+            duration = PropertyUtility.get_GUT(TF_cost, building_instance.rank)
+        building_upgrade = BuildingUpgradeQueue(id=building_id, city_id=building_instance.city_id, start_time=datetime.utcnow(), duration=duration, current_rank=building_instance.rank)
+
+        self.session.add(building_upgrade)
+
 
         """
         Remove the resources form the user their account
@@ -634,4 +644,96 @@ class BuildingAccess(DatabaseAccess):
 
         return results == user_id
 
+    async def update_building_upgrade_queue(self, city_id: int):
+        """
+        Update the building upgrade queue and remove buildings that are done
+        """
 
+        get_upgrade_list = select(BuildingUpgradeQueue).where(BuildingUpgradeQueue.city_id == city_id)
+        upgrade_list = await self.session.execute(get_upgrade_list)
+
+        upgrade_list = upgrade_list.all()
+
+        remaining_update_dict = dict()
+
+        for upgrade in upgrade_list:
+            upgrade_queue_entry = upgrade[0]
+            """
+            Calculate the remaining time
+            """
+            remaining_time = (upgrade_queue_entry.start_time + timedelta(
+                seconds=upgrade_queue_entry.duration)) - datetime.utcnow()
+
+            get_building_instance = select(BuildingInstance).where(upgrade_queue_entry.id==BuildingInstance.id)
+            get_building_instance = await self.session.execute(get_building_instance)
+
+            """
+            Increase the building rank
+            """
+            building_instance: BuildingInstance = get_building_instance.first()[0]
+
+
+            if remaining_time.total_seconds() <= 0:
+
+                building_instance.rank += 1
+
+                """
+                If the remaining time is zero or negative, remove the update queue entry
+                """
+                await self.session.delete(upgrade_queue_entry)
+
+            else:
+                """
+                Add the remaining time in seconds to the upgrade time dict
+                """
+                remaining_update_dict[building_instance.id] = floor(remaining_time.total_seconds())
+
+        await self.session.flush()
+        await self.session.commit()
+
+
+
+        return remaining_update_dict
+
+    async def get_base_stats(self):
+        """
+        get the base stats of all types of towers and walls
+        :return: a dictionary with wall/tower names as keys and their defense/attack values as values
+        """
+        # Query WallType
+        wall_query = select(WallType.name, WallType.defense)
+        result = await self.session.execute(wall_query)
+        wall_types = result.all()
+
+        # Query TowerType
+        tower_query = select(TowerType.name, TowerType.attack)
+        result = await self.session.execute(tower_query)
+        tower_types = result.all()
+
+        # Combine results into a single dictionary
+        base_stats = {name: value for name, value in wall_types}
+        base_stats.update({name: value for name, value in tower_types})
+
+        return base_stats
+
+    async def get_prod_stats(self):
+        """
+        get the types of production buildings and what they produce
+        :return: a dictionary with building name as key and what it produces as value
+        """
+        query = Select(ProducesResources.building_name, ProducesResources.resource_name, ProducesResources.base_production)
+        result = await self.session.execute(query)
+        result = result.all()
+        return result
+
+
+    async def get_barrack_ids_in_city(self, city_id: int) -> list[int]:
+        """
+        Get all the barrack ids in a city
+        :param city_id: id of the city
+        :return: list of barrack ids
+        """
+        get_barracks = select(BuildingInstance.id).where(and_(BuildingInstance.city_id == city_id, BuildingInstance.building_type == "barracks"))
+        barracks = await self.session.execute(get_barracks)
+        barracks = barracks.all()
+        return [b[0] for b in barracks]

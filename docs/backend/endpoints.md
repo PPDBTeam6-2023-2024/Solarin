@@ -12,7 +12,7 @@ We use an authentication token to identify the user who is communicating with th
 
 Our Endpoints are structured into multiple routers:
 
-<details>
+
 <summary><strong>Authentication: '/auth'</strong></summary>
 <p>
 
@@ -23,9 +23,9 @@ Our Endpoints are structured into multiple routers:
 | validate |  GET   | Check if a provided token is valid                               |
 |    me    |  GET   | Get basic information about the user account                     |
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Chat: '/chat'</strong></summary>
 <p>
 
@@ -41,26 +41,31 @@ Our Endpoints are structured into multiple routers:
 |   alliance_requests   |   POST    | Accept/Reject an alliance request                                                    |
 | alliance_messageboard |    GET    | Get the message board corresponding to the user his alliance                         |
 |        ranking        |    GET    | Get the player ranking (based on amount of Solarium a user has)                      |
+|       kick_user       |   POST    | Kick a user from the alliance (when leaving the alliance, kick yourself)             |
 
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Logic: '/logic'</strong></summary>
 <p>
 general logic information needed
 
-|    Endpoint     | Method | Purpose                                             |
-|:---------------:|:------:|:----------------------------------------------------|
-|    resources    |  GET   | Get the current resources of a specific user        |
-|    politics     |  GET   | Get the current political stance of a specific user |
-| update_politics |  POST  | update the political stance of a user               |
+|    Endpoint     |  Method   | Purpose                                             |
+|:---------------:|:---------:|:----------------------------------------------------|
+|    resources    |    GET    | Get the current resources of a specific user        |
+|    politics     |    GET    | Get the current political stance of a specific user |
+| update_politics |   POST    | update the political stance of a user               |
+|   maintenance   | WEBSOCKET | websocket to handle communication about maintenance |
+|     restart     |   POST    | let the user restart                                |
+
+
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>CityManagement: '/cityManager'</strong></summary>
 <p>
 
@@ -76,9 +81,9 @@ general logic information needed
 
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Planets: '/planet'</strong></summary>
 <p>
 
@@ -89,26 +94,27 @@ general logic information needed
 | regions  |    GET    | Retrieve all regions that are a part of a planet                             |
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Armies: '/army'</strong></summary>
 <p>
 This router will handle the communication about Armies and their actions
 
-|   Endpoint   | Method | Purpose                                                 |
-|:------------:|:------:|:--------------------------------------------------------|
-|    armies    |  GET   | Get all the armies on a specific planet                 |
-|    troops    |  GET   | Get all troops and stats of an army                     |
-| armies_user  |  GET   | Get all the armies that are owned by the accessing user |
-| army_in_city |  GET   | Retrieve the army that is inside the city               |
-| fleets_in_space |  GET   | Retrieve the fleets that are in space               |
-| fleets  |  GET   | Retrieve the fleets of a user on a specific planet               |
+|    Endpoint     | Method | Purpose                                                 |
+|:---------------:|:------:|:--------------------------------------------------------|
+|     armies      |  GET   | Get all the armies on a specific planet                 |
+|     troops      |  GET   | Get all troops and stats of an army                     |
+|   armies_user   |  GET   | Get all the armies that are owned by the accessing user |
+|  army_in_city   |  GET   | Retrieve the army that is inside the city               |
+|   split_army    |  POST  | Split up an army                                        |
+| fleets_in_space |  GET   | Retrieve the fleets that are in space                   |
+|     fleets      |  GET   | Retrieve the fleets of a user on a specific planet      |
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>BuildingManagement: '/building'</strong></summary>
 <p>
 
@@ -120,9 +126,9 @@ This router will handle the communication about Armies and their actions
 |  upgrade_building   |  POST  | Upgrade a specific building                                  |
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>UnitManagement: '/unit'</strong></summary>
 <p>
 
@@ -132,9 +138,9 @@ This router will handle the communication about Armies and their actions
 |   train    |  POST  | Add a training queue entry to the training queue list of a barrack |
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Spawn: '/spawn'</strong></summary>
 <p>
 
@@ -143,10 +149,10 @@ This router will handle the communication about Armies and their actions
 |          |  GET   | Give information, on what the user needs to see when he/she opens the game |
 
 </p>
-</details>
 
 
-<details>
+
+
 <summary><strong>Spawn: '/trading'</strong></summary>
 <p>
 
@@ -155,9 +161,9 @@ This router will handle the communication about Armies and their actions
 |    WS    | WEBSOCKET | Websocket for handeling trading |
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>GeneralRouter: '/general'</strong></summary>
 <p>
 
@@ -168,4 +174,14 @@ This router will handle the communication about Armies and their actions
 |   remove_general   |  POST  | Un-assign a general from an army                                    |
 
 </p>
-</details>
+
+
+
+<summary><strong>Spawn: '/globalws'</strong></summary>
+<p>
+
+| Endpoint |  Method   | Purpose                                  |
+|:--------:|:---------:|:-----------------------------------------|
+|    ws    | WEBSOCKET | Websocket to transfer global information |
+
+</p>

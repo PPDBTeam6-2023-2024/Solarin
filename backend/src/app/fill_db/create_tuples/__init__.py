@@ -24,6 +24,7 @@ class CreateTuples:
         await self.create_wall_types(types["walls"])
         await self.create_production_building_types(types["production-buildings"])
         await self.create_general_types(types["generals"])
+        await self.create_political_stances(types["political-stance"])
         await self.__session.commit()
 
     async def create_associations(self, associations: list[dict[str, Any]]):
@@ -42,6 +43,9 @@ class CreateTuples:
                 await self.__dev.create_barracks_type(barracks_type["name"])
                 creation_cost: list[tuple[str, int]] = [(cc, barracks_type["creation-cost"][cc]) for cc in barracks_type["creation-cost"]]
                 await self.__dev.set_creation_cost(barracks_type["name"], creation_cost)
+
+                maintenance = [(m["product-name"], m["amount"]) for m in barracks_type["maintenance"]]
+                await self.__dev.create_maintenance_building(barracks_type["name"], maintenance)
 
     async def create_tower_types(self, tower_types: list[dict[str, Any]]):
         for tower_type in tower_types:
@@ -80,12 +84,13 @@ class CreateTuples:
                 for resource_type in building_type["products"]:
                     await self.__dev.set_produces_resources(building_type["name"], resource_type["product-name"], resource_type["base-rate"], resource_type["base-cap"])
 
+                maintenance = [(m["product-name"], m["amount"]) for m in building_type["maintenance"]]
+                await self.__dev.create_maintenance_building(building_type["name"], maintenance)
 
-    async def create_resource_types(self, resource_types: list[str]):
-        for resource_type in resource_types:
+    async def create_resource_types(self, resource_types: dict[str, int]):
+        for resource_type, starting_amount in resource_types.items():
             if await self.__session.get(ResourceType, resource_type) is None:
-                await self.__dev.create_resource_type(resource_type)
-
+                await self.__dev.create_resource_type(resource_type, starting_amount)
     async def create_troop_types(self, troop_types: list[dict[str, Any]]):
         for troop_type in troop_types:
             if await self.__session.get(TroopType, troop_type["name"]) is None:
@@ -108,6 +113,8 @@ class CreateTuples:
                                                          battle_stats.recovery, battle_stats.speed])
                 creation_cost = [(extra_cost, troop_type["extra_cost"][extra_cost]) for extra_cost in troop_type["extra_cost"]]+[("SOL", base_cost)]
                 await self.__dev.set_troop_type_cost(troop_type["name"], creation_cost)
+                maintenance = [(m["product-name"], m["amount"]) for m in troop_type["maintenance"]]
+                await self.__dev.create_maintenance_troop(troop_type["name"], maintenance)
     async def create_production_modifiers(self, production_modifiers: list[dict[str, Any]]):
         for coefficient in production_modifiers:
             stmt = (
@@ -146,3 +153,10 @@ class CreateTuples:
         """
         for s in stats_types:
             await self.__dev.create_stat(s)
+
+    async def create_political_stances(self, stances: list[str]):
+        """
+        Define the types of army stats
+        """
+        for s in stances:
+            await self.__dev.create_political_stance(s)

@@ -6,20 +6,16 @@ import {IoMdClose} from 'react-icons/io';
 
 import {Resources} from '../ResourceViewer/ResourceViewer';
 
-
 const ProfileElement = (props) => {
     /**
      * create the visuals for the profile button
      * */
     return (
-        <>
-            <div className="profile_circle bottom-0 fixed transition ease-in-out" onClick={props.onProfileClick}>
-                <div className="profile_background bottom-0 fixed">
-                    <img src={(`/images/profile_images/profile_1.png`)} alt="profile_1" draggable="false"/>
-                </div>
+        <div className="profile_circle bottom-0 fixed transition ease-in-out" onClick={props.onProfileClick}>
+            <div className="profile_background bottom-0 fixed">
+                <img src={(`/images/profile_images/profile_1.png`)} alt="profile_1" draggable="false"/>
             </div>
-
-        </>
+        </div>
     );
 };
 
@@ -46,7 +42,7 @@ function ProfileButton() {
         }
     }
     return (
-        <WindowUI hideState={hideWindow} windowName="Profile Viewer">
+        <WindowUI hideState={hideWindow} windowName="ProfileViewer">
             {/*Below is the bar we have which will contain all the resources*/}
             <ProfileElement onProfileClick={onPressProfileButton}/>
             <div id="profile_bar" className="bottom-0 left-0 fixed flex justify-center items-center">

@@ -66,13 +66,26 @@ async def create_building(
         planet.visible = True
         await data_access.commit()
 
-@router.get("/get_rates/{building_id}")
-async def get_rates( user_id: Annotated[int, Depends(get_my_id)],
-        building_id: int,
+
+@router.get("/get_rates/{city_id}")
+async def get_rates(user_id: Annotated[int, Depends(get_my_id)],
+        city_id: int,
         db=Depends(get_db)):
     data_access = DataAccess(db)
-    stats = await data_access.BuildingAccess.get_production_building_stats(user_id, building_id)
-    return stats
+
+    """
+    Retrieve the production rates of the builings inside a city
+    """
+
+    buildings = await data_access.BuildingAccess.get_city_buildings(city_id)
+
+    stats_dict = {}
+    for b in buildings:
+        stats = await data_access.BuildingAccess.get_production_building_stats(user_id, b.id)
+        stats_dict[b.id] = stats
+
+    return stats_dict
+
 
 @router.post("/collect/{building_id}", response_model=Confirmation)
 async def collect_resource(
@@ -105,3 +118,31 @@ async def upgrade_building(
     if not confirmed:
         raise HTTPException(status_code=400, detail="Building could not be upgraded.")
     return Confirmation(confirmed=confirmed)
+
+
+@router.get("/get_stats/")
+async def get_tower_wall_stats(db=Depends(get_db)):
+    """
+    get the base stats of all the different types of walls and towers
+    """
+    data_access = DataAccess(db)
+    result = await data_access.BuildingAccess.get_base_stats()
+
+    await data_access.commit()
+    return result
+
+
+@router.get("/get_production/")
+async def get_production_stats(db=Depends(get_db)):
+    """
+    get the different types of production buildings and what they produce
+    """
+    data_access = DataAccess(db)
+    result = await data_access.BuildingAccess.get_prod_stats()
+    formatted_result = {}
+    for item in result:
+        building, resource, amount = item
+        if building not in formatted_result:
+            formatted_result[building] = []
+        formatted_result[building].append({"resource": resource, "amount": amount})
+    return formatted_result

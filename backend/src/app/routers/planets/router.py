@@ -10,6 +10,7 @@ from ...database.models.PlanetModels import Planet
 from .connection_manager import ConnectionManager
 from .schemas import PlanetOut, Region
 from .planet_socket_actions import PlanetSocketActions
+
 router = APIRouter(prefix="/planet", tags=["Planet"])
 manager = ConnectionManager()
 
@@ -38,6 +39,7 @@ async def get_planets_private(
     planets = await data_access.PlanetAccess.get_planets_of_user(user_id=user_id)
     return [Planet.to_dict(planet) for planet in planets]
 
+
 @router.websocket("/ws/{planet_id}")
 async def planet_socket(
         websocket: WebSocket,
@@ -57,8 +59,9 @@ async def planet_socket(
 
     planet_actions = PlanetSocketActions(user_id, planet_id, data_access, connection_pool, websocket)
 
+    pending_tasks = []
     if new_conn:
-        await planet_actions.load_on_arrive()
+        pending_tasks = await planet_actions.load_on_arrive()
 
     """
     Start the websocket loop
@@ -82,7 +85,10 @@ async def planet_socket(
 
     except WebSocketDisconnect:
         connection_pool.disconnect(websocket)
-
+        if connection_pool.empty():
+            for task in pending_tasks:
+                if not task.done():
+                    task.cancel()
 
 @router.get("/regions/{planet_id}")
 async def get_planet_regions(

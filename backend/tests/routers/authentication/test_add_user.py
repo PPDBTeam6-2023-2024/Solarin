@@ -30,7 +30,7 @@ async def test_already_inside(client):
     }
     response = client.post("/auth/add_user", json=data)
 
-    assert response.status_code == 404
+    assert response.status_code == 409
 
 
 async def test_invalid_email(client):

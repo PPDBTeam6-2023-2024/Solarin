@@ -13,7 +13,6 @@
     /*center message*/
     font-size: 70%;
     color: var(--tertiaryColor);
-    display: inline;
     overflow: hidden;
     display: inline-block;
 }

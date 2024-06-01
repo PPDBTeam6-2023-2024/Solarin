@@ -1,6 +1,8 @@
+import asyncio
 from typing import Optional
 from math import dist
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import exc
 
 from ..models import *
 from ..exceptions.permission_exception import PermissionException
@@ -9,8 +11,10 @@ from ..exceptions.not_found_exception import NotFoundException
 from .database_acess import DatabaseAccess
 from .user_access import UserAccess
 from ..models.ArmyModels import Army
-
+from ....logic.formula.compute_properties import PoliticalModifiers
 from .city_access import CityAccess
+from src.app import config
+
 
 """
 Pre declaration of class because else circular import
@@ -19,6 +23,12 @@ Pre declaration of class because else circular import
 
 class GeneralAccess:
     pass
+
+
+"""
+Lock to prevent concurrency
+"""
+army_semaphore = asyncio.Semaphore(1)
 
 
 class ArmyAccess(DatabaseAccess):
@@ -66,44 +76,59 @@ class ArmyAccess(DatabaseAccess):
         """
         run a query to find the table giving the relation between troops and armies
         """
-        get_entry = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id,
-                                                 ArmyConsistsOf.troop_type == troop_type,
-                                                 ArmyConsistsOf.rank == rank)
-        """
-        Don't add empty entries
-        """
-        if amount == 0:
-            return
-
-        results = await self.session.execute(get_entry)
-        result = results.scalar_one_or_none()
 
         """
-        verify whether the entry (giving the specific relation) existed
+        Lock to prevent concurrency
         """
-        if result is None:
-            """
-            In case no entry is yet present:
-            We will create a new entry
-            """
-            army_consists_of = ArmyConsistsOf(army_id=army_id, troop_type=troop_type, rank=rank, size=amount)
-            self.session.add(army_consists_of)
 
-        else:
+        async with army_semaphore:
+            get_entry = Select(ArmyConsistsOf).where((ArmyConsistsOf.army_id == army_id) &
+                                                     (ArmyConsistsOf.troop_type == troop_type) &
+                                                     (ArmyConsistsOf.rank == rank))
             """
-            In case an entry is present:
-            We will increase the amount of the entry with the provided amount
+            Don't add empty entries
+            """
+            if amount <= 0:
+                return
+
+            await self.session.flush()
+            results = await self.session.execute(get_entry)
+            result = results.scalar_one_or_none()
+
+            r = await self.session.execute(Select(ArmyConsistsOf))
+            r = r.scalars().all()
+
+            """
+            verify whether the entry (giving the specific relation) existed
             """
 
-            result.size += amount
+            if result is None:
+                """
+                In case no entry is yet present:
+                We will create a new entry
+                """
 
-        """
-        Flush is necessary in case multiple adds to an army are done before a commit, because we might need
-        to alter the just created entry when the exact same troops are added to the army
-        """
-        await self.session.flush()
+                army_consists_of = ArmyConsistsOf(army_id=army_id, troop_type=troop_type, rank=rank, size=amount)
+                self.session.add(army_consists_of)
+                await self.session.commit()
+                r = await self.session.execute(Select(ArmyConsistsOf))
+                r = r.scalars().all()
 
-    async def get_troops(self, army_id: int):
+            else:
+                """
+                In case an entry is present:
+                We will increase the amount of the entry with the provided amount
+                """
+
+                result.size += amount
+
+            """
+            Flush is necessary in case multiple adds to an army are done before a commit, because we might need
+            to alter the just created entry when the exact same troops are added to the army
+            """
+            await self.session.flush()
+
+    async def get_troops(self, army_id: int) -> list[ArmyConsistsOf]:
         """
         Get the troops that are part of the army
 
@@ -138,6 +163,8 @@ class ArmyAccess(DatabaseAccess):
         await self.session.flush()
         armies = armies.scalars().all()
         return armies
+
+
     async def get_user_fleets_on_planet(self, user_id: int, planet_id: int ) -> list[Army]:
         """
        Get fleets on a planet
@@ -173,6 +200,8 @@ class ArmyAccess(DatabaseAccess):
         await self.session.flush()
         armies = armies.scalars().all()
         return armies
+
+
     async def get_army_extra(self, army_id: int):
         """
         Get also alliance name and username of the owner of the army
@@ -184,6 +213,8 @@ class ArmyAccess(DatabaseAccess):
         army = army.fetchone()
         army[0].alliance = army[1]
         army[0].username = army[2]
+        army[0].speed = (await self.get_army_stats(army[0].id))["speed"]
+
         return army[0]
     async def get_armies_on_planet_extra(self, planet_id: Optional[int]) -> list[Army]:
         """
@@ -204,6 +235,7 @@ class ArmyAccess(DatabaseAccess):
         for army in armies_fetched:
             army[0].alliance = army[1]
             army[0].username = army[2]
+            army[0].speed = (await self.get_army_stats(army[0].id))["speed"]
             armies.append(army[0])
 
         # Get all the armies on the planet that are in a city
@@ -335,7 +367,10 @@ class ArmyAccess(DatabaseAccess):
         to calculate how long the army will need to move to this position (delta)
         """
         distance = dist((army.x, army.y), (army.to_x, army.to_y))
-        delta = await self.get_army_time_delta(army_id, distance=distance, developer_speed=10)
+        if config.idle_time is not None:
+            delta = timedelta(seconds=config.idle_time)
+        else:
+            delta = await self.get_army_time_delta(army_id, distance=distance)
 
         """
         Change the departure time to now and the arrival time to the moment our army will arrive
@@ -414,7 +449,7 @@ class ArmyAccess(DatabaseAccess):
         """
         Check user doesn't attack alliance member
         """
-        if user_alliance == city_owner.alliance:
+        if user_alliance == city_owner.alliance and user_alliance != None:
             raise InvalidActionException("You cannot attack your allies")
 
         """
@@ -512,18 +547,13 @@ class ArmyAccess(DatabaseAccess):
         calculate and apply the modifiers gotten through the political stance of the user
         default value = 1
         """
+        strength_modifier = PoliticalModifiers.strength_modifier(stance)
 
-        strength_modifier = 1
-        speed_modifier = 1
-        if stance:
-            strength_modifier = ((stance.authoritarian * 30) - (stance.anarchism * 20) + (stance.theocracy * 15) - (stance.democratic * 10))/100
-            strength_modifier += 1
 
-            army_stats["city_attack"] = army_stats["city_attack"] * strength_modifier
-            army_stats["attack"] = army_stats["attack"] * strength_modifier
+        army_stats["city_attack"] = army_stats["city_attack"] * strength_modifier
+        army_stats["attack"] = army_stats["attack"] * strength_modifier
 
-            speed_modifier = ((stance.anarchism * 10) - (stance.corporate_state * 30) - (stance.theocracy * 5)) / 100
-            speed_modifier += 1
+        speed_modifier = PoliticalModifiers.speed_modifier(stance)
 
         """
         Modify the army stats based on the general of the army
@@ -533,10 +563,10 @@ class ArmyAccess(DatabaseAccess):
 
         modifiers = []
         if general is not None:
-            modifiers = await ga.get_modifiers(general.name)
+            modifiers = await ga.get_modifiers(user_id, general.name)
 
         for m in modifiers:
-            army_stats[m.stat] *= (1+m.amount)
+            army_stats[m[0].stat] *= (1+m[0].amount)*(1+m[1])
 
         """
         Speed is expresses as a weighted average, In case no troops are present, our
@@ -577,25 +607,28 @@ class ArmyAccess(DatabaseAccess):
         When no army is inside the city we will use the add_on_none optional
         to create an empty army
         """
+        async with army_semaphore:
+            armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
+            results = await self.session.execute(armies_in_cities)
+            result = results.scalar_one_or_none()
 
-        armies_in_cities = Select(ArmyInCity.army_id).where(ArmyInCity.city_id == city_id)
-        results = await self.session.execute(armies_in_cities)
-        result = results.scalar_one_or_none()
+            if result is None and add_on_none:
+                """
+                When no army is inside the city put a default army inside the city
+                """
+                get_city = Select(City).where(City.id == city_id)
+                city = await self.session.execute(get_city)
+                city = city.scalar_one()
 
-        if result is None and add_on_none:
-            """
-            When no army is inside the city put a default army inside the city
-            """
-            get_city = Select(City).where(City.id == city_id)
-            city = await self.session.execute(get_city)
-            city = city.scalar_one()
+                army_id = await self.create_army(city.controlled_by, city.region.planet_id, city.x, city.y)
 
-            army_id = await self.create_army(city.controlled_by, city.region.planet_id, city.x, city.y)
-            await self.flush()
-            await self.enter_city(city.id, army_id)
-            result = army_id
+                await self.enter_city(city.id, army_id)
+                await self.session.flush()
+                result = army_id
+            await self.session.flush()
 
         return result
+
     async def leave_planet(self, army_id: int):
         """
        let an army exit a planet
@@ -843,7 +876,7 @@ class ArmyAccess(DatabaseAccess):
             raise NotFoundException(not_found_param="army_id", table_name="army")
 
         same_owner = results[0].id == results[1].id
-        same_alliance = results[0].alliance == results[1].alliance and results[0].alliance is not None
+        same_alliance = results[0].alliance == results[1].alliance and results[0].alliance != None
 
         return same_owner, same_alliance
 
@@ -891,4 +924,81 @@ class ArmyAccess(DatabaseAccess):
 
         return army.planet_id, curr_x, curr_y
 
+    async def remove_user_armies(self, user_id: int):
+        """
+        Remove all armies belonging to a user
+        param: user_id: the users whose armies we want to remove
+        """
+        d = delete(Army).where(Army.user_id == user_id)
+        await self.session.execute(d)
+        await self.flush()
+
+    async def split_army(self, troop_list: list, army_id: int, user_id: int) -> int:
+        """
+        Split of a set of troops from an army
+        param: troop_list: list of troops that will be split of from the rest of the army
+        return: id of the new army that was split of from the main army
+        """
+
+        """
+        get main army
+        """
+        get_army = select(Army).where(Army.id == army_id)
+        army = await self.session.execute(get_army)
+        army = army.first()[0]
+
+
+        """
+        determine position of new army, which will be just next to the main army
+        """
+        planet_id, curr_x, curr_y = await self.get_current_position(army_id)
+        new_x = curr_x +0.02 if curr_x < 0.95 else curr_x - 0.02
+
+        """
+        create new army
+        """
+        new_army_id = await self.create_army(user_id, planet_id, new_x, curr_y)
+
+        """
+        remove troops from old army and add to new army
+        """
+        for troop in troop_list:
+            """
+            run a query to find the table giving the relation between troops and armies
+            """
+            get_troop = Select(ArmyConsistsOf).where(ArmyConsistsOf.army_id == army_id,
+                                                     ArmyConsistsOf.troop_type == troop.troop_type,
+                                                     ArmyConsistsOf.rank == troop.rank)
+            troop = await self.session.execute(get_troop)
+            troop = troop.first()[0]
+            troop.army_id = new_army_id
+
+        await self.session.commit()
+        return new_army_id
+
+    async def get_troop_stats(self):
+        """
+        get all the stats of every type of troops
+        :return: a list of dictionaries
+        """
+        query = Select(TroopHasStat.troop_type, TroopHasStat.stat, TroopHasStat.value)
+        result = await self.session.execute(query)
+        result = result.all()
+        return result
+
+    async def army_in_city(self, army_id) -> int:
+        """
+        Checks whether an army is inside a city or not
+        param: army_id: id of the army that we want to check
+        return: id of the city the army is in
+        """
+
+        get_city = Select(ArmyInCity.city_id).where(ArmyInCity.army_id == army_id)
+
+        city = await self.session.execute(get_city)
+        city = city.scalar_one_or_none()
+
+        return city
+
 from .general_access import GeneralAccess
+

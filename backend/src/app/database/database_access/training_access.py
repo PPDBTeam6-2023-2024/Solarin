@@ -6,6 +6,7 @@ from .building_access import BuildingAccess
 from .army_access import ArmyAccess
 from ....logic.formula.compute_properties import *
 from .database_acess import DatabaseAccess
+from src.app import config
 
 
 class TrainingAccess(DatabaseAccess):
@@ -61,9 +62,12 @@ class TrainingAccess(DatabaseAccess):
         """
         create queue
         """
-        training_time: int = await self.__getTrainingTime(troop_type)
+        if config.idle_time is not None:
+            training_time = config.idle_time * amount
+        else:
+            training_time: int = await self.__getTrainingTime(troop_type) * amount
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,
-                           training_size=amount, train_remaining=training_time*amount)
+                           training_size=amount, train_remaining=training_time)
 
         self.session.add(tq)
         await self.session.flush()
@@ -89,16 +93,17 @@ class TrainingAccess(DatabaseAccess):
 
         :param: building_id: id of buildings whose queue we will check
         :param: seconds: time in between provided (ONLY USED BY DEVELOPERS) if None, the real time will be used
+        :return: time until the next update of the queue
         """
 
         results = await self.get_queue(building_id)
-
         """
         developers should be allowed to change the time, that is why seconds can be provided
         """
         if seconds is None:
             delta_time = await BuildingAccess(self.session).get_delta_time(building_id)
             seconds = delta_time.total_seconds()
+        time_until_update = None
         for r in results:
             if seconds <= 0:
                 break
@@ -110,7 +115,10 @@ class TrainingAccess(DatabaseAccess):
             If multiple troops trained add only part to army when not fully done
             """
 
-            unit_training_time = r[1]
+            if config.idle_time is not None:
+                unit_training_time = config.idle_time
+            else:
+                unit_training_time = r[1]
             queue_entry: TrainingQueue = r[0]
 
             """
@@ -126,6 +134,8 @@ class TrainingAccess(DatabaseAccess):
                 queue_entry.train_remaining = diff
                 seconds = 0
 
+            time_until_update = queue_entry.train_remaining % unit_training_time
+
             """
             handle the trained unit changes
             """
@@ -136,8 +146,6 @@ class TrainingAccess(DatabaseAccess):
 
             building_city = await ba.get_city(building_id)
 
-            await self.session.flush()
-
             army_id = await aa.get_army_in_city(building_city.id)
 
             await army_access.add_to_army(army_id, queue_entry.troop_type, queue_entry.rank, troops_trained)
@@ -147,13 +155,15 @@ class TrainingAccess(DatabaseAccess):
             """
             if diff < 0:
                 await self.session.delete(queue_entry)
+                time_until_update = None
 
         """
         make a commit of the training changes and potentially removed training queue entries
         """
         await self.session.flush()
+        return time_until_update
 
-    async def get_queue(self, building_id):
+    async def get_queue(self, building_id) -> list[TrainingQueue]:
         """
         get the training queue of a building id
         :param: building_id: id of buildings whose queue we will check
@@ -161,16 +171,16 @@ class TrainingAccess(DatabaseAccess):
         """
 
         """
-                query to get the training queue, sorted by asc Training id, so the first entry will be first in the list 
-                """
+        query to get the training queue, sorted by asc Training id, so the first entry will be first in the list 
+        """
         get_queue_entries = Select(TrainingQueue, TroopType.training_time).join(TroopType,
                                                                                 TroopType.type == TrainingQueue.troop_type).where(
-            TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))
+        TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))
         results = await self.session.execute(get_queue_entries)
         results = results.all()
         return results
 
-    async def get_troop_cost(self, user_id: int, troop_type: str):
+    async def get_troop_cost(self, troop_type: str, rank: int):
         """
         Calculate the cost of 1 unit, based on the rank the user has leveled the unit to
 
@@ -178,8 +188,6 @@ class TrainingAccess(DatabaseAccess):
         :param: troop_type: type of unit it wants to train
         :return: list of following format (resource_type, amount)
         """
-
-        rank = await self.get_troop_rank(user_id, troop_type)
 
         get_cost = Select(TroopTypeCost.resource_type, TroopTypeCost.amount).where(TroopTypeCost.troop_type == troop_type)
 
@@ -196,53 +204,4 @@ class TrainingAccess(DatabaseAccess):
 
         return ranked_cost
 
-    async def get_troop_rank(self, user_id: int, troop_type: str):
-        """
-        Get the rank of a specific unit for a specific user
-
-        :param: user_id: id of the user who wants to know the unit cost
-        :param: troop_type: type of unit whose rank we want to retrieve corresponding to the user id
-        """
-
-        rank = Select(TroopRank.rank).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
-        results = await self.session.execute(rank)
-        result = results.first()
-
-        if result is None:
-            return 1
-        return result[0]
-
-    async def upgrade_troop_rank(self, user_id: int, troop_type: str):
-        """
-        Upgrade the rank of a specific unit, for a specific user
-
-        :param: user_id: id of the user who wants to know the unit cost
-        :param: troop_type: type of unit whose rank we want to upgrade corresponding to the user id
-        """
-
-        rank = await self.get_troop_rank(user_id, troop_type)
-
-        """
-        rank 1 is not yet stored, so if the original rank mis 1, we need to create a row with the new rank
-        """
-        create_new_row = False
-        if rank == 1:
-            create_new_row = True
-
-        rank += 1
-
-        if create_new_row:
-            """
-            create new row entry
-            """
-            self.session.add(TroopRank(user_id=user_id, troop_type=troop_type, rank=rank))
-        else:
-            """
-            alter row entry
-            """
-            u = update(TroopRank).\
-                values({"rank": rank}).where((TroopRank.user_id==user_id) & (TroopRank.troop_type==troop_type))
-            await self.session.execute(u)
-
-        await self.session.flush()
 

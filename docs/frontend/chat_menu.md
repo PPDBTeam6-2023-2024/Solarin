@@ -18,7 +18,7 @@ The chatMenu is shown as the component 'ChatMenu'. When a category is selected, 
 
 3 Categories:
 ### Friends
-<details>
+
 <summary><strong>Dm Overview</strong></summary>
 
 The friend component will make it possible to communicate with friends
@@ -33,9 +33,7 @@ and decreasing in create time of the last message.
 
 <br>![alt text](../images/dm_overview.png)
 
-</details>
 
-<details>
 <summary><strong>Friend requests</strong></summary>
 
 When a friend request is send to a user, the receiving user will have an entry for the friend request in its DM overview.
@@ -53,10 +51,10 @@ These FriendRequest will appear before the friendOverview entries.
 
 Friend request will be quiet similar to Alliance requests (at least on the frontend), so we will have an 'RequestEntry' which will just be
 a template component for requests, the 'FriendRequestEntry' will be just a wrapper around it, changing some parameters.
-</details>
+
 
 ### Alliances
-<details>
+
 <summary><strong>Alliances Overview (when not in an alliance)</strong></summary>
 If the user is not yet in an alliance the alliance category doesn't show much
 An text entry field will appear to enter an alliance name, below both a 'create alliance' and 'join alliance'
@@ -72,10 +70,10 @@ They will receive an alliance join request. When the user decide to try to join 
 
 <br>![alt text](../images/alliance_menu_not_in.png)
 
-</details>
 
 
-<details>
+
+
 <summary><strong>Alliances Overview (when in an alliance)</strong></summary>
 When you are in an alliance below, a button 'Open chat' appears.
 When we press this button we will go to the chat of the alliance.
@@ -83,21 +81,24 @@ This overview will also show a list of all players who want to join the alliance
 We can accept or reject users. These components are called 'AllianceRequestEntry', and behave similary to friend request entries,
 but has as backend endpoint /chat/alliance_requests
 
+Below the list of alliance join requests a list of current alliance members will also be provided
+and also the option to leave this alliance
+
 <br>![alt text](../images/alliance_menu_in.png)
 
-</details>
+
 
 ### Ranking
-<details>
+
 <summary><strong>Player Ranking</strong></summary>
 The category ranking shows the top 30 ranking of players, based on a 'quantity'. This quantity is the amount of solarium a player has
 
 <br>![alt text](../images/ranking.png)
 
-</details>
+
 
 ### Message Board
-<details>
+
 <summary><strong>Messages</strong></summary>
 The most important part of a chat system, is that users can communicate with each other.
 When we open a chat, the 'MessageBoard' component is shown.
@@ -129,4 +130,4 @@ The bottom also contains an input field so users can enter their text. This part
 <br>![alt text](../images/message_board.png)
 
 The Messages themselves are inside the component 'Message', which gives the message the right visual format.
-</details>
+

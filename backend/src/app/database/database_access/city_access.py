@@ -8,7 +8,7 @@ from .resource_access import ResourceAccess
 from ..models import *
 from .planet_access import PlanetAccess
 from .database_acess import DatabaseAccess
-
+from src.app import config
 
 class CityAccess(DatabaseAccess):
     """
@@ -217,11 +217,18 @@ class CityAccess(DatabaseAccess):
 
         get_city = select(City).where(City.id == city_id)
         city = await self.session.execute(get_city)
+
         city : City= city.first()[0]
 
         resource_cost = upgrade_tuple[0]
         time_cost = upgrade_tuple[1]
         can_upgrade = upgrade_tuple[2]
+
+        """
+        The max rank of a city is 5, return False if the current rank is 5
+        """
+        if city.rank > 4:
+            return False
 
         """
         Check if there's an existing upgrade entry for this city
@@ -244,7 +251,11 @@ class CityAccess(DatabaseAccess):
             """
             Add city to the cityUpdateQueue
             """
-            city_update = CityUpdateQueue(city_id=city_id, start_time=datetime.utcnow(), duration=time_cost)
+            if config.idle_time is not None:
+                duration = config.idle_time
+            else:
+                duration = time_cost
+            city_update = CityUpdateQueue(city_id=city_id, start_time=datetime.utcnow(), duration=duration)
 
             self.session.add(city_update)
 
@@ -271,6 +282,7 @@ class CityAccess(DatabaseAccess):
         city.rank += rank_increase
 
         # Commit the changes to the database
+        await self.session.flush()
         await self.session.commit()
 
     async def get_remain_update_time(self, city_id: int) -> float:
@@ -302,28 +314,30 @@ class CityAccess(DatabaseAccess):
             resource_cost = upgrade_tuple[0]
 
             """
-            get the city instance in the database
-            """
-            get_city = select(City).where(City.id == city_id)
-            city = await self.session.execute(get_city)
-            city: City = city.first()[0]
-
-            """
             Update the population according to the population upgrade cost and increase the city_rank by 1
             """
             for resource_type, resource_cost in resource_cost:
                 if resource_type == "POP":
-                    await self.update_population_and_rank(city_id, resource_cost, city.rank+1)
+                    await self.update_population_and_rank(city_id, resource_cost, 1)
                     break
 
             """
             If the remaining time is zero or negative, remove the update queue entry
             """
             await self.session.delete(update_queue_entry)
-            await self.session.commit()
+            await self.session.flush()
             return 0
         else:
             """
             Return the remaining time in seconds
             """
             return int(remaining_time.total_seconds())
+
+    async def remove_user_cities(self, user_id: int):
+        """
+        Remove all cities belonging to a user
+        param: user_id: the users whose cities we want to remove
+        """
+        d = delete(City).where(City.controlled_by == user_id)
+        await self.session.execute(d)
+        await self.flush()

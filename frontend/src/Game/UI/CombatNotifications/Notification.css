@@ -1,0 +1,18 @@
+.Notification{
+    position: fixed;
+    z-index: 21;
+    padding: 2vw;
+    border-radius: 1vw 1vw 1vw 1vw;
+
+    font-size: 2vw;
+    background-image: linear-gradient(5deg, var(--primaryColor), var(--secundaryColor));
+    color: var(--textColor);
+
+}
+.Notification *{
+    color: var(--textColor);
+}
+
+.Notification span{
+    color: var(--tertiaryColor);
+}

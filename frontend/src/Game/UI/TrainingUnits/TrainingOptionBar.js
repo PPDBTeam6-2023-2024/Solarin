@@ -1,8 +1,7 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import './TrainingViewer.css'
 import './TrainingOptionBar.css'
 import TrainingOptionEntry from "./TrainingOptionEntry";
-import troopsJson from "./../troops.json"
 import TrainingOptionAdder from "./TrainingOptionAdder";
 
 function TrainingOptionBar(props) {
@@ -12,6 +11,21 @@ function TrainingOptionBar(props) {
     * */
 
     const [selected, setSelected] = useState("");
+
+    const [troopsJson, setTroopsJson] = useState({});
+
+    useEffect(() => {
+        const importTroopsJson = async () => {
+            try {
+                const module = await import(`./../troops_${props.buildingType}.json`);
+                setTroopsJson(module.default);
+            } catch (error) {
+                console.error("Error importing troops data: ", error);
+            }
+        };
+
+        importTroopsJson();
+    }, [props.buildingType]);
 
     const changeSelected = (key) => {
         if (selected === key) {
@@ -37,7 +51,7 @@ function TrainingOptionBar(props) {
                 )
                 }
             </div>
-            {selected !== "" && <TrainingOptionAdder onTrain={props.onTrain} type={selected}/>}
+            {selected !== "" && <TrainingOptionAdder onTrain={props.onTrain} type={selected} buildingId={props.buildingId}/>}
         </>
     )
 }

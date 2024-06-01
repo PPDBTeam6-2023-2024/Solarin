@@ -1,17 +1,19 @@
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request, WebSocket, WebSocketDisconnect
 
 from ...database.database_access.data_access import DataAccess
 from typing import Annotated, Tuple, List
 from ..authentication.router import get_my_id
 from ...database.database import get_db, AsyncSession
 from ...database.models import *
+import asyncio
 
 router = APIRouter(prefix="/unit", tags=["City"])
 
 
-@router.get("/train_cost/{unit_type}")
+@router.get("/train_cost/{unit_type}/{building_id}")
 async def get_buildings(
         user_id: Annotated[int, Depends(get_my_id)],
+        building_id: int,
         unit_type: str,
         db=Depends(get_db)
 ):
@@ -21,7 +23,8 @@ async def get_buildings(
 
     da = DataAccess(db)
 
-    cost_list = await da.TrainingAccess.get_troop_cost(user_id, unit_type)
+    rank = await da.BuildingAccess.get_building_rank(building_id)
+    cost_list = await da.TrainingAccess.get_troop_cost(unit_type, rank)
     return cost_list
 
 
@@ -54,7 +57,8 @@ async def get_buildings(
         return {"queue": [], "success": False, "message":
                 "Only the owner of this building can change its training queue"}
 
-    cost_list = await da.TrainingAccess.get_troop_cost(user_id, troop_type)
+    rank = await da.BuildingAccess.get_building_rank(building_id)
+    cost_list = await da.TrainingAccess.get_troop_cost(troop_type, rank)
     cost_list = [(c[0], c[1]*amount) for c in cost_list]
     has_resources = await da.ResourceAccess.has_resources(user_id, cost_list)
     if not has_resources:
@@ -77,12 +81,8 @@ async def get_buildings(
     await da.BuildingAccess.checked(building_id)
     await da.commit()
 
-    rank = await da.TrainingAccess.get_troop_rank(user_id, troop_type)
-    rank2 = await da.BuildingAccess.get_building_rank(building_id)
-    """
-    Rank of the troops are the average of the troop rank and the building type
-    """
-    rank = floor((rank+rank2)/2)
+    rank = await da.BuildingAccess.get_building_rank(building_id)
+
     await da.TrainingAccess.train_type(building_id, troop_type, rank, amount)
     await da.commit()
 
@@ -94,3 +94,62 @@ async def get_buildings(
 
     output = [t[0].toTrainingQueueEntry(t[1]) for t in training_queue]
     return {"queue": output, "success": True, "message": ""}
+
+
+async def building_queue_trigger(building_id, trigger_queue, da: DataAccess):
+    """
+    This function will trigger the queue of a building, and put a message in the queue
+
+    True will be put in the queue if a new troop is trained
+    False will be put in the queue if the queue is empty
+    """
+    while True:
+        time_until_next_update = await da.TrainingAccess.check_queue(building_id)
+        await da.BuildingAccess.checked(building_id)
+        await da.commit()
+        await trigger_queue.put(True)
+        if time_until_next_update is None:
+            await trigger_queue.put(False)
+            return
+        await asyncio.sleep(time_until_next_update + 0.3)
+
+
+@router.websocket("/ws/{city_id}")
+async def websocket_endpoint(websocket: WebSocket, city_id: int, db=Depends(get_db)):
+    """
+    This websocket will notify the user when a new troop is trained in the city
+    """
+    auth_token = websocket.headers.get("Sec-WebSocket-Protocol")
+    user_id = get_my_id(auth_token)
+    await websocket.accept(subprotocol=auth_token)
+
+    # no connection manager needed because this is a simple p2p connection
+
+    data_access = DataAccess(db)
+
+    # get all barrack ids in the city
+    ids = await data_access.BuildingAccess.get_barrack_ids_in_city(city_id)
+
+    trigger_queue = asyncio.Queue()
+    tasks = [asyncio.create_task(building_queue_trigger(id, trigger_queue, data_access)) for id in ids]
+
+    try:
+        # check if any of the tasks are still running
+        # will also be false if the tasks list is empty
+        running = any([not t.done() for t in tasks])
+        while running:
+            # wait for a trigger
+            update = await trigger_queue.get()
+            if update:
+                await websocket.send_json({"message": "new troop trained"})
+            else:
+                # keep running if there is any task that is not done
+                running = any([not t.done() for t in tasks])
+    except WebSocketDisconnect:
+        pass
+    except Exception as e:
+        await websocket.close()
+    finally:
+        for t in tasks:
+            if not t.done():
+                t.cancel()

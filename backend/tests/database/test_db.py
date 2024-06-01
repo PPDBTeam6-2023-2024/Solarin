@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from src.app.database.database import sessionmanager
@@ -25,6 +27,7 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.create_resource_type("Energon")
         await da.DeveloperAccess.create_resource_type("SOL")
         await da.DeveloperAccess.create_resource_type("TF")
+        await da.DeveloperAccess.create_resource_type("RA")
 
         await da.DeveloperAccess.create_stat("attack")
         await da.DeveloperAccess.create_stat("defense")
@@ -32,6 +35,13 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.create_stat("city_defense")
         await da.DeveloperAccess.create_stat("recovery")
         await da.DeveloperAccess.create_stat("speed")
+
+        await da.DeveloperAccess.create_political_stance("anarchism")
+        await da.DeveloperAccess.create_political_stance("authoritarian")
+        await da.DeveloperAccess.create_political_stance("democratic")
+        await da.DeveloperAccess.create_political_stance("corporate_state")
+        await da.DeveloperAccess.create_political_stance("theocracy")
+        await da.DeveloperAccess.create_political_stance("technocracy")
 
         """
         Creates 50 users
@@ -119,12 +129,10 @@ async def insert_test_data(connection_test):
         await da.DeveloperAccess.create_production_building_type("The mines of moria")
         await da.DeveloperAccess.create_barracks_type("Kamino training complex")
         await da.DeveloperAccess.create_tower_type("towerH", 50)
-        await da.DeveloperAccess.create_house_type("Solarin mansion", 50)
         await da.DeveloperAccess.create_wall_type("wallW", 50)
 
         await da.DeveloperAccess.set_produces_resources("The mines of moria", "Vibranium", 100, 2000)
 
-        await da.DeveloperAccess.set_creation_cost("Solarin mansion", [("Vibranium", 2022), ("Energon", 22)])
         await da.DeveloperAccess.set_creation_cost("Kamino training complex", [("Vibranium", 1)])
         await da.DeveloperAccess.set_creation_cost("Kamino training complex", [("Energon", 2)])
 
@@ -145,11 +153,9 @@ async def insert_test_data(connection_test):
         """
         await da.BuildingAccess.create_building(20, c_id, "The mines of moria")
         b_id = await da.BuildingAccess.create_building(20, c_id, "Kamino training complex")
-        await da.BuildingAccess.create_building(20, c_id, "Solarin mansion")
 
         await da.BuildingAccess.create_building(1, c_id2, "The mines of moria")
         b_id2 = await da.BuildingAccess.create_building(1, c_id2, "Kamino training complex")
-        await da.BuildingAccess.create_building(1, c_id2, "Solarin mansion")
 
         await da.BuildingAccess.create_building(20, c_id, "towerH")
         await da.BuildingAccess.create_building(20, c_id, "wallW")
@@ -195,6 +201,31 @@ async def insert_test_data(connection_test):
 
         yield
 
+async def test_city_combat(event_loop):
+    """
+    Test combat between an army and a city
+    """
+    async with sessionmanager.session() as session:
+        da = DataAccess(session)
+
+        owner = await da.CityAccess.get_city_controller(1)
+        assert owner.id == 20
+
+        await da.ArmyAccess.enter_city(1, 2)
+
+        await da.ArmyAccess.attack_city(1, 1)
+
+        suc6 = await ArriveCheck.check_arrive(1, da)
+        assert suc6
+
+        owner = await da.CityAccess.get_city_controller(1)
+        assert owner.id == 1
+
+        army = await da.ArmyAccess.get_army_by_id(1)
+        troops = await da.ArmyAccess.get_troops(1)
+
+        assert army is not None
+        assert len(troops) > 0
 
 async def test_check_messages():
     """
@@ -286,21 +317,19 @@ async def test_buildings():
         da = DataAccess(session)
 
         bt = await da.BuildingAccess.get_building_types()
-        assert len(bt) == 5
+        assert len(bt) == 4
         assert (bt[0].name, bt[0].type) == ('The mines of moria', 'productionBuilding')
         assert (bt[1].name, bt[1].type) == ('Kamino training complex', 'Barracks')
         assert (bt[2].name, bt[2].type) == ('towerH', 'tower')
-        assert (bt[3].name, bt[3].type) == ('Solarin mansion', 'house')
 
         cbt = await da.BuildingAccess.get_city_buildings(1)
-        assert len(cbt) == 5
+        assert len(cbt) == 4
         assert (cbt[0].type.name, cbt[0].type.type) == ('The mines of moria', 'productionBuilding')
         assert (cbt[1].type.name, cbt[1].type.type) == ('Kamino training complex', 'Barracks')
-        assert (cbt[2].type.name, cbt[2].type.type) == ('Solarin mansion', 'house')
 
         assert cbt[0].id == 1
         assert cbt[1].id == 2
-        assert cbt[2].id == 3
+        assert cbt[2].id == 5
 
 
 async def test_DM_overview():
@@ -397,7 +426,7 @@ async def test_training():
         assert army_troops[0].rank == 3
 
 
-async def test_troop_rank():
+async def test_troops():
     """
     test that troop ank works correctly
     """
@@ -407,26 +436,13 @@ async def test_troop_rank():
         """
         Tests that retrieving and upgrading unit ranks occurs correctly
         """
-        rank = await da.TrainingAccess.get_troop_rank(1, "soldier")
-        assert rank == 1
 
-        cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
+        cost_list = await da.TrainingAccess.get_troop_cost("soldier", 1)
         assert len(cost_list) == 1
         assert cost_list[0][0] == "Vibranium"
         assert cost_list[0][1] == 5
 
-        await da.TrainingAccess.upgrade_troop_rank(1, "soldier")
-
-        rank = await da.TrainingAccess.get_troop_rank(1, "soldier")
-        assert rank == 2
-
-        rank = await da.TrainingAccess.get_troop_rank(2, "soldier")
-        assert rank == 1
-
-        rank = await da.TrainingAccess.get_troop_rank(1, "medic")
-        assert rank == 1
-
-        cost_list = await da.TrainingAccess.get_troop_cost(1, "soldier")
+        cost_list = await da.TrainingAccess.get_troop_cost("soldier", 1)
         assert len(cost_list) == 1
         assert cost_list[0][0] == "Vibranium"
         assert cost_list[0][1] == 5
@@ -503,28 +519,4 @@ async def test_army_combat():
         assert a1 is None or a2 is None
 
 
-async def test_city_combat():
-    """
-    Test combat between an army and a city
-    """
-    async with sessionmanager.session() as session:
-        da = DataAccess(session)
 
-        owner = await da.CityAccess.get_city_controller(1)
-        assert owner.id == 20
-
-        await da.ArmyAccess.enter_city(1, 2)
-
-        await da.ArmyAccess.attack_city(1, 1)
-
-        suc6 = await ArriveCheck.check_arrive(1, da)
-        assert suc6
-
-        owner = await da.CityAccess.get_city_controller(1)
-        assert owner.id == 1
-
-        army = await da.ArmyAccess.get_army_by_id(1)
-        troops = await da.ArmyAccess.get_troops(1)
-
-        assert army is not None
-        assert len(troops) > 0

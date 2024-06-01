@@ -98,7 +98,10 @@ async def get_buildings(
 
 async def building_queue_trigger(building_id, trigger_queue, da: DataAccess):
     """
-    This function will trigger the training queue to check if a new troop is trained
+    This function will trigger the queue of a building, and put a message in the queue
+
+    True will be put in the queue if a new troop is trained
+    False will be put in the queue if the queue is empty
     """
     while True:
         time_until_next_update = await da.TrainingAccess.check_queue(building_id)
@@ -106,10 +109,9 @@ async def building_queue_trigger(building_id, trigger_queue, da: DataAccess):
         await da.commit()
         await trigger_queue.put(True)
         if time_until_next_update is None:
-            time_until_next_update = 5
-        else:
-            time_until_next_update += 0.3
-        await asyncio.sleep(time_until_next_update)
+            await trigger_queue.put(False)
+            return
+        await asyncio.sleep(time_until_next_update + 0.3)
 
 
 @router.websocket("/ws/{city_id}")
@@ -132,15 +134,20 @@ async def websocket_endpoint(websocket: WebSocket, city_id: int, db=Depends(get_
     tasks = [asyncio.create_task(building_queue_trigger(id, trigger_queue, data_access)) for id in ids]
 
     try:
-        while True:
-            # send all the troops that are currently in the city
-            # wait for a trigger that a new troop is trained
-            await trigger_queue.get()
-            await websocket.send_json({"message": "new troop trained"})
+        running = not all([t.done() for t in tasks])
+        while running:
+            # wait for a trigger
+            update = await trigger_queue.get()
+            if update:
+                await websocket.send_json({"message": "new troop trained"})
+            else:
+                # keep running if not all are done
+                running = not all([t.done() for t in tasks])
     except WebSocketDisconnect:
         pass
     except Exception as e:
         await websocket.close()
     finally:
         for t in tasks:
-            t.cancel()
+            if not t.done():
+                t.cancel()

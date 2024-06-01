@@ -89,6 +89,9 @@ export const UpgradeButtonComponent = ({
 
     /* Effect to handle remaining time and button disabling logic*/
     useEffect(() => {
+        const upgradeBuildingEvent = async () => {
+            await refreshData();
+        };
         /*
         * When waiting time is over, update the data
         * */
@@ -96,7 +99,8 @@ export const UpgradeButtonComponent = ({
             const newTimerValue = Math.max(data.remaining_update_time - totalTimePassed, 0);
             setTimer(newTimerValue);
             if(data.remaining_update_time > 0 && newTimerValue <= 0){
-                refreshData();
+                /*after a delay of 1 seconds upgradeBuildingEvent is called*/
+                setTimeout(upgradeBuildingEvent, 1000)
             }
             setIsButtonDisabled(newTimerValue > 0);
         };
@@ -127,7 +131,6 @@ export const UpgradeButtonComponent = ({
             const cityData = await getCityData(cityId);
             setBuildings(cityData?.buildings);
             setCityInfo(cityData?.city);
-
             const buildings = await getUpgradeCost(cityId);
             const building_costs = buildings?.[0];
             const costMap = building_costs?.reduce((acc, building) => {

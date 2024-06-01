@@ -323,3 +323,18 @@ async def kick_user(
     await data_access.commit()
 
     return {"success": True}
+
+
+@router.get("/get_alliance")
+async def get_alliance_members(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+) -> str:
+    """
+    update the alliance information of a user
+    """
+
+    data_access = DataAccess(db)
+    alliance = await data_access.AllianceAccess.get_alliance(user_id)
+    return alliance

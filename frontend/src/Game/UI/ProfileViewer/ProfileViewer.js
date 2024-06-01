@@ -114,6 +114,7 @@ function ProfileViewer(props) {
         <>
             <div className="profile_viewer">
                 <h1>Username: {userInfo.username}</h1>
+                <h1>Alliance: {userInfo.alliance}</h1>
 
                 {/*list of buttons on the left: cities and armies (category tabs)*/}
                 <div style={{"width": "15%", "height": "100%", "marginLeft": "1vw"}}>

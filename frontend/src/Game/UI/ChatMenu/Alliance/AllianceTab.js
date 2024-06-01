@@ -48,7 +48,6 @@ const AllianceTab = (props) => {
 
     }
 
-
     /*
     * This function will create/try to join an alliance
     * */
@@ -165,8 +164,15 @@ const AllianceTab = (props) => {
                         <>
                             {/*this part gives an overview of the alliance, when the user is part of an alliance*/}
 
+                            <span style={{"marginLeft": "auto", "marginRight": "auto"}}>
+                                Alliance: {userInfo.alliance}
+                            </span>
+
+
                             {/*visualize all alliance join requests*/}
-                            <div style={{"overflowY": "scroll", "height": "85%", "scrollbarWidth:": "none"}}>
+                            <div style={{"overflowY": "scroll", "height": "85%", "scrollbarWidth:": "none",
+                                "overflowX": "hidden"}}>
+
                                 {
                                 /*display all friend requests*/
                                 allianceRequests.map((elem, index) =>

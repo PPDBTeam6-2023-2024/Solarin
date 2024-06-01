@@ -101,10 +101,11 @@ function PlanetSVG(props) {
             );
         });
     };
-    /* calculate travel time to a coordinate in seconds (for army movement) */
-    const getTravelTime = (from, to) => {
+    /* calculate travel time to a coordinate in minutes (for army movement) */
+    const getTravelTime = (from, to, speed) => {
         /*to change when army speed is taken into account*/
-        return Math.round(Math.hypot(to[0]-from[0], to[1]-from[1])*(100000/3600))
+        const mapCrossTime = 1000 / speed * 60
+        return Math.round(Math.hypot(to[0]-from[0], to[1]-from[1])*mapCrossTime)
     }
 
     /*
@@ -127,7 +128,7 @@ function PlanetSVG(props) {
                     <line stroke={"red"} strokeWidth={3} key={i} x1={armyImage.curr_x*width} y1={armyImage.curr_y*height} x2={mousePos[0]*width} y2={mousePos[1]*height}/>
                     <circle cx={mousePos[0]*width} cy={mousePos[1]*height} r={10} fill={"red"}/>
                     <text fill="white" x={(mousePos[0]+armyImage.curr_x)*width/2} y={(mousePos[1]+armyImage.curr_y)*height/2-20}>
-                        {getTravelTime([armyImage.curr_x, armyImage.curr_y], mousePos)} seconds
+                        {getTravelTime([armyImage.curr_x, armyImage.curr_y], mousePos, armyImage.speed)} minutes
                     </text>
                     </Fragment>
                 })
@@ -140,7 +141,7 @@ function PlanetSVG(props) {
                             <circle cx={army.to_x * width} cy={army.to_y * height} r={10} fill={"lightblue"}/>
                             <text fill="white" x={(army.to_x + army.curr_x) * width / 2}
                                   y={(army.to_y + army.curr_y) * height / 2-20}>
-                                {getTravelTime([army.curr_x, army.curr_y], [army.to_x, army.to_y])} seconds
+                                {getTravelTime([army.curr_x, army.curr_y], [army.to_x, army.to_y], army.speed)} minutes
                             </text>
                         </Fragment> : <></>
                 })

@@ -213,6 +213,8 @@ class ArmyAccess(DatabaseAccess):
         army = army.fetchone()
         army[0].alliance = army[1]
         army[0].username = army[2]
+        army[0].speed = (await self.get_army_stats(army[0].id))["speed"]
+
         return army[0]
     async def get_armies_on_planet_extra(self, planet_id: Optional[int]) -> list[Army]:
         """
@@ -233,6 +235,7 @@ class ArmyAccess(DatabaseAccess):
         for army in armies_fetched:
             army[0].alliance = army[1]
             army[0].username = army[2]
+            army[0].speed = (await self.get_army_stats(army[0].id))["speed"]
             armies.append(army[0])
 
         # Get all the armies on the planet that are in a city

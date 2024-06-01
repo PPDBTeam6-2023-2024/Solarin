@@ -63,7 +63,7 @@ class TrainingAccess(DatabaseAccess):
         create queue
         """
         if config.idle_time is not None:
-            training_time = config.idle_time
+            training_time = config.idle_time * amount
         else:
             training_time: int = await self.__getTrainingTime(troop_type) * amount
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,
@@ -93,6 +93,7 @@ class TrainingAccess(DatabaseAccess):
 
         :param: building_id: id of buildings whose queue we will check
         :param: seconds: time in between provided (ONLY USED BY DEVELOPERS) if None, the real time will be used
+        :return: time until the next update of the queue
         """
 
         results = await self.get_queue(building_id)
@@ -102,6 +103,7 @@ class TrainingAccess(DatabaseAccess):
         if seconds is None:
             delta_time = await BuildingAccess(self.session).get_delta_time(building_id)
             seconds = delta_time.total_seconds()
+        time_until_update = None
         for r in results:
             if seconds <= 0:
                 break
@@ -113,7 +115,10 @@ class TrainingAccess(DatabaseAccess):
             If multiple troops trained add only part to army when not fully done
             """
 
-            unit_training_time = r[1]
+            if config.idle_time is not None:
+                unit_training_time = config.idle_time
+            else:
+                unit_training_time = r[1]
             queue_entry: TrainingQueue = r[0]
 
             """
@@ -128,6 +133,8 @@ class TrainingAccess(DatabaseAccess):
             else:
                 queue_entry.train_remaining = diff
                 seconds = 0
+
+            time_until_update = queue_entry.train_remaining % unit_training_time
 
             """
             handle the trained unit changes
@@ -148,13 +155,15 @@ class TrainingAccess(DatabaseAccess):
             """
             if diff < 0:
                 await self.session.delete(queue_entry)
+                time_until_update = None
 
         """
         make a commit of the training changes and potentially removed training queue entries
         """
         await self.session.flush()
+        return time_until_update
 
-    async def get_queue(self, building_id):
+    async def get_queue(self, building_id) -> list[TrainingQueue]:
         """
         get the training queue of a building id
         :param: building_id: id of buildings whose queue we will check
@@ -162,11 +171,11 @@ class TrainingAccess(DatabaseAccess):
         """
 
         """
-                query to get the training queue, sorted by asc Training id, so the first entry will be first in the list 
-                """
+        query to get the training queue, sorted by asc Training id, so the first entry will be first in the list 
+        """
         get_queue_entries = Select(TrainingQueue, TroopType.training_time).join(TroopType,
                                                                                 TroopType.type == TrainingQueue.troop_type).where(
-            TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))
+        TrainingQueue.building_id == building_id).order_by(asc(TrainingQueue.id))
         results = await self.session.execute(get_queue_entries)
         results = results.all()
         return results

@@ -1,19 +1,45 @@
-import React, {useContext, useMemo, useState} from "react";
+import React, {useContext, useMemo, useState, useRef, useEffect} from "react";
 import {AgGridReact} from "ag-grid-react";
 import './NewBuildingGrid.css';
 import {SocketContext} from "../../../Context/SocketContext";
 import ResourceCostEntry from "../../../UI/ResourceViewer/ResourceCostEntry";
 import {SplitArmy} from "../BuildingManager";
+import {getArmyInCity} from "../BuildingManager";
+import { sort } from "d3";
 
-const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
+const ArmyGrid = ({cityId, onRowMouseOver, selectedImage, refresh}) => {
 
     const [socket, setSocket] = useContext(SocketContext);
     const [gridApi, setGridApi] = useState()
-    const [armyId, setArmyId] = useState(troops.army_id)
+    const [troops, setTroops] = useState({troops: [], maintenance: []})
+    const websocket = useRef(null);
+
+    useEffect(() => {
+        websocket.current = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/unit/ws/${cityId}`, `${localStorage.getItem('access-token')}`);
+        websocket.current.onopen = () => {
+            console.log("Websocket connected");
+        };
+
+        websocket.current.onmessage = (event) => {
+            getArmyInCity(cityId).then(setTroops);
+            console.log(troops)
+        };
+        websocket.current.onclose = () => {
+            console.log("Websocket closed");
+        };
+
+        return () => {
+            websocket.current.close();
+        };
+    }, [setTroops, cityId]);
+
+    useEffect(() => {
+        getArmyInCity(cityId).then(setTroops);
+    }, [cityId]);
 
     /* set column data */
     const columns = useMemo(() => [
-        {headerName: "Troop Type", field: "troop_type", autoHeight: true},
+        {headerName: "Troop Type", field: "troop_type", autoHeight: true, sortable: true},
         {headerName: "Rank", field: "rank"},
         {headerName: "Size", field: "size"},
     ], []);
@@ -54,7 +80,7 @@ const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
 
         if (!allSelected){
             /* if not all troops are selected, split army and leave city with selected troops */
-            setArmyId(await SplitArmy(troops.army_id,selectedTroops))
+            await SplitArmy(troops.army_id, selectedTroops)
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: "get_armies" }));
             } else {
@@ -62,10 +88,9 @@ const ArmyGrid = ({troops, onRowMouseOver, selectedImage, refresh}) => {
             }
         } else{
             /* else have the whole army leave the city */
-            setArmyId(troops.army_id)
-                    const data_json = {
-            type: "leave_city",
-            army_id: armyId
+            const data_json = {
+                type: "leave_city",
+                army_id: troops.army_id
             };
 
             await socket.send(JSON.stringify(data_json));

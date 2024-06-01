@@ -8,13 +8,14 @@ import ProfileViewer from "./UI/ProfileViewer/ProfileViewer";
 import {RiArrowLeftSLine} from "react-icons/ri";
 import {IoMdPlanet} from "react-icons/io";
 import {UserInfoContext} from "./Context/UserInfoContext"
-
+import {useDispatch, useSelector} from "react-redux";
 import {PlanetListContext} from "./Context/PlanetListContext"
 
 import ColorManager from "./ColorManager";
 import Notification from "./UI/CombatNotifications/Notification";
 import MaintenanceHook from "./Hooks/MaintenanceHook";
 import GlobalHook from "./Hooks/GlobalHook";
+import {initializeResources} from "./UI/ResourceViewer/ResourceViewer";
 const Game = () => {
     /**
      * This Component is the general component containing the entire game
@@ -74,6 +75,11 @@ const Game = () => {
         setPlanetList([])
     }
 
+    /*
+    * Dispatch to access local state resources
+    * */
+    const dispatch = useDispatch()
+
     const getAllPlanets = async () => {
         /*retrieve a list of planet id's and planet names to switch between them*/
         try {
@@ -81,6 +87,12 @@ const Game = () => {
             const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
 
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/private`)
+
+            /*
+            * Update resources after spawn in case a user just started
+            * */
+            initializeResources(dispatch)
+
             console.log("spawning", response.data)
 
             if (response.data.length > 0){

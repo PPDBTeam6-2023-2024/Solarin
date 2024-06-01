@@ -48,7 +48,7 @@ const Game = () => {
     * Support the global websocket actions using a custom hook
     * */
     const [combatNotifications, setCombatNotifications] = useState([]);
-    GlobalHook(setCombatNotifications)
+    GlobalHook(setCombatNotifications, setUserInfo)
 
     /*
     * Verify who the user is

@@ -103,7 +103,10 @@ function Login() {
             /*After creating an account it is convenient to automatically log in too*/
             await doLogin(username, password)
         }catch(error) {
-          setSignError(error.response.data.detail[0].msg)
+            /*
+            * Diplay why the user was not able to create an account
+            * */
+            setSignError(error.response.data.detail.msg)
         }
     }
 

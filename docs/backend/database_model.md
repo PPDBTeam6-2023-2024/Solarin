@@ -9,24 +9,24 @@ Explanation of how our database model works and looks
 ## Tables
 In our database model we can consider 2 types of Tables:
 
-<details>
+
 <summary><strong>Lookup Tables</strong></summary>
 <p>
 These type of tables can be filled by developers.
 These tables are only supposed to be altered during development by the game and 
 <br/> not because of the actions of a user. In our project we use such tables to add new types of troops, building, etc.
 </p>
-</details>
-<details>
+
+
 <summary><strong>Data Tables</strong></summary>
 <p>
 These tables can be used to store information about the game and can be altered by user interactions
 </p>
-</details>
+
 
 An overview of each the tables in the database:
 
-<details>
+
 <summary><strong>User and Communication</strong></summary>
 <p>
 
@@ -45,10 +45,10 @@ An overview of each the tables in the database:
 
 
 </p>
-</details>
 
 
-<details>
+
+
 <summary><strong>Planets and environment</strong></summary>
 <p>
 
@@ -62,9 +62,9 @@ An overview of each the tables in the database:
 
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Settlements</strong></summary>
 <p>
 
@@ -86,9 +86,9 @@ An overview of each the tables in the database:
 
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Armies</strong></summary>
 <p>
 
@@ -113,9 +113,9 @@ An overview of each the tables in the database:
 |   EnterPlanet   |  Data  | Stores which planet we might enter when our fleet arrives at its position (This table is a child of an ISA/polymorphic relation with OnArrive)                                                                          |
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Resources</strong></summary>
 <p>
 
@@ -132,20 +132,20 @@ An overview of each the tables in the database:
 
 
 </p>
-</details>
 
-<details>
+
+
 <summary><strong>Coordinate System</strong></summary>
 <p>
 The coordinate system used in our game is stored in the database as double precision (x,y) coordinate with values ranging from 0 to 1. 
 Cities, Armies and regions have coordinates to keep track of their location.
 </p>
-</details>
 
 
 
 
-<details>
+
+
 <summary><strong>Domains</strong></summary>
 <p>
 The following domains are used:
@@ -158,6 +158,6 @@ The following domains are used:
 |     Decimal     | Value in range between [0, 1]                |  
 
 </p>
-</details>
+
 
 These models are created in SQL Alchemy and are generated using alembic

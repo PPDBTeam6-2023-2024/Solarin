@@ -132,7 +132,28 @@ async def armies_user(
 
     data_access = DataAccess(db)
     armies = await data_access.ArmyAccess.get_user_armies(user_id)
-    armies_schemas = [army.to_army_schema() for army in armies]
+    armies_schemas = [army.to_army_schema().dict() for army in armies]
+
+    for i, army in enumerate(armies):
+        """
+        Provide information about the general of the army
+        """
+        general = await data_access.GeneralAccess.get_general(army.id)
+        if general is not None:
+            general = general.to_scheme().dict()
+
+        armies_schemas[i]["general"] = general
+
+        """
+        Provide information about the city the army might be in
+        """
+        city = await data_access.ArmyAccess.army_in_city(army.id)
+        armies_schemas[i]["city"] = city
+
+        if city is not None:
+            city_rank = await data_access.CityAccess.get_city_rank(city)
+            armies_schemas[i]["city_rank"] = city_rank
+
     return armies_schemas
 
 
@@ -189,6 +210,7 @@ async def split_army(
     new_army_id = await data_access.ArmyAccess.split_army(troops_list, troops_list[0].army_id, user_id)
 
     return new_army_id
+
 
 @router.get("/get_troop_stats/")
 async def get_troop_stats(db=Depends(get_db)):

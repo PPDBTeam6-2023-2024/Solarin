@@ -973,10 +973,6 @@ class ArmyAccess(DatabaseAccess):
             troop = troop.first()[0]
             troop.army_id = new_army_id
 
-
-
-
-        await self.session.flush()
         await self.session.commit()
         return new_army_id
 
@@ -990,4 +986,19 @@ class ArmyAccess(DatabaseAccess):
         result = result.all()
         return result
 
+    async def army_in_city(self, army_id) -> int:
+        """
+        Checks whether an army is inside a city or not
+        param: army_id: id of the army that we want to check
+        return: id of the city the army is in
+        """
+
+        get_city = Select(ArmyInCity.city_id).where(ArmyInCity.army_id == army_id)
+
+        city = await self.session.execute(get_city)
+        city = city.scalar_one_or_none()
+
+        return city
+
 from .general_access import GeneralAccess
+

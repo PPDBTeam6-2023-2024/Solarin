@@ -86,7 +86,11 @@ function PoliticsMenu() {
                 ...impacts,
                 Cost: cost
             };
-            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload);
+            await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/logic/update_politics`, payload, {
+                    headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json',
+                    }});
             setStanceFetched(false)
 
             /*Recalibrate the resources*/

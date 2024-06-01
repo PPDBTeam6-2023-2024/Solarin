@@ -26,7 +26,6 @@ class MaintenanceSocketActions:
         delta_time = await self.data_access.ResourceAccess.maintenance_delta_time(self.user_id)
 
         cost_dict = await self.check_maintenance()
-        cost_dict = [(k, v) for k, v in cost_dict.items()]
         """
         checkin, gives information to the user, that calibration with the backend is no use for at least
         the amount provided in the checkin
@@ -84,6 +83,5 @@ class MaintenanceSocketActions:
 
         if change_occurred and self.websocket is not None:
             await self.websocket.send_json({"request_type": "reload"})
-
         return cost_dict
 

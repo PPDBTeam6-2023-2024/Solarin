@@ -134,15 +134,17 @@ async def websocket_endpoint(websocket: WebSocket, city_id: int, db=Depends(get_
     tasks = [asyncio.create_task(building_queue_trigger(id, trigger_queue, data_access)) for id in ids]
 
     try:
-        running = not all([t.done() for t in tasks])
+        # check if any of the tasks are still running
+        # will also be false if the tasks list is empty
+        running = any([not t.done() for t in tasks])
         while running:
             # wait for a trigger
             update = await trigger_queue.get()
             if update:
                 await websocket.send_json({"message": "new troop trained"})
             else:
-                # keep running if not all are done
-                running = not all([t.done() for t in tasks])
+                # keep running if there is any task that is not done
+                running = any([not t.done() for t in tasks])
     except WebSocketDisconnect:
         pass
     except Exception as e:

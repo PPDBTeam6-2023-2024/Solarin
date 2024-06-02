@@ -94,7 +94,9 @@ function TrainingOptionAdder(props) {
                         <div key={stat.stat} className="stat-entry">
                             <img src={`/images/stats_icons/${statJson[stat.stat].icon}`}
                                  alt={stat}/>
-                            <div>{stat.value*unitAmount}</div>
+                            {stat.stat !== "speed" ? <div>{stat.value*unitAmount}</div> :
+                            <div>{stat.value}</div>}
+
                         </div>
                     ))}
                 </div>

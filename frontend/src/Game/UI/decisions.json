@@ -28,7 +28,7 @@
             "title": "Promote technological innovations",
             "impacts": {
                 "Technocracy": "+10%",
-                "Corporate_State": "+50%",
+                "Corporate_State": "+5%",
                 "Democratic": "+2%",
                 "Theocracy": "-5%"
             },

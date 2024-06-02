@@ -1,17 +1,17 @@
 # Solarin
-Our game I an IDLE strategy game. The user playing our game will control a space civilization of an alien race.
+Our game is an IDLE strategy game. The user playing our game will control a space civilization of an alien race.
 Cities will be founded, and armies will be raised. Users will be able to fight each other using these armies, and try to conquer 
-each other their cities. Each city has buildings, that can produce resources, train troops, ...
+each other's cities. Each city has buildings, that can produce resources, train troops, ...
 Users start on a single planet, where they can grow their civilization. Later on, users will be able to travel to other distant planets.
 The goal of our game is to grow your civilization as much as possible, by conquering and working together.
-The other documentation files inside the `/general_explanation` will shed some more light about the most important
+The other documentation files inside the `/general_explanation` will shed some more light on the most important
 game features. 
 
 ## IDLE mechanics
 Our IDLE components mainly consist of time delays, and duration.
-- Buildings that produce a certain resource, have a production of X amount fo resources /hour (So the user needs to wait some time).
+- Buildings that produce a certain resource, have a production of X amount of resources per hour (So the user needs to wait some time).
 - Training Troops for your armies will take time.
-- Moving Armies, will take a couple hours depending on the distance.
+- Moving Armies, will take a couple of hours depending on the distance.
 - Adding/upgrading buildings will need some time to do the construction.
 
 ## Strategy mechanics
@@ -52,7 +52,7 @@ Cities can be created on a planet and be used to produce resources, train units,
 - Change city visualization based on city rank
 - Change city production/training level based on building level
 - Cities can have Towers and Walls to improve the city its combat stats
-- When Space Dock is build, planet is visible to other players too
+- When Space Dock is built, the planet is visible to other players too
 - City combat stats visualized
 - Click outside city menu widget to close menu
 - Make upgrade/build buttons not clickable when not enough resources
@@ -82,11 +82,11 @@ A 3D view of the galaxy provides the visualization of the planets in space.
 - Uses Generation algorithm to generate the position of the new planets (Fibonacci Spiral)
 - Only allow a user to visit a planet when the user has something on that planet
 - Only display planets that can be visible
-- Another planet is only visible if it build a 'space dock'
+- Another planet is only visible if there is a 'space dock' present on that planet
 - Transport armies through space (using a 3d FLEET)
 - visualize a line for fleet movement
 - Button to go to galaxy view
-- Double click on planet to go to planet view
+- Double-click on planet to go to planet view
 
 ### Trading
 Users can trade with each other (in same alliance)
@@ -127,8 +127,8 @@ game over detection
 - Added Game restart button in settings menu
 
 ### Hideable
-making certain UI components hidable
-- make it possible to hide certain UI components (in case you need access a city just hiden by this component)
+making certain UI components hideable
+- make it possible to hide certain UI components (in case you need access a city just hidden by this component)
 
 ### Settings
 having a settings menu
@@ -167,5 +167,5 @@ training of troops
 - Let troops be trained
 - Training queue for each barrack, which will IDLE train troops
 - Slider to select how many troops need to be trained
-- Display the stats of the troop (corres with amount trained) when we would train these troops
+- Display the stats of the troop (corresponds with amount trained) when we would train these troops
 - Display the costs of training these troops

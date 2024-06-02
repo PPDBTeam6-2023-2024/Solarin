@@ -186,11 +186,15 @@ function ArmyViewer({armyId, is_owner, onCityCreated, in_space}) {
                         {troopsOutput}
                     </TreeItem>
 
-                    <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`maintenance-${armyId}`}
+                    {/*Only display maintenance option when it contains information*/}
+                    {maintenance.length > 0 &&
+                        <TreeItem className="border-2" sx={{ padding: "0.2rem" }} nodeId={`maintenance-${armyId}`}
                               label={`Maintenance Cost /hour`}>
                         {maintenanceOutput}
 
-                    </TreeItem>
+                        </TreeItem>
+                    }
+
                 </TreeView>
 
             </div>

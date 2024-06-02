@@ -58,7 +58,6 @@ const GlobalHook = (setNotifications, setUserInfo) => {
             }
 
             if (data.type === "city_to_close"){
-                console.log("he")
                 const not = (<DefaultNotification text={"City cannot be created because other city to close"}/>)
 
                 setNotifications(notif => [...notif, not])

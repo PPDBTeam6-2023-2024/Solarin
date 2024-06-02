@@ -94,7 +94,6 @@ const Game = () => {
             * */
             initializeResources(dispatch)
 
-            console.log("spawning", response.data)
 
             if (response.data.length > 0){
                 setPlanetList(response.data);

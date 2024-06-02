@@ -22,7 +22,6 @@ const ArmyGrid = ({cityId, onRowMouseOver, selectedImage, refresh}) => {
 
         websocket.current.onmessage = (event) => {
             getArmyInCity(cityId).then(setTroops);
-            console.log(troops)
         };
         websocket.current.onclose = () => {
             console.log("Websocket closed");
@@ -108,7 +107,6 @@ const ArmyGrid = ({cityId, onRowMouseOver, selectedImage, refresh}) => {
             await new Promise((resolve) => setTimeout(resolve, 300))
 
             refresh();
-            console.log(troops.troops.length)
 
             /*set army list to empty, in case of refresh latency (the rest of this latency is not so important)*/
             setTroops(tr => {

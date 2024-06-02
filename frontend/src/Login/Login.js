@@ -173,7 +173,6 @@ function Login() {
                                                className="justify-center rounded-md bg-transparent hover:bg-white hover:text-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-white-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white-600"/>
                                     </div>
                                 </form>
-                                {console.log(signError)}
                                 {signError && <h4 className="text-red-500">{signError}</h4>}
                             </div>
                         }

@@ -96,7 +96,8 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
+                                    {/*Display the production rates*/}
+                                    {rates[selectedBuilding.id]?.map((res, index) => (
                                         <tr key={index}>
                                             <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {rates[selectedBuilding.id][res.resource_name] && <small>{String(rates[selectedBuilding.id][res.resource_name])}/hr</small>}</td>
                                         </tr>

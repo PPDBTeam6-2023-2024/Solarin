@@ -84,6 +84,8 @@ function Scene(props) {
 
 
     useEffect(() => {
+        if (!socket) return
+
         const fetchPublicPlanets = async() => {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/public`)
             setPublicPlanets(response.data)
@@ -99,7 +101,7 @@ function Scene(props) {
                 {
                     type: "get_armies",
                 }))
-    }, [])
+    }, [socket])
 
     const [fleetsMoveMode, setFleetsMoveMode] = useState([])
     const [hoverPos, setHoverPos] = useState([0,0,0])

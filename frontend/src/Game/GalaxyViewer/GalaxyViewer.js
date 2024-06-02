@@ -85,6 +85,7 @@ function Scene(props) {
 
     useEffect(() => {
         if (!socket) return
+        if (!props.isWebSocketConnected.current) return
 
         const fetchPublicPlanets = async() => {
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/public`)
@@ -96,6 +97,7 @@ function Scene(props) {
         }
         fetchPublicPlanets()
         fetchPrivatePlanets()
+
         socket.send(
             JSON.stringify(
                 {
@@ -194,7 +196,8 @@ function ForwardCanvas(props) {
         flat shadows style={{position: "fixed", backgroundColor: "#0a0a0a"}} scene={{background: "black"}}>
             {/* Propagating contexts */}
             <ContextBridge>
-                <Scene planetListIndex={props.planetListIndex} setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}/>
+                <Scene planetListIndex={props.planetListIndex} setViewMode={props.setViewMode}
+                       changePlanetId={props.changePlanetId} isWebSocketConnected={props.isWebSocketConnected}/>
             </ContextBridge>
       </Canvas>
     )
@@ -225,7 +228,8 @@ function GalaxyViewer(props) {
 
     useEffect(() => {
         if (!socket) return
-        socket.onclose = async (event) => {
+
+        socket.onclose = (event) => {
             isWebSocketConnected.current = false;
             socket.close();
         }
@@ -235,7 +239,8 @@ function GalaxyViewer(props) {
 
         <PlanetIdContext.Provider value={0}>
         <SocketContext.Provider value={[socket, setSocket]}>
-            <ForwardCanvas planetListIndex={props.planetListIndex} setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}/>
+            <ForwardCanvas planetListIndex={props.planetListIndex} setViewMode={props.setViewMode} changePlanetId={props.changePlanetId}
+                           isWebSocketConnected={isWebSocketConnected}/>
         </SocketContext.Provider>
         </PlanetIdContext.Provider>
     )

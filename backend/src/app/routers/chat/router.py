@@ -10,6 +10,7 @@ from ...database.database_access.data_access import DataAccess
 import json
 from .friend_request_handler import FriendRequestHandler
 from ..authentication.schemas import MessageToken
+from ..globalws.router import global_queue
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -247,6 +248,7 @@ async def alliance_requests(
     if data["accepted"]:
         alliance = await data_access.AllianceAccess.get_alliance(user_id)
         await data_access.AllianceAccess.accept_alliance_request(data["user_id"], alliance)
+        await global_queue.put({"target": data["user_id"], "type": "alliance", "value": alliance})
     else:
         await data_access.AllianceAccess.reject_alliance_request(data["user_id"])
     await data_access.commit()
@@ -322,4 +324,21 @@ async def kick_user(
     await data_access.AllianceAccess.kick_user(user_id, to_kick_id)
     await data_access.commit()
 
+    await global_queue.put({"target": to_kick_id, "type": "alliance", "value": None})
+
     return {"success": True}
+
+
+@router.get("/get_alliance")
+async def get_alliance_members(
+        user_id: Annotated[int, Depends(get_my_id)],
+        db: AsyncSession = Depends(get_db)
+
+) -> str:
+    """
+    update the alliance information of a user
+    """
+
+    data_access = DataAccess(db)
+    alliance = await data_access.AllianceAccess.get_alliance(user_id)
+    return alliance

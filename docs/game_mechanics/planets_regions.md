@@ -205,7 +205,10 @@ $\text{modifier(region, subject) = x}$
 	* Uncommon Resources:
         * Solarium
 			* $\text{modifier(plain, SOL) = 0.3}$
-        
+      
+## Full control modifier
+When a user is in full control of a region it will get a 25% bonus on its production
+  
 ## Planet Types
 
 * Arctic Planet

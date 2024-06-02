@@ -42,6 +42,7 @@ Our Endpoints are structured into multiple routers:
 | alliance_messageboard |    GET    | Get the message board corresponding to the user his alliance                         |
 |        ranking        |    GET    | Get the player ranking (based on amount of Solarium a user has)                      |
 |       kick_user       |   POST    | Kick a user from the alliance (when leaving the alliance, kick yourself)             |
+|     get alliance      |    GET    | Get in which alliance the user currently is                                          |
 
 
 </p>

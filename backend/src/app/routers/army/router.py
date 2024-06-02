@@ -96,6 +96,10 @@ async def get_troops(
     We will also make sure that the army amounts are unknown
     """
     army_owner = await data_access.ArmyAccess.get_army_owner(army_id)
+
+    maintenance_cost = await data_access.ResourceAccess.get_maintenance_army(army_id)
+    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
+
     if army_owner.id != user_id:
         """
         The values we send will be -1, frontend will replace it by a question mark
@@ -107,15 +111,17 @@ async def get_troops(
             t.size = -1
             troops_schema[i] = t
 
+        """
+        don't display maintenance costs for other armies
+        """
+        maintenance_cost = []
+
     general = await data_access.GeneralAccess.get_general(army_id)
     if general is not None:
         modifiers = await data_access.GeneralAccess.get_modifiers(user_id, general.name)
         modifiers = [m[0].to_scheme(m[1]) for m in modifiers]
         general = general.to_scheme().dict()
         general.update({"modifiers": modifiers})
-
-    maintenance_cost = await data_access.ResourceAccess.get_maintenance_army(army_id)
-    maintenance_cost = [(k, v) for k, v in maintenance_cost.items()]
 
     return {"troops": troops_schema, "stats": army_stats, "general": general, "maintenance": maintenance_cost, "army_id": army_id}
 

@@ -5,6 +5,7 @@ import './TrainingOptionBar.css'
 import './TrainingOptionAdder.css'
 import TrainingCostEntry from "./TrainingCostEntry";
 import statJson from "../stats.json"
+import {useSelector} from "react-redux";
 
 function TrainingOptionAdder(props) {
     /*
@@ -73,6 +74,26 @@ function TrainingOptionAdder(props) {
         })
     }
 
+    /*
+     * Function to determine the max amount of troops we can train based on our resources
+     * */
+
+    const resources = useSelector((state) => state.resources.resources)
+    const getMaxTrainable = (costs) => {
+
+        let min = 100;
+
+        costs.forEach((cost) => {
+            if (cost[1] !== 0){
+                min = Math.min(resources[cost[0]]/cost[1], min)
+            }
+
+        })
+
+        return min
+
+    }
+
     return (
         <div className="TrainingOptionAdderWidget">
             <div ref={resourceBar} style={{
@@ -94,7 +115,9 @@ function TrainingOptionAdder(props) {
                         <div key={stat.stat} className="stat-entry">
                             <img src={`/images/stats_icons/${statJson[stat.stat].icon}`}
                                  alt={stat}/>
-                            <div>{stat.value*unitAmount}</div>
+                            {stat.stat !== "speed" ? <div>{stat.value*unitAmount}</div> :
+                            <div>{stat.value}</div>}
+
                         </div>
                     ))}
                 </div>
@@ -113,7 +136,7 @@ function TrainingOptionAdder(props) {
                     "pointerEvents": "none"
                 }}>{unitAmount}</span>
 
-                <input ref={sliderRef} className="TroopAmountSlider" type="range" min="1" max="100" value={unitAmount}
+                <input ref={sliderRef} className="TroopAmountSlider" type="range" min="1" max={`${getMaxTrainable(typeCost)}`} value={unitAmount}
                        onInput={onSliderChange}/>
 
             </div>

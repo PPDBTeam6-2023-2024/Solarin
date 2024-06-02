@@ -1,7 +1,7 @@
 import {useEffect, useRef} from 'react';
 import {useNavigate} from "react-router-dom";
 
-const GlobalHook = (setCombatNotifications) => {
+const GlobalHook = (setCombatNotifications, setUserInfo) => {
     /**
     * This hook handles the global websocket, and its actions (like letting the user know he/ she is game over)
     */
@@ -49,6 +49,10 @@ const GlobalHook = (setCombatNotifications) => {
             if (data.type === "combat_notification"){
                 setCombatNotifications(notif => [...notif, data])
                 remove_notification(data)
+            }
+
+            if (data.type === 'alliance') {
+                setUserInfo(Info => {return {...Info, alliance: data.value}})
             }
         };
 

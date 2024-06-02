@@ -24,12 +24,6 @@ class Decimal(TypeDecorator):
         return value
 
     def process_bind_param(self, value, dialect):
-        """
-        SQL Alchemy has no native support for adding checks to Domains, so
-        we check manually if the value is between 0 and 1.
-        """
-        '''if not (0 <= value <= 1):
-            raise DomainException("Coordinate", "value in range [0, 1]")'''
 
         return value
 
@@ -72,13 +66,6 @@ class Coordinate(Decimal):
     This class is a domain for values that are in the range of [0,1]
     """
     def process_bind_param(self, value, dialect):
-        """
-        SQL Alchemy has no native support for adding checks to Domains, so
-        we check manually if the value of a coordinate is between 0 and 1.
-        """
-        # overwrite the base class here, so we can throw a different exception
-        '''if not (0 <= value <= 1):
-            raise DomainException("Coordinate", "value in range [0, 1]")'''
 
         if value is not None:
             value = min(value, (2 ** 31) - 1)

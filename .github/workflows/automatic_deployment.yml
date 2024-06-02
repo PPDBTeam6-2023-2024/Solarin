@@ -44,7 +44,7 @@ jobs:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        command_timeout: 20m
+        command_timeout: 40m
         script: |
           cd ..
           sudo su -c 'cd app/PPDB-Template-App/frontend && npm install && npm run build  && systemctl restart nginx'

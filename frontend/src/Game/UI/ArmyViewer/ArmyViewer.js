@@ -158,7 +158,7 @@ function ArmyViewer({armyId, is_owner, onCityCreated, in_space}) {
                         Create City
                         </Button>
                     }
-                    {selectedTroopIndexes.length > 0 && (
+                    {selectedTroopIndexes.length > 0 && is_owner && (
                       <Button variant="contained"
                         onClick={handleSplitArmy} sx={{margin: "10px",
                             backgroundColor: primaryColor, '&:hover': {

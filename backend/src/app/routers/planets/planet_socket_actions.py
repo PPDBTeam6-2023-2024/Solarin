@@ -48,6 +48,22 @@ class PlanetSocketActions:
         to_x = data["to_x"]
         to_y = data["to_y"]
 
+        """
+        change the to location to the position of the city/army
+        """
+        if data.get("on_arrive", False) and \
+                (data["target_id"] != army_id or data["target_type"] in ("attack_city", "enter", "enter_planet")):
+            if data["target_type"] in ("attack_city", "enter"):
+                to_x, to_y = await self.data_access.CityAccess.get_position(data["target_id"])
+
+            if data["target_type"] in ("attack_army", "merge"):
+                target_army = await self.data_access.ArmyAccess.get_army_by_id(data["target_id"])
+                to_x = target_army.x
+                to_y = target_army.y
+
+        """
+        change the direction
+        """
         changed, army = await self.data_access.ArmyAccess.change_army_direction(
             user_id=self.user_id,
             army_id=army_id,
@@ -74,7 +90,6 @@ class PlanetSocketActions:
                                 "enter_planet": self.data_access.ArmyAccess.add_enter_planet}
 
             arrive_func = target_type_dict.get(data["target_type"])
-
 
             if arrive_func is not None:
                 """

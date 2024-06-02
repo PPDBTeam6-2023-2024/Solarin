@@ -86,6 +86,15 @@ const ArmyGrid = ({cityId, onRowMouseOver, selectedImage, refresh}) => {
             } else {
                 console.error("WebSocket is not open.");
             }
+
+            /*
+            * remove selected troops from display list in city
+            * */
+            setTroops(tr => {
+                return {...troops, "troops": tr.troops.filter(troop =>
+                !gridApi.getSelectedRows().some(t => (t.troop_type === troop.troop_type) && (t.rank === troop.rank)))}
+            })
+
         } else{
             /* else have the whole army leave the city */
             const data_json = {
@@ -97,9 +106,18 @@ const ArmyGrid = ({cityId, onRowMouseOver, selectedImage, refresh}) => {
 
             /*Makes it so that the access of armies arrives after the websocket arrives, a really short sleep*/
             await new Promise((resolve) => setTimeout(resolve, 300))
-        }
 
-        refresh()
+            refresh();
+            console.log(troops.troops.length)
+
+            /*set army list to empty, in case of refresh latency (the rest of this latency is not so important)*/
+            setTroops(tr => {
+                return {...troops, "troops": []}
+            })
+
+
+
+        }
 
     };
 

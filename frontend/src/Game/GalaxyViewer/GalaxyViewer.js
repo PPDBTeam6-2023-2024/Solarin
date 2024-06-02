@@ -216,12 +216,16 @@ function GalaxyViewer(props) {
         * */
         const webSocket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/planet/ws/0`, `${localStorage.getItem('access-token')}`);
         setSocket(webSocket)
+
+
+
     },[])
 
     useEffect(() => {
         if (!socket) return
-        return () => {
-            socket.close()
+        socket.onclose = async (event) => {
+            isWebSocketConnected.current = false;
+            socket.close();
         }
     }, [socket])
 

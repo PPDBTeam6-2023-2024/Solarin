@@ -9,7 +9,7 @@
                 "Corporate_State": "-6%"
             },
             "cost": {
-                "INF": 5
+                "INF": 500
             }
         },
         {
@@ -21,19 +21,19 @@
                 "Technocracy": "-1%"
             },
             "cost": {
-                "INF": 10
+                "INF": 1000
             }
         },
         {
             "title": "Promote technological innovations",
             "impacts": {
                 "Technocracy": "+10%",
-                "Corporate_State": "+50%",
+                "Corporate_State": "+5%",
                 "Democratic": "+2%",
                 "Theocracy": "-5%"
             },
             "cost": {
-                "INF": 10
+                "INF": 1000
             }
         },
         {
@@ -45,7 +45,7 @@
                 "Authoritarian": "+1%"
             },
             "cost": {
-                "INF": 5
+                "INF": 500
             }
         },
         {
@@ -57,7 +57,7 @@
                 "Anarchism": "+5%"
             },
             "cost": {
-                "INF": 10
+                "INF": 1000
             }
         },
         {
@@ -69,7 +69,7 @@
                 "Authoritarian": "-1%"
             },
             "cost": {
-                "INF": 20
+                "INF": 2000
             }
         }
     ]

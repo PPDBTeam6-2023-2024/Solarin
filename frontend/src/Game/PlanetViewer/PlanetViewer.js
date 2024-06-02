@@ -106,7 +106,7 @@ function PlanetViewer(props) {
                     }))
         }
 
-    }, []);
+    }, [socket]);
 
     const handleGetArmies = (data) => {
         return data.map(army => {
@@ -246,6 +246,10 @@ function PlanetViewer(props) {
                     break
             }
         }
+        socket.onclose = async (event) => {
+            isWebSocketConnected.current = false;
+        }
+
     }, [socket, armyImages])
 
     /*

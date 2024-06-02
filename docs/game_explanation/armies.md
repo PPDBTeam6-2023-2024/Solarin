@@ -22,5 +22,5 @@ This can be done by selecting the troops which you wish to split off, and press 
 <br>![alt text](../images/split_army_on_map.png)
 
 
-<br>![alt text](../images/fleets.png)
-Fleets, which are armies with at least one mothership unit,  are just like armies in terms of combat, merging, moving, viewing stats, etc... However they can also enter and exit planets. 
+<br>![alt text](../images/fleet.png)<br>
+Fleets, which are armies with at least one mothership unit,  are just like armies in terms of combat, merging, moving, viewing stats, etc... However, they can also enter and exit planets. 

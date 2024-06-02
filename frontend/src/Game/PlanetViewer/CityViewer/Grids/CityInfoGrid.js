@@ -78,11 +78,11 @@ const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap
                         {/*Display the combat stats of a city*/}
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
-                            <div>{cityStats["attack"]}</div>
+                            <div>{Math.round(cityStats["attack"])}</div>
                         </div>
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
-                            <div>{cityStats["defense"]}</div>
+                            <div>{Math.round(cityStats["defense"])}</div>
                         </div>
                     </div>
                 }

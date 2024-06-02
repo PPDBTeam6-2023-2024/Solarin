@@ -103,35 +103,42 @@ const BuildingGrid = ({
             </div>
             {selectedImage &&
                 <div className="right-screen">
-                    {selectedType && selectedType === "tower" &&
+                    <div style={{"height": "30%"}}>
+                        {selectedType && selectedType === "tower" &&
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
                             <div>{baseStats[selectedBuilding]}</div>
                         </div>
-                    }
-                    {selectedType && selectedType === "wall" &&
-                        <div className={"building-stats"}>
-                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
-                            <div>{baseStats[selectedBuilding]}</div>
-                        </div>
-                    }
-                    {selectedType && selectedType === "productionBuilding" &&
-                        <>
-                            <div>Produces:</div>
+                        }
+                        {selectedType && selectedType === "wall" &&
                             <div className={"building-stats"}>
-                                {prodStats[selectedBuilding].map(resource => (
-                                    <div key={resource.resource} className="resource-entry">
-                                        <img src={`/images/resources/${resourceJson[resource.resource].icon}`}
-                                             alt={resource.resource}/>
-                                        <div>{resource.amount}</div>
-                                    </div>
-                                ))}
+                                <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
+                                <div>{baseStats[selectedBuilding]}</div>
                             </div>
-                        </>
-                    }
-                    <div className="building_image">
-                        <img src={selectedImage} alt="Building" className="selected-image"/>
+                        }
+
+                        {selectedType && selectedType === "productionBuilding" &&
+                            <>
+                                <div>Produces:</div>
+                                <div className={"building-stats"}>
+                                    {prodStats[selectedBuilding].map(resource => (
+                                        <div key={resource.resource} className="resource-entry">
+                                            <img src={`/images/resources/${resourceJson[resource.resource].icon}`}
+                                                 alt={resource.resource}/>
+                                            <div>{resource.amount}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        }
                     </div>
+
+                    <div style={{"height": "60%"}}>
+                        <div className="building_image">
+                        <img src={selectedImage} alt="Building" className="selected-image"/>
+                        </div>
+                    </div>
+
                 </div>
             }
         </>

@@ -86,10 +86,11 @@ const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap
                         </div>
                     </div>
                 }
-                <div className="building_image">
+                <div className="building_image" style={{"marginBottom": "5vw"}}>
                     {/*Display an image of the city*/}
                     <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
                 </div>
+
                 { <UpgradeButtonComponent
                                             data = {cityInfo}
                                             cityId={cityId}

@@ -35,11 +35,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 10%;
+    height: auto;
     width: 100%;
     font-size: 1.4vw;
     top: 5%;
     transform: translateY(-150%);
+    max-width: 25vw;
 }
 
 .wide-button.disabled {

@@ -122,7 +122,7 @@ const BuildingGrid = ({
                                 <div>Produces:</div>
                                 <div className={"building-stats"}>
                                     {prodStats[selectedBuilding].map(resource => (
-                                        <div key={selectedBuilding} className="resource-entry">
+                                        <div key={resource.resource} className="resource-entry">
                                             <img src={`/images/resources/${resourceJson[resource.resource].icon}`}
                                                  alt={resource.resource}/>
                                             <div>{resource.amount}</div>

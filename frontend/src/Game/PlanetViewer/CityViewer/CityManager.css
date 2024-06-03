@@ -106,7 +106,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translateX(-7%) translateY(10%);
+    transform: translateX(-7%);
 }
 
 .right-screen-city-info{

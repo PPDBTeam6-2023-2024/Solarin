@@ -45,10 +45,11 @@ const Game = () => {
     const [planetListIndex, setPlanetListIndex] = useState(0)
 
     /*
-    * Support the global websocket actions using a custom hook
+    * Use basic notifications
     * */
-    const [combatNotifications, setCombatNotifications] = useState([]);
-    GlobalHook(setCombatNotifications, setUserInfo)
+    const [Notifications, setNotifications] = useState([]);
+
+    GlobalHook(setNotifications, setUserInfo)
 
     /*
     * Verify who the user is
@@ -93,7 +94,6 @@ const Game = () => {
             * */
             initializeResources(dispatch)
 
-            console.log("spawning", response.data)
 
             if (response.data.length > 0){
                 setPlanetList(response.data);
@@ -148,9 +148,7 @@ const Game = () => {
             {userInfo && <Suspense fallback={<h1>Loading...</h1>}>
                 <UI/>
 
-                {combatNotifications.map((el) => <Notification won={el.won}
-                                                               own_target={el.own_target}
-                                                               other_target={el.other_target}/>)}
+                {Notifications.map((el) => el)}
 
 
                 {/*Display a planet map*/}

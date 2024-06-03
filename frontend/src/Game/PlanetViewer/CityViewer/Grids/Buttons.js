@@ -7,6 +7,7 @@ import {
     upgradeCity
 } from "../BuildingManager";
 import React, { useState, useEffect } from 'react';
+import Tooltip from "@mui/material/Tooltip";
 
 
 function formatTime(seconds) {
@@ -188,9 +189,13 @@ export const UpgradeButtonComponent = ({
                 : 'Loading...';
 
     return (
-        <button style={{"fontSize": "1.4vw"}} className={buttonStyle} onClick={UpgradeBuildingHelper}
-                disabled={!isCostAvailable || !costData.can_upgrade || isButtonDisabled}>
-            {buttonText}
-        </button>
+        <Tooltip title={buttonText}>
+
+            <button
+                    className={buttonStyle} onClick={UpgradeBuildingHelper}
+                    disabled={!isCostAvailable || !costData.can_upgrade || isButtonDisabled}>
+                {buttonText}
+            </button>
+        </Tooltip>
     );
 };

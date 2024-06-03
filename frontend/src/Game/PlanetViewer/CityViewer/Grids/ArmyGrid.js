@@ -151,7 +151,7 @@ const ArmyGrid = ({cityId, onRowMouseOver, selectedImage, refresh}) => {
             </div>
             <div style={{"width": "27%"}} className="right-screen">
 
-                    <div className="building_image">
+                    <div className="building_image" style={{"marginTop": "5%"}}>
                         {selectedImage &&
                         <img src={selectedImage} alt="Troops" className="selected-image"/>
                         }

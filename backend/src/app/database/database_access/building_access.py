@@ -358,7 +358,6 @@ class BuildingAccess(DatabaseAccess):
             modifier_dict[resource_type] = row_list[1]
             modifier_dict[resource_type] += general_production_modifier
 
-
         rates = dict()
         for p in production:
             """
@@ -378,10 +377,6 @@ class BuildingAccess(DatabaseAccess):
             production_rate = PropertyUtility.getGPR(modifier_, p[0].base_production, p[1], region_control)
             rates[p[0].resource_name] = production_rate
         return rates
-
-
-
-
 
     async def collect_resources(self, user_id: int, building_id: int, collect_resources: bool):
         """
@@ -403,7 +398,7 @@ class BuildingAccess(DatabaseAccess):
         retrieve the resource production
         """
         get_production = Select(ProducesResources, BuildingInstance.rank).\
-            join(BuildingInstance, BuildingInstance.building_type == ProducesResources.building_name).\
+            join(BuildingInstance, ProducesResources.building_name == BuildingInstance.building_type).\
             where(BuildingInstance.id == building_id)
 
         production = await self.session.execute(get_production)
@@ -459,7 +454,6 @@ class BuildingAccess(DatabaseAccess):
             modifier_dict[resource_type] = row_list[1]
             modifier_dict[resource_type] += general_production_modifier
 
-
         """
         Store new amount to list
         """
@@ -469,6 +463,7 @@ class BuildingAccess(DatabaseAccess):
         Add the resources to user taking into account the max capacity
         """
         ra = ResourceAccess(self.session)
+
         for p in production:
             """
             if regional modifier exists, apply
@@ -494,7 +489,6 @@ class BuildingAccess(DatabaseAccess):
             # if flag "increase_resources" is on, increase resources
             if collect_resources:
                 await ra.add_resource(user_id, p[0].resource_name, min(int(production_rate*hours), max_capacity))
-
 
         """
         If flag "increase_resources" is on,
@@ -690,8 +684,6 @@ class BuildingAccess(DatabaseAccess):
 
         await self.session.flush()
         await self.session.commit()
-
-
 
         return remaining_update_dict
 

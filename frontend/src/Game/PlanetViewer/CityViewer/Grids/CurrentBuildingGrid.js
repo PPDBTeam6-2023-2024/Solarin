@@ -110,13 +110,13 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                         {selectedBuilding && selectedBuilding.type === "tower" &&
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
-                            <div>{selectedBuildingStat}</div>
+                            <div>{Math.round(selectedBuildingStat* (Math.pow(1.4, selectedBuilding.rank)))}</div>
                         </div>
                         }
                         {selectedBuilding && selectedBuilding.type === "wall" &&
                             <div className={"building-stats"}>
                                 <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
-                                <div>{selectedBuildingStat}</div>
+                                <div>{Math.round(selectedBuildingStat* (Math.pow(1.4, selectedBuilding.rank)))}</div>
                             </div>
                         }
                     </div>

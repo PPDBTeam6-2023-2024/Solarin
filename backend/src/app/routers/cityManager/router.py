@@ -191,7 +191,7 @@ async def get_resource_stocks(
     value: a list tuples respresenting the resources stored: (resource_type, amount_in_storage, max_storage_capacity)
     """
     data_access = DataAccess(db)
-    data = await data_access.BuildingAccess.get_resource_stocks(user_id,city_id)
+    data = await data_access.BuildingAccess.get_resource_stocks(user_id, city_id)
 
     result_dict = dict()
 

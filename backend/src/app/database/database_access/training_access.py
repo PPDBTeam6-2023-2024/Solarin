@@ -76,6 +76,9 @@ class TrainingAccess(DatabaseAccess):
         user_id = await CityAccess(self.session).get_city_controller(city_id)
         stance = await UserAccess(self.session).get_politics(user_id.id)
         modifier2 = PoliticalModifiers.training_speed_modifier(stance)
+
+        print(modifier2, "m")
+
         training_time *= modifier2
 
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,

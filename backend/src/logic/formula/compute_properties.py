@@ -184,6 +184,7 @@ class PropertyUtility:
 
         return resource_cost, time_cost
 
+
 class PoliticalModifiers:
     """
     Do calculations based on political modifiers
@@ -209,6 +210,18 @@ class PoliticalModifiers:
         speed_modifier = 1
         speed_modifier += ((stance.get("anarchism", 0) * 10) - (stance.get("corporate_state", 0) * 30)
                            - (stance.get("theocracy", 0) * 5)) / 100
+        return speed_modifier
+
+    @staticmethod
+    def training_speed_modifier(stance: dict):
+        """
+        Calculate the speed modifier based on the political stance
+        """
+
+        speed_modifier = 1
+        speed_modifier += ((stance.get("authoritarian", 0) * 10) - (stance.get("technocracy", 0) * 15)
+                           - (stance.get("corporate_state", 0) * 10) - (stance.get("heocracy", 0) * 10)) / 100
+
         return speed_modifier
 
     @staticmethod

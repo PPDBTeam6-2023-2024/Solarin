@@ -87,7 +87,7 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
             </div>
             {selectedImage && selectedClick[0] === -1 &&
                 <div className="right-screen">
-                    <div style={{"height": "20%"}}>
+                    <div style={{"height": "20%", "marginTop": "10%"}}>
                         {selectedBuilding && selectedBuilding.type === "productionBuilding" && (
                             <div>
                                 <table>
@@ -121,10 +121,12 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                         }
                     </div>
 
-                    <div className="building_image" style={{"height": "60%"}}>
+                    <div className="building_image" style={{"height": "50%"}}>
                         <img src={selectedImage} alt="Building" className="selected-image"/>
                     </div>
-                    <div style={{"height": "20%", "marginTop": "auto"}}>
+                    <div style={{"height": "30%", "marginTop": "auto"}}>
+
+
                         {selectedBuilding && selectedBuilding.type==="Barracks" &&
                             <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
                         }

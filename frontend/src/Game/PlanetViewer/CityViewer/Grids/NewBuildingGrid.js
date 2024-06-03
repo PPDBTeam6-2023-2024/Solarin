@@ -103,7 +103,7 @@ const BuildingGrid = ({
             </div>
             {selectedImage &&
                 <div className="right-screen">
-                    <div style={{"height": "30%"}}>
+                    <div style={{"height": "20%", "marginTop": "8%", "marginBottom": "5%"}}>
                         {selectedType && selectedType === "tower" &&
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
@@ -121,7 +121,7 @@ const BuildingGrid = ({
                             <>
                                 <div>Produces:</div>
                                 <div className={"building-stats"}>
-                                    {prodStats[selectedBuilding].map(resource => (
+                                    {selectedBuilding !== "" && prodStats[selectedBuilding].map(resource => (
                                         <div key={resource.resource} className="resource-entry">
                                             <img src={`/images/resources/${resourceJson[resource.resource].icon}`}
                                                  alt={resource.resource}/>

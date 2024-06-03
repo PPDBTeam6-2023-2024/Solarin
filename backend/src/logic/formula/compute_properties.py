@@ -219,8 +219,8 @@ class PoliticalModifiers:
         """
 
         speed_modifier = 1
-        speed_modifier += ((stance.get("authoritarian", 0) * 10) - (stance.get("technocracy", 0) * 15)
-                           - (stance.get("corporate_state", 0) * 10) - (stance.get("heocracy", 0) * 10)) / 100
+        speed_modifier += (-(stance.get("authoritarian", 0) * 10) - (stance.get("technocracy", 0) * 15)
+                           - (stance.get("corporate_state", 0) * 10) + (stance.get("theocracy", 0) * 10)) / 100
 
         return speed_modifier
 

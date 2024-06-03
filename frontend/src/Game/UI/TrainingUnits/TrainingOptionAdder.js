@@ -59,7 +59,7 @@ function TrainingOptionAdder(props) {
 
     /*Put value in scrollbar*/
     useEffect(() => {
-        sliderPos.current.style.left = (unitAmount * 78.5 / 100) + 5 + "%";
+        sliderPos.current.style.left = (unitAmount * 78.5 / Math.max(getMaxTrainable(typeCost), 1)) + 5 + "%";
     }, [unitAmount]);
 
     /*
@@ -140,7 +140,7 @@ function TrainingOptionAdder(props) {
                     "pointerEvents": "none"
                 }}>{unitAmount}</span>
 
-                <input ref={sliderRef} className="TroopAmountSlider" type="range" min="1" max={`${getMaxTrainable(typeCost)}`} value={unitAmount}
+                <input ref={sliderRef} className="TroopAmountSlider" type="range" min="1" max={`${Math.max(getMaxTrainable(typeCost), 1)}`} value={unitAmount}
                        onInput={onSliderChange}/>
 
             </div>

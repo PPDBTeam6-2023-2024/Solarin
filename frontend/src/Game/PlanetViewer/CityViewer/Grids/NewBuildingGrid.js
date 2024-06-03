@@ -103,7 +103,7 @@ const BuildingGrid = ({
             </div>
             {selectedImage &&
                 <div className="right-screen">
-                    <div style={{"height": "30%"}}>
+                    <div style={{"height": "20%", "marginTop": "8%", "marginBottom": "5%"}}>
                         {selectedType && selectedType === "tower" &&
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>

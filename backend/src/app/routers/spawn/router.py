@@ -41,7 +41,7 @@ async def spawn_user(
     else:
         planet_id = await generate_random_planet(db)
 
-    await data_access.ArmyAccess.create_army(user_id, planet_id, random.uniform(0, 1), random.uniform(0, 1))
+    await data_access.ArmyAccess.create_army(user_id, planet_id, random.uniform(0, 1), random.uniform(0, 0.5))
     await data_access.ResourceAccess.set_starting_resources(user_id)
     await db.commit()
     return {

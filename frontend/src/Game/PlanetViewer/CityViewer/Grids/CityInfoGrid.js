@@ -78,18 +78,19 @@ const CityInfoGrid = ({setBuildings, refreshResources, cityId, setUpgradeCostMap
                         {/*Display the combat stats of a city*/}
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
-                            <div>{cityStats["attack"]}</div>
+                            <div>{Math.round(cityStats["attack"])}</div>
                         </div>
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
-                            <div>{cityStats["defense"]}</div>
+                            <div>{Math.round(cityStats["defense"])}</div>
                         </div>
                     </div>
                 }
-                <div className="building_image">
+                <div className="building_image" style={{"marginBottom": "5vw"}}>
                     {/*Display an image of the city*/}
                     <img src={getCityImage(cityInfo?.rank)} alt="City" className="selected-image shadow-2xl"/>
                 </div>
+
                 { <UpgradeButtonComponent
                                             data = {cityInfo}
                                             cityId={cityId}

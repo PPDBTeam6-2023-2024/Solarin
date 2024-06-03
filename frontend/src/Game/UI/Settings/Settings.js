@@ -81,7 +81,6 @@ function Settings(props) {
         const handleClickOutside = event => {
             const {target} = event;
             const settingsElement = document.querySelector('.SettingsMenu');
-            console.log("s", settingsElement)
 
             if (!initialClick && !(settingsElement.contains(target))) {
 

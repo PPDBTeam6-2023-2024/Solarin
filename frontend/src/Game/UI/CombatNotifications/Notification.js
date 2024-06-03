@@ -6,10 +6,9 @@ import WindowUI from "../WindowUI/WindowUI";
 
 
 function Notification({own_target, other_target, won}) {
-    /*
+    /**
     * Display a short notification message
     * */
-    console.log(own_target)
     return (
         <WindowUI>
             <div className="Notification">

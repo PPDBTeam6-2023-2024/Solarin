@@ -156,7 +156,7 @@ const MaintenanceHook = () => {
                     * Frontend cannot be aware of this rounding, but using this delay the user will not be aware of
                     * such rounding occurring.
                     * */
-                    await new Promise((resolve) => setTimeout(resolve, Math.floor(1000*3600/element[1])))
+                    await new Promise((resolve) => setTimeout(resolve, 2*Math.floor(1000*3600/element[1])))
 
                     /*
                     * To avoid cpu intensiveness, we will maximally update the maintenance of each

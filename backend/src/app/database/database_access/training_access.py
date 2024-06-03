@@ -7,6 +7,8 @@ from .army_access import ArmyAccess
 from ....logic.formula.compute_properties import *
 from .database_acess import DatabaseAccess
 from src.app import config
+from .user_access import UserAccess
+from .city_access import CityAccess
 
 
 class TrainingAccess(DatabaseAccess):
@@ -66,6 +68,16 @@ class TrainingAccess(DatabaseAccess):
             training_time = config.idle_time * amount
         else:
             training_time: int = await self.__getTrainingTime(troop_type) * amount
+
+        """
+        Let the training time depend on the political stance
+        """
+        city_id = (await BuildingAccess(self.session).get_city(building_id)).id
+        user_id = await CityAccess(self.session).get_city_controller(city_id)
+        stance = await UserAccess(self.session).get_politics(user_id.id)
+        modifier2 = PoliticalModifiers.training_speed_modifier(stance)
+        training_time *= modifier2
+
         tq = TrainingQueue(id=highest_nr, building_id=building_id, troop_type=troop_type, rank=rank,
                            training_size=amount, train_remaining=training_time)
 

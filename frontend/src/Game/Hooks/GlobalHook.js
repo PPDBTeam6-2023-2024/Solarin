@@ -1,7 +1,9 @@
 import {useEffect, useRef} from 'react';
 import {useNavigate} from "react-router-dom";
+import Notification from "../UI/CombatNotifications/Notification";
+import DefaultNotification from "../UI/CombatNotifications/DefaultNotification";
 
-const GlobalHook = (setCombatNotifications, setUserInfo) => {
+const GlobalHook = (setNotifications, setUserInfo) => {
     /**
     * This hook handles the global websocket, and its actions (like letting the user know he/ she is game over)
     */
@@ -22,7 +24,7 @@ const GlobalHook = (setCombatNotifications, setUserInfo) => {
     * */
     const remove_notification = async(notification) => {
         await new Promise((resolve) => setTimeout(resolve, 5000))
-        setCombatNotifications(notif => notif.filter(item => item !== notification))
+        setNotifications(notif => notif.filter(item => item !== notification))
     }
 
     /*
@@ -47,9 +49,21 @@ const GlobalHook = (setCombatNotifications, setUserInfo) => {
 
             /*Display a combat notification*/
             if (data.type === "combat_notification"){
-                setCombatNotifications(notif => [...notif, data])
-                remove_notification(data)
+                const not = (<Notification won={data.won}
+                   own_target={data.own_target}
+                   other_target={data.other_target}/>)
+
+                setNotifications(notif => [...notif, not])
+                remove_notification(not)
             }
+
+            if (data.type === "city_to_close"){
+                const not = (<DefaultNotification text={"City cannot be created because other city to close"}/>)
+
+                setNotifications(notif => [...notif, not])
+                remove_notification(not)
+            }
+
 
             if (data.type === 'alliance') {
                 setUserInfo(Info => {return {...Info, alliance: data.value}})

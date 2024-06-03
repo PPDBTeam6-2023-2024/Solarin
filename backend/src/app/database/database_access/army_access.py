@@ -164,7 +164,6 @@ class ArmyAccess(DatabaseAccess):
         armies = armies.scalars().all()
         return armies
 
-
     async def get_user_fleets_on_planet(self, user_id: int, planet_id: int ) -> list[Army]:
         """
        Get fleets on a planet

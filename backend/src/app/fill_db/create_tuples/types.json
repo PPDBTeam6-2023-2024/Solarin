@@ -56,14 +56,14 @@
       "maintenance":  [{"product-name":  "RA", "amount":  10}, {"product-name":  "OI", "amount":  25}, {"product-name":  "UR", "amount":  1}]}
     ],
   "towers": [
-    {"name":  "Sentry Tower", "attack":  50, "creation-cost":  {"TF": 500, "SOL":  50}},
-    {"name":  "Plasmic Cannons", "attack":  100, "creation-cost":  {"TF": 2500, "SOL": 100, "MI":  200}},
-    {"name":  "Directed Antiprotonic Annihilation System", "attack":  150, "creation-cost":  {"TF": 10000, "SOL":  250, "MI": 500, "UR":  150}}
+    {"name":  "Sentry Tower", "attack":  250, "creation-cost":  {"TF": 500, "SOL":  50}},
+    {"name":  "Plasmic Cannons", "attack":  500, "creation-cost":  {"TF": 2500, "SOL": 100, "MI":  200}},
+    {"name":  "Directed Antiprotonic Annihilation System", "attack":  800, "creation-cost":  {"TF": 10000, "SOL":  250, "MI": 500, "UR":  150}}
   ],
   "walls": [
-    {"name":  "Reinforced Techno-Mesh", "defense": 50, "creation-cost":  {"TF": 500}},
-    {"name":  "Solarinium Absorption Barrier", "defense": 100, "creation-cost":  {"TF": 2500, "SOL": 500, "MI": 500}},
-    {"name":  "Void-fuelled Nullification Wall", "defense": 150, "creation-cost":  {"TF": 10000, "SOL": 500, "MI": 1000, "UR": 250}}
+    {"name":  "Reinforced Techno-Mesh", "defense": 250, "creation-cost":  {"TF": 500}},
+    {"name":  "Solarinium Absorption Barrier", "defense": 500, "creation-cost":  {"TF": 2500, "SOL": 500, "MI": 500}},
+    {"name":  "Void-fuelled Nullification Wall", "defense": 800, "creation-cost":  {"TF": 10000, "SOL": 500, "MI": 1000, "UR": 250}}
   ],
   "production-buildings": [
     {"name":  "nexus", "creation-cost" : {"TF": 6500, "UR": 500, "SOL": 500},"products": [
@@ -137,19 +137,19 @@
   "units": [
     {"name":  "soldier", "spec": "land", "base-points":
     {"AP":  250, "DP":  250, "CAP":  250, "CDP":  250, "PBR": 250, "MS": 250},
-      "maintenance":  [{"product-name":  "RA", "amount":  25}],"extra_cost": {"TF": 50}
+      "maintenance":  [{"product-name":  "RA", "amount":  25}],"extra_cost": {"TF": 10}
     },
     {"name":  "tank", "spec": "land", "base-points":
     {"AP":  149, "DP":  350, "CAP":  149, "CDP":  300, "PBR": 250, "MS": 149},
-      "maintenance":  [{"product-name":  "RA", "amount":  30}],"extra_cost": {"TF": 50, "CO": 50}
+      "maintenance":  [{"product-name":  "RA", "amount":  30}],"extra_cost": {"TF": 10, "CO": 50}
     },
     {"name":  "assassin", "spec": "land", "base-points":
     {"AP":  350, "DP":  149, "CAP":  250, "CDP":  149, "PBR": 250, "MS": 350},
-      "maintenance":  [{"product-name":  "RA", "amount":  20}], "extra_cost": {"TF": 75}
+      "maintenance":  [{"product-name":  "RA", "amount":  20}], "extra_cost": {"TF": 20}
     },
     {"name":  "medic", "spec": "land", "base-points":
     {"AP":  200, "DP":  200, "CAP":  200, "CDP":  200, "PBR": 350, "MS": 250},
-      "maintenance":  [{"product-name":  "RA", "amount":  10}], "extra_cost": {"MI": 50, "TF": 50}
+      "maintenance":  [{"product-name":  "RA", "amount":  10}], "extra_cost": {"MI": 50, "INF": 10}
     },
     {"name":  "fighter", "spec": "space", "base-points":
     {"AP":  350, "DP":  200, "CAP":  149, "CDP":  200, "PBR": 250, "MS": 350},

@@ -151,15 +151,12 @@ export const getResourcesInStorage = async (cityId) =>{
 
 
 export const SplitArmy = async (armyId, troopsToSplitOff) => {
-            console.log("troopsToSplitOff :", troopsToSplitOff)
-        console.log("armyId :", armyId)
     try {
         const response = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/army/split_army/${armyId}`,
             { to_split: troopsToSplitOff },
             { headers: { 'Content-Type': 'application/json' } });
 
         if (response.status === 200) {
-            console.log("Success:", response.data);
             return response.data;
         }
     } catch (error) {

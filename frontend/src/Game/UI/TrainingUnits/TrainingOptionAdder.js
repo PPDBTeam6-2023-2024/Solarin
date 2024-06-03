@@ -6,6 +6,7 @@ import './TrainingOptionAdder.css'
 import TrainingCostEntry from "./TrainingCostEntry";
 import statJson from "../stats.json"
 import {useSelector} from "react-redux";
+import Tooltip from "@mui/material/Tooltip";
 
 function TrainingOptionAdder(props) {
     /*
@@ -112,13 +113,16 @@ function TrainingOptionAdder(props) {
                 {troopStats[props.type] &&
                 <div className={"troop-stats"}>
                     {troopStats[props.type].map(stat => (
-                        <div key={stat.stat} className="stat-entry">
-                            <img src={`/images/stats_icons/${statJson[stat.stat].icon}`}
-                                 alt={stat}/>
-                            {stat.stat !== "speed" ? <div>{stat.value*unitAmount}</div> :
-                            <div>{stat.value}</div>}
+                        <Tooltip title={`${stat.stat}: ${stat.value} for each troop`}>
 
-                        </div>
+                            <div key={stat.stat} className="stat-entry">
+                                <img src={`/images/stats_icons/${statJson[stat.stat].icon}`}
+                                     alt={stat}/>
+                                {stat.stat !== "speed" ? <div>{stat.value*unitAmount}</div> :
+                                <div>{stat.value}</div>}
+
+                            </div>
+                        </Tooltip>
                     ))}
                 </div>
                 }

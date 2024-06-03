@@ -87,39 +87,44 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
             </div>
             {selectedImage && selectedClick[0] === -1 &&
                 <div className="right-screen">
-                    {selectedBuilding && selectedBuilding.type === "productionBuilding" && (
-                        <div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Amount in Stock</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
-                                        <tr key={index}>
-                                            <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {rates[selectedBuilding.id][res.resource_name] && <small>{String(rates[selectedBuilding.id][res.resource_name])}/hr</small>}</td>
+                    <div style={{"height": "20%"}}>
+                        {selectedBuilding && selectedBuilding.type === "productionBuilding" && (
+                            <div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Amount in Stock</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                    {selectedBuilding && selectedBuilding.type === "tower" &&
+                                    </thead>
+                                    <tbody>
+                                        {resourcesInStorage[selectedBuilding.id]?.map((res, index) => (
+                                            <tr key={index}>
+                                                <td>{res.amount_in_stock} / {res.max_amount}  {res.resource_name} {rates[selectedBuilding.id][res.resource_name] && <small>{String(rates[selectedBuilding.id][res.resource_name])}/hr</small>}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+
+                        {selectedBuilding && selectedBuilding.type === "tower" &&
                         <div className={"building-stats"}>
                             <img src={`/images/stats_icons/${statsJson.attack.icon}`} alt={"attack"}/>
-                            <div>{selectedBuildingStat}</div>
+                            <div>{Math.round(selectedBuildingStat* (Math.pow(1.4, selectedBuilding.rank)))}</div>
                         </div>
-                    }
-                    {selectedBuilding && selectedBuilding.type === "wall" &&
-                        <div className={"building-stats"}>
-                            <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
-                            <div>{selectedBuildingStat}</div>
-                        </div>
-                    }
-                    <div className="building_image">
+                        }
+                        {selectedBuilding && selectedBuilding.type === "wall" &&
+                            <div className={"building-stats"}>
+                                <img src={`/images/stats_icons/${statsJson.defense.icon}`} alt={"defense"}/>
+                                <div>{Math.round(selectedBuildingStat* (Math.pow(1.4, selectedBuilding.rank)))}</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div className="building_image" style={{"height": "60%"}}>
                         <img src={selectedImage} alt="Building" className="selected-image"/>
                     </div>
+                    <div style={{"height": "20%", "marginTop": "auto"}}>
                         {selectedBuilding && selectedBuilding.type==="Barracks" &&
                             <TrainButtonComponent data={selectedBuilding} setSelectedClick={setSelectedClick}/>
                         }
@@ -142,6 +147,9 @@ const CurrentBuildingGrid = ({ buildings, onRowMouseOver, setSelectedClick, sele
                                                     setTotalTimePassed={setTimer}
                             />
                         }
+
+                    </div>
+
                 </div>
             }
         </>

@@ -1,4 +1,6 @@
 import json
+import math
+
 from ..core.connection_pool import ConnectionPool
 from fastapi.websockets import WebSocket
 from ...database.database_access.data_access import DataAccess
@@ -6,6 +8,7 @@ from ....logic.combat.ArriveCheck import ArriveCheck
 import asyncio
 import datetime
 from ...database.exceptions.invalid_action_exception import InvalidActionException
+from ..globalws.router import global_queue
 
 
 class PlanetSocketActions:
@@ -48,6 +51,22 @@ class PlanetSocketActions:
         to_x = data["to_x"]
         to_y = data["to_y"]
 
+        """
+        change the to location to the position of the city/army
+        """
+        if data.get("on_arrive", False) and \
+                (data["target_id"] != army_id or data["target_type"] in ("attack_city", "enter", "enter_planet")):
+            if data["target_type"] in ("attack_city", "enter"):
+                to_x, to_y = await self.data_access.CityAccess.get_position(data["target_id"])
+
+            if data["target_type"] in ("attack_army", "merge"):
+                target_army = await self.data_access.ArmyAccess.get_army_by_id(data["target_id"])
+                to_x = target_army.x
+                to_y = target_army.y
+
+        """
+        change the direction
+        """
         changed, army = await self.data_access.ArmyAccess.change_army_direction(
             user_id=self.user_id,
             army_id=army_id,
@@ -74,7 +93,6 @@ class PlanetSocketActions:
                                 "enter_planet": self.data_access.ArmyAccess.add_enter_planet}
 
             arrive_func = target_type_dict.get(data["target_type"])
-
 
             if arrive_func is not None:
                 """
@@ -158,9 +176,28 @@ class PlanetSocketActions:
 
         planet_id, x, y = await self.data_access.ArmyAccess.get_current_position(army_id)
 
+        all_cities = await self.data_access.PlanetAccess.get_planet_cities(self.planet_id)
+
+        """
+        check if the city creation is not to close to another city
+        """
+        min_dis = 2
+
+        for city in all_cities:
+            distance = math.sqrt((city.x-x)**2+(city.y-y)**2)
+            min_dis = min(min_dis, distance)
+
+        """
+        when city to close to another city give feedback notification to user
+        """
+        if min_dis < 0.06:
+            await global_queue.put({"target": self.user_id, "type": "city_to_close"})
+            return
+
         city_id = await self.data_access.CityAccess.create_city(planet_id, self.user_id, x, y)
 
         await self.data_access.ArmyAccess.enter_city(city_id, army_id)
 
         await self.data_access.commit()
+
         await self.connection_pool.broadcast({"request_type": "reload"})

@@ -10,6 +10,7 @@ from .planet_access import PlanetAccess
 from .database_acess import DatabaseAccess
 from src.app import config
 
+
 class CityAccess(DatabaseAccess):
     """
     This class will manage the sql access for data related to information of cities
@@ -341,3 +342,16 @@ class CityAccess(DatabaseAccess):
         d = delete(City).where(City.controlled_by == user_id)
         await self.session.execute(d)
         await self.flush()
+
+    async def get_position(self, city_id: int):
+        """
+        get the position of the city
+        param: city_id: id of the city
+        """
+
+        get_pos = Select(City).where(City.id == city_id)
+
+        results = await self.session.execute(get_pos)
+
+        pos = results.scalar_one()
+        return pos.x, pos.y

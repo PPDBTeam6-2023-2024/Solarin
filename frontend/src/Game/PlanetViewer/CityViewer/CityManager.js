@@ -101,6 +101,7 @@ const CityManager = ({ cityId, onClose}) => {
                 });
 
         });
+        setSelectedNewBuilding("")
     };
 
     /*

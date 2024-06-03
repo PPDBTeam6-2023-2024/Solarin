@@ -49,7 +49,7 @@
 
 .building_view {
     display: flex;
-    width: 90vw;
+    width: 92vw;
     height: 30vw;
 
     background: linear-gradient(to top, color-mix(in srgb, var(--primaryColor), transparent 50%),
@@ -62,7 +62,7 @@
     height: 20vw;
     position: relative;
     display: inline-block;
-    margin: auto;
+
     justify-content: center;
 }
 

@@ -35,11 +35,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 10%;
+    height: auto;
     width: 100%;
+    padding: 0.1vw;
     font-size: 1.4vw;
     top: 5%;
     transform: translateY(-150%);
+    max-width: 25vw;
 }
 
 .wide-button.disabled {
@@ -49,7 +51,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 10%;
+    padding: 0.1vw;
+    height: auto;
     width: 100%;
     top: 5%;
     cursor: not-allowed;
@@ -61,7 +64,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 10%;
+    padding: 0.1vw;
+    height: auto;
     width: 100%;
     top: 5%;
 }

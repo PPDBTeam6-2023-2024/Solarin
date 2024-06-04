@@ -12,7 +12,7 @@ from ...database.database_access.data_access import DataAccess
 router = APIRouter(prefix="/spawn", tags=["Spawn"])
 
 
-@router.post("")
+@router.get("")
 async def spawn_user(
         user_id: Annotated[str, Depends(get_my_id)],
         db=Depends(get_db)

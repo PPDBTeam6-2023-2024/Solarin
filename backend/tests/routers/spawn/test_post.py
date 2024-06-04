@@ -29,7 +29,7 @@ async def test_1(client):
     assert body["token_type"] == "bearer"
     token = body["access_token"]
 
-    response = client.post("/spawn", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/spawn", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     body = response.json()
     assert "planet_id" in body
@@ -50,7 +50,7 @@ async def test_2(client):
     assert body["token_type"] == "bearer"
     token = body["access_token"]
 
-    response = client.post("/spawn", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/spawn", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     body = response.json()
     assert "planet_id" in body
@@ -71,7 +71,7 @@ async def test_2(client):
     assert body["token_type"] == "bearer"
     token = body["access_token"]
 
-    response = client.post("/spawn", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/spawn", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     body = response.json()
     assert "planet_id" in body
@@ -98,7 +98,7 @@ async def test_3(client):
     assert body["token_type"] == "bearer"
     token = body["access_token"]
 
-    response = client.post("/spawn", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/spawn", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     body = response.json()
     assert "planet_id" in body
@@ -120,13 +120,13 @@ async def test_4(client):
     assert body["token_type"] == "bearer"
     token = body["access_token"]
 
-    response = client.post("/spawn", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/spawn", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     body = response.json()
     assert "planet_id" in body
     planet_id = body["planet_id"]
 
-    response = client.post("/spawn", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/spawn", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     body = response.json()
     assert "planet_id" in body
@@ -147,7 +147,7 @@ async def test_fibonacci_1(client, data_access: DataAccess):
     assert body["token_type"] == "bearer"
     token = body["access_token"]
 
-    response = client.post("/spawn", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/spawn", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     body = response.json()
     assert "planet_id" in body
@@ -181,7 +181,7 @@ async def test_fibonacci_2(client, data_access: DataAccess):
     assert body["token_type"] == "bearer"
     token = body["access_token"]
 
-    response = client.post("/spawn", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/spawn", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     body = response.json()
     assert "planet_id" in body

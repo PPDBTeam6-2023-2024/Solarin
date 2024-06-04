@@ -13,7 +13,9 @@ This indicates when a building was last checked. To check the IDLE progress of t
 who uses the current time and the last checked time to determine a delta time. This delta time will be subtracted from the training time
 and will leave the remaining time. In case the delta time is bigger than the time needed to train, These units will be trained and the queue entry will be removed.
 A queue entry contains an amount of troops, Even when de queue is not yet finished entirely, Some troops of this entry can already be trained.
-When trained these troops will automatically be assigned to the provided army.
+When trained these troops will automatically be assigned to the provided army. The training of troops will be done by comparing the last_checked of the building, with the current time
+and using this time difference to determine the changes. A building can have multiple queue entries, but only the 1 with the lowest id will be trained. After this queue is done training, only than it will start on the next queue.
+
 
 Units will currently be added to the army that is inside a city.
 When no army is inside the city, automatically a new army will be created.

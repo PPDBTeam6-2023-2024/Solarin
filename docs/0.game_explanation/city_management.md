@@ -11,6 +11,8 @@ Below the building image, additional buttons appear. These buttons vary dependin
 
 Pressing the 'Collect' button adds the produced resources of the building to the user's resources. The 'Train Troops' button opens a training interface:
 <br><img src="../images/image_training.png" alt="Training Interface" width="300">
+We chose to implement this IDLE mechanic by keeping track when the last collect (update of this building was), and calculate the time difference
+between then and now to calculate how much the user would receive
 
 The current training queue for this building type appears. If the queue is too long, horizontal scrolling is possible using the mouse scroll. In the lower half of the menu, you can select a unit and use the slider to decide how many you want to train. Pressing the 'Train Units' button adds the unit to the training queue.
 

@@ -27,3 +27,6 @@ When we click this button a create trade offer menu will appear.
 Both The receive and give side have a scrollbar with resources that you can select.
 When selecting you want to trade that resource, and you can choose an amount.
 Clicking the accept button will confirm your trade offer.
+
+To make this window update live, we use a websocket with a websocket pool for each alliance, so when a change occurs, it will
+update for all users in that alliance, that have opened the menu.

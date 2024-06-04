@@ -7,7 +7,7 @@ The Move To can be selected, when we click after on a place on the map, our army
 provided position (using IDLE long times, but does also update live). When we click details another window appears.
 'Create City' makes it possible to create a new city on the position of the army. 
 
-If another city is to close, a pop-up message will appear (global notification) taht another city is too close to
+If another city is to close, a pop-up message will appear (global notification) that another city is too close to
 create a new city.
 
 The stats visualize the stats of the army, which will be used to calculate battle outcomes.
@@ -19,6 +19,10 @@ When the army arrives, it will calculate the combat results, and remove the defe
 When an army clicks on its own army it will move towards that army and when it arrives will merge both armies.
 When an army moves to its own city, it will enter the city.
 To indicate which action will be done, Cursor indications are given when hovering over another city/army
+
+We chose to do army actions with OnArrive events.
+This means that we keep track of when an army would arrive at the selected location
+When it arrives, we will trigger an 'onArrive' event, and to the necessary checks.
 
 ### Splitting up an army
 If an army consists of multiple troops, it may be desirable to split up the army. 

@@ -345,6 +345,7 @@ class ResourceAccess(DatabaseAccess):
             We Will now check whether we have sufficient resources
             """
             has_enough = await self.has_resources(user_id, [r])
+
             if has_enough:
                 await self.remove_resource(user_id, r[0], r[1])
                 continue
@@ -361,7 +362,8 @@ class ResourceAccess(DatabaseAccess):
             get_losing_troops = Select(ArmyConsistsOf).\
                 join(TroopType, ArmyConsistsOf.troop_type == TroopType.type).\
                 join(MaintenanceTroop, TroopType.type == MaintenanceTroop.troop_type).\
-                where(MaintenanceTroop.resource_type == r[0])
+                join(Army, Army.id == ArmyConsistsOf.army_id).\
+                where((MaintenanceTroop.resource_type == r[0]) & (Army.user_id == user_id))
 
             losing_troops = await self.session.execute(get_losing_troops)
             losing_troops = losing_troops.scalars().all()

@@ -88,7 +88,7 @@ const Game = () => {
             axios.defaults.headers.common = {'Authorization': `Bearer ${localStorage.getItem('access-token')}`,
             'content-type': 'application/x-www-form-urlencoded',
             'accept': 'application/json'}
-            const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn/`, {
+            const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn/`, {},{
                     headers: {
                         'content-type': 'application/json',
                         'accept': 'application/json',

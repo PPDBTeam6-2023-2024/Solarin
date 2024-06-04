@@ -33,11 +33,11 @@ These are the formulas we use to calculate the modifiers, all of these are limit
 
 - **Resource Production**
 
-$\text{Resource Production} = \text{anarchism} \times 10 + \text{democratic} \times 3 - \text{theocracy} \times 10 - \text{technocracy} \times 5 + \text{corporate_state} \times 20 $
+$\text{Resource Production} = \text{anarchism} \times 10 + \text{democratic} \times 3 - \text{theocracy} \times 10 - \text{technocracy} \times 5 + \text{corporate\_state} \times 20 $
 
 - **Upgrade Speed**
 
-$ \text{Upgrade Speed} = \text{technocracy} \times 25 + \text{democratic} \times 20 - \text{authoritarian} \times 15 - \text{theocracy} \times 20 - \text{corporate_state} \times 10 $
+$ \text{Upgrade Speed} = \text{technocracy} \times 25 + \text{democratic} \times 20 - \text{authoritarian} \times 15 - \text{theocracy} \times 20 - \text{corporate\_state} \times 10 $
 
 - **Army Strength**
 
@@ -45,8 +45,8 @@ $ \text{Army Strength} = \text{authoritarian} \times 30 - \text{anarchism} \time
 
 - **Training Time**
 
-$ \text{Training Time} = -\text{authoritarian} \times 20 - \text{technocracy} \times 15 - \text{corporate_state} \times 10 + \text{theocracy} \times 10 $
+$ \text{Training Time} = -\text{authoritarian} \times 20 - \text{technocracy} \times 15 - \text{corporate\_state} \times 10 + \text{theocracy} \times 10 $
 
 - **Army Movement Speed**
 
-$ \text{Army Movement Speed} = \text{anarchism} \times 10 - \text{corporate_state} \times 30 - \text{theocracy} \times 5 $
+$ \text{Army Movement Speed} = \text{anarchism} \times 10 - \text{corporate\_state} \times 30 - \text{theocracy} \times 5 $

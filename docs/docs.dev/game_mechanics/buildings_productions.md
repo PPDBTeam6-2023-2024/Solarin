@@ -19,17 +19,17 @@ The grow_rate is configurable, by the developers. This should be greater than 1,
 wanted effect. This makes sure that the units become drastically stronger the higher rank (level) the get
 
 ## Unit Train Cost
-Units training costs are calculated using the following formula: $base_value*grow_rate^level$
+Units training costs are calculated using the following formula: $base_value*grow\_rate^{level}$
 This grow_rate can differ from the grow rate used for calculating the Unit Stats
 
 ## General Upgrade Cost (GUC)
-* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1}){2}\right\rfloor$ TF 
+* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1)}{2}\right\rfloor$ TF 
 	* $\text{level}$ is the current (pre-upgrade) level of the building
 	* $\text{CC}$ is the creation cost of the building
 	* GUC and CC is given in Techforge (TF) currency by default
 
 ## General Upgrade Time (GUT)
-* $\left\lfloor \text{TFC} \times 1.15^{\text{level} + 1} \right\rfloor
+* $\left\lfloor \text{TFC} \times 1.15^{\text{level} + 1} \right\rfloor $
 	* $\text{level}$ is the current (pre-upgrade) level of the building
 	* $\text{TFC}$ is the Tech Forge cost for upgrading the building
 	* GUT is thus dependent on the TF cost, determined by using the GUC formula

@@ -28,9 +28,14 @@ async def spawn_user(
 
     if planets:
         planet_id = max(planets, key=lambda planet: planet.created_at).id
-        return {
-            "planet_id": planet_id
-        }
+
+        """
+        ignore space as a planet        
+        """
+        if planet_id != 0:
+            return {
+                "planet_id": planet_id
+            }
 
     delta = timedelta(hours=1)
     curr_time = datetime.utcnow()

@@ -61,8 +61,8 @@ class PlanetSocketActions:
 
             if data["target_type"] in ("attack_army", "merge"):
                 target_army = await self.data_access.ArmyAccess.get_army_by_id(data["target_id"])
-                to_x = target_army.x
-                to_y = target_army.y
+                to_x = target_army.to_x
+                to_y = target_army.to_y
 
         """
         change the direction

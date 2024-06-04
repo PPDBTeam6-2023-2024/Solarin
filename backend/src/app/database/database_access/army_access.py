@@ -95,9 +95,6 @@ class ArmyAccess(DatabaseAccess):
             results = await self.session.execute(get_entry)
             result = results.scalar_one_or_none()
 
-            r = await self.session.execute(Select(ArmyConsistsOf))
-            r = r.scalars().all()
-
             """
             verify whether the entry (giving the specific relation) existed
             """
@@ -296,7 +293,10 @@ class ArmyAccess(DatabaseAccess):
         1000/speed  (speed in range 149-350) * 3600 (= 1 hour)
         An army with a speed of 250 will take 4 hours to cross the entire map
         """
-        map_cross_time = PropertyUtility.get_map_cross_time(army_stats["speed"])
+        if config.idle_time is not None:
+            map_cross_time = seconds=config.idle_time
+        else:
+            map_cross_time = PropertyUtility.get_map_cross_time(army_stats["speed"])
 
         """
         let the developer speed override the calculated speed
@@ -366,10 +366,8 @@ class ArmyAccess(DatabaseAccess):
         to calculate how long the army will need to move to this position (delta)
         """
         distance = dist((army.x, army.y), (army.to_x, army.to_y))
-        if config.idle_time is not None:
-            delta = timedelta(seconds=config.idle_time)
-        else:
-            delta = await self.get_army_time_delta(army_id, distance=distance)
+
+        delta = await self.get_army_time_delta(army_id, distance=distance)
 
         """
         Change the departure time to now and the arrival time to the moment our army will arrive
@@ -998,6 +996,14 @@ class ArmyAccess(DatabaseAccess):
         city = city.scalar_one_or_none()
 
         return city
+
+    async def remove_troop(self, army_obj: ArmyConsistsOf):
+        """
+        Remove a troop from an army (when dead)
+        """
+        d = delete(ArmyConsistsOf).where((ArmyConsistsOf.army_id == army_obj.army_id) & (ArmyConsistsOf.rank == army_obj.rank) & (ArmyConsistsOf.troop_type == army_obj.troop_type))
+        await self.session.execute(d)
+        await self.session.commit()
 
 from .general_access import GeneralAccess
 

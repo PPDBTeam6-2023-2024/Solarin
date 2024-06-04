@@ -45,6 +45,13 @@ class ArmyCombat:
         """
         for army_troop in army_troops:
             army_troop.size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio, army_troop.size)
+
+            """
+            When troop type has 0 troops, remove entry
+            """
+            if army_troop.size == 0:
+                await da.ArmyAccess.remove_troop(army_troop)
+
         await da.commit()
 
         await global_queue.put({"target": winner_id, "won": True, "own_target": f"army {winner}",
@@ -114,6 +121,12 @@ class ArmyCombat:
         for army_troop in army_troops:
             army_troop.size = PropertyUtility.getSurvivedUnitsAmount(pbr_ratio, strength_ratio,
                                                                      army_troop.size)
+
+            """
+            When troop type has 0 troops, remove entry
+            """
+            if army_troop.size == 0:
+                await da.ArmyAccess.remove_troop(army_troop)
 
         await da.commit()
 

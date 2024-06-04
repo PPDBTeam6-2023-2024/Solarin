@@ -95,6 +95,7 @@ class BuildingInstance(Base):
 
         return b
 
+
 class BuildingUpgradeQueue(Base):
     """
     Stores the buildings currently being upgraded
@@ -103,11 +104,14 @@ class BuildingUpgradeQueue(Base):
     duration: duration of the upgrade
     """
     __tablename__ = 'BuildingUpgradeQueue'
-    id = Column(Integer, ForeignKey("buildingInstance.id"), primary_key=True)
-    city_id = Column(Integer, ForeignKey("city.id"), nullable=False)
+    id = Column(Integer, ForeignKey("buildingInstance.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                primary_key=True)
+    city_id = Column(Integer, ForeignKey("city.id", deferrable=True, initially='DEFERRED', ondelete="cascade"),
+                     nullable=False)
     start_time = Column(DateTime, nullable=False)
     duration = Column(PositiveInteger, nullable=False)
     current_rank = Column(PositiveInteger, nullable=False)
+
 
 class BuildingType(Base):
     """
@@ -280,6 +284,6 @@ class CityUpdateQueue(Base):
     duration: the duration of the update in seconds
     """
     __tablename__ = "CityUpdateQueue"
-    city_id = Column(ForeignKey("city.id"), primary_key=True)
+    city_id = Column(ForeignKey("city.id", deferrable=True, initially='DEFERRED', ondelete="cascade"), primary_key=True)
     start_time = Column(DateTime, nullable=False)
     duration = Column(PositiveInteger)

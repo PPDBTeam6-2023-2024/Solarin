@@ -85,7 +85,12 @@ const Game = () => {
         /*retrieve a list of planet id's and planet names to switch between them*/
         try {
             /*Make sure the user sees the right planets*/
-            const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`)
+            const response2 = await axios.post(`${process.env.REACT_APP_BACKEND_PATH}/spawn`, {
+                    headers: {
+                        'content-type': 'application/json',
+                        'accept': 'application/json',
+                    },
+                })
 
             const response = await axios.get(`${process.env.REACT_APP_BACKEND_PATH}/planet/planets/private`)
 

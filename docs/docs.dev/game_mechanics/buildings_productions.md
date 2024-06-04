@@ -19,7 +19,7 @@ The grow_rate is configurable, by the developers. This should be greater than 1,
 wanted effect. This makes sure that the units become drastically stronger the higher rank (level) the get
 
 ## Unit Train Cost
-Units training costs are calculated using the following formula: $base_value*grow\_rate^{level}$
+Units training costs are calculated using the following formula: $baseValue*growRate^{level}$
 This grow_rate can differ from the grow rate used for calculating the Unit Stats
 
 ## General Upgrade Cost (GUC)

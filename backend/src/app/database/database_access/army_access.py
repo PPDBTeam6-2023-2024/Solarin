@@ -321,7 +321,6 @@ class ArmyAccess(DatabaseAccess):
         Retrieve the army object
         """
 
-
         army = await self.get_army_extra(army_id)
 
         """
@@ -388,7 +387,7 @@ class ArmyAccess(DatabaseAccess):
         Attackers cancel to, because the attacked army is not at the target location anymore,
         So the attacking army cannot combat the other army on arrival anymore
         """
-        get_attackers = Select(AttackArmy).where(AttackArmy.target_id == army_id)
+        get_attackers = Select(AttackArmy.army_id).where(AttackArmy.target_id == army_id)
         results = await self.session.execute(get_attackers)
         results = results.scalars().all()
         for r in results:
@@ -481,6 +480,7 @@ class ArmyAccess(DatabaseAccess):
         Cancel the on_arrive event with the target, if doing anything
         param: army_id: the id of the army whose on arrive event we want to cancel
         """
+
         d = delete(OnArrive).where(OnArrive.army_id == army_id)
         await self.session.execute(d)
 

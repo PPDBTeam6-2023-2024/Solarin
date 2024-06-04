@@ -248,6 +248,7 @@ function PlanetViewer(props) {
         }
         socket.onclose = async (event) => {
             isWebSocketConnected.current = false;
+            console.log("planet socket closed")
         }
 
     }, [socket, armyImages])
@@ -292,6 +293,16 @@ function PlanetViewer(props) {
             const merged_data = Object.assign({}, data_json, action_json);
 
             /*Send websocket message about movement change*/
+
+            /*
+            * Reopen websocket when closed
+            * */
+            if (socket.isClosed){
+                const webSocket = new WebSocket(`${process.env.REACT_APP_BACKEND_PATH_WEBSOCKET}/planet/ws/${props.planetId}`, `${localStorage.getItem('access-token')}`);
+                setSocket(webSocket);
+                isWebSocketConnected.current = true;
+            }
+
             await socket.send(JSON.stringify(merged_data));
             toggleMoveMode(armyId)
         })

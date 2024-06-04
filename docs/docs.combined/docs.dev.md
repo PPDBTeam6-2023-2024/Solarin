@@ -1,75 +1,74 @@
 # Table of Contents
 - game_explanation
-	- [general_explanation](#654494bd-7ad5-4014-b95b-a7fc8b6ce03f)
-	- [armies](#7aa770de-a6a4-47de-b8ec-56465f390dc4)
-	- [city_management](#76089ead-faee-4ffd-999a-8b2bee5c924e)
-	- [fleets](#f7a70454-7b34-49da-a075-505023d64cbf)
-	- [planet_view](#571aff16-840f-4971-aa3b-f6f121abb906)
-	- [scene_setting](#bcc78f6a-50af-4d2e-bdd4-41c3dd01e06d)
-	- [trading](#e9cf6d6e-bc1f-49db-9459-7c100bd7f4e5)
-	- [user_experience](#da7c2889-a3d1-47fc-9aaf-a45c906aff9d)
-	- [user_interactions](#02c66ff9-b4d4-48a2-bf84-ec8ff79e51dd)
+	- [general_explanation](#339dea85-d386-41c6-a542-d21618b71d44)
+	- [armies](#ba4f1513-6c8e-4911-9cd5-ac4ad5c7be1c)
+	- [city_management](#d3342790-69b6-4542-9ffb-caca03efd9af)
+	- [fleets](#82303d8e-0565-4153-a9f4-e67be6a757b0)
+	- [planet_view](#5a5922bb-c970-4dc8-bfb7-83039ee0ee66)
+	- [scene_setting](#24376774-4247-4cf1-9e43-b2c4d11fe4ad)
+	- [trading](#1d46e28f-7e44-4faf-914c-c7e59f69eb4f)
+	- [user_experience](#db442a62-8416-488e-b664-525506189e0f)
+	- [user_interactions](#9c759c9c-ef0d-4864-ae3e-30f90d149414)
 - backend
-	- [army_combat](#f3ffa946-299f-4cd7-8e83-1032ab623598)
-	- [authentication](#39726c0d-b498-4e08-b506-b269603a8304)
-	- [backend_structure](#8fc7b5d7-42ee-4974-b6d9-77652ed5e8d1)
-	- [config](#20eab1f5-ec32-495c-a71e-6c77790597e8)
-	- [database_access](#57b3226b-455a-461f-a4d5-e4521bf162cc)
-	- [database_connection](#807bb3b4-aa9b-4e1c-832f-0cd5bcb112be)
-	- [database_model](#f0e9a1d1-9272-4cca-bd8b-37ecf5c7569e)
-	- [endpoints](#b5603e48-56b5-4064-b20b-ea41e4b9693f)
-	- [general_modifiers](#bd03d01e-8950-4f5e-a3e0-b6898833056a)
-	- [global_ws](#f3acd05c-e057-462e-a535-1c87879c092f)
-	- [logging](#1f45d927-748a-4f85-b49b-2779ffbf84b5)
-	- [maintenance](#fbd2eac3-77e8-4626-b374-32a9e3187e2f)
-	- [planet_generation](#4a39462a-95f9-461a-a23b-39e845bfb43a)
-	- [planet_name_gen](#d5f05f53-a7ff-4946-a3fc-1254e4c116f4)
-	- [planet_socket](#aca732aa-0ab4-4115-b961-91a774e6d4ec)
-	- [snapshotter](#5dc8aeee-0ae4-4ff8-98eb-f85e54c3a676)
-	- [spawn](#f6366038-2d8e-4be8-90c8-4c334ba02d9d)
-	- [testing_setup](#8ea33baf-b9dd-4c5e-bade-a84fd40930ce)
-	- [trading](#55a07160-2b37-4ad9-8bf8-fc2e0d9e7ce8)
-	- [training_units](#3d8390a1-6ecb-4011-820a-33a718d09531)
-	- [websockets](#97bf8e84-5e9b-4f4c-a1f9-f3d599b30c0f)
+	- [army_combat](#8e628208-631f-41de-98f0-97fef716b480)
+	- [authentication](#00a151e9-d72d-491b-a7e1-483f0d9588d1)
+	- [backend_structure](#be1d9a14-c66a-42f2-a2e3-5120ca9e02be)
+	- [config](#d6e5c883-de1e-4a46-b947-9c97edee81bf)
+	- [database_access](#f933743a-e30f-42d3-939a-70222922b049)
+	- [database_connection](#9896ecd6-5195-454a-87d0-169a0370ce12)
+	- [database_model](#86694db2-9078-425d-b90a-24f56b013c5e)
+	- [endpoints](#d16907d9-37b3-43c3-8ad1-c658eac8803b)
+	- [general_modifiers](#399af4e0-4948-4b31-a7ec-1f1bb83e9fc8)
+	- [global_ws](#e1252886-5549-4a6d-b794-e1df8513ac36)
+	- [logging](#258ee5c9-b7a2-4134-9de8-d6b338f1626e)
+	- [maintenance](#76310ffa-6393-4270-9dab-492f2741fb45)
+	- [planet_generation](#7d279bc9-c0b9-402a-a799-77fee3697d4c)
+	- [planet_name_gen](#9229c9a7-4f7b-4472-9b03-f49da130ff15)
+	- [planet_socket](#aa1cdd67-12af-48bf-91ab-46dd586fb7be)
+	- [snapshotter](#c53c7c73-73de-404b-b306-b4ad9c2b94a8)
+	- [spawn](#7a09ed8f-338b-458b-b9c3-c969e8a49f05)
+	- [testing_setup](#f2738260-613d-4ea2-a8dd-1a3227ca0765)
+	- [trading](#fa47e3bc-197e-4c8a-8b21-73adbe9cdfe6)
+	- [training_units](#02649846-19c5-4a54-b0b9-76561d100f93)
+	- [websockets](#9294361b-1fdb-42b0-b794-0cf63934dcea)
 - frontend
-	- [army_movement](#4c939b3d-18f2-44eb-bd12-dc997fb54030)
-	- [army_viewer](#d9baf370-b20f-43e0-9e67-b27328203fc2)
-	- [chat_menu](#4f89d638-a949-4c18-8cc3-929d0a208947)
-	- [city_viewer](#feab12f2-a76a-43f8-93e3-54b09004edc8)
-	- [combat_notifications](#1ee61b4c-a3ac-4e4e-8661-27f4402326e3)
-	- [fleets](#88859dfb-60c2-4bec-a3ca-d1e6a1f53edc)
-	- [galaxy_viewer](#f201df9a-a4cc-4ef5-acd6-fe6cf4b1da54)
-	- [general_view](#b1e5562d-f357-4dcc-a7e9-d6843f982cd6)
-	- [hidden_windows_viewer](#fcecb6ff-9db5-490a-9734-329cd69dade6)
-	- [login](#bc145955-b15e-4e25-a9ba-d76650052a70)
-	- [planet_viewer](#9534f59d-7505-4851-92e6-837717403670)
-	- [planet_visualisation](#c734d519-48a2-49ff-91fe-e55476a2a211)
-	- [politics_menu](#38899a47-e072-45ed-99ee-d6c31eb3e67d)
-	- [profile_viewer](#0d5de440-46f0-45f7-a8d5-b192b494467e)
-	- [resource_viewer](#090bc70e-9cf9-4f4b-a510-9451c4945280)
-	- [settings](#9abe13ec-983c-40f5-a5ff-1edfb94afade)
-	- [sidemenu](#0db8cebc-9ee0-4f8a-bebd-425ab9157f2a)
-	- [trading](#2b410dde-fb3b-4546-a9b7-a86a4ea2f398)
-	- [training_viewer](#eb93f7ac-111c-485a-a152-c084b58be7af)
-	- [window_ui](#a927ba3a-decf-407d-a169-fbca480c8836)
+	- [army_movement](#06b1e1c5-8b35-4138-a6dc-74fe2398d71a)
+	- [army_viewer](#75dfd107-e958-4b39-993a-08151b520f31)
+	- [chat_menu](#4de353d1-75d5-44e3-b9f1-b7ffec32a9a7)
+	- [city_viewer](#9cdc34b5-98e6-4f45-8894-98ecbc017535)
+	- [combat_notifications](#27ed3d46-7712-47c8-90d2-80463b587d35)
+	- [fleets](#e5387019-ebdf-4730-b502-035a32eb5c4d)
+	- [galaxy_viewer](#b8501cc7-d0c0-4984-bae8-8ebd71973a61)
+	- [general_view](#f8a10c3f-dbca-491f-a133-94591d7bf138)
+	- [hidden_windows_viewer](#280cf087-4d69-4097-a4b6-3e81eab187f3)
+	- [login](#42973491-c0e7-4175-99b9-fd9b92814424)
+	- [planet_viewer](#2ee1e4a6-7120-42f3-ac9f-993e1d0ac43e)
+	- [planet_visualisation](#df3cf30c-1e41-4f43-b96c-1411b5df9ede)
+	- [politics_menu](#3035f6ba-49f4-4a3e-a794-40a709ad274b)
+	- [profile_viewer](#edd6d10b-965b-4515-841c-c6f236f3785c)
+	- [resource_viewer](#ad00bd84-6451-4a1a-a949-7ba11966d8d5)
+	- [settings](#251e5841-009c-4852-b9bc-62facc9b0860)
+	- [sidemenu](#1fb0a93d-5b4a-4b84-b697-8cd4143ad428)
+	- [trading](#acb66510-e674-48df-bcd6-dfdf5671176b)
+	- [training_viewer](#0e1ac9b0-1e62-419e-82b8-c726e9f10353)
+	- [window_ui](#80470438-4a77-4954-a12e-8bf71c9aa1af)
 - game_mechanics
-	- [army_combat](#accbd1c4-5aea-482a-a2d9-d0a219c18615)
-	- [buildings_productions](#b53a2d50-5d42-460b-bcd6-d7b5447b5266)
-	- [city_construction_and_expansion](#e5bee784-4e05-4d66-bc27-35d0b39583d6)
-	- [generals](#de029e95-fac6-4441-ac94-01daf2962254)
-	- [maintenance_cost](#9c8f06be-bd47-4e75-93f0-a768643a6411)
-	- [planets_regions](#ce3b0188-e55a-463d-92d6-3bd52ab282a9)
-	- [politics](#13bd1d9f-b4ca-4f2e-9eda-0182f052cd44)
-	- [resource_types](#82ac9e77-d8b0-4707-ab0f-6a022ab5d784)
-	- [tower_types](#e65786be-94f3-42cb-ab08-e0a3c94d96ba)
-	- [unit_types](#9d12b19d-9fe1-43be-af0d-d541efcdf5b7)
-	- [wall_types](#84b09d60-6a99-437a-aa47-c2e5547bff3c)
-- [template](#9435bc26-a059-4fbc-a49b-ccdaea3bf633)
+	- [army_combat](#be602d32-9fc2-47f1-9cff-e9b67fafc937)
+	- [buildings_productions](#b2e07711-c2f0-4dfb-81be-4ffdf545b937)
+	- [city_construction_and_expansion](#2cb05002-fa20-4bfe-9a15-b632c337f10e)
+	- [generals](#746b8856-c960-4617-bafb-839c6fd85c19)
+	- [maintenance_cost](#4f643178-0498-494a-b3a5-b038f191fcbc)
+	- [planets_regions](#51ed9bf5-68c4-41c7-8eb9-5d610312da25)
+	- [politics](#a0db1a47-8be0-4cf9-a8be-936632873c93)
+	- [resource_types](#f6d5ce08-371c-4dfd-a735-d0d6a26f6fe8)
+	- [tower_types](#2de944d2-dd73-4548-a8b9-4ed0270358d8)
+	- [unit_types](#50314568-67c9-4f6d-ad38-5e5aa5a112d4)
+	- [wall_types](#4f7b6a94-207b-4549-a7f9-cf444957f20b)
 
 
 <hr style="border:2px solid gray">
 
-<a id='654494bd-7ad5-4014-b95b-a7fc8b6ce03f'></a>
+<a id='339dea85-d386-41c6-a542-d21618b71d44'></a>
 # Solarin
 Our game is an IDLE strategy game. The user playing our game will control a space civilization of an alien race.
 Cities will be founded, and armies will be raised. Users will be able to fight each other using these armies, and try to conquer 
@@ -245,7 +244,7 @@ training of troops
 
 <hr style="border:2px solid gray">
 
-<a id='7aa770de-a6a4-47de-b8ec-56465f390dc4'></a>
+<a id='ba4f1513-6c8e-4911-9cd5-ac4ad5c7be1c'></a>
 # Armies
 Controlling armies is a vital part of our strategy game
 <br>![alt text](./images/army_details.png)
@@ -285,7 +284,7 @@ Fleets, which are armies with at least one mothership unit,  are just like armie
 
 <hr style="border:2px solid gray">
 
-<a id='76089ead-faee-4ffd-999a-8b2bee5c924e'></a>
+<a id='d3342790-69b6-4542-9ffb-caca03efd9af'></a>
 # City Management
 
 When you click on a city you own, the following menu appears:
@@ -340,7 +339,7 @@ Pressing the 'Upgrade City' button starts the process of upgrading the city to t
 
 <hr style="border:2px solid gray">
 
-<a id='f7a70454-7b34-49da-a075-505023d64cbf'></a>
+<a id='82303d8e-0565-4153-a9f4-e67be6a757b0'></a>
 # Fleets 
 <br>![alt text](./images/fleet.png)
 Fleets, which are armies with at least one mothership unit,  are just like armies in terms of combat, merging, moving, viewing stats, etc... (See /game_explanation/armies).
@@ -356,7 +355,7 @@ In order for a fleet or multiple fleets to exit a planet, the user must click th
 
 <hr style="border:2px solid gray">
 
-<a id='571aff16-840f-4971-aa3b-f6f121abb906'></a>
+<a id='5a5922bb-c970-4dc8-bfb7-83039ee0ee66'></a>
 # PlanetView
 
 The view of a planet looks something like the image below:
@@ -374,7 +373,7 @@ takes some time, so you might not see this visually.
 
 <hr style="border:2px solid gray">
 
-<a id='bcc78f6a-50af-4d2e-bdd4-41c3dd01e06d'></a>
+<a id='24376774-4247-4cf1-9e43-b2c4d11fe4ad'></a>
 # Scene Setting
 The game takes place in the future where technologically advanced societies, 
 both human and alien, have expanded beyond their home planet and have started colonizing new ones. 
@@ -387,7 +386,7 @@ All in the hopes of one day becoming one of the greatest civilizations in histor
 
 <hr style="border:2px solid gray">
 
-<a id='e9cf6d6e-bc1f-49db-9459-7c100bd7f4e5'></a>
+<a id='1d46e28f-7e44-4faf-914c-c7e59f69eb4f'></a>
 # Trading
 
 Trading between users is a vitale part of improving the strategy component behind our game
@@ -424,7 +423,7 @@ update for all users in that alliance, that have opened the menu.
 
 <hr style="border:2px solid gray">
 
-<a id='da7c2889-a3d1-47fc-9aaf-a45c906aff9d'></a>
+<a id='db442a62-8416-488e-b664-525506189e0f'></a>
 # User experience
 
 We allow users to grow their civilization by conquest and colonization. Cities can contain buildings that can be upgraded by the user for a certain price (in resources). The upgrades will improve certain things about the building or give access to new things (producing more, training new kinds of units, ...). The thrill of conquering the settlements of other players and the fear of losing your own will encourage players to check the game frequently.  The game mechanics with regards to battles are the following: Both armies and cities have battle values (attack, defense, ...) deciding how strong they are in battle. An army its battle values will depend on the troops inside its army. Each type of troop will influence these values differently. Players will be able to strategize about their army composition. Some troops will cause a larger increase in attack and others increase the army their speed and so on. Armies can attack cities and also other armies that are present on the same planet. Cities will also have battle values by building/upgrading towers and walls. Armies can also be stationed inside a city to help defend against invading armies.   
@@ -472,7 +471,7 @@ Other features like Generals, Trading, etc. will give players the opportunity to
 
 <hr style="border:2px solid gray">
 
-<a id='02c66ff9-b4d4-48a2-bf84-ec8ff79e51dd'></a>
+<a id='9c759c9c-ef0d-4864-ae3e-30f90d149414'></a>
 # Interactions
 
 Users will control a space civilization managing its cities and navigating its armies.   
@@ -498,7 +497,7 @@ In addition, we are also looking at some form of trading resources between playe
 
 <hr style="border:2px solid gray">
 
-<a id='f3ffa946-299f-4cd7-8e83-1032ab623598'></a>
+<a id='8e628208-631f-41de-98f0-97fef716b480'></a>
 # Army Combat
 
 ## Overview
@@ -537,7 +536,7 @@ All the on Arrive event handeling occurs in 'ArriveCheck', this will make sure t
 
 <hr style="border:2px solid gray">
 
-<a id='39726c0d-b498-4e08-b506-b269603a8304'></a>
+<a id='00a151e9-d72d-491b-a7e1-483f0d9588d1'></a>
 # OAuth2 with Password (and hashing), Bearer with JWT tokens
 
 ## Overview
@@ -590,7 +589,7 @@ For adding a user, sqlalchemy will try to insert a user to the table. If this fa
 
 <hr style="border:2px solid gray">
 
-<a id='8fc7b5d7-42ee-4974-b6d9-77652ed5e8d1'></a>
+<a id='be1d9a14-c66a-42f2-a2e3-5120ca9e02be'></a>
 # Backend Structure
 
 ## Overview
@@ -632,7 +631,7 @@ Our backend file structure is completely in the 'backend' directory
 
 <hr style="border:2px solid gray">
 
-<a id='20eab1f5-ec32-495c-a71e-6c77790597e8'></a>
+<a id='d6e5c883-de1e-4a46-b947-9c97edee81bf'></a>
 # Config
 
 ## Overview
@@ -672,7 +671,7 @@ You can load a config from many different source types:
 
 <hr style="border:2px solid gray">
 
-<a id='57b3226b-455a-461f-a4d5-e4521bf162cc'></a>
+<a id='f933743a-e30f-42d3-939a-70222922b049'></a>
 # Database access
 
 ## Overview
@@ -741,7 +740,7 @@ use custom exceptions.
 
 <hr style="border:2px solid gray">
 
-<a id='807bb3b4-aa9b-4e1c-832f-0cd5bcb112be'></a>
+<a id='9896ecd6-5195-454a-87d0-169a0370ce12'></a>
 # Database connection
 
 ## Overview
@@ -775,7 +774,7 @@ async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)
 
 <hr style="border:2px solid gray">
 
-<a id='f0e9a1d1-9272-4cca-bd8b-37ecf5c7569e'></a>
+<a id='86694db2-9078-425d-b90a-24f56b013c5e'></a>
 # Database model
 
 ## Overview
@@ -945,7 +944,7 @@ These models are created in SQL Alchemy and are generated using alembic
 
 <hr style="border:2px solid gray">
 
-<a id='b5603e48-56b5-4064-b20b-ea41e4b9693f'></a>
+<a id='d16907d9-37b3-43c3-8ad1-c658eac8803b'></a>
 # Endpoints
 
 ## Overview
@@ -958,9 +957,10 @@ Explanation of what each endpoint does
 Communication from frontend with the backend is done using the REST structure.
 We use an authentication token to identify the user who is communicating with the backend
 
-To view our API swagger, go to: `https://team6.ua-ppdb.me/api/docs`
+You can find our swagger at: `https://team6.ua-ppdb.me/api/docs`
 
 Our Endpoints are structured into multiple routers:
+
 
 <summary><strong>Authentication: '/auth'</strong></summary>
 <p>
@@ -1140,7 +1140,7 @@ This router will handle the communication about Armies and their actions
 
 <hr style="border:2px solid gray">
 
-<a id='bd03d01e-8950-4f5e-a3e0-b6898833056a'></a>
+<a id='399af4e0-4948-4b31-a7ec-1f1bb83e9fc8'></a>
 # general modifiers
 When we assign a general to an army, the army will receive certain bonuses.
 This is done with modifiers. Each general has a base modifier and this is also influenced by the political direction of the user.
@@ -1157,7 +1157,7 @@ Generals can also be unassigned directly from an army.
 
 <hr style="border:2px solid gray">
 
-<a id='f3acd05c-e057-462e-a535-1c87879c092f'></a>
+<a id='e1252886-5549-4a6d-b794-e1df8513ac36'></a>
 # Global Websocket Router
 
 ## Overview
@@ -1180,7 +1180,7 @@ This router can be extended to support other types of notifications or messages 
 
 <hr style="border:2px solid gray">
 
-<a id='1f45d927-748a-4f85-b49b-2779ffbf84b5'></a>
+<a id='258ee5c9-b7a2-4134-9de8-d6b338f1626e'></a>
 # Logging
 
 ## Overview
@@ -1224,7 +1224,7 @@ Make sure the path parameter pointing to the directroy in which the logs need to
 
 <hr style="border:2px solid gray">
 
-<a id='fbd2eac3-77e8-4626-b374-32a9e3187e2f'></a>
+<a id='76310ffa-6393-4270-9dab-492f2741fb45'></a>
 # Maintenance
 ## Overview
 Explanation how maintenance costs are checked and applied for cities and armies
@@ -1251,7 +1251,7 @@ all buildings in that city will be removed.
 
 <hr style="border:2px solid gray">
 
-<a id='4a39462a-95f9-461a-a23b-39e845bfb43a'></a>
+<a id='7d279bc9-c0b9-402a-a799-77fee3697d4c'></a>
 # Planet generation
 
 ## Overview
@@ -1282,7 +1282,7 @@ The radius for each planet is calculated using the Fibonacci sequence. The squar
 
 <hr style="border:2px solid gray">
 
-<a id='d5f05f53-a7ff-4946-a3fc-1254e4c116f4'></a>
+<a id='9229c9a7-4f7b-4472-9b03-f49da130ff15'></a>
 # Random Planet Name Generation
 
 ## Overview
@@ -1301,7 +1301,7 @@ Function generate_planet_name() returns random line from planet_names.txt
 
 <hr style="border:2px solid gray">
 
-<a id='aca732aa-0ab4-4115-b961-91a774e6d4ec'></a>
+<a id='aa1cdd67-12af-48bf-91ab-46dd586fb7be'></a>
 # Planet socket
 
 ## Overview
@@ -1373,7 +1373,7 @@ current_y = y_diff * (current_time_diff / total_time_diff)
 
 <hr style="border:2px solid gray">
 
-<a id='5dc8aeee-0ae4-4ff8-98eb-f85e54c3a676'></a>
+<a id='c53c7c73-73de-404b-b306-b4ad9c2b94a8'></a>
 # Snapshotter
 
 ## Overview
@@ -1402,7 +1402,7 @@ Snapshotter can be invoked from the command line with the following arguments:
 
 <hr style="border:2px solid gray">
 
-<a id='f6366038-2d8e-4be8-90c8-4c334ba02d9d'></a>
+<a id='7a09ed8f-338b-458b-b9c3-c969e8a49f05'></a>
 
 # Spawn router
 
@@ -1433,7 +1433,7 @@ I the system detects that the user is starting as a new player. That player will
 
 <hr style="border:2px solid gray">
 
-<a id='8ea33baf-b9dd-4c5e-bade-a84fd40930ce'></a>
+<a id='f2738260-613d-4ea2-a8dd-1a3227ca0765'></a>
 # Testing Setup
 
 ## Overview
@@ -1517,7 +1517,7 @@ jobs:  # Definition of jobs to be executed
 
 <hr style="border:2px solid gray">
 
-<a id='55a07160-2b37-4ad9-8bf8-fc2e0d9e7ce8'></a>
+<a id='fa47e3bc-197e-4c8a-8b21-73adbe9cdfe6'></a>
 
 # Trading
 
@@ -1543,7 +1543,7 @@ These actions are done by calling tradeAccess Methods
 
 <hr style="border:2px solid gray">
 
-<a id='3d8390a1-6ecb-4011-820a-33a718d09531'></a>
+<a id='02649846-19c5-4a54-b0b9-76561d100f93'></a>
 # Training Units
 
 ## Overview
@@ -1573,7 +1573,7 @@ When a user sends a request to train units, first it will be checked if the user
 
 <hr style="border:2px solid gray">
 
-<a id='97bf8e84-5e9b-4f4c-a1f9-f3d599b30c0f'></a>
+<a id='9294361b-1fdb-42b0-b794-0cf63934dcea'></a>
 # Websockets
 Sometimes we want to communicate with the front-end without that the frontend has send anything to the backend (for example live updating of incoming chat messages).
 To do this we use websockets. To make sure we can form 'pools' of people that would receive anything on a change (like an extra chat message in an alliance), we use
@@ -1583,7 +1583,7 @@ connection pools. When a user opens a websocket it will be assigned to a 'connec
 
 <hr style="border:2px solid gray">
 
-<a id='4c939b3d-18f2-44eb-bd12-dc997fb54030'></a>
+<a id='06b1e1c5-8b35-4138-a6dc-74fe2398d71a'></a>
 # Army Movement
 
 ## Overview
@@ -1610,7 +1610,7 @@ Depending on where the user clicks on the map, the army will move to this positi
 
 <hr style="border:2px solid gray">
 
-<a id='d9baf370-b20f-43e0-9e67-b27328203fc2'></a>
+<a id='75dfd107-e958-4b39-993a-08151b520f31'></a>
 # Army Viewer
 
 ## Overview
@@ -1642,7 +1642,7 @@ The component offers functionalities too:
 
 <hr style="border:2px solid gray">
 
-<a id='4f89d638-a949-4c18-8cc3-929d0a208947'></a>
+<a id='4de353d1-75d5-44e3-b9f1-b7ffec32a9a7'></a>
 # Chat Menu
 
 ## Overview
@@ -1781,7 +1781,7 @@ The Messages themselves are inside the component 'Message', which gives the mess
 
 <hr style="border:2px solid gray">
 
-<a id='feab12f2-a76a-43f8-93e3-54b09004edc8'></a>
+<a id='9cdc34b5-98e6-4f45-8894-98ecbc017535'></a>
 # CityViewer Documentation
 
 ## Overview
@@ -1831,7 +1831,7 @@ CityViewer is a crucial component that enhances user engagement by providing a v
 
 <hr style="border:2px solid gray">
 
-<a id='1ee61b4c-a3ac-4e4e-8661-27f4402326e3'></a>
+<a id='27ed3d46-7712-47c8-90d2-80463b587d35'></a>
 # Combat Notifications
 
 When army combat occurred, when a user is online, we will display for a short time (5 seconds) a notification
@@ -1843,7 +1843,7 @@ did occur
 
 <hr style="border:2px solid gray">
 
-<a id='88859dfb-60c2-4bec-a3ca-d1e6a1f53edc'></a>
+<a id='e5387019-ebdf-4730-b502-035a32eb5c4d'></a>
 # Fleets
 
 ## Overview
@@ -1864,7 +1864,7 @@ Furthermore it is possible to also view stats of fleets just like armies on plan
 
 <hr style="border:2px solid gray">
 
-<a id='f201df9a-a4cc-4ef5-acd6-fe6cf4b1da54'></a>
+<a id='b8501cc7-d0c0-4984-bae8-8ebd71973a61'></a>
 # Galaxy Viewer
 
 ## Overview
@@ -1893,7 +1893,7 @@ None
 
 <hr style="border:2px solid gray">
 
-<a id='b1e5562d-f357-4dcc-a7e9-d6843f982cd6'></a>
+<a id='f8a10c3f-dbca-491f-a133-94591d7bf138'></a>
 # GeneralView
 
 When looking at the details of an army, we can also see information about the general of the army
@@ -1910,7 +1910,7 @@ on the political direction of the user. The second modifier gives an indication 
 
 <hr style="border:2px solid gray">
 
-<a id='fcecb6ff-9db5-490a-9734-329cd69dade6'></a>
+<a id='280cf087-4d69-4097-a4b6-3e81eab187f3'></a>
 # Hidden Windows Viewer
 
 ## Overview
@@ -1933,7 +1933,7 @@ When components are hidden we see the following:
 
 <hr style="border:2px solid gray">
 
-<a id='bc145955-b15e-4e25-a9ba-d76650052a70'></a>
+<a id='42973491-c0e7-4175-99b9-fd9b92814424'></a>
 # Login Page
 
 ## Overview
@@ -1966,7 +1966,7 @@ Of course, if the backend is down then the user will not be able to sign in or s
 
 <hr style="border:2px solid gray">
 
-<a id='9534f59d-7505-4851-92e6-837717403670'></a>
+<a id='2ee1e4a6-7120-42f3-ac9f-993e1d0ac43e'></a>
 # Planet Viewer
 
 ## Overview
@@ -1994,7 +1994,7 @@ None
 
 <hr style="border:2px solid gray">
 
-<a id='c734d519-48a2-49ff-91fe-e55476a2a211'></a>
+<a id='df3cf30c-1e41-4f43-b96c-1411b5df9ede'></a>
 # [Planet visulaisation - PlanetSVG]
 
 ## Overview
@@ -2013,7 +2013,7 @@ The frontend retrieves the region data. It scales all the region data to 1920x10
 
 <hr style="border:2px solid gray">
 
-<a id='38899a47-e072-45ed-99ee-d6c31eb3e67d'></a>
+<a id='3035f6ba-49f4-4a3e-a794-40a709ad274b'></a>
 # Politics menu
 
 ## Overview
@@ -2055,7 +2055,7 @@ This cost is shown in the top right above the button to enact a decision.
 
 <hr style="border:2px solid gray">
 
-<a id='0d5de440-46f0-45f7-a8d5-b192b494467e'></a>
+<a id='edd6d10b-965b-4515-841c-c6f236f3785c'></a>
 # Profile Viewer
 
 ## Overview
@@ -2082,7 +2082,7 @@ The same is for the armies category, but here it will display armies instead of 
 
 <hr style="border:2px solid gray">
 
-<a id='090bc70e-9cf9-4f4b-a510-9451c4945280'></a>
+<a id='ad00bd84-6451-4a1a-a949-7ba11966d8d5'></a>
 # Resource Viewer
 
 ## Overview
@@ -2107,7 +2107,7 @@ The profile window on the bottom-left corner renders component Resources to disp
 
 <hr style="border:2px solid gray">
 
-<a id='9abe13ec-983c-40f5-a5ff-1edfb94afade'></a>
+<a id='251e5841-009c-4852-b9bc-62facc9b0860'></a>
 # settings
 
 ## Overview
@@ -2141,7 +2141,7 @@ Like lack of a resource, and nobody wants to trade. In that case, the player can
 
 <hr style="border:2px solid gray">
 
-<a id='0db8cebc-9ee0-4f8a-bebd-425ab9157f2a'></a>
+<a id='1fb0a93d-5b4a-4b84-b697-8cd4143ad428'></a>
 # Sidemenu
 
 ## Overview
@@ -2165,7 +2165,7 @@ None
 
 <hr style="border:2px solid gray">
 
-<a id='2b410dde-fb3b-4546-a9b7-a86a4ea2f398'></a>
+<a id='acb66510-e674-48df-bcd6-dfdf5671176b'></a>
 # Trading
 
 ## Overview
@@ -2203,7 +2203,7 @@ trade a resource to both sides (can be done by just not trading).
 
 <hr style="border:2px solid gray">
 
-<a id='eb93f7ac-111c-485a-a152-c084b58be7af'></a>
+<a id='0e1ac9b0-1e62-419e-82b8-c726e9f10353'></a>
 # training viewer
 
 ## Overview
@@ -2246,7 +2246,7 @@ for dynamically change the value based on the slider.
 
 <hr style="border:2px solid gray">
 
-<a id='a927ba3a-decf-407d-a169-fbca480c8836'></a>
+<a id='80470438-4a77-4954-a12e-8bf71c9aa1af'></a>
 # WindowUI
 
 ## Overview
@@ -2266,7 +2266,7 @@ By wrapping the desired component with WindowUI, the component will be draggable
 
 <hr style="border:2px solid gray">
 
-<a id='accbd1c4-5aea-482a-a2d9-d0a219c18615'></a>
+<a id='be602d32-9fc2-47f1-9cff-e9b67fafc937'></a>
 # Army Combat 
 
 During army combat the winner will be determined by a formula
@@ -2312,7 +2312,7 @@ The formula we use for calculating the duration is as follows:
 
 <hr style="border:2px solid gray">
 
-<a id='b53a2d50-5d42-460b-bcd6-d7b5447b5266'></a>
+<a id='b2e07711-c2f0-4dfb-81be-4ffdf545b937'></a>
 # Buildings & Production
 ## General Production Cost (GPC)
 
@@ -2334,17 +2334,17 @@ The grow_rate is configurable, by the developers. This should be greater than 1,
 wanted effect. This makes sure that the units become drastically stronger the higher rank (level) the get
 
 ## Unit Train Cost
-Units training costs are calculated using the following formula: $base_value*grow_rate^level$
+Units training costs are calculated using the following formula: $baseValue*growRate^{level}$
 This grow_rate can differ from the grow rate used for calculating the Unit Stats
 
 ## General Upgrade Cost (GUC)
-* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1}){2}\right\rfloor$ TF 
+* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1)}{2}\right\rfloor$ TF 
 	* $\text{level}$ is the current (pre-upgrade) level of the building
 	* $\text{CC}$ is the creation cost of the building
 	* GUC and CC is given in Techforge (TF) currency by default
 
 ## General Upgrade Time (GUT)
-* $\left\lfloor \text{TFC} \times 1.15^{\text{level} + 1} \right\rfloor
+* $\left\lfloor \text{TFC} \times 1.15^{\text{level} + 1} \right\rfloor $
 	* $\text{level}$ is the current (pre-upgrade) level of the building
 	* $\text{TFC}$ is the Tech Forge cost for upgrading the building
 	* GUT is thus dependent on the TF cost, determined by using the GUC formula
@@ -2499,7 +2499,7 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 
 <hr style="border:2px solid gray">
 
-<a id='e5bee784-4e05-4d66-bc27-35d0b39583d6'></a>
+<a id='2cb05002-fa20-4bfe-9a15-b632c337f10e'></a>
 # City Construction and Expansion
 
 In the dynamic world of our game, players are tasked with the crucial role of constructing and expanding their own cities. This process is not only about growing a city in size but also about strategic planning and resource management to ensure sustainable development and progress.
@@ -2552,7 +2552,7 @@ This formula balances simplicity with strategic depth, making it suitable for ga
 
 <hr style="border:2px solid gray">
 
-<a id='de029e95-fac6-4441-ac94-01daf2962254'></a>
+<a id='746b8856-c960-4617-bafb-839c6fd85c19'></a>
 # Generals
 Generals can be assigned to an army to give an army some bonuses.
 Generals are named after emotions/ behaviour attributes.
@@ -2627,7 +2627,7 @@ We have the following generals:
 
 <hr style="border:2px solid gray">
 
-<a id='9c8f06be-bd47-4e75-93f0-a768643a6411'></a>
+<a id='4f643178-0498-494a-b3a5-b038f191fcbc'></a>
 # Maintenance Cost
 Both Cities and armies will have maintenance cost.
 The end user will never directly receive information about the maintenance cost,
@@ -2712,7 +2712,7 @@ For troops:
 
 <hr style="border:2px solid gray">
 
-<a id='ce3b0188-e55a-463d-92d6-3bd52ab282a9'></a>
+<a id='51ed9bf5-68c4-41c7-8eb9-5d610312da25'></a>
 # Planets & Regions
 ## Regions
 $\text{modifier(region, subject) = x}$
@@ -2958,7 +2958,7 @@ When a user is in full control of a region it will get a 25% bonus on its produc
 
 <hr style="border:2px solid gray">
 
-<a id='13bd1d9f-b4ca-4f2e-9eda-0182f052cd44'></a>
+<a id='a0db1a47-8be0-4cf9-a8be-936632873c93'></a>
 # Politics and modifiers
 
 The user can influence how their society evolves through decisions in the political menu. Each type of society has an impact on a set of modifiers. 
@@ -2994,28 +2994,28 @@ These are the formulas we use to calculate the modifiers, all of these are limit
 
 - **Resource Production**
 
-\text{Resource Production} = \text{anarchism} \times 10 + \text{democratic} \times 3 - \text{theocracy} \times 10 - \text{technocracy} \times 5 + \text{corporate_state} \times 20
+$\text{Resource Production} = \text{anarchism} \times 10 + \text{democratic} \times 3 - \text{theocracy} \times 10 - \text{technocracy} \times 5 + \text{corporateState} \times 20 $
 
 - **Upgrade Speed**
 
-\text{Upgrade Speed} = \text{technocracy} \times 25 + \text{democratic} \times 20 - \text{authoritarian} \times 15 - \text{theocracy} \times 20 - \text{corporate_state} \times 10
+$\text{Upgrade Speed} = \text{technocracy} \times 25 + \text{democratic} \times 20 - \text{authoritarian} \times 15 - \text{theocracy} \times 20 - \text{corporateState} \times 10 $
 
 - **Army Strength**
 
-\text{Army Strength} = \text{authoritarian} \times 30 - \text{anarchism} \times 20 + \text{theocracy} \times 15 - \text{democratic} \times 10
+$\text{Army Strength} = \text{authoritarian} \times 30 - \text{anarchism} \times 20 + \text{theocracy} \times 15 - \text{democratic} \times 10 $
 
 - **Training Time**
 
-\text{Training Time} = -\text{authoritarian} \times 20 - \text{technocracy} \times 15 - \text{corporate_state} \times 10 + \text{theocracy} \times 10
+$\text{Training Time} = -\text{authoritarian} \times 20 - \text{technocracy} \times 15 - \text{corporateState} \times 10 + \text{theocracy} \times 10 $
 
 - **Army Movement Speed**
 
-\text{Army Movement Speed} = \text{anarchism} \times 10 - \text{corporate_state} \times 30 - \text{theocracy} \times 5
+$\text{Army Movement Speed} = \text{anarchism} \times 10 - \text{corporateState} \times 30 - \text{theocracy} \times 5 $
 
 
 <hr style="border:2px solid gray">
 
-<a id='82ac9e77-d8b0-4707-ab0f-6a022ab5d784'></a>
+<a id='f6d5ce08-371c-4dfd-a735-d0d6a26f6fe8'></a>
 # Resources
 Resources are uncapped. 
 * Techforge (TF)
@@ -3041,7 +3041,7 @@ Resources are uncapped.
 
 <hr style="border:2px solid gray">
 
-<a id='e65786be-94f3-42cb-ab08-e0a3c94d96ba'></a>
+<a id='2de944d2-dd73-4548-a8b9-4ed0270358d8'></a>
 # Towers
 ## Types
 * Sentry Tower (*ST*)
@@ -3071,7 +3071,7 @@ Resources are uncapped.
 
 <hr style="border:2px solid gray">
 
-<a id='9d12b19d-9fe1-43be-af0d-d541efcdf5b7'></a>
+<a id='50314568-67c9-4f6d-ad38-5e5aa5a112d4'></a>
 ## Points
 A point is a natural number and always bounded by the interval [0,499]
 ### Point Classification
@@ -3171,7 +3171,7 @@ A point is a natural number and always bounded by the interval [0,499]
 
 <hr style="border:2px solid gray">
 
-<a id='84b09d60-6a99-437a-aa47-c2e5547bff3c'></a>
+<a id='4f7b6a94-207b-4549-a7f9-cf444957f20b'></a>
 # Walls
 ## Types
 * Reinforced Techno-Mesh (*RT*)
@@ -3195,28 +3195,6 @@ A point is a natural number and always bounded by the interval [0,499]
 		* 1000 Minerals
 		* 250 Uranium
 
-
-
-<hr style="border:2px solid gray">
-
-<a id='9435bc26-a059-4fbc-a49b-ccdaea3bf633'></a>
-# [Feature Name]
-
-## Overview
-[Non technical overview of feature]
-
-## Technologies used
-- Technology1
-- Technology2
-
-## Description
-[Technical description how the feature works]
-
-## Issues
-[Any issues you can face when using the feature]
-
-## Additional Information
-[Anything else you want to add]
 
 
 <hr style="border:2px solid gray">

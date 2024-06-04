@@ -1,74 +1,74 @@
 # Table of Contents
 - game_explanation
-	- [general_explanation](#339dea85-d386-41c6-a542-d21618b71d44)
-	- [armies](#ba4f1513-6c8e-4911-9cd5-ac4ad5c7be1c)
-	- [city_management](#d3342790-69b6-4542-9ffb-caca03efd9af)
-	- [fleets](#82303d8e-0565-4153-a9f4-e67be6a757b0)
-	- [planet_view](#5a5922bb-c970-4dc8-bfb7-83039ee0ee66)
-	- [scene_setting](#24376774-4247-4cf1-9e43-b2c4d11fe4ad)
-	- [trading](#1d46e28f-7e44-4faf-914c-c7e59f69eb4f)
-	- [user_experience](#db442a62-8416-488e-b664-525506189e0f)
-	- [user_interactions](#9c759c9c-ef0d-4864-ae3e-30f90d149414)
+	- [general_explanation](#18b7a36b-7633-41d4-b9ff-a86b0457f6d5)
+	- [armies](#facd9ab1-326a-4823-b719-049db0145986)
+	- [city_management](#5043d627-1a88-47e1-914b-cc97fadaa8ef)
+	- [fleets](#fa532347-fe49-4f04-b5c0-259bbb73511d)
+	- [planet_view](#3c96bbea-9aad-4128-9b2f-ac352549fae8)
+	- [scene_setting](#5b38f41a-e886-4add-ac6c-407e52132417)
+	- [trading](#c1ad2329-0ed5-4cfc-bb8e-17999271a27f)
+	- [user_experience](#57d5cb84-ad65-4849-ae97-01542a765d4e)
+	- [user_interactions](#fd665b2b-88a8-484b-8f68-ae1738d110e8)
 - backend
-	- [army_combat](#8e628208-631f-41de-98f0-97fef716b480)
-	- [authentication](#00a151e9-d72d-491b-a7e1-483f0d9588d1)
-	- [backend_structure](#be1d9a14-c66a-42f2-a2e3-5120ca9e02be)
-	- [config](#d6e5c883-de1e-4a46-b947-9c97edee81bf)
-	- [database_access](#f933743a-e30f-42d3-939a-70222922b049)
-	- [database_connection](#9896ecd6-5195-454a-87d0-169a0370ce12)
-	- [database_model](#86694db2-9078-425d-b90a-24f56b013c5e)
-	- [endpoints](#d16907d9-37b3-43c3-8ad1-c658eac8803b)
-	- [general_modifiers](#399af4e0-4948-4b31-a7ec-1f1bb83e9fc8)
-	- [global_ws](#e1252886-5549-4a6d-b794-e1df8513ac36)
-	- [logging](#258ee5c9-b7a2-4134-9de8-d6b338f1626e)
-	- [maintenance](#76310ffa-6393-4270-9dab-492f2741fb45)
-	- [planet_generation](#7d279bc9-c0b9-402a-a799-77fee3697d4c)
-	- [planet_name_gen](#9229c9a7-4f7b-4472-9b03-f49da130ff15)
-	- [planet_socket](#aa1cdd67-12af-48bf-91ab-46dd586fb7be)
-	- [snapshotter](#c53c7c73-73de-404b-b306-b4ad9c2b94a8)
-	- [spawn](#7a09ed8f-338b-458b-b9c3-c969e8a49f05)
-	- [testing_setup](#f2738260-613d-4ea2-a8dd-1a3227ca0765)
-	- [trading](#fa47e3bc-197e-4c8a-8b21-73adbe9cdfe6)
-	- [training_units](#02649846-19c5-4a54-b0b9-76561d100f93)
-	- [websockets](#9294361b-1fdb-42b0-b794-0cf63934dcea)
+	- [army_combat](#e67d0108-2f60-421e-952c-b054d94d2244)
+	- [authentication](#4c295707-becb-4c0a-849f-7dd4153ed36a)
+	- [backend_structure](#70c02231-4131-4e60-878f-d07d63c025bb)
+	- [config](#1d939043-98d8-406c-8bf9-fc00e6394e2a)
+	- [database_access](#b07d34d0-63e4-4f4d-af8d-cc02fabb4a56)
+	- [database_connection](#3b5ecf9b-bb53-4ccc-ac18-639ec01b8edf)
+	- [database_model](#fead51bf-7eb6-4bfe-baa9-a70539be9cd6)
+	- [endpoints](#ec1710df-ce8f-43b9-b99c-935f84ea516c)
+	- [general_modifiers](#a0d24292-2cfc-4343-ba70-c11c304189a4)
+	- [global_ws](#76d5ee8f-3a8f-4451-a4b9-22cdd44bd2e0)
+	- [logging](#90c2847f-6a0e-4c92-8a17-da5b91135200)
+	- [maintenance](#ab0fff1d-73be-497e-8006-c0dbd33c3d0d)
+	- [planet_generation](#c0d79c86-2f95-472d-b9ba-bd00fe51d329)
+	- [planet_name_gen](#f9fc915d-29b5-4d4f-9fc5-3fed393945af)
+	- [planet_socket](#46ab24d9-4ca7-4803-ac0e-ffaceaabd567)
+	- [snapshotter](#47a76b2e-8fea-46db-b310-b21ee30edce7)
+	- [spawn](#c29ecacb-d84d-4091-9cd1-046b0eeb9552)
+	- [testing_setup](#3bdd28a7-becc-4dea-8b68-a9f46c9e3249)
+	- [trading](#5a83a534-3411-4b51-8179-a482ec6758e3)
+	- [training_units](#b855437f-3794-4cc7-a580-4d377bacba3a)
+	- [websockets](#622796eb-14ed-4b22-afe5-a2986eef079e)
 - frontend
-	- [army_movement](#06b1e1c5-8b35-4138-a6dc-74fe2398d71a)
-	- [army_viewer](#75dfd107-e958-4b39-993a-08151b520f31)
-	- [chat_menu](#4de353d1-75d5-44e3-b9f1-b7ffec32a9a7)
-	- [city_viewer](#9cdc34b5-98e6-4f45-8894-98ecbc017535)
-	- [combat_notifications](#27ed3d46-7712-47c8-90d2-80463b587d35)
-	- [fleets](#e5387019-ebdf-4730-b502-035a32eb5c4d)
-	- [galaxy_viewer](#b8501cc7-d0c0-4984-bae8-8ebd71973a61)
-	- [general_view](#f8a10c3f-dbca-491f-a133-94591d7bf138)
-	- [hidden_windows_viewer](#280cf087-4d69-4097-a4b6-3e81eab187f3)
-	- [login](#42973491-c0e7-4175-99b9-fd9b92814424)
-	- [planet_viewer](#2ee1e4a6-7120-42f3-ac9f-993e1d0ac43e)
-	- [planet_visualisation](#df3cf30c-1e41-4f43-b96c-1411b5df9ede)
-	- [politics_menu](#3035f6ba-49f4-4a3e-a794-40a709ad274b)
-	- [profile_viewer](#edd6d10b-965b-4515-841c-c6f236f3785c)
-	- [resource_viewer](#ad00bd84-6451-4a1a-a949-7ba11966d8d5)
-	- [settings](#251e5841-009c-4852-b9bc-62facc9b0860)
-	- [sidemenu](#1fb0a93d-5b4a-4b84-b697-8cd4143ad428)
-	- [trading](#acb66510-e674-48df-bcd6-dfdf5671176b)
-	- [training_viewer](#0e1ac9b0-1e62-419e-82b8-c726e9f10353)
-	- [window_ui](#80470438-4a77-4954-a12e-8bf71c9aa1af)
+	- [army_movement](#c45fc3d7-c110-4a49-b174-052a1d311c4a)
+	- [army_viewer](#a1d293d2-8a70-44d3-9adf-e7933c197d54)
+	- [chat_menu](#92679c4f-8eba-41fc-af80-116c6f300d3d)
+	- [city_viewer](#bfe64270-36a0-40b1-9b04-72bf8e94ef25)
+	- [combat_notifications](#0ad1ba65-9881-46fb-b82b-d893403631e9)
+	- [fleets](#18dd129b-9d36-4174-a392-e6e49ae3c5f3)
+	- [galaxy_viewer](#1ff95264-662a-49e1-9039-f8d63441930c)
+	- [general_view](#c0429f16-4a87-4d00-8132-0104c553326c)
+	- [hidden_windows_viewer](#22839320-7145-41af-a0ae-4bb2a5c2eb8d)
+	- [login](#f494a6bc-7d62-4156-8608-dd79276d4424)
+	- [planet_viewer](#0249aa3f-1db2-452d-be0a-2c809c5a6774)
+	- [planet_visualisation](#d2939b17-4b4a-478f-97a7-7cb909904d7e)
+	- [politics_menu](#b9f72a49-6007-49ad-991c-8f1e74c870a3)
+	- [profile_viewer](#792143cf-2b99-4575-a2a5-356719bd7756)
+	- [resource_viewer](#7611e5bc-d28c-4691-808c-affc469405c4)
+	- [settings](#bf00a4ef-d141-46a6-aff0-8da87b9d52a2)
+	- [sidemenu](#98156f25-e78b-4834-b694-ba09cb4d7bc6)
+	- [trading](#eca118d1-b83a-4ac3-b5d3-60878713f463)
+	- [training_viewer](#9c6a008c-4660-497b-a715-22605fd9d4cb)
+	- [window_ui](#9b429f85-a211-406b-b524-612b12a25536)
 - game_mechanics
-	- [army_combat](#be602d32-9fc2-47f1-9cff-e9b67fafc937)
-	- [buildings_productions](#b2e07711-c2f0-4dfb-81be-4ffdf545b937)
-	- [city_construction_and_expansion](#2cb05002-fa20-4bfe-9a15-b632c337f10e)
-	- [generals](#746b8856-c960-4617-bafb-839c6fd85c19)
-	- [maintenance_cost](#4f643178-0498-494a-b3a5-b038f191fcbc)
-	- [planets_regions](#51ed9bf5-68c4-41c7-8eb9-5d610312da25)
-	- [politics](#a0db1a47-8be0-4cf9-a8be-936632873c93)
-	- [resource_types](#f6d5ce08-371c-4dfd-a735-d0d6a26f6fe8)
-	- [tower_types](#2de944d2-dd73-4548-a8b9-4ed0270358d8)
-	- [unit_types](#50314568-67c9-4f6d-ad38-5e5aa5a112d4)
-	- [wall_types](#4f7b6a94-207b-4549-a7f9-cf444957f20b)
+	- [army_combat](#f5114719-799e-426a-8f11-53ebaf2f0f84)
+	- [buildings_productions](#76d5376c-15a1-4d5a-90de-6fe895a2f803)
+	- [city_construction_and_expansion](#e823313f-cca5-4630-9065-fdf8a45111a6)
+	- [generals](#1e26b5b8-0216-4669-85eb-57b27c0339ee)
+	- [maintenance_cost](#81031a60-1747-4726-816d-8853e0003955)
+	- [planets_regions](#68bc00e5-246e-4992-8c0f-d660b6941d7a)
+	- [politics](#812e883a-c29d-4cdc-af2d-28644466725a)
+	- [resource_types](#e1e05284-4a61-4a88-ac53-27fa60dcde4d)
+	- [tower_types](#246c248e-cf8e-4a14-aaa2-a55908d27ae1)
+	- [unit_types](#170d03ad-bf45-4c80-bc92-4f632cdb3197)
+	- [wall_types](#b252e81d-a2b5-49d7-84b0-13f0995cfa59)
 
 
 <hr style="border:2px solid gray">
 
-<a id='339dea85-d386-41c6-a542-d21618b71d44'></a>
+<a id='18b7a36b-7633-41d4-b9ff-a86b0457f6d5'></a>
 # Solarin
 Our game is an IDLE strategy game. The user playing our game will control a space civilization of an alien race.
 Cities will be founded, and armies will be raised. Users will be able to fight each other using these armies, and try to conquer 
@@ -244,7 +244,7 @@ training of troops
 
 <hr style="border:2px solid gray">
 
-<a id='ba4f1513-6c8e-4911-9cd5-ac4ad5c7be1c'></a>
+<a id='facd9ab1-326a-4823-b719-049db0145986'></a>
 # Armies
 Controlling armies is a vital part of our strategy game
 <br>![alt text](./images/army_details.png)
@@ -284,7 +284,7 @@ Fleets, which are armies with at least one mothership unit,  are just like armie
 
 <hr style="border:2px solid gray">
 
-<a id='d3342790-69b6-4542-9ffb-caca03efd9af'></a>
+<a id='5043d627-1a88-47e1-914b-cc97fadaa8ef'></a>
 # City Management
 
 When you click on a city you own, the following menu appears:
@@ -339,7 +339,7 @@ Pressing the 'Upgrade City' button starts the process of upgrading the city to t
 
 <hr style="border:2px solid gray">
 
-<a id='82303d8e-0565-4153-a9f4-e67be6a757b0'></a>
+<a id='fa532347-fe49-4f04-b5c0-259bbb73511d'></a>
 # Fleets 
 <br>![alt text](./images/fleet.png)
 Fleets, which are armies with at least one mothership unit,  are just like armies in terms of combat, merging, moving, viewing stats, etc... (See /game_explanation/armies).
@@ -355,7 +355,7 @@ In order for a fleet or multiple fleets to exit a planet, the user must click th
 
 <hr style="border:2px solid gray">
 
-<a id='5a5922bb-c970-4dc8-bfb7-83039ee0ee66'></a>
+<a id='3c96bbea-9aad-4128-9b2f-ac352549fae8'></a>
 # PlanetView
 
 The view of a planet looks something like the image below:
@@ -373,7 +373,7 @@ takes some time, so you might not see this visually.
 
 <hr style="border:2px solid gray">
 
-<a id='24376774-4247-4cf1-9e43-b2c4d11fe4ad'></a>
+<a id='5b38f41a-e886-4add-ac6c-407e52132417'></a>
 # Scene Setting
 The game takes place in the future where technologically advanced societies, 
 both human and alien, have expanded beyond their home planet and have started colonizing new ones. 
@@ -386,7 +386,7 @@ All in the hopes of one day becoming one of the greatest civilizations in histor
 
 <hr style="border:2px solid gray">
 
-<a id='1d46e28f-7e44-4faf-914c-c7e59f69eb4f'></a>
+<a id='c1ad2329-0ed5-4cfc-bb8e-17999271a27f'></a>
 # Trading
 
 Trading between users is a vitale part of improving the strategy component behind our game
@@ -423,7 +423,7 @@ update for all users in that alliance, that have opened the menu.
 
 <hr style="border:2px solid gray">
 
-<a id='db442a62-8416-488e-b664-525506189e0f'></a>
+<a id='57d5cb84-ad65-4849-ae97-01542a765d4e'></a>
 # User experience
 
 We allow users to grow their civilization by conquest and colonization. Cities can contain buildings that can be upgraded by the user for a certain price (in resources). The upgrades will improve certain things about the building or give access to new things (producing more, training new kinds of units, ...). The thrill of conquering the settlements of other players and the fear of losing your own will encourage players to check the game frequently.  The game mechanics with regards to battles are the following: Both armies and cities have battle values (attack, defense, ...) deciding how strong they are in battle. An army its battle values will depend on the troops inside its army. Each type of troop will influence these values differently. Players will be able to strategize about their army composition. Some troops will cause a larger increase in attack and others increase the army their speed and so on. Armies can attack cities and also other armies that are present on the same planet. Cities will also have battle values by building/upgrading towers and walls. Armies can also be stationed inside a city to help defend against invading armies.   
@@ -471,7 +471,7 @@ Other features like Generals, Trading, etc. will give players the opportunity to
 
 <hr style="border:2px solid gray">
 
-<a id='9c759c9c-ef0d-4864-ae3e-30f90d149414'></a>
+<a id='fd665b2b-88a8-484b-8f68-ae1738d110e8'></a>
 # Interactions
 
 Users will control a space civilization managing its cities and navigating its armies.   
@@ -497,7 +497,7 @@ In addition, we are also looking at some form of trading resources between playe
 
 <hr style="border:2px solid gray">
 
-<a id='8e628208-631f-41de-98f0-97fef716b480'></a>
+<a id='e67d0108-2f60-421e-952c-b054d94d2244'></a>
 # Army Combat
 
 ## Overview
@@ -536,7 +536,7 @@ All the on Arrive event handeling occurs in 'ArriveCheck', this will make sure t
 
 <hr style="border:2px solid gray">
 
-<a id='00a151e9-d72d-491b-a7e1-483f0d9588d1'></a>
+<a id='4c295707-becb-4c0a-849f-7dd4153ed36a'></a>
 # OAuth2 with Password (and hashing), Bearer with JWT tokens
 
 ## Overview
@@ -589,7 +589,7 @@ For adding a user, sqlalchemy will try to insert a user to the table. If this fa
 
 <hr style="border:2px solid gray">
 
-<a id='be1d9a14-c66a-42f2-a2e3-5120ca9e02be'></a>
+<a id='70c02231-4131-4e60-878f-d07d63c025bb'></a>
 # Backend Structure
 
 ## Overview
@@ -631,7 +631,7 @@ Our backend file structure is completely in the 'backend' directory
 
 <hr style="border:2px solid gray">
 
-<a id='d6e5c883-de1e-4a46-b947-9c97edee81bf'></a>
+<a id='1d939043-98d8-406c-8bf9-fc00e6394e2a'></a>
 # Config
 
 ## Overview
@@ -671,7 +671,7 @@ You can load a config from many different source types:
 
 <hr style="border:2px solid gray">
 
-<a id='f933743a-e30f-42d3-939a-70222922b049'></a>
+<a id='b07d34d0-63e4-4f4d-af8d-cc02fabb4a56'></a>
 # Database access
 
 ## Overview
@@ -740,7 +740,7 @@ use custom exceptions.
 
 <hr style="border:2px solid gray">
 
-<a id='9896ecd6-5195-454a-87d0-169a0370ce12'></a>
+<a id='3b5ecf9b-bb53-4ccc-ac18-639ec01b8edf'></a>
 # Database connection
 
 ## Overview
@@ -774,7 +774,7 @@ async def me(user_id: Annotated[UUID, Depends(get_my_id)], db=Depends(db.get_db)
 
 <hr style="border:2px solid gray">
 
-<a id='86694db2-9078-425d-b90a-24f56b013c5e'></a>
+<a id='fead51bf-7eb6-4bfe-baa9-a70539be9cd6'></a>
 # Database model
 
 ## Overview
@@ -944,7 +944,7 @@ These models are created in SQL Alchemy and are generated using alembic
 
 <hr style="border:2px solid gray">
 
-<a id='d16907d9-37b3-43c3-8ad1-c658eac8803b'></a>
+<a id='ec1710df-ce8f-43b9-b99c-935f84ea516c'></a>
 # Endpoints
 
 ## Overview
@@ -956,8 +956,6 @@ Explanation of what each endpoint does
 ## Endpoints
 Communication from frontend with the backend is done using the REST structure.
 We use an authentication token to identify the user who is communicating with the backend
-
-You can find our swagger at: `https://team6.ua-ppdb.me/api/docs`
 
 Our Endpoints are structured into multiple routers:
 
@@ -1140,7 +1138,7 @@ This router will handle the communication about Armies and their actions
 
 <hr style="border:2px solid gray">
 
-<a id='399af4e0-4948-4b31-a7ec-1f1bb83e9fc8'></a>
+<a id='a0d24292-2cfc-4343-ba70-c11c304189a4'></a>
 # general modifiers
 When we assign a general to an army, the army will receive certain bonuses.
 This is done with modifiers. Each general has a base modifier and this is also influenced by the political direction of the user.
@@ -1157,7 +1155,7 @@ Generals can also be unassigned directly from an army.
 
 <hr style="border:2px solid gray">
 
-<a id='e1252886-5549-4a6d-b794-e1df8513ac36'></a>
+<a id='76d5ee8f-3a8f-4451-a4b9-22cdd44bd2e0'></a>
 # Global Websocket Router
 
 ## Overview
@@ -1180,7 +1178,7 @@ This router can be extended to support other types of notifications or messages 
 
 <hr style="border:2px solid gray">
 
-<a id='258ee5c9-b7a2-4134-9de8-d6b338f1626e'></a>
+<a id='90c2847f-6a0e-4c92-8a17-da5b91135200'></a>
 # Logging
 
 ## Overview
@@ -1224,7 +1222,7 @@ Make sure the path parameter pointing to the directroy in which the logs need to
 
 <hr style="border:2px solid gray">
 
-<a id='76310ffa-6393-4270-9dab-492f2741fb45'></a>
+<a id='ab0fff1d-73be-497e-8006-c0dbd33c3d0d'></a>
 # Maintenance
 ## Overview
 Explanation how maintenance costs are checked and applied for cities and armies
@@ -1251,7 +1249,7 @@ all buildings in that city will be removed.
 
 <hr style="border:2px solid gray">
 
-<a id='7d279bc9-c0b9-402a-a799-77fee3697d4c'></a>
+<a id='c0d79c86-2f95-472d-b9ba-bd00fe51d329'></a>
 # Planet generation
 
 ## Overview
@@ -1282,7 +1280,7 @@ The radius for each planet is calculated using the Fibonacci sequence. The squar
 
 <hr style="border:2px solid gray">
 
-<a id='9229c9a7-4f7b-4472-9b03-f49da130ff15'></a>
+<a id='f9fc915d-29b5-4d4f-9fc5-3fed393945af'></a>
 # Random Planet Name Generation
 
 ## Overview
@@ -1301,7 +1299,7 @@ Function generate_planet_name() returns random line from planet_names.txt
 
 <hr style="border:2px solid gray">
 
-<a id='aa1cdd67-12af-48bf-91ab-46dd586fb7be'></a>
+<a id='46ab24d9-4ca7-4803-ac0e-ffaceaabd567'></a>
 # Planet socket
 
 ## Overview
@@ -1373,7 +1371,7 @@ current_y = y_diff * (current_time_diff / total_time_diff)
 
 <hr style="border:2px solid gray">
 
-<a id='c53c7c73-73de-404b-b306-b4ad9c2b94a8'></a>
+<a id='47a76b2e-8fea-46db-b310-b21ee30edce7'></a>
 # Snapshotter
 
 ## Overview
@@ -1402,7 +1400,7 @@ Snapshotter can be invoked from the command line with the following arguments:
 
 <hr style="border:2px solid gray">
 
-<a id='7a09ed8f-338b-458b-b9c3-c969e8a49f05'></a>
+<a id='c29ecacb-d84d-4091-9cd1-046b0eeb9552'></a>
 
 # Spawn router
 
@@ -1433,7 +1431,7 @@ I the system detects that the user is starting as a new player. That player will
 
 <hr style="border:2px solid gray">
 
-<a id='f2738260-613d-4ea2-a8dd-1a3227ca0765'></a>
+<a id='3bdd28a7-becc-4dea-8b68-a9f46c9e3249'></a>
 # Testing Setup
 
 ## Overview
@@ -1517,7 +1515,7 @@ jobs:  # Definition of jobs to be executed
 
 <hr style="border:2px solid gray">
 
-<a id='fa47e3bc-197e-4c8a-8b21-73adbe9cdfe6'></a>
+<a id='5a83a534-3411-4b51-8179-a482ec6758e3'></a>
 
 # Trading
 
@@ -1543,7 +1541,7 @@ These actions are done by calling tradeAccess Methods
 
 <hr style="border:2px solid gray">
 
-<a id='02649846-19c5-4a54-b0b9-76561d100f93'></a>
+<a id='b855437f-3794-4cc7-a580-4d377bacba3a'></a>
 # Training Units
 
 ## Overview
@@ -1573,7 +1571,7 @@ When a user sends a request to train units, first it will be checked if the user
 
 <hr style="border:2px solid gray">
 
-<a id='9294361b-1fdb-42b0-b794-0cf63934dcea'></a>
+<a id='622796eb-14ed-4b22-afe5-a2986eef079e'></a>
 # Websockets
 Sometimes we want to communicate with the front-end without that the frontend has send anything to the backend (for example live updating of incoming chat messages).
 To do this we use websockets. To make sure we can form 'pools' of people that would receive anything on a change (like an extra chat message in an alliance), we use
@@ -1583,7 +1581,7 @@ connection pools. When a user opens a websocket it will be assigned to a 'connec
 
 <hr style="border:2px solid gray">
 
-<a id='06b1e1c5-8b35-4138-a6dc-74fe2398d71a'></a>
+<a id='c45fc3d7-c110-4a49-b174-052a1d311c4a'></a>
 # Army Movement
 
 ## Overview
@@ -1610,7 +1608,7 @@ Depending on where the user clicks on the map, the army will move to this positi
 
 <hr style="border:2px solid gray">
 
-<a id='75dfd107-e958-4b39-993a-08151b520f31'></a>
+<a id='a1d293d2-8a70-44d3-9adf-e7933c197d54'></a>
 # Army Viewer
 
 ## Overview
@@ -1642,7 +1640,7 @@ The component offers functionalities too:
 
 <hr style="border:2px solid gray">
 
-<a id='4de353d1-75d5-44e3-b9f1-b7ffec32a9a7'></a>
+<a id='92679c4f-8eba-41fc-af80-116c6f300d3d'></a>
 # Chat Menu
 
 ## Overview
@@ -1781,7 +1779,7 @@ The Messages themselves are inside the component 'Message', which gives the mess
 
 <hr style="border:2px solid gray">
 
-<a id='9cdc34b5-98e6-4f45-8894-98ecbc017535'></a>
+<a id='bfe64270-36a0-40b1-9b04-72bf8e94ef25'></a>
 # CityViewer Documentation
 
 ## Overview
@@ -1831,7 +1829,7 @@ CityViewer is a crucial component that enhances user engagement by providing a v
 
 <hr style="border:2px solid gray">
 
-<a id='27ed3d46-7712-47c8-90d2-80463b587d35'></a>
+<a id='0ad1ba65-9881-46fb-b82b-d893403631e9'></a>
 # Combat Notifications
 
 When army combat occurred, when a user is online, we will display for a short time (5 seconds) a notification
@@ -1843,7 +1841,7 @@ did occur
 
 <hr style="border:2px solid gray">
 
-<a id='e5387019-ebdf-4730-b502-035a32eb5c4d'></a>
+<a id='18dd129b-9d36-4174-a392-e6e49ae3c5f3'></a>
 # Fleets
 
 ## Overview
@@ -1864,7 +1862,7 @@ Furthermore it is possible to also view stats of fleets just like armies on plan
 
 <hr style="border:2px solid gray">
 
-<a id='b8501cc7-d0c0-4984-bae8-8ebd71973a61'></a>
+<a id='1ff95264-662a-49e1-9039-f8d63441930c'></a>
 # Galaxy Viewer
 
 ## Overview
@@ -1893,7 +1891,7 @@ None
 
 <hr style="border:2px solid gray">
 
-<a id='f8a10c3f-dbca-491f-a133-94591d7bf138'></a>
+<a id='c0429f16-4a87-4d00-8132-0104c553326c'></a>
 # GeneralView
 
 When looking at the details of an army, we can also see information about the general of the army
@@ -1910,7 +1908,7 @@ on the political direction of the user. The second modifier gives an indication 
 
 <hr style="border:2px solid gray">
 
-<a id='280cf087-4d69-4097-a4b6-3e81eab187f3'></a>
+<a id='22839320-7145-41af-a0ae-4bb2a5c2eb8d'></a>
 # Hidden Windows Viewer
 
 ## Overview
@@ -1933,7 +1931,7 @@ When components are hidden we see the following:
 
 <hr style="border:2px solid gray">
 
-<a id='42973491-c0e7-4175-99b9-fd9b92814424'></a>
+<a id='f494a6bc-7d62-4156-8608-dd79276d4424'></a>
 # Login Page
 
 ## Overview
@@ -1966,7 +1964,7 @@ Of course, if the backend is down then the user will not be able to sign in or s
 
 <hr style="border:2px solid gray">
 
-<a id='2ee1e4a6-7120-42f3-ac9f-993e1d0ac43e'></a>
+<a id='0249aa3f-1db2-452d-be0a-2c809c5a6774'></a>
 # Planet Viewer
 
 ## Overview
@@ -1994,7 +1992,7 @@ None
 
 <hr style="border:2px solid gray">
 
-<a id='df3cf30c-1e41-4f43-b96c-1411b5df9ede'></a>
+<a id='d2939b17-4b4a-478f-97a7-7cb909904d7e'></a>
 # [Planet visulaisation - PlanetSVG]
 
 ## Overview
@@ -2013,7 +2011,7 @@ The frontend retrieves the region data. It scales all the region data to 1920x10
 
 <hr style="border:2px solid gray">
 
-<a id='3035f6ba-49f4-4a3e-a794-40a709ad274b'></a>
+<a id='b9f72a49-6007-49ad-991c-8f1e74c870a3'></a>
 # Politics menu
 
 ## Overview
@@ -2055,7 +2053,7 @@ This cost is shown in the top right above the button to enact a decision.
 
 <hr style="border:2px solid gray">
 
-<a id='edd6d10b-965b-4515-841c-c6f236f3785c'></a>
+<a id='792143cf-2b99-4575-a2a5-356719bd7756'></a>
 # Profile Viewer
 
 ## Overview
@@ -2082,7 +2080,7 @@ The same is for the armies category, but here it will display armies instead of 
 
 <hr style="border:2px solid gray">
 
-<a id='ad00bd84-6451-4a1a-a949-7ba11966d8d5'></a>
+<a id='7611e5bc-d28c-4691-808c-affc469405c4'></a>
 # Resource Viewer
 
 ## Overview
@@ -2107,7 +2105,7 @@ The profile window on the bottom-left corner renders component Resources to disp
 
 <hr style="border:2px solid gray">
 
-<a id='251e5841-009c-4852-b9bc-62facc9b0860'></a>
+<a id='bf00a4ef-d141-46a6-aff0-8da87b9d52a2'></a>
 # settings
 
 ## Overview
@@ -2141,7 +2139,7 @@ Like lack of a resource, and nobody wants to trade. In that case, the player can
 
 <hr style="border:2px solid gray">
 
-<a id='1fb0a93d-5b4a-4b84-b697-8cd4143ad428'></a>
+<a id='98156f25-e78b-4834-b694-ba09cb4d7bc6'></a>
 # Sidemenu
 
 ## Overview
@@ -2165,7 +2163,7 @@ None
 
 <hr style="border:2px solid gray">
 
-<a id='acb66510-e674-48df-bcd6-dfdf5671176b'></a>
+<a id='eca118d1-b83a-4ac3-b5d3-60878713f463'></a>
 # Trading
 
 ## Overview
@@ -2203,7 +2201,7 @@ trade a resource to both sides (can be done by just not trading).
 
 <hr style="border:2px solid gray">
 
-<a id='0e1ac9b0-1e62-419e-82b8-c726e9f10353'></a>
+<a id='9c6a008c-4660-497b-a715-22605fd9d4cb'></a>
 # training viewer
 
 ## Overview
@@ -2246,7 +2244,7 @@ for dynamically change the value based on the slider.
 
 <hr style="border:2px solid gray">
 
-<a id='80470438-4a77-4954-a12e-8bf71c9aa1af'></a>
+<a id='9b429f85-a211-406b-b524-612b12a25536'></a>
 # WindowUI
 
 ## Overview
@@ -2266,102 +2264,102 @@ By wrapping the desired component with WindowUI, the component will be draggable
 
 <hr style="border:2px solid gray">
 
-<a id='be602d32-9fc2-47f1-9cff-e9b67fafc937'></a>
+<a id='f5114719-799e-426a-8f11-53ebaf2f0f84'></a>
 # Army Combat 
 
 During army combat the winner will be determined by a formula
 
 * Unit strength
 	
-	* For calculating the strength of an army the following formula is used: $\text{strength(unit)}=\dfrac{\text{rank(unit)}\cdot\text{mean(P)}}{250}$
-        * $\text{P} = ( \text{AP, DP, ..., CDP})$
-        * Take into account city defense and defense will be scaled by a weight so the resulting $final defense = w*city_defense*(1-w)*defense$. This is so we their is a difference (with regards to stats) between fighting between armies and fighting in a city. The same counts for attack and city attack.
+	* For calculating the strength of an army the following formula is used: $$\text{strength(unit)}=\dfrac{\text{rank(unit)}\cdot\text{mean(P)}}{250}$$
+        * $$\text{P} = ( \text{AP, DP, ..., CDP})$$
+        * Take into account city defense and defense will be scaled by a weight so the resulting $$final defense = w*city_defense*(1-w)*defense$$. This is so we their is a difference (with regards to stats) between fighting between armies and fighting in a city. The same counts for attack and city attack.
         * Recovery is scaled by a modifier < 1, to make sure that the 'recovery' stat does not influence too much of the battle outcome.
-    *  $\text{cityStrength(unit)}=\dfrac{\text{rank(unit)}\cdot\text{mean(CW(P))}}{250}$
-		* $\text{CW(P)} = ( \text{CW(AP), CW(DP), ..., CW(CDP)})$
-		* $\text{CW(point)} = \begin{cases}\text{point}\text{ if isCity(point)}=1\\(0.5\cdot\text{point})\text{ if isCity(point)}=0\end{cases}$
-			* Example: $\text{CW(CDP)}=\text{CDP},\text{CW(DP)}=0.5\cdot\text{DP}$
+    *  $$\text{cityStrength(unit)}=\dfrac{\text{rank(unit)}\cdot\text{mean(CW(P))}}{250}$$
+		* $$\text{CW(P)} = ( \text{CW(AP), CW(DP), ..., CW(CDP)})$$
+		* $$\text{CW(point)} = \begin{cases}\text{point}\text{ if isCity(point)}=1\\(0.5\cdot\text{point})\text{ if isCity(point)}=0\end{cases}$$
+			* Example: $$\text{CW(CDP)}=\text{CDP},\text{CW(DP)}=0.5\cdot\text{DP}$$
 * Army strength
-	* $\text{strength(army)}=\text{mean}(\text{strength(unit}_1),...,\text{strength(unit}_n))$ 
-	* $\text{cityStrength(army)}=\text{mean}(\text{cityStrength(unit}_1),...,\text{cityStrength(unit}_n))$ 
+	* $$\text{strength(army)}=\text{mean}(\text{strength(unit}_1),...,\text{strength(unit}_n))$$ 
+	* $$\text{cityStrength(army)}=\text{mean}(\text{cityStrength(unit}_1),...,\text{cityStrength(unit}_n))$$ 
 ## Battle 
 A battle is initiated when player 1 decides to attack player 2 by either directly attacking an army not stationed in a city or attacking the player's city.
 
 (*TODO*: add towers, turrets strength to cityBattle and give weights to attacking and defending)
-* $\text{battle}(\text{army}_1, \text{army}_2)=\text{max}\left[\text{rand}_1\cdot\text{strength}(\text{army}_1),\text{rand}_2\cdot\text{strength}(\text{army}_2)\right]$
-* $\text{cityBattle}(\text{army}_1, \text{army}_2)=\text{max}\left[\text{rand}_1\cdot\text{cityStrength}(\text{army}_1),\text{rand}_2\cdot\text{cityStrength}(\text{army}_2)\right]$
-* $\text{rand}_1, \text{rand}_2 \in \left[\frac{1}{2}, \frac{3}{2}\right] \sim N(1,0.1)$ 
+* $$\text{battle}(\text{army}_1, \text{army}_2)=\text{max}\left[\text{rand}_1\cdot\text{strength}(\text{army}_1),\text{rand}_2\cdot\text{strength}(\text{army}_2)\right]$$
+* $$\text{cityBattle}(\text{army}_1, \text{army}_2)=\text{max}\left[\text{rand}_1\cdot\text{cityStrength}(\text{army}_1),\text{rand}_2\cdot\text{cityStrength}(\text{army}_2)\right]$$
+* $$\text{rand}_1, \text{rand}_2 \in \left[\frac{1}{2}, \frac{3}{2}\right] \sim N(1,0.1)$$ 
 ## Post-Battle Recovery
 The Post-Battle Recovery gives information about how many troops are reamining after an attack.
 
 We define 2 ratio's:
 
-* $PBR ratio = \dfrac{\text{winning PBR}}{\text{losing PBR}}$
-* $strength ratio = \dfrac{\text{winning strength}}{\text{losing strength}}$ (This will almost always be > 1 (unless the random factor changes the outcome to much) )
+* $$PBR ratio = \dfrac{\text{winning PBR}}{\text{losing PBR}}$$
+* $$strength ratio = \dfrac{\text{winning strength}}{\text{losing strength}}$$ (This will almost always be > 1 (unless the random factor changes the outcome to much) )
 
 
-$\text{armySurvival} \in \left[0,1\right] \sim N(\text{PBR ratio}\cdot\left(1-\dfrac{1}{\text{strength ratio}}\right), 0.1)$ where $\left\lfloor\text{armySurvival}\cdot\text{numOfUnits(army)}\right\rceil$ is the number of units surviving after a battle.
+$$\text{armySurvival} \in \left[0,1\right] \sim N(\text{PBR ratio}\cdot\left(1-\dfrac{1}{\text{strength ratio}}\right), 0.1)$$ where $$\left\lfloor\text{armySurvival}\cdot\text{numOfUnits(army)}\right\rceil$$ is the number of units surviving after a battle.
 
 ## Army movement
 Armies can move between 2 positions, but it will take some time. The time needed will depend on the speed of an army
 The formula we use for calculating the duration is as follows:
 
-* $mapCrossTime = \dfrac{1000}{army speed}\cdot 3600$ (The 3600, just makes sure we have hours)
-* $duration =  mapCrossTime\cdot distance$
+* $$mapCrossTime = \dfrac{1000}{army speed}\cdot 3600$$ (The 3600, just makes sure we have hours)
+* $$duration =  mapCrossTime\cdot distance$$
 
 
 <hr style="border:2px solid gray">
 
-<a id='b2e07711-c2f0-4dfb-81be-4ffdf545b937'></a>
+<a id='76d5376c-15a1-4d5a-90de-6fe895a2f803'></a>
 # Buildings & Production
 ## General Production Cost (GPC)
 
-* Our base point bounds are currently $[0,499]$
-* Current choice of $\text{rate}=5$ (how fast we want the GPC to increase)
+* Our base point bounds are currently $$[0,499]$$
+* Current choice of $$\text{rate}=5$$ (how fast we want the GPC to increase)
 * Production price per item type:
-        * For product type tuple $\text{prod} = (b_1, ..., b_n)$:
-                * $b_i \in [l, u] \cap \mathbb{N}$ is $i$th base point of the product
-                * Each base point has lower and upper bound $l$ and $u$
-                * $\text{basePrice}(\text{prod})$ is a function getting the base price of $\text{prod}$
-                * $\text{GPC}(\text{prod})= \text{basePrice}(\text{prod}) \cdot{\left(\left\lfloor\dfrac{2\cdot\sum{b_i}}{n(l+u)}\right\rfloor\right)}^{\text{rate}}$ SOL
+        * For product type tuple $$\text{prod} = (b_1, ..., b_n)$$:
+                * $$b_i \in [l, u] \cap \mathbb{N}$$ is $$i$$th base point of the product
+                * Each base point has lower and upper bound $$l$$ and $$u$$
+                * $$\text{basePrice}(\text{prod})$$ is a function getting the base price of $$\text{prod}$$
+                * $$\text{GPC}(\text{prod})= \text{basePrice}(\text{prod}) \cdot{\left(\left\lfloor\dfrac{2\cdot\sum{b_i}}{n(l+u)}\right\rfloor\right)}^{\text{rate}}$$ SOL
                 * Example: production of a single land unit in the barracks:
-                        * $\text{GPC(unit)}= 50\left(\left\lfloor\dfrac{\text{AP+DP+...+MS}}{1497}\right \rfloor\right)^5$ SOL
+                        * $$\text{GPC(unit)}= 50\left(\left\lfloor\dfrac{\text{AP+DP+...+MS}}{1497}\right \rfloor\right)^5$$ SOL
                 * The currency type of GPC depends on the product type, therefore let's say the GPC is given in SOL (solarium) by default.
 ## Unit Stats Ranked
 Calculating the units their stats can easily be done using the getUnitStatsRanked function
-This function has the following formula: $base_value*grow_rate^level$
+This function has the following formula: $$base_value*grow_rate^level$$
 The grow_rate is configurable, by the developers. This should be greater than 1, to have the 
 wanted effect. This makes sure that the units become drastically stronger the higher rank (level) the get
 
 ## Unit Train Cost
-Units training costs are calculated using the following formula: $baseValue*growRate^{level}$
+Units training costs are calculated using the following formula: $$baseValue*growRate^{level}$$
 This grow_rate can differ from the grow rate used for calculating the Unit Stats
 
 ## General Upgrade Cost (GUC)
-* $\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1)}{2}\right\rfloor$ TF 
-	* $\text{level}$ is the current (pre-upgrade) level of the building
-	* $\text{CC}$ is the creation cost of the building
+* $$\text{GUC(building)} = \left\lfloor\dfrac{\text{CC}\cdot(\text{level}+1)}{2}\right\rfloor$$ TF 
+	* $$\text{level}$$ is the current (pre-upgrade) level of the building
+	* $$\text{CC}$$ is the creation cost of the building
 	* GUC and CC is given in Techforge (TF) currency by default
 
 ## General Upgrade Time (GUT)
-* $\left\lfloor \text{TFC} \times 1.15^{\text{level} + 1} \right\rfloor $
-	* $\text{level}$ is the current (pre-upgrade) level of the building
-	* $\text{TFC}$ is the Tech Forge cost for upgrading the building
+* $$\left\lfloor \text{TFC} \times 1.15^{\text{level} + 1} \right\rfloor $$
+	* $$\text{level}$$ is the current (pre-upgrade) level of the building
+	* $$\text{TFC}$$ is the Tech Forge cost for upgrading the building
 	* GUT is thus dependent on the TF cost, determined by using the GUC formula
 
 ## General Production Rate (GPR)
-* $\text{GPR(resource, building)}=\text{modifier(region, resource)} \cdot \text{baseRate(resource, building)}\cdot\text{level}^2 * (1+\text{Control Modifier(region, player)}*0.25)$ 
-	* $\text{baseRate(resource, building)}$ is the amount of the resource produced in a given building per minute
-	* $\text{modifier(region, resource)}$ is the modifier that is applied depending on the resource produced and the region where the building is located
-    * $\text{Control Modifier (region, player) is a bonus multiplier that applies when a player controls all building instances within a region. This is set at a fixed value of +25% if the player is in control of the region.}$
+* $$\text{GPR(resource, building)}=\text{modifier(region, resource)} \cdot \text{baseRate(resource, building)}\cdot\text{level}^2 * (1+\text{Control Modifier(region, player)}*0.25)$$ 
+	* $$\text{baseRate(resource, building)}$$ is the amount of the resource produced in a given building per minute
+	* $$\text{modifier(region, resource)}$$ is the modifier that is applied depending on the resource produced and the region where the building is located
+    * $$\text{Control Modifier (region, player) is a bonus multiplier that applies when a player controls all building instances within a region. This is set at a fixed value of +25% if the player is in control of the region.}$$
 
 ## Building Types
 A building can generally be upgraded up to level 10.
-The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
+The capacity of a building is $$\text{baseCapacity}\cdot\text{level}$$
 * Barracks
 	* For training land units
-		* $\text{basePrice}(\text{unit}) = 50$ SOL
-		* $\text{baseCapacity(unit, barracks)}=20$
+		* $$\text{basePrice}(\text{unit}) = 50$$ SOL
+		* $$\text{baseCapacity(unit, barracks)}=20$$
 	* Creation Cost:
 		* 550 TF
 		* 100 POP
@@ -2369,8 +2367,8 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 	* Training time will depend on the unit type
 * Space Dock
 	* For training space units 
-		* $\text{basePrice}(\text{spaceUnit}) = 100$ SOL
-		* $\text{baseCapacity(spaceUnit, spaceDock)}=30$
+		* $$\text{basePrice}(\text{spaceUnit}) = 100$$ SOL
+		* $$\text{baseCapacity(spaceUnit, spaceDock)}=30$$
   	* Creation Cost:
 		* 1250 TF 
 		* 1000 Coal
@@ -2381,11 +2379,11 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 * Nexus
 	* Produces: 
 		* *Solarium (SOL)*
-			* $\text{baseRate(SOL, nexus)}=600$
-			* $\text{baseCapacity(SOL, nexus)}=5000$
+			* $$\text{baseRate(SOL, nexus)}=600$$
+			* $$\text{baseCapacity(SOL, nexus)}=5000$$
 		* *Techforge (TF)*
-			* $\text{baseRate(TF, nexus)}=400$
-			* $\text{baseCapacity(TF, nexus)}=5000$
+			* $$\text{baseRate(TF, nexus)}=400$$
+			* $$\text{baseCapacity(TF, nexus)}=5000$$
 	* Creation Cost:
 		* 6500 TF
   		* 500 Uranium
@@ -2393,16 +2391,16 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 	* The player begins with a free *Nexus*
 * Farmpod
 	* Produces *Rations (RA)*
-		* $\text{baseRate(RA, farmpod)}=300$
-		* $\text{baseCapacity(RA, farmpod)}=5000$
+		* $$\text{baseRate(RA, farmpod)}=300$$
+		* $$\text{baseCapacity(RA, farmpod)}=5000$$
 	* Creation Cost:
  		* 1200 TF
    		* 250 Minerals
      		* 50 Solarium 
 * Cloning Chamber
 	* Produces *Population (POP)*
-		* $\text{baseRate(POP, cloningChamber)}=150$
-		* $\text{baseCapacity(POP, cloningChamber)}=1000$
+		* $$\text{baseRate(POP, cloningChamber)}=150$$
+		* $$\text{baseCapacity(POP, cloningChamber)}=1000$$
 	* Creation Cost
 		* 1500 TF
  	 	* 1000 Rations
@@ -2411,19 +2409,19 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 * Extractor
 	* Produces:
 		* *Minerals*
-			* $\text{baseRate(minerals, extractor)}=500$
-			* $\text{baseCapacity(minerals, extractor)}=1500$
+			* $$\text{baseRate(minerals, extractor)}=500$$
+			* $$\text{baseCapacity(minerals, extractor)}=1500$$
 		* *Oil*
-			* $\text{baseRate(oil, extractor)}=500$
-			* $\text{baseCapacity(oil, extractor)}=1500$
+			* $$\text{baseRate(oil, extractor)}=500$$
+			* $$\text{baseCapacity(oil, extractor)}=1500$$
 	* Creation Cost:
 		* 3000 TF
   		* 150 Solarium
     		* 500 Coal
 * Reactor
 	* Produces *Uranium*
-		* $\text{baseRate(uranium, extractor))}=100$
-		* $\text{baseCapacity(uranium, extractor)}=550$
+		* $$\text{baseRate(uranium, extractor))}=100$$
+		* $$\text{baseCapacity(uranium, extractor)}=550$$
 	* Creation Cost:
 		* 10000 TF
   		* 250 Solarium
@@ -2431,8 +2429,8 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
   
 * Oil Pump
 	* Produces *Oil*
-		* $\text{baseRate(oil, oil pump))}=400$
-		* $\text{baseCapacit(yoil, oil pump)}=1600$
+		* $$\text{baseRate(oil, oil pump))}=400$$
+		* $$\text{baseCapacit(yoil, oil pump)}=1600$$
 	* Creation Cost:
 		* 3500 TF
   		* 50 Solarium
@@ -2440,57 +2438,57 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
       
 * Parlement
 	* Produces *Influence*
-		* $\text{baseRate(influence, parlement))}=100$
-		* $\text{baseCapacity(influence, parlement)}=200$
+		* $$\text{baseRate(influence, parlement))}=100$$
+		* $$\text{baseCapacity(influence, parlement)}=200$$
 	* Creation Cost:
 		* 1500 TF
   		* 25 Solarium
 
 * Solar Generator
 	* Produces *SOL*
-		* $\text{baseRate(SOL, solar generator))}=700$
-		* $\text{baseCapacity(SOL, solar generator)}=5000$
+		* $$\text{baseRate(SOL, solar generator))}=700$$
+		* $$\text{baseCapacity(SOL, solar generator)}=5000$$
 	* Creation Cost:
 		* 6800 TF
   		* 500 Coal
  
 * Material Lab
 	* Produces *TF*
-		* $\text{baseRate(TF, material lab))}=700$
-		* $\text{baseCapacity(TF, material lab)}=6000$
+		* $$\text{baseRate(TF, material lab))}=700$$
+		* $$\text{baseCapacity(TF, material lab)}=6000$$
 	* Creation Cost:
 		* 9000 TF
   		* 150 Solarium
  
 * Plant Growth Accelerator
 	* Produces *RA*
-		* $\text{baseRate(RA, plant growth accelerator))}=1500$
-		* $\text{baseCapacity(RA, plant growth accelerator)}=10000$
+		* $$\text{baseRate(RA, plant growth accelerator))}=1500$$
+		* $$\text{baseCapacity(RA, plant growth accelerator)}=10000$$
 	* Creation Cost:
 		* 15000 TF
   		* 250 Uranium
  
 * Electric Mine
 	* Produces *Minerals*
-		* $\text{baseRate(Minerals, electric mine))}=800$
-		* $\text{baseCapacity(Minerals, electric mine)}=10000$
+		* $$\text{baseRate(Minerals, electric mine))}=800$$
+		* $$\text{baseCapacity(Minerals, electric mine)}=10000$$
     * Produces *Coal*
-		* $\text{baseRate(Coal, electric mine))}=200$
-		* $\text{baseCapacity(Coal, electric mine)}=7000$
+		* $$\text{baseRate(Coal, electric mine))}=200$$
+		* $$\text{baseCapacity(Coal, electric mine)}=7000$$
     * Produces *Oil*
-		* $\text{baseRate(Oil, electric mine))}=30$
-		* $\text{baseCapacity(Oil, electric mine)}=300$
+		* $$\text{baseRate(Oil, electric mine))}=30$$
+		* $$\text{baseCapacity(Oil, electric mine)}=300$$
 	* Creation Cost:
 		* 9000 TF
   		* 100 Solarium
  
 * Solar Lab
     * Produces *TF*
-        * $\text{baseRate(TF, material lab))}=100$
-        * $\text{baseCapacity(TF, material lab)}=600$
+        * $$\text{baseRate(TF, material lab))}=100$$
+        * $$\text{baseCapacity(TF, material lab)}=600$$
     * Produces *SOL*
-        * $\text{baseRate(TF, material lab))}=500$
-        * $\text{baseCapacity(TF, material lab)}=4000$
+        * $$\text{baseRate(TF, material lab))}=500$$
+        * $$\text{baseCapacity(TF, material lab)}=4000$$
     * Creation Cost:
         * 7000 TF
         * 500 Minerals
@@ -2499,7 +2497,7 @@ The capacity of a building is $\text{baseCapacity}\cdot\text{level}$
 
 <hr style="border:2px solid gray">
 
-<a id='2cb05002-fa20-4bfe-9a15-b632c337f10e'></a>
+<a id='e823313f-cca5-4630-9065-fdf8a45111a6'></a>
 # City Construction and Expansion
 
 In the dynamic world of our game, players are tasked with the crucial role of constructing and expanding their own cities. This process is not only about growing a city in size but also about strategic planning and resource management to ensure sustainable development and progress.
@@ -2552,7 +2550,7 @@ This formula balances simplicity with strategic depth, making it suitable for ga
 
 <hr style="border:2px solid gray">
 
-<a id='746b8856-c960-4617-bafb-839c6fd85c19'></a>
+<a id='1e26b5b8-0216-4669-85eb-57b27c0339ee'></a>
 # Generals
 Generals can be assigned to an army to give an army some bonuses.
 Generals are named after emotions/ behaviour attributes.
@@ -2627,7 +2625,7 @@ We have the following generals:
 
 <hr style="border:2px solid gray">
 
-<a id='4f643178-0498-494a-b3a5-b038f191fcbc'></a>
+<a id='81031a60-1747-4726-816d-8853e0003955'></a>
 # Maintenance Cost
 Both Cities and armies will have maintenance cost.
 The end user will never directly receive information about the maintenance cost,
@@ -2712,214 +2710,214 @@ For troops:
 
 <hr style="border:2px solid gray">
 
-<a id='51ed9bf5-68c4-41c7-8eb9-5d610312da25'></a>
+<a id='68bc00e5-246e-4992-8c0f-d660b6941d7a'></a>
 # Planets & Regions
 ## Regions
-$\text{modifier(region, subject) = x}$
-* $x \in \mathbb{R}^+$
+$$\text{modifier(region, subject) = x}$$
+* $$x \in \mathbb{R}^+$$
 ### Region Types
 * Arctic Region
 	* A cold region with snow.
 	* Common Resources:
 		* Coal
-			* $\text{modifier(arctic, coal) = 1.2}$
+			* $$\text{modifier(arctic, coal) = 1.2}$$
 		* Minerals 
-			* $\text{modifier(arctic, minerals) = 1.3}$
+			* $$\text{modifier(arctic, minerals) = 1.3}$$
 	* Uncommon Resources:
 		* Oil
-			* $\text{modifier(arctic, oil) = 0.8}$
+			* $$\text{modifier(arctic, oil) = 0.8}$$
         * Rations
-            * $\text{modifier(arctic, minerals) = 0.6}$
+            * $$\text{modifier(arctic, minerals) = 0.6}$$
 * Polar Region
 	* A very cold region with snow.
 	* Common Resources:
 		* Coal
-			* $\text{modifier(Polar, coal) = 0.8}$
+			* $$\text{modifier(Polar, coal) = 0.8}$$
 		* Minerals 
-			* $\text{modifier(Polar, minerals) = 1.4}$
+			* $$\text{modifier(Polar, minerals) = 1.4}$$
 	* Uncommon Resources:
 		* Oil
-			* $\text{modifier(Polar, oil) = 0.5}$
+			* $$\text{modifier(Polar, oil) = 0.5}$$
         * Rations
-            * $\text{modifier(Polar, RA) = 0.8}$
+            * $$\text{modifier(Polar, RA) = 0.8}$$
         
 * Desert Region:
 	* A very hot region with desert.
 	* Common Resources:
   		* Solarium
-			* $\text{modifier(desert, solarium) = 1.1}$
+			* $$\text{modifier(desert, solarium) = 1.1}$$
 		* Oil
-			* $\text{modifier(desert, oil) = 1.4}$
+			* $$\text{modifier(desert, oil) = 1.4}$$
 		* Uranium
-			* $\text{modifier(desert, uranium) = 1.2}$
+			* $$\text{modifier(desert, uranium) = 1.2}$$
 	* Uncommon resources:
 		* Techforge
-			* $\text{modifier(desert, TF) = 0.8}$
+			* $$\text{modifier(desert, TF) = 0.8}$$
         * Rations
-            * $\text{modifier(desert, RA) = 0.5}$
+            * $$\text{modifier(desert, RA) = 0.5}$$
 * Alpine Region:
 	* A region with a lot of mountains.
 	* Common Resources:
 		* Minerals
-			* $\text{modifier(alpine, minerals) = 1.4}$
+			* $$\text{modifier(alpine, minerals) = 1.4}$$
 		* Techforge
-			* $\text{modifier(alpine, TF) = 1.2}$
+			* $$\text{modifier(alpine, TF) = 1.2}$$
 	* Uncommon Resources:
 		* Uranium
-			* $\text{modifier(alpine, uranium) = 0.8}$
+			* $$\text{modifier(alpine, uranium) = 0.8}$$
         * Rations
-            * $\text{modifier(alpine, RA) = 0.9}$
+            * $$\text{modifier(alpine, RA) = 0.9}$$
 * Plain Region:
 	* A generally treeless, flat region.
 	* Common Resources:
 		* Rations
-			* $\text{modifier(plain, RA) = 1.6}$
+			* $$\text{modifier(plain, RA) = 1.6}$$
 		* Coal
-			* $\text{modifier(plain, coal) = 1.1}$
+			* $$\text{modifier(plain, coal) = 1.1}$$
 	* Uncommon Resources:
 		* Techforge
-			* $\text{modifier(plain, TF) = 0.8}$
+			* $$\text{modifier(plain, TF) = 0.8}$$
 * Taiga Region:
 	* A region filled with aggregation common for cold regions
 	* Common Resources:
 		* Techforge
-			* $\text{modifier(taiga, TF) = 1.5}$
+			* $$\text{modifier(taiga, TF) = 1.5}$$
 	* Uncommon Resources:
         * Oil
-            * $\text{modifier(taiga, oil) = 0.8}$
+            * $$\text{modifier(taiga, oil) = 0.8}$$
         * Rations
-            * $\text{modifier(taiga, RA) = 0.7}$
+            * $$\text{modifier(taiga, RA) = 0.7}$$
         * Uranium
-			* $\text{modifier(taiga, uranium) = 1.3}$
+			* $$\text{modifier(taiga, uranium) = 1.3}$$
 * Savannah Region:
 	* Long stretching plains in a hot climate, with barely any trees
 	* Common Resources:
 		* Techforge
-			* $\text{modifier(savannah, TF) = 1.05}$
+			* $$\text{modifier(savannah, TF) = 1.05}$$
         * Solarium
-			* $\text{modifier(savannah, SOL) = 1.1}$
+			* $$\text{modifier(savannah, SOL) = 1.1}$$
 	* Uncommon Resources:
         * Oil
-            * $\text{modifier(savannah, oil) = 0.8}$
+            * $$\text{modifier(savannah, oil) = 0.8}$$
         * Rations
-            * $\text{modifier(savannah, RA) = 0.7}$
+            * $$\text{modifier(savannah, RA) = 0.7}$$
         * Uranium
-			* $\text{modifier(savannah, uranium) = 0.4}$
+			* $$\text{modifier(savannah, uranium) = 0.4}$$
 * Steppe Region:
     * regions covered with dry grass
 	* Common Resources:
 		* Rations
-            * $\text{modifier(steppe, RA) = 1.3}$
+            * $$\text{modifier(steppe, RA) = 1.3}$$
         
 	* Uncommon Resources:
   		* Solarium
-			* $\text{modifier(steppe, SOL) = 0.9}$
+			* $$\text{modifier(steppe, SOL) = 0.9}$$
         * Uranium
-			* $\text{modifier(steppe, uranium) = 0.7}$
+			* $$\text{modifier(steppe, uranium) = 0.7}$$
       
 * Rainforest Region:
     * region filled with large trees, in these regions there is a lot of rainfall 
 	* Common Resources:
 		* Rations
-            * $\text{modifier(rainforest, RA) = 1.8}$
+            * $$\text{modifier(rainforest, RA) = 1.8}$$
         * Minerals
-			* $\text{modifier(rainforest, minerals) = 1.2}$
+			* $$\text{modifier(rainforest, minerals) = 1.2}$$
 	* Uncommon Resources:
         * Uranium
-			* $\text{modifier(rainforest, uranium) = 0.7}$
+			* $$\text{modifier(rainforest, uranium) = 0.7}$$
         * Oil
-            * $\text{modifier(rainforest, oil) = 0.5}$
+            * $$\text{modifier(rainforest, oil) = 0.5}$$
         * Techforge
-			* $\text{modifier(rainforest, TF) = 0.6}$
+			* $$\text{modifier(rainforest, TF) = 0.6}$$
         * Solarium
-			* $\text{modifier(rainforest, SOL) = 0.7}$
+			* $$\text{modifier(rainforest, SOL) = 0.7}$$
 * Coast Region:
     * region which has some water near/in it
 	* Common Resources:
 		* Rations
-            * $\text{modifier(coast, RA) = 1.2}$
+            * $$\text{modifier(coast, RA) = 1.2}$$
         * Uranium
-			* $\text{modifier(coast, uranium) = 1.4}$
+			* $$\text{modifier(coast, uranium) = 1.4}$$
 	* Uncommon Resources:
         * Techforge
-			* $\text{modifier(coast, TF) = 0.7}$
+			* $$\text{modifier(coast, TF) = 0.7}$$
         * Solarium
-			* $\text{modifier(coast, SOL) = 0.9}$
+			* $$\text{modifier(coast, SOL) = 0.9}$$
         * Minerals
-			* $\text{modifier(coast, minerals) = 0.6}$
+			* $$\text{modifier(coast, minerals) = 0.6}$$
           
 * Magma Region:
     * region filled with hot stones, and warm magma
 	* Common Resources:
   		* Minerals
-			* $\text{modifier(magma, minerals) = 2.5}$
+			* $$\text{modifier(magma, minerals) = 2.5}$$
         * Uranium
-			* $\text{modifier(magma, uranium) = 1.8}$
+			* $$\text{modifier(magma, uranium) = 1.8}$$
         * Solarium
-			* $\text{modifier(magma, SOL) = 1.1}$
+			* $$\text{modifier(magma, SOL) = 1.1}$$
 	* Uncommon Resources:
         * Oil
-            * $\text{modifier(magma, oil) = 0.8}$
+            * $$\text{modifier(magma, oil) = 0.8}$$
         * Rations
-            * $\text{modifier(magma, RA) = 0.1}$
+            * $$\text{modifier(magma, RA) = 0.1}$$
         * Techforge
-			* $\text{modifier(magma, TF) = 0.3}$
+			* $$\text{modifier(magma, TF) = 0.3}$$
 
 * Volcanic Region:
     * region filled with warm stones
 	* Common Resources:
   		* Minerals
-			* $\text{modifier(volcanic, minerals) = 1.6}$
+			* $$\text{modifier(volcanic, minerals) = 1.6}$$
         * Uranium
-			* $\text{modifier(volcanic, uranium) = 1.4}$ 
+			* $$\text{modifier(volcanic, uranium) = 1.4}$$ 
         * Oil
-            * $\text{modifier(volcanic, oil) = 1.6}$
+            * $$\text{modifier(volcanic, oil) = 1.6}$$
 	* Uncommon Resources:
         * Rations
-            * $\text{modifier(volcanic, RA) = 0.2}$
+            * $$\text{modifier(volcanic, RA) = 0.2}$$
         * Techforge
-			* $\text{modifier(volcanic, TF) = 0.7}$
+			* $$\text{modifier(volcanic, TF) = 0.7}$$
 
 * Silicaat Region:
     * region filled with precious minerals
 	* Common Resources:
   		* Minerals
-			* $\text{modifier(silicaat, minerals) = 3.1}$
+			* $$\text{modifier(silicaat, minerals) = 3.1}$$
 	* Uncommon Resources:
 		* Uranium
-			* $\text{modifier(silicaat, uranium) = 0.7}$
+			* $$\text{modifier(silicaat, uranium) = 0.7}$$
         * Oil
-            * $\text{modifier(silicaat, oil) = 0.6}$
+            * $$\text{modifier(silicaat, oil) = 0.6}$$
         * Rations
-            * $\text{modifier(silicaat, RA) = 0.7}$
+            * $$\text{modifier(silicaat, RA) = 0.7}$$
         * Techforge
-			* $\text{modifier(silicaat, TF) = 0.9}$
+			* $$\text{modifier(silicaat, TF) = 0.9}$$
         * Solarium
-			* $\text{modifier(silicaat, SOL) = 0.9}$
+			* $$\text{modifier(silicaat, SOL) = 0.9}$$
           
 * Dark forest Region:
 	* A forest without much light 
 	* Common Resources:
   		* Rations
-            * $\text{modifier(dark forest, RA) = 1.1}$
+            * $$\text{modifier(dark forest, RA) = 1.1}$$
 	* Uncommon Resources:
         * Solarium
-			* $\text{modifier(dark forest, SOL) = 0.2}$
+			* $$\text{modifier(dark forest, SOL) = 0.2}$$
         * Techforge
-			* $\text{modifier(dark forest, TF) = 0.9}$
+			* $$\text{modifier(dark forest, TF) = 0.9}$$
         
 * Valley of shadow Region:
     * What or who lives in these regions is still unknown, while difficult to see because of the darkness, the region is full of richness
 	* Common Resources:
   		* Techforge
-			* $\text{modifier(valley of shadow, TF) = 1.5}$
+			* $$\text{modifier(valley of shadow, TF) = 1.5}$$
         * Uranium
-            * $\text{modifier(valley of shadow, uranium) = 1.1}$
+            * $$\text{modifier(valley of shadow, uranium) = 1.1}$$
         * Minerals
-			* $\text{modifier(valley of shadow, minerals) = 1.1}$
+			* $$\text{modifier(valley of shadow, minerals) = 1.1}$$
 	* Uncommon Resources:
         * Solarium
-			* $\text{modifier(plain, SOL) = 0.3}$
+			* $$\text{modifier(plain, SOL) = 0.3}$$
       
 ## Full control modifier
 When a user is in full control of a region it will get a 25% bonus on its production
@@ -2958,7 +2956,7 @@ When a user is in full control of a region it will get a 25% bonus on its produc
 
 <hr style="border:2px solid gray">
 
-<a id='a0db1a47-8be0-4cf9-a8be-936632873c93'></a>
+<a id='812e883a-c29d-4cdc-af2d-28644466725a'></a>
 # Politics and modifiers
 
 The user can influence how their society evolves through decisions in the political menu. Each type of society has an impact on a set of modifiers. 
@@ -2994,28 +2992,28 @@ These are the formulas we use to calculate the modifiers, all of these are limit
 
 - **Resource Production**
 
-$\text{Resource Production} = \text{anarchism} \times 10 + \text{democratic} \times 3 - \text{theocracy} \times 10 - \text{technocracy} \times 5 + \text{corporateState} \times 20 $
+$$\text{Resource Production} = \text{anarchism} \times 10 + \text{democratic} \times 3 - \text{theocracy} \times 10 - \text{technocracy} \times 5 + \text{corporateState} \times 20 $$
 
 - **Upgrade Speed**
 
-$\text{Upgrade Speed} = \text{technocracy} \times 25 + \text{democratic} \times 20 - \text{authoritarian} \times 15 - \text{theocracy} \times 20 - \text{corporateState} \times 10 $
+$$\text{Upgrade Speed} = \text{technocracy} \times 25 + \text{democratic} \times 20 - \text{authoritarian} \times 15 - \text{theocracy} \times 20 - \text{corporateState} \times 10 $$
 
 - **Army Strength**
 
-$\text{Army Strength} = \text{authoritarian} \times 30 - \text{anarchism} \times 20 + \text{theocracy} \times 15 - \text{democratic} \times 10 $
+$$\text{Army Strength} = \text{authoritarian} \times 30 - \text{anarchism} \times 20 + \text{theocracy} \times 15 - \text{democratic} \times 10 $$
 
 - **Training Time**
 
-$\text{Training Time} = -\text{authoritarian} \times 20 - \text{technocracy} \times 15 - \text{corporateState} \times 10 + \text{theocracy} \times 10 $
+$$\text{Training Time} = -\text{authoritarian} \times 20 - \text{technocracy} \times 15 - \text{corporateState} \times 10 + \text{theocracy} \times 10 $$
 
 - **Army Movement Speed**
 
-$\text{Army Movement Speed} = \text{anarchism} \times 10 - \text{corporateState} \times 30 - \text{theocracy} \times 5 $
+$$\text{Army Movement Speed} = \text{anarchism} \times 10 - \text{corporateState} \times 30 - \text{theocracy} \times 5 $$
 
 
 <hr style="border:2px solid gray">
 
-<a id='f6d5ce08-371c-4dfd-a735-d0d6a26f6fe8'></a>
+<a id='e1e05284-4a61-4a88-ac53-27fa60dcde4d'></a>
 # Resources
 Resources are uncapped. 
 * Techforge (TF)
@@ -3041,7 +3039,7 @@ Resources are uncapped.
 
 <hr style="border:2px solid gray">
 
-<a id='2de944d2-dd73-4548-a8b9-4ed0270358d8'></a>
+<a id='246c248e-cf8e-4a14-aaa2-a55908d27ae1'></a>
 # Towers
 ## Types
 * Sentry Tower (*ST*)
@@ -3071,7 +3069,7 @@ Resources are uncapped.
 
 <hr style="border:2px solid gray">
 
-<a id='50314568-67c9-4f6d-ad38-5e5aa5a112d4'></a>
+<a id='170d03ad-bf45-4c80-bc92-4f632cdb3197'></a>
 ## Points
 A point is a natural number and always bounded by the interval [0,499]
 ### Point Classification
@@ -3171,7 +3169,7 @@ A point is a natural number and always bounded by the interval [0,499]
 
 <hr style="border:2px solid gray">
 
-<a id='4f7b6a94-207b-4549-a7f9-cf444957f20b'></a>
+<a id='b252e81d-a2b5-49d7-84b0-13f0995cfa59'></a>
 # Walls
 ## Types
 * Reinforced Techno-Mesh (*RT*)
